@@ -1,1 +1,1 @@
-This project has been integrated in <a href="https://github.com/mdesalvo/RDFSharp">RDFSharp</a>
+This project is now part of <a href="https://github.com/mdesalvo/RDFSharp">RDFSharp</a>
