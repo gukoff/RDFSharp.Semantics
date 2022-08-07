@@ -41,6 +41,6 @@
     <Optimize>true</Optimize>
   </PropertyGroup>
   <ItemGroup>
-	  <PackageReference Include="RDFSharp" Version="3.0.0-preview3" />
+    <PackageReference Include="RDFSharp" Version="3.0.0-preview3" />
   </ItemGroup>
 </Project>

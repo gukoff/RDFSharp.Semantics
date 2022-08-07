@@ -16,7 +16,6 @@
 
 using RDFSharp.Model;
 using RDFSharp.Query;
-using RDFSharp.Semantics.SKOS;
 using System;
 using System.Collections.Generic;
 using System.Linq;
