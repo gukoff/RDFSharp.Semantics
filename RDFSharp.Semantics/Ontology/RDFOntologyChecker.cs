@@ -16,19 +16,17 @@
 
 namespace RDFSharp.Semantics
 {
-
     /// <summary>
     /// RDFOntologyChecker is responsible for implicit RDFS/OWL-DL validation of ontologies during modeling
     /// </summary>
     internal static class RDFOntologyChecker
     {
-
         #region ClassModel
         /// <summary>
         /// Checks if the given class is a reserved BASE ontology class
         /// </summary>
-        internal static bool CheckReservedClass(RDFOntologyClass ontClass) =>
-            RDFBASEOntology.Instance.Model.ClassModel.Classes.ContainsKey(ontClass.PatternMemberID);
+        internal static bool CheckReservedClass(RDFOntologyClass ontologyClass) =>
+            RDFBASEOntology.Instance.Model.ClassModel.Classes.ContainsKey(ontologyClass.PatternMemberID);
 
         /// <summary>
         /// Checks if the given childclass can be set subclassof the given motherclass
@@ -59,8 +57,8 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Checks if the given property is a reserved BASE ontology property
         /// </summary>
-        internal static bool CheckReservedProperty(RDFOntologyProperty ontProperty)
-            => RDFBASEOntology.Instance.Model.PropertyModel.Properties.ContainsKey(ontProperty.PatternMemberID);
+        internal static bool CheckReservedProperty(RDFOntologyProperty ontologyProperty)
+            => RDFBASEOntology.Instance.Model.PropertyModel.Properties.ContainsKey(ontologyProperty.PatternMemberID);
 
         /// <summary>
         /// Checks if the given childproperty can be set subPropertyOf the given motherproperty;<br/>
@@ -180,7 +178,5 @@ namespace RDFSharp.Semantics
         internal static bool CheckNegativeAssertionCompatibility(RDFOntologyData ontologyData, RDFOntologyFact aFact, RDFOntologyDatatypeProperty datatypeProperty, RDFOntologyLiteral ontologyLiteral)
             => !ontologyData.CheckIsDataAssertion(aFact, datatypeProperty, ontologyLiteral);
         #endregion
-
     }
-
 }
