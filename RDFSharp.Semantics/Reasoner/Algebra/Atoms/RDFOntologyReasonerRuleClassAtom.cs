@@ -47,7 +47,7 @@ namespace RDFSharp.Semantics
             RDFQueryEngine.AddColumn(atomResult, this.LeftArgument.ToString());
 
             //Materialize members of the atom class
-            RDFOntologyData ontologyData = RDFOntologyHelper.GetMembersOf(ontology, (RDFOntologyClass)this.Predicate);
+            RDFOntologyData ontologyData = RDFOntologyDataHelper.GetMembersOf(ontology, (RDFOntologyClass)this.Predicate);
             foreach (RDFOntologyFact ontologyFact in ontologyData)
             {
                 Dictionary<string, string> bindings = new Dictionary<string, string>();
@@ -77,7 +77,7 @@ namespace RDFSharp.Semantics
 
             //Materialize members of the atom class (only if taxonomy protection has been requested)
             RDFOntologyData atomClassMembers =
-                options.EnforceTaxonomyProtection ? RDFOntologyHelper.GetMembersOf(ontology, (RDFOntologyClass)this.Predicate)
+                options.EnforceTaxonomyProtection ? RDFOntologyDataHelper.GetMembersOf(ontology, (RDFOntologyClass)this.Predicate)
                                                   : new RDFOntologyData();
 
             //Iterate the antecedent results table to materialize the atom's reasoner evidences

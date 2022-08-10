@@ -80,7 +80,7 @@ namespace RDFSharp.Semantics
             //Inference-enabled discovery of same facts
             if (enableInference)
             {
-                List<RDFOntologyFact> sameFacts = RDFOntologyHelper.GetSameFactsAs(this.Ontology.Data, this.OntologyFact).ToList();
+                List<RDFOntologyFact> sameFacts = RDFOntologyDataHelper.GetSameFactsAs(this.Ontology.Data, this.OntologyFact).ToList();
                 foreach (RDFOntologyFact sameFact in sameFacts)
                 {
                     if (!result.Any(f => f.Item2.Equals(sameFact)))
@@ -111,7 +111,7 @@ namespace RDFSharp.Semantics
             //Inference-enabled discovery of different facts
             if (enableInference)
             {
-                List<RDFOntologyFact> differentFacts = RDFOntologyHelper.GetDifferentFactsFrom(this.Ontology.Data, this.OntologyFact).ToList();
+                List<RDFOntologyFact> differentFacts = RDFOntologyDataHelper.GetDifferentFactsFrom(this.Ontology.Data, this.OntologyFact).ToList();
                 foreach (RDFOntologyFact differentFact in differentFacts)
                 {
                     if (!result.Any(f => f.Item2.Equals(differentFact)))
@@ -145,7 +145,7 @@ namespace RDFSharp.Semantics
                 //Skip already enlisted classes and also reserved/literal-compatible classes
                 var availableclasses = this.Ontology.Model.ClassModel.Where(cls => !result.Any(res => res.Item2.Equals(cls))
                                                                                                         && !RDFOntologyChecker.CheckReservedClass(cls)
-                                                                                                            && !RDFOntologyHelper.CheckIsLiteralCompatibleClass(this.Ontology.Model.ClassModel, cls));
+                                                                                                            && !RDFOntologyClassModelHelper.CheckIsLiteralCompatibleClass(this.Ontology.Model.ClassModel, cls));
                 var membersCache = new Dictionary<long, RDFOntologyData>();
 
                 //Evaluate enumerations

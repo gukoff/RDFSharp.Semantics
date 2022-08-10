@@ -673,7 +673,7 @@ namespace RDFSharp.Semantics
                 {
                     //Enforce checks on syntactic corner cases and OWL2 decidability (do not allow cycles)
                     chainProperties.RemoveAll(chainProp => chainProp == null || chainProp.Equals(ontologyProperty));
-                    if (!chainProperties.Any(chainProp => RDFOntologyHelper.CheckIsPropertyChainStepOf(this, ontologyProperty, chainProp)))
+                    if (!chainProperties.Any(chainProp => RDFOntologyPropertyModelHelper.CheckIsPropertyChainStepOf(this, ontologyProperty, chainProp)))
                     {
                         chainProperties.ForEach(chainProperty => this.Relations.PropertyChainAxiom.AddEntry(new RDFOntologyTaxonomyEntry(ontologyProperty, RDFVocabulary.OWL.PROPERTY_CHAIN_AXIOM.ToRDFOntologyObjectProperty(), chainProperty)));
                     }

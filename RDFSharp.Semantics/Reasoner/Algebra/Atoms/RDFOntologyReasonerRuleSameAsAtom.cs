@@ -57,7 +57,7 @@ namespace RDFSharp.Semantics
             //Materialize owl:sameAs inferences of the atom
             if (this.RightArgument is RDFOntologyFact rightArgumentFact)
             { 
-                RDFOntologyData sameFacts = RDFOntologyHelper.GetSameFactsAs(ontology.Data, rightArgumentFact);
+                RDFOntologyData sameFacts = RDFOntologyDataHelper.GetSameFactsAs(ontology.Data, rightArgumentFact);
                 foreach (RDFOntologyFact sameFact in sameFacts)
                 {
                     Dictionary<string, string> bindings = new Dictionary<string, string>();
@@ -70,7 +70,7 @@ namespace RDFSharp.Semantics
             {
                 foreach (RDFOntologyFact ontologyFact in ontology.Data)
                 {
-                    RDFOntologyData sameFacts = RDFOntologyHelper.GetSameFactsAs(ontology.Data, ontologyFact);
+                    RDFOntologyData sameFacts = RDFOntologyDataHelper.GetSameFactsAs(ontology.Data, ontologyFact);
                     foreach (RDFOntologyFact sameFact in sameFacts)
                     {
                         Dictionary<string, string> bindings = new Dictionary<string, string>();
@@ -143,7 +143,7 @@ namespace RDFSharp.Semantics
                         rightFact = new RDFOntologyFact(rightArgumentValueResource);
 
                     //Protect atom's inferences with implicit taxonomy checks (only if taxonomy protection has been requested)
-                    if (!options.EnforceTaxonomyProtection || !RDFOntologyHelper.CheckIsDifferentFactFrom(ontology.Data, leftFact, rightFact))
+                    if (!options.EnforceTaxonomyProtection || !RDFOntologyDataHelper.CheckIsDifferentFactFrom(ontology.Data, leftFact, rightFact))
                     {
                         //Create the inference as a taxonomy entry
                         RDFOntologyTaxonomyEntry sem_infA = new RDFOntologyTaxonomyEntry(leftFact, (RDFOntologyObjectProperty)this.Predicate, rightFact)

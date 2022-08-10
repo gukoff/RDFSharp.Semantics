@@ -160,25 +160,25 @@ namespace RDFSharp.Semantics
         /// Checks if the given "aFact -> objectProperty -> bFact" can be an assertion
         /// </summary>
         internal static bool CheckAssertionCompatibility(RDFOntologyData ontologyData, RDFOntologyFact aFact, RDFOntologyObjectProperty objProperty, RDFOntologyFact bFact)
-            => !ontologyData.CheckIsNegativeAssertion(aFact, objProperty, bFact);
+            => !ontologyData.CheckIsNegativeObjectAssertion(aFact, objProperty, bFact);
 
         /// <summary>
         /// Checks if the given "aFact -> datatypeProperty -> ontologyLiteral" can be an assertion
         /// </summary>
         internal static bool CheckAssertionCompatibility(RDFOntologyData ontologyData, RDFOntologyFact aFact, RDFOntologyDatatypeProperty datatypeProperty, RDFOntologyLiteral ontologyLiteral)
-            => !ontologyData.CheckIsNegativeAssertion(aFact, datatypeProperty, ontologyLiteral);
+            => !ontologyData.CheckIsNegativeDataAssertion(aFact, datatypeProperty, ontologyLiteral);
 
         /// <summary>
         /// Checks if the given "aFact -> objectProperty -> bFact" can be a negative assertion
         /// </summary>
         internal static bool CheckNegativeAssertionCompatibility(RDFOntologyData ontologyData, RDFOntologyFact aFact, RDFOntologyObjectProperty objProperty, RDFOntologyFact bFact)
-            => !ontologyData.CheckIsAssertion(aFact, objProperty, bFact);
+            => !ontologyData.CheckIsObjectAssertion(aFact, objProperty, bFact);
 
         /// <summary>
         /// Checks if the given "aFact -> datatypeProperty -> ontologyLiteral" can be a negative assertion
         /// </summary>
         internal static bool CheckNegativeAssertionCompatibility(RDFOntologyData ontologyData, RDFOntologyFact aFact, RDFOntologyDatatypeProperty datatypeProperty, RDFOntologyLiteral ontologyLiteral)
-            => !ontologyData.CheckIsAssertion(aFact, datatypeProperty, ontologyLiteral);
+            => !ontologyData.CheckIsDataAssertion(aFact, datatypeProperty, ontologyLiteral);
         #endregion
 
     }

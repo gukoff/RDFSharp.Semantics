@@ -80,7 +80,7 @@ namespace RDFSharp.Semantics
             //Inference-enabled discovery of subclasses
             if (enableInference)
             {
-                List<RDFOntologyClass> subClasses = RDFOntologyHelper.GetSubClassesOf(this.Ontology.Model.ClassModel, this.OntologyClass).ToList();
+                List<RDFOntologyClass> subClasses = RDFOntologyClassModelHelper.GetSubClassesOf(this.Ontology.Model.ClassModel, this.OntologyClass).ToList();
                 foreach (RDFOntologyClass subClass in subClasses)
                 {
                     if (!result.Any(f => f.Item2.Equals(subClass)))
@@ -111,7 +111,7 @@ namespace RDFSharp.Semantics
             //Inference-enabled discovery of superclasses
             if (enableInference)
             {
-                List<RDFOntologyClass> superClasses = RDFOntologyHelper.GetSuperClassesOf(this.Ontology.Model.ClassModel, this.OntologyClass).ToList();
+                List<RDFOntologyClass> superClasses = RDFOntologyClassModelHelper.GetSuperClassesOf(this.Ontology.Model.ClassModel, this.OntologyClass).ToList();
                 foreach (RDFOntologyClass superClass in superClasses)
                 {
                     if (!result.Any(f => f.Item2.Equals(superClass)))
@@ -142,7 +142,7 @@ namespace RDFSharp.Semantics
             //Inference-enabled discovery of equivalent classes
             if (enableInference)
             {
-                List<RDFOntologyClass> equivalentClasses = RDFOntologyHelper.GetEquivalentClassesOf(this.Ontology.Model.ClassModel, this.OntologyClass).ToList();
+                List<RDFOntologyClass> equivalentClasses = RDFOntologyClassModelHelper.GetEquivalentClassesOf(this.Ontology.Model.ClassModel, this.OntologyClass).ToList();
                 foreach (RDFOntologyClass equivalentClass in equivalentClasses)
                 {
                     if (!result.Any(f => f.Item2.Equals(equivalentClass)))
@@ -173,7 +173,7 @@ namespace RDFSharp.Semantics
             //Inference-enabled discovery of disjoint classes
             if (enableInference)
             {
-                List<RDFOntologyClass> disjointClasses = RDFOntologyHelper.GetDisjointClassesWith(this.Ontology.Model.ClassModel, this.OntologyClass).ToList();
+                List<RDFOntologyClass> disjointClasses = RDFOntologyClassModelHelper.GetDisjointClassesWith(this.Ontology.Model.ClassModel, this.OntologyClass).ToList();
                 foreach (RDFOntologyClass disjointClass in disjointClasses)
                 {
                     if (!result.Any(f => f.Item2.Equals(disjointClass)))
@@ -218,7 +218,7 @@ namespace RDFSharp.Semantics
             List<(bool, RDFOntologyResource)> result = new List<(bool, RDFOntologyResource)>();
 
             //First-level enlisting of members (datatype class)
-            if (RDFOntologyHelper.CheckIsLiteralCompatibleClass(this.Ontology.Model.ClassModel, this.OntologyClass))
+            if (RDFOntologyClassModelHelper.CheckIsLiteralCompatibleClass(this.Ontology.Model.ClassModel, this.OntologyClass))
             {
                 IEnumerable<RDFOntologyLiteral> ontlits = this.Ontology.Data.Literals.Values.Where(ol => ol.Value is RDFTypedLiteral);
                 foreach (RDFOntologyLiteral ontlit in ontlits.Where(ol => RDFModelUtilities.GetDatatypeFromEnum(((RDFTypedLiteral)ol.Value).Datatype).Equals(this.OntologyClass.ToString())))
@@ -237,7 +237,7 @@ namespace RDFSharp.Semantics
             //Inference-enabled discovery of members
             if (enableInference)
             {
-                RDFOntologyData members = RDFOntologyHelper.GetMembersOf(this.Ontology, this.OntologyClass);
+                RDFOntologyData members = RDFOntologyDataHelper.GetMembersOf(this.Ontology, this.OntologyClass);
                 foreach (RDFOntologyFact fact in members)
                 {
                     if (!result.Any(f => f.Item2.Equals(fact)))

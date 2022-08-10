@@ -80,7 +80,7 @@ namespace RDFSharp.Semantics
             //Inference-enabled discovery of subproperties
             if (enableInference)
             {
-                List<RDFOntologyProperty> subProperties = RDFOntologyHelper.GetSubPropertiesOf(this.Ontology.Model.PropertyModel, this.OntologyProperty).ToList();
+                List<RDFOntologyProperty> subProperties = RDFOntologyPropertyModelHelper.GetSubPropertiesOf(this.Ontology.Model.PropertyModel, this.OntologyProperty).ToList();
                 foreach (RDFOntologyProperty subProperty in subProperties)
                 {
                     if (!result.Any(f => f.Item2.Equals(subProperty)))
@@ -111,7 +111,7 @@ namespace RDFSharp.Semantics
             //Inference-enabled discovery of superproperties
             if (enableInference)
             {
-                List<RDFOntologyProperty> superProperties = RDFOntologyHelper.GetSuperPropertiesOf(this.Ontology.Model.PropertyModel, this.OntologyProperty).ToList();
+                List<RDFOntologyProperty> superProperties = RDFOntologyPropertyModelHelper.GetSuperPropertiesOf(this.Ontology.Model.PropertyModel, this.OntologyProperty).ToList();
                 foreach (RDFOntologyProperty superProperty in superProperties)
                 {
                     if (!result.Any(f => f.Item2.Equals(superProperty)))
@@ -142,7 +142,7 @@ namespace RDFSharp.Semantics
             //Inference-enabled discovery of equivalent properties
             if (enableInference)
             {
-                List<RDFOntologyProperty> equivalentProperties = RDFOntologyHelper.GetEquivalentPropertiesOf(this.Ontology.Model.PropertyModel, this.OntologyProperty).ToList();
+                List<RDFOntologyProperty> equivalentProperties = RDFOntologyPropertyModelHelper.GetEquivalentPropertiesOf(this.Ontology.Model.PropertyModel, this.OntologyProperty).ToList();
                 foreach (RDFOntologyProperty equivalentProperty in equivalentProperties)
                 {
                     if (!result.Any(f => f.Item2.Equals(equivalentProperty)))
@@ -175,9 +175,9 @@ namespace RDFSharp.Semantics
                 //Inference-enabled discovery of inverse properties
                 if (enableInference)
                 {
-                    List<RDFOntologyObjectProperty> inverseProperties = RDFOntologyHelper.GetInversePropertiesOf(this.Ontology.Model.PropertyModel, (RDFOntologyObjectProperty)this.OntologyProperty)
-                                                                                         .OfType<RDFOntologyObjectProperty>()
-                                                                                         .ToList();
+                    List<RDFOntologyObjectProperty> inverseProperties = RDFOntologyPropertyModelHelper.GetInversePropertiesOf(this.Ontology.Model.PropertyModel, (RDFOntologyObjectProperty)this.OntologyProperty)
+                                                                                                      .OfType<RDFOntologyObjectProperty>()
+                                                                                                      .ToList();
                     foreach (RDFOntologyObjectProperty inverseProperty in inverseProperties)
                     {
                         if (!result.Any(f => f.Item2.Equals(inverseProperty)))
@@ -209,7 +209,7 @@ namespace RDFSharp.Semantics
             //Inference-enabled discovery of disjoint properties
             if (enableInference)
             {
-                List<RDFOntologyProperty> disjointProperties = RDFOntologyHelper.GetPropertiesDisjointWith(this.Ontology.Model.PropertyModel, this.OntologyProperty).ToList();
+                List<RDFOntologyProperty> disjointProperties = RDFOntologyPropertyModelHelper.GetPropertiesDisjointWith(this.Ontology.Model.PropertyModel, this.OntologyProperty).ToList();
                 foreach (RDFOntologyProperty disjointProperty in disjointProperties)
                 {
                     if (!result.Any(f => f.Item2.Equals(disjointProperty)))
