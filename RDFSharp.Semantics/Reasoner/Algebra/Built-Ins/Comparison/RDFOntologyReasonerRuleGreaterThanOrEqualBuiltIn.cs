@@ -38,7 +38,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Default-ctor to build a swrlb:greaterThanOrEqual built-in with given arguments
         /// </summary>
-        public RDFOntologyReasonerRuleGreaterThanOrEqualBuiltIn(RDFVariable leftArgument, RDFOntologyFact rightArgument)
+        public RDFOntologyReasonerRuleGreaterThanOrEqualBuiltIn(RDFVariable leftArgument, RDFOntologyIndividual rightArgument)
             : this(leftArgument, rightArgument?.Value as RDFPatternMember) { }
 
         /// <summary>

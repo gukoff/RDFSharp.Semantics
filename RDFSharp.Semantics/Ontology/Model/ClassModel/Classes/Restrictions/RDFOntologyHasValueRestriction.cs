@@ -38,7 +38,7 @@ namespace RDFSharp.Semantics
         /// </summary>
         public RDFOntologyHasValueRestriction(RDFResource restrictionName,
                                               RDFOntologyProperty onProperty,
-                                              RDFOntologyFact requiredValue) : base(restrictionName, onProperty)
+                                              RDFOntologyIndividual requiredValue) : base(restrictionName, onProperty)
         {
             if (requiredValue != null)
             {

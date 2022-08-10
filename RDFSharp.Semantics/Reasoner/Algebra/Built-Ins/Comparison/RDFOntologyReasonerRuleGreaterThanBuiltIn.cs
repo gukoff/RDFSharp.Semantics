@@ -38,7 +38,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Default-ctor to build a swrlb:greaterThan built-in with given arguments
         /// </summary>
-        public RDFOntologyReasonerRuleGreaterThanBuiltIn(RDFVariable leftArgument, RDFOntologyFact rightArgument)
+        public RDFOntologyReasonerRuleGreaterThanBuiltIn(RDFVariable leftArgument, RDFOntologyIndividual rightArgument)
             : this(leftArgument, rightArgument?.Value as RDFPatternMember) { }
 
         /// <summary>

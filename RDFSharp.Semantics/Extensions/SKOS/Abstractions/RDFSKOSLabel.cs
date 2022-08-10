@@ -22,7 +22,7 @@ namespace RDFSharp.Semantics
     /// <summary>
     /// RDFSKOSLabel represents an instance of skosxl:Label within an instance of skos:ConceptScheme
     /// </summary>
-    public class RDFSKOSLabel : RDFOntologyFact
+    public class RDFSKOSLabel : RDFOntologyIndividual
     {
 
         #region Ctors

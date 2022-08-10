@@ -24,7 +24,7 @@ namespace RDFSharp.Semantics
 {
 
     /// <summary>
-    /// RDFOntologyReasonerRuleDataPropertyAtom represents an atom inferring assertions relating ontology facts to literals
+    /// RDFOntologyReasonerRuleDataPropertyAtom represents an atom inferring assertions relating ontology individuals to literals
     /// </summary>
     public class RDFOntologyReasonerRuleDataPropertyAtom : RDFOntologyReasonerRuleAtom
     {
@@ -118,10 +118,10 @@ namespace RDFSharp.Semantics
                 if (leftArgumentValue is RDFResource leftArgumentValueResource
                         && rightArgumentValue is RDFLiteral rightArgumentValueLiteral)
                 {
-                    //Search the fact in the ontology
-                    RDFOntologyFact fact = ontology.Data.SelectFact(leftArgumentValueResource.ToString());
-                    if (fact == null)
-                        fact = new RDFOntologyFact(leftArgumentValueResource);
+                    //Search the individual in the ontology
+                    RDFOntologyIndividual individual = ontology.Data.SelectIndividual(leftArgumentValueResource.ToString());
+                    if (individual == null)
+                        individual = new RDFOntologyIndividual(leftArgumentValueResource);
 
                     //Search the literal in the ontology
                     RDFOntologyLiteral literal = ontology.Data.SelectLiteral(rightArgumentValueLiteral.ToString());
@@ -129,10 +129,10 @@ namespace RDFSharp.Semantics
                         literal = new RDFOntologyLiteral(rightArgumentValueLiteral);
 
                     //Protect atom's inferences with implicit taxonomy checks (only if taxonomy protection has been requested)
-                    if (!options.EnforceTaxonomyProtection || RDFOntologyChecker.CheckAssertionCompatibility(ontology.Data, fact, (RDFOntologyDatatypeProperty)this.Predicate, literal))
+                    if (!options.EnforceTaxonomyProtection || RDFOntologyChecker.CheckAssertionCompatibility(ontology.Data, individual, (RDFOntologyDatatypeProperty)this.Predicate, literal))
                     {
                         //Create the inference as a taxonomy entry
-                        RDFOntologyTaxonomyEntry sem_inf = new RDFOntologyTaxonomyEntry(fact, (RDFOntologyDatatypeProperty)this.Predicate, literal)
+                        RDFOntologyTaxonomyEntry sem_inf = new RDFOntologyTaxonomyEntry(individual, (RDFOntologyDatatypeProperty)this.Predicate, literal)
                                                                 .SetInference(RDFSemanticsEnums.RDFOntologyInferenceType.Reasoner);
 
                         //Add the inference to the report

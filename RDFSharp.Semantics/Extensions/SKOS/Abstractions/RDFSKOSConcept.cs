@@ -22,7 +22,7 @@ namespace RDFSharp.Semantics
     /// <summary>
     /// RDFSKOSConcept represents an instance of skos:Concept within an instance of skos:ConceptScheme
     /// </summary>
-    public class RDFSKOSConcept : RDFOntologyFact
+    public class RDFSKOSConcept : RDFOntologyIndividual
     {
 
         #region Ctors

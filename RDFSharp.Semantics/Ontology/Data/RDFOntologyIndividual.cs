@@ -15,32 +15,25 @@
 */
 
 using RDFSharp.Model;
-using System.Text;
 
 namespace RDFSharp.Semantics
 {
-
     /// <summary>
-    /// RDFOntologyFact represents an instance of an ontology class within an ontology data.
+    /// RDFOntologyIndividual represents an instance of an ontology class within an ontology data.
     /// </summary>
-    public class RDFOntologyFact : RDFOntologyResource
+    public class RDFOntologyIndividual : RDFOntologyResource
     {
         #region Ctors
         /// <summary>
-        /// Default-ctor to build an ontology fact with the given name.
+        /// Default-ctor to build an ontology individual with the given name.
         /// </summary>
-        public RDFOntologyFact(RDFResource factName)
+        public RDFOntologyIndividual(RDFResource individualName)
         {
-            if (factName != null)
-            {
-                this.Value = factName;
-            }
-            else
-            {
-                throw new RDFSemanticsException("Cannot create RDFOntologyFact because given \"factName\" parameter is null.");
-            }
+            if (individualName == null)
+                throw new RDFSemanticsException("Cannot create RDFOntologyIndividual because given \"individualName\" parameter is null.");
+
+            this.Value = individualName;
         }
         #endregion
     }
-
 }

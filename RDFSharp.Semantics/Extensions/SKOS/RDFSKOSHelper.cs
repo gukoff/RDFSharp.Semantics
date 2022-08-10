@@ -994,8 +994,8 @@ namespace RDFSharp.Semantics
         /// Adds the "skosCollection -> skos:member -> skosMember" relation to the data (and links the given axiom annotation if provided)
         /// </summary>
         internal static RDFOntologyData AddMemberRelation(this RDFOntologyData ontologyData,
-                                                          RDFOntologyFact skosCollection,
-                                                          RDFOntologyFact skosMember,
+                                                          RDFOntologyIndividual skosCollection,
+                                                          RDFOntologyIndividual skosMember,
                                                           RDFOntologyAxiomAnnotation axiomAnnotation=null)
         {
             if (ontologyData != null && skosCollection != null && skosMember != null)
@@ -1013,8 +1013,8 @@ namespace RDFSharp.Semantics
         /// Adds the "skosOrderedCollection -> skos:memberList -> skosMember" relation to the data (and links the given axiom annotation if provided)
         /// </summary>
         internal static RDFOntologyData AddMemberListRelation(this RDFOntologyData ontologyData,
-                                                              RDFOntologyFact skosOrderedCollection,
-                                                              RDFOntologyFact skosMember,
+                                                              RDFOntologyIndividual skosOrderedCollection,
+                                                              RDFOntologyIndividual skosMember,
                                                               RDFOntologyAxiomAnnotation axiomAnnotation = null)
         {
             if (ontologyData != null && skosOrderedCollection != null && skosMember != null)
@@ -1032,8 +1032,8 @@ namespace RDFSharp.Semantics
         /// Removes the "skosCollection -> skos:member -> skosMember" relation to the data.
         /// </summary>
         internal static RDFOntologyData RemoveMemberRelation(this RDFOntologyData ontologyData,
-                                                             RDFOntologyFact skosCollection,
-                                                             RDFOntologyFact skosMember)
+                                                             RDFOntologyIndividual skosCollection,
+                                                             RDFOntologyIndividual skosMember)
         {
             if (ontologyData != null && skosCollection != null && skosMember != null)
             {
@@ -1050,8 +1050,8 @@ namespace RDFSharp.Semantics
         /// Removes the "skosOrderedCollection -> skos:memberList -> skosMember" relation to the data.
         /// </summary>
         internal static RDFOntologyData RemoveMemberListRelation(this RDFOntologyData ontologyData,
-                                                                 RDFOntologyFact skosOrderedCollection,
-                                                                 RDFOntologyFact skosMember)
+                                                                 RDFOntologyIndividual skosOrderedCollection,
+                                                                 RDFOntologyIndividual skosMember)
         {
             if (ontologyData != null && skosOrderedCollection != null && skosMember != null)
             {

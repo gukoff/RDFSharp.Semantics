@@ -312,11 +312,11 @@ namespace RDFSharp.Semantics
                 //Populate result with corresponding ontology assertions
                 foreach (RDFTriple queryResultTriple in queryResult.ToRDFGraph())
                 {
-                    RDFOntologyFact assertionSubject = ontology.Data.SelectFact(queryResultTriple.Subject.ToString());
+                    RDFOntologyIndividual assertionSubject = ontology.Data.SelectIndividual(queryResultTriple.Subject.ToString());
                     RDFOntologyProperty assertionPredicate = ontology.Model.PropertyModel.SelectProperty(queryResultTriple.Predicate.ToString());
-                    RDFOntologyFact assertionObject = ontology.Data.SelectFact(queryResultTriple.Object.ToString());
+                    RDFOntologyIndividual assertionObject = ontology.Data.SelectIndividual(queryResultTriple.Object.ToString());
                     if (assertionPredicate is RDFOntologyObjectProperty)
-                        result[propertyChainAxiomTaxonomy.Key.ToString()].AddAssertionRelation(assertionSubject, (RDFOntologyObjectProperty)assertionPredicate, assertionObject);
+                        result[propertyChainAxiomTaxonomy.Key.ToString()].AddObjectAssertion(assertionSubject, (RDFOntologyObjectProperty)assertionPredicate, assertionObject);
                 }
             }
             return result;

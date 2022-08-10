@@ -24,7 +24,7 @@ namespace RDFSharp.Semantics
 {
 
     /// <summary>
-    /// RDFOntologyReasonerRuleDifferentFromAtom represents an atom inferring owl:differentFrom assertions between ontology facts 
+    /// RDFOntologyReasonerRuleDifferentFromAtom represents an atom inferring owl:differentFrom assertions between ontology individuals 
     /// </summary>
     public class RDFOntologyReasonerRuleDifferentFromAtom : RDFOntologyReasonerRuleObjectPropertyAtom
     {
@@ -38,7 +38,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Default-ctor to build an owl:differentFrom atom with the given arguments
         /// </summary>
-        public RDFOntologyReasonerRuleDifferentFromAtom(RDFVariable leftArgument, RDFOntologyFact rightArgument)
+        public RDFOntologyReasonerRuleDifferentFromAtom(RDFVariable leftArgument, RDFOntologyIndividual rightArgument)
             : base(RDFVocabulary.OWL.DIFFERENT_FROM.ToRDFOntologyObjectProperty(), leftArgument, rightArgument) { }
         #endregion
 
@@ -55,27 +55,27 @@ namespace RDFSharp.Semantics
                 RDFQueryEngine.AddColumn(atomResult, this.RightArgument.ToString());
 
             //Materialize owl:differentFrom inferences of the atom
-            if (this.RightArgument is RDFOntologyFact rightArgumentFact)
+            if (this.RightArgument is RDFOntologyIndividual rightArgumentIndividual)
             {
-                RDFOntologyData differentFacts = RDFOntologyDataHelper.GetDifferentFactsFrom(ontology.Data, rightArgumentFact);
-                foreach (RDFOntologyFact differentFact in differentFacts)
+                RDFOntologyData differentIndividuals = RDFOntologyDataHelper.GetDifferentIndividuals(ontology.Data, rightArgumentIndividual);
+                foreach (RDFOntologyIndividual differentIndividual in differentIndividuals)
                 {
                     Dictionary<string, string> bindings = new Dictionary<string, string>();
-                    bindings.Add(this.LeftArgument.ToString(), differentFact.ToString());
+                    bindings.Add(this.LeftArgument.ToString(), differentIndividual.ToString());
 
                     RDFQueryEngine.AddRow(atomResult, bindings);
                 }
             }
             else
             {
-                foreach (RDFOntologyFact ontologyFact in ontology.Data)
+                foreach (RDFOntologyIndividual ontologyIndividual in ontology.Data)
                 {
-                    RDFOntologyData differentFacts = RDFOntologyDataHelper.GetDifferentFactsFrom(ontology.Data, ontologyFact);
-                    foreach (RDFOntologyFact differentFact in differentFacts)
+                    RDFOntologyData differentIndividuals = RDFOntologyDataHelper.GetDifferentIndividuals(ontology.Data, ontologyIndividual);
+                    foreach (RDFOntologyIndividual differentIndividual in differentIndividuals)
                     {
                         Dictionary<string, string> bindings = new Dictionary<string, string>();
-                        bindings.Add(this.LeftArgument.ToString(), ontologyFact.ToString());
-                        bindings.Add(this.RightArgument.ToString(), differentFact.ToString());
+                        bindings.Add(this.LeftArgument.ToString(), ontologyIndividual.ToString());
+                        bindings.Add(this.RightArgument.ToString(), differentIndividual.ToString());
 
                         RDFQueryEngine.AddRow(atomResult, bindings);
                     }
@@ -127,28 +127,28 @@ namespace RDFSharp.Semantics
                 //Parse the value of the column corresponding to the atom's right argument
                 RDFPatternMember rightArgumentValue =
                     this.RightArgument is RDFVariable ? RDFQueryUtilities.ParseRDFPatternMember(currentRow[rightArgumentString].ToString())
-                                                      : ((RDFOntologyFact)this.RightArgument).Value;
+                                                      : ((RDFOntologyIndividual)this.RightArgument).Value;
 
                 if (leftArgumentValue is RDFResource leftArgumentValueResource
                         && rightArgumentValue is RDFResource rightArgumentValueResource)
                 {
-                    //Search the left fact in the ontology
-                    RDFOntologyFact leftFact = ontology.Data.SelectFact(leftArgumentValueResource.ToString());
-                    if (leftFact == null)
-                        leftFact = new RDFOntologyFact(leftArgumentValueResource);
+                    //Search the left individual in the ontology
+                    RDFOntologyIndividual leftIndividual = ontology.Data.SelectIndividual(leftArgumentValueResource.ToString());
+                    if (leftIndividual == null)
+                        leftIndividual = new RDFOntologyIndividual(leftArgumentValueResource);
 
-                    //Search the right fact in the ontology
-                    RDFOntologyFact rightFact = ontology.Data.SelectFact(rightArgumentValueResource.ToString());
-                    if (rightFact == null)
-                        rightFact = new RDFOntologyFact(rightArgumentValueResource);
+                    //Search the right individual in the ontology
+                    RDFOntologyIndividual rightIndividual = ontology.Data.SelectIndividual(rightArgumentValueResource.ToString());
+                    if (rightIndividual == null)
+                        rightIndividual = new RDFOntologyIndividual(rightArgumentValueResource);
 
                     //Protect atom's inferences with implicit taxonomy checks (only if taxonomy protection has been requested)
-                    if (!options.EnforceTaxonomyProtection || !RDFOntologyDataHelper.CheckIsSameFactAs(ontology.Data, leftFact, rightFact))
+                    if (!options.EnforceTaxonomyProtection || !ontology.Data.CheckIsSameIndividual(leftIndividual, rightIndividual))
                     {
                         //Create the inference as a taxonomy entry
-                        RDFOntologyTaxonomyEntry sem_infA = new RDFOntologyTaxonomyEntry(leftFact, (RDFOntologyObjectProperty)this.Predicate, rightFact)
+                        RDFOntologyTaxonomyEntry sem_infA = new RDFOntologyTaxonomyEntry(leftIndividual, (RDFOntologyObjectProperty)this.Predicate, rightIndividual)
                                                                  .SetInference(RDFSemanticsEnums.RDFOntologyInferenceType.Reasoner);
-                        RDFOntologyTaxonomyEntry sem_infB = new RDFOntologyTaxonomyEntry(rightFact, (RDFOntologyObjectProperty)this.Predicate, leftFact)
+                        RDFOntologyTaxonomyEntry sem_infB = new RDFOntologyTaxonomyEntry(rightIndividual, (RDFOntologyObjectProperty)this.Predicate, leftIndividual)
                                                                  .SetInference(RDFSemanticsEnums.RDFOntologyInferenceType.Reasoner);
 
                         //Add the inference to the report

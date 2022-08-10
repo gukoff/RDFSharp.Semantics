@@ -48,10 +48,10 @@ namespace RDFSharp.Semantics
 
             //Materialize members of the atom class
             RDFOntologyData ontologyData = RDFOntologyDataHelper.GetMembersOf(ontology, (RDFOntologyClass)this.Predicate);
-            foreach (RDFOntologyFact ontologyFact in ontologyData)
+            foreach (RDFOntologyIndividual ontologyIndividual in ontologyData)
             {
                 Dictionary<string, string> bindings = new Dictionary<string, string>();
-                bindings.Add(this.LeftArgument.ToString(), ontologyFact.ToString());
+                bindings.Add(this.LeftArgument.ToString(), ontologyIndividual.ToString());
 
                 RDFQueryEngine.AddRow(atomResult, bindings);
             }
@@ -96,16 +96,16 @@ namespace RDFSharp.Semantics
                 RDFPatternMember leftArgumentValue = RDFQueryUtilities.ParseRDFPatternMember(currentRow[leftArgumentString].ToString());
                 if (leftArgumentValue is RDFResource leftArgumentValueResource)
                 {
-                    //Search the fact in the ontology
-                    RDFOntologyFact fact = ontology.Data.SelectFact(leftArgumentValueResource.ToString());
-                    if (fact == null)
-                        fact = new RDFOntologyFact(leftArgumentValueResource);
+                    //Search the individual in the ontology
+                    RDFOntologyIndividual individual = ontology.Data.SelectIndividual(leftArgumentValueResource.ToString());
+                    if (individual == null)
+                        individual = new RDFOntologyIndividual(leftArgumentValueResource);
 
                     //Protect atom's inferences with implicit taxonomy checks (only if taxonomy protection has been requested)
-                    if (!options.EnforceTaxonomyProtection || atomClassMembers.Facts.ContainsKey(fact.PatternMemberID))
+                    if (!options.EnforceTaxonomyProtection || atomClassMembers.Individuals.ContainsKey(individual.PatternMemberID))
                     {
                         //Create the inference as a taxonomy entry
-                        RDFOntologyTaxonomyEntry sem_inf = new RDFOntologyTaxonomyEntry(fact, type, (RDFOntologyClass)this.Predicate)
+                        RDFOntologyTaxonomyEntry sem_inf = new RDFOntologyTaxonomyEntry(individual, type, (RDFOntologyClass)this.Predicate)
                                                                 .SetInference(RDFSemanticsEnums.RDFOntologyInferenceType.Reasoner);
 
                         //Add the inference to the report

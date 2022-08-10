@@ -215,7 +215,7 @@ namespace RDFSharp.Semantics
                 RDFOntologyTaxonomy pAsns = ontology.Data.Relations.Assertions.SelectEntriesByPredicate(p);
 
                 //Iterate the related assertions
-                foreach (RDFOntologyTaxonomyEntry pAsn in pAsns.Where(x => x.TaxonomyObject.IsFact()))
+                foreach (RDFOntologyTaxonomyEntry pAsn in pAsns.Where(x => x.TaxonomyObject.IsIndividual()))
                 {
                     //Create the inference as a taxonomy entry
                     RDFOntologyTaxonomyEntry sem_inf = new RDFOntologyTaxonomyEntry(pAsn.TaxonomyObject, type, p.Range)
@@ -236,11 +236,11 @@ namespace RDFSharp.Semantics
         {
             RDFOntologyReasonerReport report = new RDFOntologyReasonerReport();
             RDFOntologyObjectProperty sameAs = RDFVocabulary.OWL.SAME_AS.ToRDFOntologyObjectProperty();
-            foreach (RDFOntologyFact f in ontology.Data)
+            foreach (RDFOntologyIndividual f in ontology.Data)
             {
-                //Enlist the same facts of the current fact
-                RDFOntologyData samefacts = ontology.Data.GetSameFactsAs(f);
-                foreach (RDFOntologyFact sf in samefacts)
+                //Enlist the same individuals of the current individual
+                RDFOntologyData sameindividuals = ontology.Data.GetSameIndividuals(f);
+                foreach (RDFOntologyIndividual sf in sameindividuals)
                 {
                     //Create the inference as a taxonomy entry
                     RDFOntologyTaxonomyEntry sem_infA = new RDFOntologyTaxonomyEntry(f, sameAs, sf)
@@ -266,11 +266,11 @@ namespace RDFSharp.Semantics
         {
             RDFOntologyReasonerReport report = new RDFOntologyReasonerReport();
             RDFOntologyObjectProperty differentFrom = RDFVocabulary.OWL.DIFFERENT_FROM.ToRDFOntologyObjectProperty();
-            foreach (RDFOntologyFact f in ontology.Data)
+            foreach (RDFOntologyIndividual f in ontology.Data)
             {
-                //Enlist the different facts of the current fact
-                RDFOntologyData differfacts = ontology.Data.GetDifferentFactsFrom(f);
-                foreach (RDFOntologyFact df in differfacts)
+                //Enlist the different individuals of the current individual
+                RDFOntologyData differindividuals = ontology.Data.GetDifferentIndividuals(f);
+                foreach (RDFOntologyIndividual df in differindividuals)
                 {
                     //Create the inference as a taxonomy entry
                     RDFOntologyTaxonomyEntry sem_infA = new RDFOntologyTaxonomyEntry(f, differentFrom, df)
@@ -308,7 +308,7 @@ namespace RDFSharp.Semantics
                 //Enlist the members of the current class
                 if (!membersCache.ContainsKey(c.PatternMemberID))
                     membersCache.Add(c.PatternMemberID, ontology.GetMembersOfClass(c));
-                foreach (RDFOntologyFact f in membersCache[c.PatternMemberID])
+                foreach (RDFOntologyIndividual f in membersCache[c.PatternMemberID])
                 {
                     //Create the inference as a taxonomy entry
                     RDFOntologyTaxonomyEntry sem_inf = new RDFOntologyTaxonomyEntry(f, type, c)
@@ -326,7 +326,7 @@ namespace RDFSharp.Semantics
                 //Enlist the members of the current enumeration
                 if (!membersCache.ContainsKey(c.PatternMemberID))
                     membersCache.Add(c.PatternMemberID, ontology.GetMembersOfEnumerate((RDFOntologyEnumerateClass)c));
-                foreach (RDFOntologyFact f in membersCache[c.PatternMemberID])
+                foreach (RDFOntologyIndividual f in membersCache[c.PatternMemberID])
                 {
                     //Create the inference as a taxonomy entry
                     RDFOntologyTaxonomyEntry sem_inf = new RDFOntologyTaxonomyEntry(f, type, c)
@@ -344,7 +344,7 @@ namespace RDFSharp.Semantics
                 //Enlist the members of the current restriction
                 if (!membersCache.ContainsKey(c.PatternMemberID))
                     membersCache.Add(c.PatternMemberID, ontology.GetMembersOfRestriction((RDFOntologyRestriction)c));
-                foreach (RDFOntologyFact f in membersCache[c.PatternMemberID])
+                foreach (RDFOntologyIndividual f in membersCache[c.PatternMemberID])
                 {
                     //Create the inference as a taxonomy entry
                     RDFOntologyTaxonomyEntry sem_inf = new RDFOntologyTaxonomyEntry(f, type, c)
@@ -362,7 +362,7 @@ namespace RDFSharp.Semantics
                 //Enlist the members of the current composite class
                 if (!membersCache.ContainsKey(c.PatternMemberID))
                     membersCache.Add(c.PatternMemberID, ontology.GetMembersOfComposite(c, membersCache));
-                foreach (RDFOntologyFact f in membersCache[c.PatternMemberID])
+                foreach (RDFOntologyIndividual f in membersCache[c.PatternMemberID])
                 {
                     //Create the inference as a taxonomy entry
                     RDFOntologyTaxonomyEntry sem_inf = new RDFOntologyTaxonomyEntry(f, type, c)
@@ -386,7 +386,7 @@ namespace RDFSharp.Semantics
             RDFOntologyObjectProperty rdfType = RDFVocabulary.RDF.TYPE.ToRDFOntologyObjectProperty();
             RDFOntologyClass owlNamedIndividual = RDFVocabulary.OWL.NAMED_INDIVIDUAL.ToRDFOntologyClass();
 
-            foreach (RDFOntologyFact f in ontology.Data.Where(x => !((RDFResource)x.Value).IsBlank))
+            foreach (RDFOntologyIndividual f in ontology.Data.Where(x => !((RDFResource)x.Value).IsBlank))
             {
                 //Create the inference as a taxonomy entry
                 RDFOntologyTaxonomyEntry sem_inf = new RDFOntologyTaxonomyEntry(f, rdfType, owlNamedIndividual)
@@ -413,7 +413,7 @@ namespace RDFSharp.Semantics
                 RDFOntologyTaxonomy pAsns = ontology.Data.Relations.Assertions.SelectEntriesByPredicate(p);
 
                 //Iterate those assertions
-                foreach (RDFOntologyTaxonomyEntry pAsn in pAsns.Where(x => x.TaxonomyObject.IsFact()))
+                foreach (RDFOntologyTaxonomyEntry pAsn in pAsns.Where(x => x.TaxonomyObject.IsIndividual()))
                 {
                     //Create the inference as a taxonomy entry
                     RDFOntologyTaxonomyEntry sem_inf = new RDFOntologyTaxonomyEntry(pAsn.TaxonomyObject, p, pAsn.TaxonomySubject)
@@ -443,11 +443,11 @@ namespace RDFSharp.Semantics
                 RDFOntologyTaxonomy pAsns = ontology.Data.Relations.Assertions.SelectEntriesByPredicate(p);
 
                 //Iterate those assertions
-                foreach (RDFOntologyTaxonomyEntry pAsn in pAsns.Where(x => x.TaxonomyObject.IsFact()))
+                foreach (RDFOntologyTaxonomyEntry pAsn in pAsns.Where(x => x.TaxonomyObject.IsIndividual()))
                 {
                     if (!transPropCache.ContainsKey(pAsn.TaxonomySubject.PatternMemberID))
-                        transPropCache.Add(pAsn.TaxonomySubject.PatternMemberID, ontology.Data.GetTransitiveAssertionsOf((RDFOntologyFact)pAsn.TaxonomySubject, (RDFOntologyObjectProperty)p));
-                    foreach (RDFOntologyFact te in transPropCache[pAsn.TaxonomySubject.PatternMemberID])
+                        transPropCache.Add(pAsn.TaxonomySubject.PatternMemberID, ontology.Data.GetTransitiveObjectAssertions((RDFOntologyIndividual)pAsn.TaxonomySubject, (RDFOntologyObjectProperty)p));
+                    foreach (RDFOntologyIndividual te in transPropCache[pAsn.TaxonomySubject.PatternMemberID])
                     {
                         //Create the inference as a taxonomy entry
                         RDFOntologyTaxonomyEntry sem_inf = new RDFOntologyTaxonomyEntry(pAsn.TaxonomySubject, p, te)
@@ -511,7 +511,7 @@ namespace RDFSharp.Semantics
                 foreach (RDFOntologyProperty p2 in inverseprops.Where(x => x.IsObjectProperty()))
                 {
                     //Iterate the compatible assertions
-                    foreach (RDFOntologyTaxonomyEntry p1Asn in p1Asns.Where(x => x.TaxonomyObject.IsFact()))
+                    foreach (RDFOntologyTaxonomyEntry p1Asn in p1Asns.Where(x => x.TaxonomyObject.IsIndividual()))
                     {
                         //Create the inference as a taxonomy entry
                         RDFOntologyTaxonomyEntry sem_inf = new RDFOntologyTaxonomyEntry(p1Asn.TaxonomyObject, p2, p1Asn.TaxonomySubject)
@@ -549,7 +549,7 @@ namespace RDFSharp.Semantics
                     foreach (RDFOntologyTaxonomyEntry p1Asn in p1Asns)
                     {
                         //Taxonomy-check for securing inference consistency
-                        if ((p2.IsObjectProperty() && p1Asn.TaxonomyObject.IsFact())
+                        if ((p2.IsObjectProperty() && p1Asn.TaxonomyObject.IsIndividual())
                                 || (p2.IsDatatypeProperty() && p1Asn.TaxonomyObject.IsLiteral()))
                         {
                             //Create the inference as a taxonomy entry
@@ -575,25 +575,25 @@ namespace RDFSharp.Semantics
         {
             RDFOntologyReasonerReport report = new RDFOntologyReasonerReport();
 
-            foreach (RDFOntologyFact f1 in ontology.Data)
+            foreach (RDFOntologyIndividual f1 in ontology.Data)
             {
-                //Enlist the same facts of the current fact
-                RDFOntologyData sameFacts = ontology.Data.GetSameFactsAs(f1);
-                if (sameFacts.FactsCount > 0)
+                //Enlist the same individuals of the current individual
+                RDFOntologyData sameIndividuals = ontology.Data.GetSameIndividuals(f1);
+                if (sameIndividuals.IndividualsCount > 0)
                 {
-                    //Filter the assertions using the current fact
+                    //Filter the assertions using the current individual
                     RDFOntologyTaxonomy f1AsnsSubj = ontology.Data.Relations.Assertions.SelectEntriesBySubject(f1);
                     RDFOntologyTaxonomy f1AsnsObj = ontology.Data.Relations.Assertions.SelectEntriesByObject(f1);
 
-                    //Enlist the same facts of the current fact
-                    foreach (RDFOntologyFact f2 in sameFacts)
+                    //Enlist the same individuals of the current individual
+                    foreach (RDFOntologyIndividual f2 in sameIndividuals)
                     {
                         #region Subject-Side
-                        //Iterate the assertions having the current fact as subject
+                        //Iterate the assertions having the current individual as subject
                         foreach (RDFOntologyTaxonomyEntry f1Asn in f1AsnsSubj)
                         {
                             //Taxonomy-check for securing inference consistency
-                            if (f1Asn.TaxonomyPredicate.IsObjectProperty() && f1Asn.TaxonomyObject.IsFact())
+                            if (f1Asn.TaxonomyPredicate.IsObjectProperty() && f1Asn.TaxonomyObject.IsIndividual())
                             {
                                 //Create the inference as a taxonomy entry
                                 RDFOntologyTaxonomyEntry sem_infA = new RDFOntologyTaxonomyEntry(f2, f1Asn.TaxonomyPredicate, f1Asn.TaxonomyObject)
@@ -607,7 +607,7 @@ namespace RDFSharp.Semantics
                         #endregion
 
                         #region Object-Side
-                        //Iterate the assertions having the current fact as object
+                        //Iterate the assertions having the current individual as object
                         foreach (RDFOntologyTaxonomyEntry f1Asn in f1AsnsObj)
                         {
                             //Taxonomy-check for securing inference consistency
@@ -648,7 +648,7 @@ namespace RDFSharp.Semantics
                 {
                     //Calculate members of the current subclass of the current owl:hasValue restriction (F1)
                     RDFOntologyData membersOfSubClassOfHVRestriction = ontology.GetMembersOf(subClassOfHVRestriction);
-                    foreach (RDFOntologyFact memberOfSubClassOfHVRestriction in membersOfSubClassOfHVRestriction)
+                    foreach (RDFOntologyIndividual memberOfSubClassOfHVRestriction in membersOfSubClassOfHVRestriction)
                     {
                         //Create the inference as a taxonomy entry
                         RDFOntologyTaxonomyEntry sem_inf = new RDFOntologyTaxonomyEntry(memberOfSubClassOfHVRestriction, hvRestriction.OnProperty, hvRestriction.RequiredValue)
@@ -682,7 +682,7 @@ namespace RDFSharp.Semantics
                 {
                     //Calculate members of the current subclass of the current owl:hasSelf restriction (F)
                     RDFOntologyData membersOfSubClassOfHSRestriction = ontology.GetMembersOf(subClassOfHSRestriction);
-                    foreach (RDFOntologyFact memberOfSubClassOfHSRestriction in membersOfSubClassOfHSRestriction)
+                    foreach (RDFOntologyIndividual memberOfSubClassOfHSRestriction in membersOfSubClassOfHSRestriction)
                     {
                         //Create the inference as a taxonomy entry
                         RDFOntologyTaxonomyEntry sem_inf = new RDFOntologyTaxonomyEntry(memberOfSubClassOfHSRestriction, hsRestriction.OnProperty, memberOfSubClassOfHSRestriction)
@@ -729,22 +729,22 @@ namespace RDFSharp.Semantics
                 #endregion
 
                 //Analyze detected collisions in order to decide if they can be tolerate or not,
-                //depending on semantic compatibility between facts (they must not be different)
+                //depending on semantic compatibility between individuals (they must not be different)
                 foreach (KeyValuePair<string, List<string>> hasKeyRelationLookupEntry in hasKeyRelationLookup)
                 {
                     #region Collision Analysis
                     for (int i = 0; i < hasKeyRelationLookupEntry.Value.Count; i++)
                     {
-                        RDFOntologyFact outerFact = ontology.Data.SelectFact(hasKeyRelationLookupEntry.Value[i]);
+                        RDFOntologyIndividual outerIndividual = ontology.Data.SelectIndividual(hasKeyRelationLookupEntry.Value[i]);
                         for (int j = i + 1; j < hasKeyRelationLookupEntry.Value.Count; j++)
                         {
-                            RDFOntologyFact innerFact = ontology.Data.SelectFact(hasKeyRelationLookupEntry.Value[j]);
-                            if (RDFOntologyChecker.CheckSameAsCompatibility(ontology.Data, outerFact, innerFact))
+                            RDFOntologyIndividual innerIndividual = ontology.Data.SelectIndividual(hasKeyRelationLookupEntry.Value[j]);
+                            if (RDFOntologyChecker.CheckSameAsCompatibility(ontology.Data, outerIndividual, innerIndividual))
                             {
                                 //Create the inference as a taxonomy entry
-                                RDFOntologyTaxonomyEntry sem_infA = new RDFOntologyTaxonomyEntry(outerFact, sameAs, innerFact)
+                                RDFOntologyTaxonomyEntry sem_infA = new RDFOntologyTaxonomyEntry(outerIndividual, sameAs, innerIndividual)
                                                                           .SetInference(RDFSemanticsEnums.RDFOntologyInferenceType.Reasoner);
-                                RDFOntologyTaxonomyEntry sem_infB = new RDFOntologyTaxonomyEntry(innerFact, sameAs, outerFact)
+                                RDFOntologyTaxonomyEntry sem_infB = new RDFOntologyTaxonomyEntry(innerIndividual, sameAs, outerIndividual)
                                                                           .SetInference(RDFSemanticsEnums.RDFOntologyInferenceType.Reasoner);
 
                                 //Add the inference to the report

@@ -422,12 +422,12 @@ namespace RDFSharp.Semantics
         }
 
         /// <summary>
-        /// Foreach of the given facts, adds the "ontologyEnumerateClass -> owl:oneOf -> ontologyFact" relation to the class model
+        /// Foreach of the given individuals, adds the "ontologyEnumerateClass -> owl:oneOf -> ontologyIndividual" relation to the class model
         /// </summary>
-        public RDFOntologyClassModel AddOneOfRelation(RDFOntologyEnumerateClass ontologyEnumerateClass, List<RDFOntologyFact> ontologyFacts)
+        public RDFOntologyClassModel AddOneOfRelation(RDFOntologyEnumerateClass ontologyEnumerateClass, List<RDFOntologyIndividual> ontologyIndividuals)
         {
-            if (ontologyEnumerateClass != null && ontologyFacts != null)
-                ontologyFacts.ForEach(f => this.Relations.OneOf.AddEntry(new RDFOntologyTaxonomyEntry(ontologyEnumerateClass, RDFVocabulary.OWL.ONE_OF.ToRDFOntologyObjectProperty(), f)));
+            if (ontologyEnumerateClass != null && ontologyIndividuals != null)
+                ontologyIndividuals.ForEach(f => this.Relations.OneOf.AddEntry(new RDFOntologyTaxonomyEntry(ontologyEnumerateClass, RDFVocabulary.OWL.ONE_OF.ToRDFOntologyObjectProperty(), f)));
             return this;
         }
 
@@ -751,12 +751,12 @@ namespace RDFSharp.Semantics
         }
 
         /// <summary>
-        /// Removes the "ontologyEnumerateClass -> owl:oneOf -> ontologyFact" relation from the class model
+        /// Removes the "ontologyEnumerateClass -> owl:oneOf -> ontologyIndividual" relation from the class model
         /// </summary>
-        public RDFOntologyClassModel RemoveOneOfRelation(RDFOntologyEnumerateClass ontologyEnumerateClass, RDFOntologyFact ontologyFact)
+        public RDFOntologyClassModel RemoveOneOfRelation(RDFOntologyEnumerateClass ontologyEnumerateClass, RDFOntologyIndividual ontologyIndividual)
         {
-            if (ontologyEnumerateClass != null && ontologyFact != null)
-                this.Relations.OneOf.RemoveEntry(new RDFOntologyTaxonomyEntry(ontologyEnumerateClass, RDFVocabulary.OWL.ONE_OF.ToRDFOntologyObjectProperty(), ontologyFact));
+            if (ontologyEnumerateClass != null && ontologyIndividual != null)
+                this.Relations.OneOf.RemoveEntry(new RDFOntologyTaxonomyEntry(ontologyEnumerateClass, RDFVocabulary.OWL.ONE_OF.ToRDFOntologyObjectProperty(), ontologyIndividual));
             return this;
         }
 
@@ -859,8 +859,8 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets the representative of the given taxonomy entry
         /// </summary>
-        internal RDFOntologyFact GetTaxonomyEntryRepresentative(RDFOntologyTaxonomyEntry taxonomyEntry)
-            => new RDFOntologyFact(new RDFResource($"bnode:semref{taxonomyEntry.TaxonomyEntryID}"));
+        internal RDFOntologyIndividual GetTaxonomyEntryRepresentative(RDFOntologyTaxonomyEntry taxonomyEntry)
+            => new RDFOntologyIndividual(new RDFResource($"bnode:semref{taxonomyEntry.TaxonomyEntryID}"));
         #endregion
 
         #region Set

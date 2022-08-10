@@ -30,49 +30,49 @@ namespace RDFSharp.Semantics
     {
         #region SameAs
         /// <summary>
-        /// Checks if the given aFact is sameAs the given bFact within the given data
+        /// Checks if the given aIndividual is sameAs the given bIndividual within the given data
         /// </summary>
-        public static bool CheckIsSameFactAs(this RDFOntologyData data, RDFOntologyFact aFact, RDFOntologyFact bFact)
-            => aFact != null && bFact != null && data != null && data.GetSameFactsAs(aFact).Facts.ContainsKey(bFact.PatternMemberID);
+        public static bool CheckIsSameIndividual(this RDFOntologyData data, RDFOntologyIndividual aIndividual, RDFOntologyIndividual bIndividual)
+            => aIndividual != null && bIndividual != null && data != null && data.GetSameIndividuals(aIndividual).Individuals.ContainsKey(bIndividual.PatternMemberID);
 
         /// <summary>
-        /// Enlists the sameFacts of the given fact within the given data
+        /// Enlists the same individuals of the given individual within the given data
         /// </summary>
-        public static RDFOntologyData GetSameFactsAs(this RDFOntologyData data, RDFOntologyFact ontologyFact)
+        public static RDFOntologyData GetSameIndividuals(this RDFOntologyData data, RDFOntologyIndividual ontologyIndividual)
         {
             RDFOntologyData result = new RDFOntologyData();
 
-            if (ontologyFact != null && data != null)
-                result = data.GetSameFactsAsInternal(ontologyFact, null)
-                             .RemoveFact(ontologyFact); //Safety deletion
+            if (ontologyIndividual != null && data != null)
+                result = data.GetSameIndividualsInternal(ontologyIndividual, null)
+                             .RemoveIndividual(ontologyIndividual); //Safety deletion
 
             return result;
         }
 
         /// <summary>
-        /// Subsumes the "owl:sameAs" taxonomy to discover direct and indirect samefacts of the given facts
+        /// Subsumes the "owl:sameAs" taxonomy to discover direct and indirect sameindividuals of the given individuals
         /// </summary>
-        internal static RDFOntologyData GetSameFactsAsInternal(this RDFOntologyData data, RDFOntologyFact ontologyFact, Dictionary<long, RDFOntologyFact> visitContext)
+        internal static RDFOntologyData GetSameIndividualsInternal(this RDFOntologyData data, RDFOntologyIndividual ontologyIndividual, Dictionary<long, RDFOntologyIndividual> visitContext)
         {
             RDFOntologyData result = new RDFOntologyData();
 
             #region visitContext
             if (visitContext == null)
-                visitContext = new Dictionary<long, RDFOntologyFact>() { { ontologyFact.PatternMemberID, ontologyFact } };
+                visitContext = new Dictionary<long, RDFOntologyIndividual>() { { ontologyIndividual.PatternMemberID, ontologyIndividual } };
             else
             {
-                if (!visitContext.ContainsKey(ontologyFact.PatternMemberID))
-                    visitContext.Add(ontologyFact.PatternMemberID, ontologyFact);
+                if (!visitContext.ContainsKey(ontologyIndividual.PatternMemberID))
+                    visitContext.Add(ontologyIndividual.PatternMemberID, ontologyIndividual);
                 else
                     return result;
             }
             #endregion
 
             // Transitivity of "owl:sameAs" taxonomy: ((A SAMEAS B)  &&  (B SAMEAS C))  =>  (A SAMEAS C)
-            foreach (RDFOntologyTaxonomyEntry sf in data.Relations.SameAs.SelectEntriesBySubject(ontologyFact))
+            foreach (RDFOntologyTaxonomyEntry sameAs in data.Relations.SameAs.SelectEntriesBySubject(ontologyIndividual))
             {
-                result.AddFact((RDFOntologyFact)sf.TaxonomyObject);
-                result = result.UnionWith(data.GetSameFactsAsInternal((RDFOntologyFact)sf.TaxonomyObject, visitContext));
+                result.AddIndividual((RDFOntologyIndividual)sameAs.TaxonomyObject);
+                result = result.UnionWith(data.GetSameIndividualsInternal((RDFOntologyIndividual)sameAs.TaxonomyObject, visitContext));
             }
 
             return result;
@@ -81,54 +81,54 @@ namespace RDFSharp.Semantics
 
         #region DifferentFrom
         /// <summary>
-        /// Checks if the given aFact is differentFrom the given bFact within the given data
+        /// Checks if the given aIndividual is differentFrom the given bIndividual within the given data
         /// </summary>
-        public static bool CheckIsDifferentFactFrom(this RDFOntologyData data, RDFOntologyFact aFact, RDFOntologyFact bFact)
-            => aFact != null && bFact != null && data != null && data.GetDifferentFactsFrom(aFact).Facts.ContainsKey(bFact.PatternMemberID);
+        public static bool CheckIsDifferentIndividual(this RDFOntologyData data, RDFOntologyIndividual aIndividual, RDFOntologyIndividual bIndividual)
+            => aIndividual != null && bIndividual != null && data != null && data.GetDifferentIndividuals(aIndividual).Individuals.ContainsKey(bIndividual.PatternMemberID);
 
         /// <summary>
-        /// Enlists the different facts of the given fact within the given data
+        /// Enlists the different individuals of the given individual within the given data
         /// </summary>
-        public static RDFOntologyData GetDifferentFactsFrom(this RDFOntologyData data, RDFOntologyFact ontFact)
+        public static RDFOntologyData GetDifferentIndividuals(this RDFOntologyData data, RDFOntologyIndividual ontologyIndividual)
         {
             RDFOntologyData result = new RDFOntologyData();
 
-            if (ontFact != null && data != null)
-                result = data.GetDifferentFactsFromInternal(ontFact, null)
-                             .RemoveFact(ontFact); //Safety deletion
+            if (ontologyIndividual != null && data != null)
+                result = data.GetDifferentIndividualsInternal(ontologyIndividual, null)
+                             .RemoveIndividual(ontologyIndividual); //Safety deletion
 
             return result;
         }
 
         /// <summary>
-        /// Subsumes the "owl:differentFrom" taxonomy to discover direct and indirect differentFacts of the given facts
+        /// Subsumes the "owl:differentFrom" taxonomy to discover direct and indirect different individuals of the given individuals
         /// </summary>
-        internal static RDFOntologyData GetDifferentFactsFromInternal(this RDFOntologyData data, RDFOntologyFact ontFact, Dictionary<long, RDFOntologyFact> visitContext)
+        internal static RDFOntologyData GetDifferentIndividualsInternal(this RDFOntologyData data, RDFOntologyIndividual ontologyIndividual, Dictionary<long, RDFOntologyIndividual> visitContext)
         {
             RDFOntologyData result = new RDFOntologyData();
 
             #region visitContext
             if (visitContext == null)
-                visitContext = new Dictionary<long, RDFOntologyFact>() { { ontFact.PatternMemberID, ontFact } };
+                visitContext = new Dictionary<long, RDFOntologyIndividual>() { { ontologyIndividual.PatternMemberID, ontologyIndividual } };
             else
             {
-                if (!visitContext.ContainsKey(ontFact.PatternMemberID))
-                    visitContext.Add(ontFact.PatternMemberID, ontFact);
+                if (!visitContext.ContainsKey(ontologyIndividual.PatternMemberID))
+                    visitContext.Add(ontologyIndividual.PatternMemberID, ontologyIndividual);
                 else
                     return result;
             }
             #endregion
 
             // Inference: (A DIFFERENTFROM B  &&  B SAMEAS C         =>  A DIFFERENTFROM C)
-            foreach (RDFOntologyTaxonomyEntry df in data.Relations.DifferentFrom.SelectEntriesBySubject(ontFact))
+            foreach (RDFOntologyTaxonomyEntry differentFrom in data.Relations.DifferentFrom.SelectEntriesBySubject(ontologyIndividual))
             {
-                result.AddFact((RDFOntologyFact)df.TaxonomyObject);
-                result = result.UnionWith(data.GetSameFactsAsInternal((RDFOntologyFact)df.TaxonomyObject, visitContext));
+                result.AddIndividual((RDFOntologyIndividual)differentFrom.TaxonomyObject);
+                result = result.UnionWith(data.GetSameIndividualsInternal((RDFOntologyIndividual)differentFrom.TaxonomyObject, visitContext));
             }
 
             // Inference: (A SAMEAS B         &&  B DIFFERENTFROM C  =>  A DIFFERENTFROM C)
-            foreach (RDFOntologyFact sa in data.GetSameFactsAs(ontFact))
-                result = result.UnionWith(data.GetDifferentFactsFromInternal(sa, visitContext));
+            foreach (RDFOntologyIndividual sameAs in data.GetSameIndividuals(ontologyIndividual))
+                result = result.UnionWith(data.GetDifferentIndividualsInternal(sameAs, visitContext));
 
             return result;
         }
@@ -136,49 +136,49 @@ namespace RDFSharp.Semantics
 
         #region TransitiveProperty
         /// <summary>
-        /// Checks if the given "aFact -> transProp" assertion links to the given bFact within the given data
+        /// Checks if the given "aIndividual -> objectProperty" assertion links to the given bIndividual within the given data
         /// </summary>
-        public static bool CheckIsTransitiveAssertionOf(this RDFOntologyData data, RDFOntologyFact aFact, RDFOntologyObjectProperty transProp, RDFOntologyFact bFact)
-            => aFact != null && transProp != null && transProp.IsTransitiveProperty() && bFact != null && data != null && data.GetTransitiveAssertionsOf(aFact, transProp).Facts.ContainsKey(bFact.PatternMemberID);
+        public static bool CheckIsTransitiveObjectAssertion(this RDFOntologyData data, RDFOntologyIndividual aIndividual, RDFOntologyObjectProperty objectProperty, RDFOntologyIndividual bIndividual)
+            => aIndividual != null && objectProperty != null && objectProperty.IsTransitiveProperty() && bIndividual != null && data != null && data.GetTransitiveObjectAssertions(aIndividual, objectProperty).Individuals.ContainsKey(bIndividual.PatternMemberID);
 
         /// <summary>
-        /// Enlists the given "aFact -> transOntProp" assertions within the given data
+        /// Enlists the given "aIndividual -> objectProperty" assertions within the given data
         /// </summary>
-        public static RDFOntologyData GetTransitiveAssertionsOf(this RDFOntologyData data, RDFOntologyFact ontFact, RDFOntologyObjectProperty transOntProp)
+        public static RDFOntologyData GetTransitiveObjectAssertions(this RDFOntologyData data, RDFOntologyIndividual ontologyIndividual, RDFOntologyObjectProperty objectProperty)
         {
             RDFOntologyData result = new RDFOntologyData();
 
-            if (ontFact != null && transOntProp != null && transOntProp.IsTransitiveProperty() && data != null)
-                result = data.GetTransitiveAssertionsOfInternal(ontFact, transOntProp, null);
+            if (ontologyIndividual != null && objectProperty != null && objectProperty.IsTransitiveProperty() && data != null)
+                result = data.GetTransitiveObjectAssertionsInternal(ontologyIndividual, objectProperty, null);
 
             return result;
         }
 
         /// <summary>
-        /// Enlists the transitive assertions of the given fact and the given property within the given data
+        /// Enlists the transitive assertions of the given individual and the given property within the given data
         /// </summary>
-        internal static RDFOntologyData GetTransitiveAssertionsOfInternal(this RDFOntologyData data, RDFOntologyFact ontFact, RDFOntologyObjectProperty ontProp, Dictionary<long, RDFOntologyFact> visitContext)
+        internal static RDFOntologyData GetTransitiveObjectAssertionsInternal(this RDFOntologyData data, RDFOntologyIndividual ontologyIndividual, RDFOntologyObjectProperty objectProperty, Dictionary<long, RDFOntologyIndividual> visitContext)
         {
             RDFOntologyData result = new RDFOntologyData();
 
             #region visitContext
             if (visitContext == null)
-                visitContext = new Dictionary<long, RDFOntologyFact>() { { ontFact.PatternMemberID, ontFact } };
+                visitContext = new Dictionary<long, RDFOntologyIndividual>() { { ontologyIndividual.PatternMemberID, ontologyIndividual } };
             else
             {
-                if (!visitContext.ContainsKey(ontFact.PatternMemberID))
-                    visitContext.Add(ontFact.PatternMemberID, ontFact);
+                if (!visitContext.ContainsKey(ontologyIndividual.PatternMemberID))
+                    visitContext.Add(ontologyIndividual.PatternMemberID, ontologyIndividual);
                 else
                     return result;
             }
             #endregion
 
             // ((F1 P F2)    &&  (F2 P F3))  =>  (F1 P F3)
-            foreach (RDFOntologyTaxonomyEntry ta in data.Relations.Assertions.SelectEntriesBySubject(ontFact)
-                                                                             .SelectEntriesByPredicate(ontProp))
+            foreach (RDFOntologyTaxonomyEntry assertion in data.Relations.Assertions.SelectEntriesBySubject(ontologyIndividual)
+                                                                                    .SelectEntriesByPredicate(objectProperty))
             {
-                result.AddFact((RDFOntologyFact)ta.TaxonomyObject);
-                result = result.UnionWith(data.GetTransitiveAssertionsOfInternal((RDFOntologyFact)ta.TaxonomyObject, ontProp, visitContext));
+                result.AddIndividual((RDFOntologyIndividual)assertion.TaxonomyObject);
+                result = result.UnionWith(data.GetTransitiveObjectAssertionsInternal((RDFOntologyIndividual)assertion.TaxonomyObject, objectProperty, visitContext));
             }
 
             return result;
@@ -187,71 +187,71 @@ namespace RDFSharp.Semantics
 
         #region Assertions
         /// <summary>
-        /// Checks if the given "aFact -> objectProperty -> bFact" is an assertion within the given data
+        /// Checks if the given "aIndividual -> objectProperty -> bIndividual" is an assertion within the given data
         /// </summary>
-        public static bool CheckIsObjectAssertion(this RDFOntologyData data, RDFOntologyFact aFact, RDFOntologyObjectProperty objectProperty, RDFOntologyFact bFact)
+        public static bool CheckIsObjectAssertion(this RDFOntologyData data, RDFOntologyIndividual aIndividual, RDFOntologyObjectProperty objectProperty, RDFOntologyIndividual bIndividual)
         {
-            if (aFact != null && bFact != null && objectProperty != null && data != null)
+            if (aIndividual != null && bIndividual != null && objectProperty != null && data != null)
             {
-                //Reason over subject/object facts to detect indirect potential taxonomy violations
-                RDFOntologyData compatibleSubjects = data.GetSameFactsAs(aFact).AddFact(aFact);
-                RDFOntologyData compatibleObjects = data.GetSameFactsAs(aFact).AddFact(bFact);
+                //Reason over subject/object individuals to detect indirect potential taxonomy violations
+                RDFOntologyData compatibleSubjects = data.GetSameIndividuals(aIndividual).AddIndividual(aIndividual);
+                RDFOntologyData compatibleObjects = data.GetSameIndividuals(aIndividual).AddIndividual(bIndividual);
 
-                return data.Relations.Assertions.Any(te => compatibleSubjects.Any(x => x.Equals(te.TaxonomySubject))
-                                                               && te.TaxonomyPredicate.Equals(objectProperty)
-                                                                   && compatibleObjects.Any(x => x.Equals(te.TaxonomyObject)));
+                return data.Relations.Assertions.Any(asn => compatibleSubjects.Any(x => x.Equals(asn.TaxonomySubject))
+                                                               && asn.TaxonomyPredicate.Equals(objectProperty)
+                                                                   && compatibleObjects.Any(x => x.Equals(asn.TaxonomyObject)));
             }
             return false;
         }
 
         /// <summary>
-        /// Checks if the given "aFact -> datatypeProperty -> ontologyLiteral" is an assertion within the given data
+        /// Checks if the given "aIndividual -> datatypeProperty -> ontologyLiteral" is an assertion within the given data
         /// </summary>
-        public static bool CheckIsDataAssertion(this RDFOntologyData data, RDFOntologyFact aFact, RDFOntologyDatatypeProperty datatypeProperty, RDFOntologyLiteral ontologyLiteral)
+        public static bool CheckIsDataAssertion(this RDFOntologyData data, RDFOntologyIndividual aIndividual, RDFOntologyDatatypeProperty datatypeProperty, RDFOntologyLiteral ontologyLiteral)
         {
-            if (aFact != null && ontologyLiteral != null && datatypeProperty != null && data != null)
+            if (aIndividual != null && ontologyLiteral != null && datatypeProperty != null && data != null)
             {
-                //Reason over subject facts to detect indirect potential taxonomy violations
-                RDFOntologyData compatibleSubjects = data.GetSameFactsAs(aFact).AddFact(aFact);
+                //Reason over subject individuals to detect indirect potential taxonomy violations
+                RDFOntologyData compatibleSubjects = data.GetSameIndividuals(aIndividual).AddIndividual(aIndividual);
 
-                return data.Relations.Assertions.Any(te => compatibleSubjects.Any(x => x.Equals(te.TaxonomySubject))
-                                                               && te.TaxonomyPredicate.Equals(datatypeProperty)
-                                                                   && te.TaxonomyObject.Equals(ontologyLiteral));
+                return data.Relations.Assertions.Any(asn => compatibleSubjects.Any(x => x.Equals(asn.TaxonomySubject))
+                                                               && asn.TaxonomyPredicate.Equals(datatypeProperty)
+                                                                   && asn.TaxonomyObject.Equals(ontologyLiteral));
             }
             return false;
         }
 
         /// <summary>
-        /// Checks if the given "aFact -> objectProperty -> bFact" is a negative assertion within the given data
+        /// Checks if the given "aIndividual -> objectProperty -> bIndividual" is a negative assertion within the given data
         /// </summary>
-        public static bool CheckIsNegativeObjectAssertion(this RDFOntologyData data, RDFOntologyFact aFact, RDFOntologyObjectProperty objectProperty, RDFOntologyFact bFact)
+        public static bool CheckIsNegativeObjectAssertion(this RDFOntologyData data, RDFOntologyIndividual aIndividual, RDFOntologyObjectProperty objectProperty, RDFOntologyIndividual bIndividual)
         {
-            if (aFact != null && bFact != null && objectProperty != null && data != null)
+            if (aIndividual != null && bIndividual != null && objectProperty != null && data != null)
             {
-                //Reason over subject/object facts to detect indirect potential taxonomy violations
-                RDFOntologyData compatibleSubjects = data.GetSameFactsAs(aFact).AddFact(aFact);
-                RDFOntologyData compatibleObjects = data.GetSameFactsAs(aFact).AddFact(bFact);
+                //Reason over subject/object individuals to detect indirect potential taxonomy violations
+                RDFOntologyData compatibleSubjects = data.GetSameIndividuals(aIndividual).AddIndividual(aIndividual);
+                RDFOntologyData compatibleObjects = data.GetSameIndividuals(aIndividual).AddIndividual(bIndividual);
 
-                return data.Relations.NegativeAssertions.Any(te => compatibleSubjects.Any(x => x.Equals(te.TaxonomySubject))
-                                                                       && te.TaxonomyPredicate.Equals(objectProperty)
-                                                                           && compatibleObjects.Any(x => x.Equals(te.TaxonomyObject)));
+                return data.Relations.NegativeAssertions.Any(nasn => compatibleSubjects.Any(x => x.Equals(nasn.TaxonomySubject))
+                                                                       && nasn.TaxonomyPredicate.Equals(objectProperty)
+                                                                           && compatibleObjects.Any(x => x.Equals(nasn.TaxonomyObject)));
             }
             return false;
         }
 
         /// <summary>
-        /// Checks if the given "aFact -> datatypeProperty -> ontologyLiteral" is a negative assertion within the given data
+        /// Checks if the given "aIndividual -> datatypeProperty -> ontologyLiteral" is a negative assertion within the given data
         /// </summary>
-        public static bool CheckIsNegativeDataAssertion(this RDFOntologyData data, RDFOntologyFact aFact, RDFOntologyDatatypeProperty datatypeProperty, RDFOntologyLiteral ontologyLiteral)
+        public static bool CheckIsNegativeDataAssertion(this RDFOntologyData data, RDFOntologyIndividual aIndividual, RDFOntologyDatatypeProperty datatypeProperty, RDFOntologyLiteral ontologyLiteral)
         {
-            if (aFact != null && ontologyLiteral != null && datatypeProperty != null && data != null)
+            if (aIndividual != null && ontologyLiteral != null && datatypeProperty != null && data != null)
             {
-                //Reason over subject facts to detect indirect potential taxonomy violations
-                RDFOntologyData compatibleSubjects = data.GetSameFactsAs(aFact).AddFact(aFact);
+                //Reason over subject individuals to detect indirect potential taxonomy violations
+                RDFOntologyData compatibleSubjects = data.GetSameIndividuals(aIndividual).AddIndividual(aIndividual);
 
-                return data.Relations.NegativeAssertions.Any(te => compatibleSubjects.Any(x => x.Equals(te.TaxonomySubject))
-                                                                       && te.TaxonomyPredicate.Equals(datatypeProperty)
-                                                                           && te.TaxonomyObject.Equals(ontologyLiteral));
+                return data.Relations.NegativeAssertions.Any(nasn => compatibleSubjects.Any(x => x.Equals(nasn.TaxonomySubject))
+                                                                       && nasn.TaxonomyPredicate.Equals(datatypeProperty)
+                                                                           && nasn.TaxonomyObject.Equals(ontologyLiteral));
             }
             return false;
         }
@@ -259,13 +259,13 @@ namespace RDFSharp.Semantics
 
         #region MemberOf
         /// <summary>
-        /// Checks if the given fact is member of the given class within the given ontology
+        /// Checks if the given individual is member of the given class within the given ontology
         /// </summary>
-        public static bool CheckIsMemberOf(this RDFOntology ontology, RDFOntologyFact ontologyFact, RDFOntologyClass ontologyClass)
-            => ontologyFact != null && ontologyClass != null && ontology != null && ontology.GetMembersOf(ontologyClass).Facts.ContainsKey(ontologyFact.PatternMemberID);
+        public static bool CheckIsMemberOf(this RDFOntology ontology, RDFOntologyIndividual ontologyIndividual, RDFOntologyClass ontologyClass)
+            => ontologyIndividual != null && ontologyClass != null && ontology != null && ontology.GetMembersOf(ontologyClass).Individuals.ContainsKey(ontologyIndividual.PatternMemberID);
 
         /// <summary>
-        /// Enlists the facts which are members of the given class within the given ontology
+        /// Enlists the individuals which are members of the given class within the given ontology
         /// </summary>
         public static RDFOntologyData GetMembersOf(this RDFOntology ontology, RDFOntologyClass ontologyClass)
         {
@@ -289,32 +289,32 @@ namespace RDFSharp.Semantics
         }
 
         /// <summary>
-        /// Enlists the facts which are members of the given class within the given ontology
+        /// Enlists the individuals which are members of the given class within the given ontology
         /// </summary>
         internal static RDFOntologyData GetMembersOfClass(this RDFOntology ontology, RDFOntologyClass ontologyClass)
         {
             RDFOntologyData result = new RDFOntologyData();
 
             //Get the compatible classes
-            RDFOntologyClassModel compClasses = ontology.Model.ClassModel.GetSubClassesOf(ontologyClass)
-                                                                         .UnionWith(ontology.Model.ClassModel.GetEquivalentClassesOf(ontologyClass))
-                                                                         .AddClass(ontologyClass);
+            RDFOntologyClassModel compatibleClasses = ontology.Model.ClassModel.GetSubClassesOf(ontologyClass)
+                                                                               .UnionWith(ontology.Model.ClassModel.GetEquivalentClassesOf(ontologyClass))
+                                                                               .AddClass(ontologyClass);
 
-            //Get the facts belonging to compatible classes
-            List<RDFOntologyResource> compFacts = ontology.Data.Relations.ClassType.Where(te => compClasses.Any(c => c.Equals(te.TaxonomyObject)))
-                                                                                   .Select(te => te.TaxonomySubject)
-                                                                                   .ToList();
+            //Get the individuals belonging to compatible classes
+            List<RDFOntologyResource> compatibleIndividuals = ontology.Data.Relations.ClassType.Where(te => compatibleClasses.Any(c => c.Equals(te.TaxonomyObject)))
+                                                                                               .Select(te => te.TaxonomySubject)
+                                                                                               .ToList();
 
-            //Add the fact and its synonyms
-            Dictionary<long, RDFOntologyData> sameFactsCache = new Dictionary<long, RDFOntologyData>();
-            foreach (RDFOntologyResource compFact in compFacts)
+            //Add the individual and its synonyms
+            Dictionary<long, RDFOntologyData> sameIndividualsCache = new Dictionary<long, RDFOntologyData>();
+            foreach (RDFOntologyResource compatibleIndividual in compatibleIndividuals)
             {
-                if (!sameFactsCache.ContainsKey(compFact.PatternMemberID))
+                if (!sameIndividualsCache.ContainsKey(compatibleIndividual.PatternMemberID))
                 {
-                    sameFactsCache.Add(compFact.PatternMemberID, ontology.Data.GetSameFactsAs((RDFOntologyFact)compFact));
+                    sameIndividualsCache.Add(compatibleIndividual.PatternMemberID, ontology.Data.GetSameIndividuals((RDFOntologyIndividual)compatibleIndividual));
 
-                    result = result.UnionWith(sameFactsCache[compFact.PatternMemberID])
-                                   .AddFact((RDFOntologyFact)compFact);
+                    result = result.UnionWith(sameIndividualsCache[compatibleIndividual.PatternMemberID])
+                                   .AddIndividual((RDFOntologyIndividual)compatibleIndividual);
                 }
             }
 
@@ -322,7 +322,7 @@ namespace RDFSharp.Semantics
         }
 
         /// <summary>
-        /// Enlists the facts which are members of the given composite within the given ontology.
+        /// Enlists the individuals which are members of the given composite within the given ontology.
         /// </summary>
         internal static RDFOntologyData GetMembersOfComposite(this RDFOntology ontology, RDFOntologyClass ontologyCompositeClass, Dictionary<long, RDFOntologyData> membersCache = null)
         {
@@ -405,7 +405,7 @@ namespace RDFSharp.Semantics
         }
 
         /// <summary>
-        /// Enlists the facts which are members of the given enumeration within the given ontology
+        /// Enlists the individuals which are members of the given enumeration within the given ontology
         /// </summary>
         internal static RDFOntologyData GetMembersOfEnumerate(this RDFOntology ontology, RDFOntologyEnumerateClass ontologyEnumerateClass)
         {
@@ -415,11 +415,11 @@ namespace RDFSharp.Semantics
             RDFOntologyTaxonomy enTaxonomy = ontology.Model.ClassModel.Relations.OneOf.SelectEntriesBySubject(ontologyEnumerateClass);
             foreach (RDFOntologyTaxonomyEntry tEntry in enTaxonomy)
             {
-                //Add the fact and its synonyms
-                if (tEntry.TaxonomySubject.IsEnumerateClass() && tEntry.TaxonomyObject.IsFact())
+                //Add the individual and its synonyms
+                if (tEntry.TaxonomySubject.IsEnumerateClass() && tEntry.TaxonomyObject.IsIndividual())
                 {
-                    result = result.UnionWith(ontology.Data.GetSameFactsAs((RDFOntologyFact)tEntry.TaxonomyObject))
-                                   .AddFact((RDFOntologyFact)tEntry.TaxonomyObject);
+                    result = result.UnionWith(ontology.Data.GetSameIndividuals((RDFOntologyIndividual)tEntry.TaxonomyObject))
+                                   .AddIndividual((RDFOntologyIndividual)tEntry.TaxonomyObject);
                 }
             }
 
@@ -427,7 +427,7 @@ namespace RDFSharp.Semantics
         }
 
         /// <summary>
-        /// Enlists the facts which are members of the given restriction within the given ontology
+        /// Enlists the individuals which are members of the given restriction within the given ontology
         /// </summary>
         internal static RDFOntologyData GetMembersOfRestriction(this RDFOntology ontology, RDFOntologyRestriction ontologyRestrictionClass)
         {
@@ -440,51 +440,51 @@ namespace RDFSharp.Semantics
 
             //Filter assertions made with enlisted compatible properties
             RDFOntologyTaxonomy restrictionAssertions = new RDFOntologyTaxonomy(ontology.Data.Relations.Assertions.Category, ontology.Data.Relations.Assertions.AcceptDuplicates);
-            foreach (RDFOntologyProperty property in restrictionProperties)
-                restrictionAssertions = restrictionAssertions.UnionWith(ontology.Data.Relations.Assertions.SelectEntriesByPredicate(property));
+            foreach (RDFOntologyProperty restrictionProperty in restrictionProperties)
+                restrictionAssertions = restrictionAssertions.UnionWith(ontology.Data.Relations.Assertions.SelectEntriesByPredicate(restrictionProperty));
 
             #region Cardinality
             if (ontologyRestrictionClass is RDFOntologyCardinalityRestriction cardinalityRestriction)
             {
-                //Item2 is a counter for occurrences of the restricted property within the subject fact
-                var cardinalityRestrictionRegistry = new Dictionary<long, Tuple<RDFOntologyFact, long>>();
+                //Item2 is a counter for occurrences of the restricted property within the subject individual
+                var cardinalityRestrictionRegistry = new Dictionary<long, Tuple<RDFOntologyIndividual, long>>();
 
                 //Iterate the compatible assertions
                 foreach (RDFOntologyTaxonomyEntry assertion in restrictionAssertions)
                 {
                     if (!cardinalityRestrictionRegistry.ContainsKey(assertion.TaxonomySubject.PatternMemberID))
-                        cardinalityRestrictionRegistry.Add(assertion.TaxonomySubject.PatternMemberID, new Tuple<RDFOntologyFact, long>((RDFOntologyFact)assertion.TaxonomySubject, 1));
+                        cardinalityRestrictionRegistry.Add(assertion.TaxonomySubject.PatternMemberID, new Tuple<RDFOntologyIndividual, long>((RDFOntologyIndividual)assertion.TaxonomySubject, 1));
                     else
                     {
                         long occurrencyCounter = cardinalityRestrictionRegistry[assertion.TaxonomySubject.PatternMemberID].Item2;
-                        cardinalityRestrictionRegistry[assertion.TaxonomySubject.PatternMemberID] = new Tuple<RDFOntologyFact, long>((RDFOntologyFact)assertion.TaxonomySubject, occurrencyCounter + 1);
+                        cardinalityRestrictionRegistry[assertion.TaxonomySubject.PatternMemberID] = new Tuple<RDFOntologyIndividual, long>((RDFOntologyIndividual)assertion.TaxonomySubject, occurrencyCounter + 1);
                     }
                 }
 
-                //Apply the cardinality restriction on the tracked facts
+                //Apply the cardinality restriction on the tracked individuals
                 var cardinalityRestrictionRegistryEnumerator = cardinalityRestrictionRegistry.Values.GetEnumerator();
                 while (cardinalityRestrictionRegistryEnumerator.MoveNext())
                 {
                     bool passesMinCardinality = true;
                     bool passesMaxCardinality = true;
 
-                    //MinCardinality: signal tracked facts having "#occurrences < MinCardinality"
+                    //MinCardinality: signal tracked individuals having "#occurrences < MinCardinality"
                     if (cardinalityRestriction.MinCardinality > 0)
                     {
                         if (cardinalityRestrictionRegistryEnumerator.Current.Item2 < cardinalityRestriction.MinCardinality)
                             passesMinCardinality = false;
                     }
 
-                    //MaxCardinality: signal tracked facts having "#occurrences > MaxCardinality"
+                    //MaxCardinality: signal tracked individuals having "#occurrences > MaxCardinality"
                     if (cardinalityRestriction.MaxCardinality > 0)
                     {
                         if (cardinalityRestrictionRegistryEnumerator.Current.Item2 > cardinalityRestriction.MaxCardinality)
                             passesMaxCardinality = false;
                     }
 
-                    //Save the candidate fact if it passes cardinality restriction
+                    //Save the candidate individual if it passes cardinality restriction
                     if (passesMinCardinality && passesMaxCardinality)
-                        result.AddFact(cardinalityRestrictionRegistryEnumerator.Current.Item1);
+                        result.AddIndividual(cardinalityRestrictionRegistryEnumerator.Current.Item1);
                 }
 
             }
@@ -494,8 +494,8 @@ namespace RDFSharp.Semantics
             else if (ontologyRestrictionClass is RDFOntologyQualifiedCardinalityRestriction qualifiedCardinalityRestriction)
             {
 
-                //Item2 is a counter for occurrences of the restricted property within the subject fact
-                var qualifiedCardinalityRestrictionRegistry = new Dictionary<long, Tuple<RDFOntologyFact, long>>();
+                //Item2 is a counter for occurrences of the restricted property within the subject individual
+                var qualifiedCardinalityRestrictionRegistry = new Dictionary<long, Tuple<RDFOntologyIndividual, long>>();
 
                 //Enlist the classes which are compatible with the restricted "OnClass"
                 RDFOntologyClassModel onClasses = ontology.Model.ClassModel.GetSubClassesOf(qualifiedCardinalityRestriction.OnClass)
@@ -506,7 +506,7 @@ namespace RDFSharp.Semantics
                 var classTypesCache = new Dictionary<long, RDFOntologyClassModel>();
                 foreach (RDFOntologyTaxonomyEntry assertion in restrictionAssertions)
                 {
-                    //Iterate the class types of the object fact, checking presence of the restricted "OnClass"
+                    //Iterate the class types of the object individual, checking presence of the restricted "OnClass"
                     bool onClassFound = false;
                     RDFOntologyTaxonomy objectClassTypes = ontology.Data.Relations.ClassType.SelectEntriesBySubject(assertion.TaxonomyObject);
                     foreach (RDFOntologyTaxonomyEntry objectClassType in objectClassTypes)
@@ -528,39 +528,39 @@ namespace RDFSharp.Semantics
                     if (onClassFound)
                     {
                         if (!qualifiedCardinalityRestrictionRegistry.ContainsKey(assertion.TaxonomySubject.PatternMemberID))
-                            qualifiedCardinalityRestrictionRegistry.Add(assertion.TaxonomySubject.PatternMemberID, new Tuple<RDFOntologyFact, long>((RDFOntologyFact)assertion.TaxonomySubject, 1));
+                            qualifiedCardinalityRestrictionRegistry.Add(assertion.TaxonomySubject.PatternMemberID, new Tuple<RDFOntologyIndividual, long>((RDFOntologyIndividual)assertion.TaxonomySubject, 1));
                         else
                         {
                             long occurrencyCounter = qualifiedCardinalityRestrictionRegistry[assertion.TaxonomySubject.PatternMemberID].Item2;
-                            qualifiedCardinalityRestrictionRegistry[assertion.TaxonomySubject.PatternMemberID] = new Tuple<RDFOntologyFact, long>((RDFOntologyFact)assertion.TaxonomySubject, occurrencyCounter + 1);
+                            qualifiedCardinalityRestrictionRegistry[assertion.TaxonomySubject.PatternMemberID] = new Tuple<RDFOntologyIndividual, long>((RDFOntologyIndividual)assertion.TaxonomySubject, occurrencyCounter + 1);
                         }
                     }
                 }
 
-                //Apply the qualified cardinality restriction on the tracked facts
+                //Apply the qualified cardinality restriction on the tracked individuals
                 var qualifiedCardinalityRestrictionRegistryEnumerator = qualifiedCardinalityRestrictionRegistry.Values.GetEnumerator();
                 while (qualifiedCardinalityRestrictionRegistryEnumerator.MoveNext())
                 {
                     bool passesMinQualifiedCardinality = true;
                     bool passesMaxQualifiedCardinality = true;
 
-                    //MinQualifiedCardinality: signal tracked facts having "#occurrences < MinQualifiedCardinality"
+                    //MinQualifiedCardinality: signal tracked individuals having "#occurrences < MinQualifiedCardinality"
                     if (qualifiedCardinalityRestriction.MinQualifiedCardinality > 0)
                     {
                         if (qualifiedCardinalityRestrictionRegistryEnumerator.Current.Item2 < qualifiedCardinalityRestriction.MinQualifiedCardinality)
                             passesMinQualifiedCardinality = false;
                     }
 
-                    //MaxQualifiedCardinality: signal tracked facts having "#occurrences > MaxQualifiedCardinality"
+                    //MaxQualifiedCardinality: signal tracked individuals having "#occurrences > MaxQualifiedCardinality"
                     if (qualifiedCardinalityRestriction.MaxQualifiedCardinality > 0)
                     {
                         if (qualifiedCardinalityRestrictionRegistryEnumerator.Current.Item2 > qualifiedCardinalityRestriction.MaxQualifiedCardinality)
                             passesMaxQualifiedCardinality = false;
                     }
 
-                    //Save the candidate fact if it passes qualified cardinality restriction
+                    //Save the candidate individual if it passes qualified cardinality restriction
                     if (passesMinQualifiedCardinality && passesMaxQualifiedCardinality)
-                        result.AddFact(qualifiedCardinalityRestrictionRegistryEnumerator.Current.Item1);
+                        result.AddIndividual(qualifiedCardinalityRestrictionRegistryEnumerator.Current.Item1);
                 }
 
             }
@@ -569,10 +569,9 @@ namespace RDFSharp.Semantics
             #region AllValuesFrom/SomeValuesFrom
             else if (ontologyRestrictionClass is RDFOntologyAllValuesFromRestriction || ontologyRestrictionClass is RDFOntologySomeValuesFromRestriction)
             {
-
                 //Item2 is a counter for occurrences of the restricted property with a range member of the restricted "FromClass"
                 //Item3 is a counter for occurrences of the restricted property with a range member not of the restricted "FromClass"
-                var valuesFromRegistry = new Dictionary<long, Tuple<RDFOntologyFact, long, long>>();
+                var valuesFromRegistry = new Dictionary<long, Tuple<RDFOntologyIndividual, long, long>>();
 
                 //Enlist the classes which are compatible with the restricted "FromClass"
                 var classes = ontologyRestrictionClass is RDFOntologyAllValuesFromRestriction
@@ -587,11 +586,11 @@ namespace RDFSharp.Semantics
                 var classTypesCache = new Dictionary<long, RDFOntologyClassModel>();
                 foreach (var assertion in restrictionAssertions)
                 {
-                    //Initialize the occurrence counters of the subject fact
+                    //Initialize the occurrence counters of the subject individual
                     if (!valuesFromRegistry.ContainsKey(assertion.TaxonomySubject.PatternMemberID))
-                        valuesFromRegistry.Add(assertion.TaxonomySubject.PatternMemberID, new Tuple<RDFOntologyFact, long, long>((RDFOntologyFact)assertion.TaxonomySubject, 0, 0));
+                        valuesFromRegistry.Add(assertion.TaxonomySubject.PatternMemberID, new Tuple<RDFOntologyIndividual, long, long>((RDFOntologyIndividual)assertion.TaxonomySubject, 0, 0));
 
-                    //Iterate the class types of the object fact, checking presence of the restricted "FromClass"
+                    //Iterate the class types of the object individual, checking presence of the restricted "FromClass"
                     bool fromClassFound = false;
                     RDFOntologyTaxonomy objectClassTypes = ontology.Data.Relations.ClassType.SelectEntriesBySubject(assertion.TaxonomyObject);
                     foreach (RDFOntologyTaxonomyEntry objectClassType in objectClassTypes)
@@ -609,16 +608,16 @@ namespace RDFSharp.Semantics
                         }
                     }
 
-                    //Update the occurrence counters of the subject fact
+                    //Update the occurrence counters of the subject individual
                     long equalityCounter = valuesFromRegistry[assertion.TaxonomySubject.PatternMemberID].Item2;
                     long differenceCounter = valuesFromRegistry[assertion.TaxonomySubject.PatternMemberID].Item3;
                     if (fromClassFound)
-                        valuesFromRegistry[assertion.TaxonomySubject.PatternMemberID] = new Tuple<RDFOntologyFact, long, long>((RDFOntologyFact)assertion.TaxonomySubject, equalityCounter + 1, differenceCounter);
+                        valuesFromRegistry[assertion.TaxonomySubject.PatternMemberID] = new Tuple<RDFOntologyIndividual, long, long>((RDFOntologyIndividual)assertion.TaxonomySubject, equalityCounter + 1, differenceCounter);
                     else
-                        valuesFromRegistry[assertion.TaxonomySubject.PatternMemberID] = new Tuple<RDFOntologyFact, long, long>((RDFOntologyFact)assertion.TaxonomySubject, equalityCounter, differenceCounter + 1);
+                        valuesFromRegistry[assertion.TaxonomySubject.PatternMemberID] = new Tuple<RDFOntologyIndividual, long, long>((RDFOntologyIndividual)assertion.TaxonomySubject, equalityCounter, differenceCounter + 1);
                 }
 
-                //Apply the restriction on the subject facts
+                //Apply the restriction on the subject individuals
                 var valuesFromRegistryEnumerator = valuesFromRegistry.Values.GetEnumerator();
                 while (valuesFromRegistryEnumerator.MoveNext())
                 {
@@ -626,16 +625,15 @@ namespace RDFSharp.Semantics
                     if (ontologyRestrictionClass is RDFOntologyAllValuesFromRestriction)
                     {
                         if (valuesFromRegistryEnumerator.Current.Item2 >= 1 && valuesFromRegistryEnumerator.Current.Item3 == 0)
-                            result.AddFact(valuesFromRegistryEnumerator.Current.Item1);
+                            result.AddIndividual(valuesFromRegistryEnumerator.Current.Item1);
                     }
                     //SomeValuesFrom
                     else
                     {
                         if (valuesFromRegistryEnumerator.Current.Item2 >= 1)
-                            result.AddFact(valuesFromRegistryEnumerator.Current.Item1);
+                            result.AddIndividual(valuesFromRegistryEnumerator.Current.Item1);
                     }
                 }
-
             }
             #endregion
 
@@ -643,17 +641,17 @@ namespace RDFSharp.Semantics
             else if (ontologyRestrictionClass is RDFOntologyHasSelfRestriction hasSelfRestriction)
             {
                 //Iterate the compatible assertions
-                var sameFactsCache = new Dictionary<long, RDFOntologyData>();
-                foreach (RDFOntologyTaxonomyEntry assertion in restrictionAssertions.Where(x => x.TaxonomyObject.IsFact()))
+                var sameIndividualsCache = new Dictionary<long, RDFOntologyData>();
+                foreach (RDFOntologyTaxonomyEntry assertion in restrictionAssertions.Where(x => x.TaxonomyObject.IsIndividual()))
                 {
-                    //Enlist the same facts of the assertion subject
-                    if (!sameFactsCache.ContainsKey(assertion.TaxonomySubject.PatternMemberID))
-                        sameFactsCache.Add(assertion.TaxonomySubject.PatternMemberID, ontology.Data.GetSameFactsAs((RDFOntologyFact)assertion.TaxonomySubject)
-                                                                                                   .AddFact((RDFOntologyFact)assertion.TaxonomySubject));
+                    //Enlist the same individuals of the assertion subject
+                    if (!sameIndividualsCache.ContainsKey(assertion.TaxonomySubject.PatternMemberID))
+                        sameIndividualsCache.Add(assertion.TaxonomySubject.PatternMemberID, ontology.Data.GetSameIndividuals((RDFOntologyIndividual)assertion.TaxonomySubject)
+                                                                                                         .AddIndividual((RDFOntologyIndividual)assertion.TaxonomySubject));
                     
-                    if (sameFactsCache[assertion.TaxonomySubject.PatternMemberID].SelectFact(assertion.TaxonomySubject.ToString()) != null
-                            && sameFactsCache[assertion.TaxonomySubject.PatternMemberID].SelectFact(assertion.TaxonomyObject.ToString()) != null)
-                        result.AddFact((RDFOntologyFact)assertion.TaxonomySubject);
+                    if (sameIndividualsCache[assertion.TaxonomySubject.PatternMemberID].SelectIndividual(assertion.TaxonomySubject.ToString()) != null
+                            && sameIndividualsCache[assertion.TaxonomySubject.PatternMemberID].SelectIndividual(assertion.TaxonomyObject.ToString()) != null)
+                        result.AddIndividual((RDFOntologyIndividual)assertion.TaxonomySubject);
                 }
             }
             #endregion
@@ -661,26 +659,26 @@ namespace RDFSharp.Semantics
             #region HasValue
             else if (ontologyRestrictionClass is RDFOntologyHasValueRestriction hasValueRestriction)
             {
-                if (hasValueRestriction.RequiredValue.IsFact())
+                if (hasValueRestriction.RequiredValue.IsIndividual())
                 {
-                    //Enlist the same facts of the restriction's "RequiredValue"
-                    RDFOntologyData facts = ontology.Data.GetSameFactsAs((RDFOntologyFact)hasValueRestriction.RequiredValue)
-                                                         .AddFact((RDFOntologyFact)hasValueRestriction.RequiredValue);
+                    //Enlist the same individuals of the restriction's "RequiredValue"
+                    RDFOntologyData individuals = ontology.Data.GetSameIndividuals((RDFOntologyIndividual)hasValueRestriction.RequiredValue)
+                                                               .AddIndividual((RDFOntologyIndividual)hasValueRestriction.RequiredValue);
 
-                    //Iterate the compatible assertions and track the subject facts having the required value
-                    foreach (RDFOntologyTaxonomyEntry assertion in restrictionAssertions.Where(x => x.TaxonomyObject.IsFact()))
+                    //Iterate the compatible assertions and track the subject individuals having the required value
+                    foreach (RDFOntologyTaxonomyEntry assertion in restrictionAssertions.Where(x => x.TaxonomyObject.IsIndividual()))
                     {
-                        if (facts.SelectFact(assertion.TaxonomyObject.ToString()) != null)
-                            result.AddFact((RDFOntologyFact)assertion.TaxonomySubject);
+                        if (individuals.SelectIndividual(assertion.TaxonomyObject.ToString()) != null)
+                            result.AddIndividual((RDFOntologyIndividual)assertion.TaxonomySubject);
                     }
                 }
                 else if (hasValueRestriction.RequiredValue.IsLiteral())
                 {
-                    //Iterate the compatible assertions and track the subject facts having the required value
+                    //Iterate the compatible assertions and track the subject individuals having the required value
                     foreach (RDFOntologyTaxonomyEntry assertion in restrictionAssertions.Where(x => x.TaxonomyObject.IsLiteral()))
                     {
                         if (RDFQueryUtilities.CompareRDFPatternMembers(hasValueRestriction.RequiredValue.Value, assertion.TaxonomyObject.Value) == 0)
-                            result.AddFact((RDFOntologyFact)assertion.TaxonomySubject);
+                            result.AddIndividual((RDFOntologyIndividual)assertion.TaxonomySubject);
                     }
                 }
             }
@@ -740,7 +738,7 @@ namespace RDFSharp.Semantics
         }
 
         /// <summary>
-        /// Enlists the facts which are members of the given non literal-compatible class within the given ontology
+        /// Enlists the individuals which are members of the given non literal-compatible class within the given ontology
         /// </summary>
         internal static RDFOntologyData GetMembersOfNonLiteralCompatibleClass(this RDFOntology ontology, RDFOntologyClass ontClass)
         {

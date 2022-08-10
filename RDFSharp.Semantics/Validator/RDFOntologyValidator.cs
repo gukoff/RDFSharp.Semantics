@@ -46,13 +46,13 @@ namespace RDFSharp.Semantics
                 //Vocabulary_Disjointness
                 new RDFOntologyValidatorRule(
                     "Vocabulary_Disjointness",
-                    "This OWL-DL rule checks for disjointness of vocabulary of classes, properties and facts",
+                    "This OWL-DL rule checks for disjointness of vocabulary of classes, properties and individuals",
                     RDFOntologyValidatorRuleset.Vocabulary_Disjointness),
 
                 //Vocabulary_Declaration
                 new RDFOntologyValidatorRule(
                     "Vocabulary_Declaration",
-                    "This OWL-DL rule checks for complete declaration of classes, properties and facts",
+                    "This OWL-DL rule checks for complete declaration of classes, properties and individuals",
                     RDFOntologyValidatorRuleset.Vocabulary_Declaration),
 
                 //Domain_Range

@@ -140,7 +140,7 @@ namespace RDFSharp.Semantics
         /// Checks if the skos:prefLabel/skosxl:prefLabel informations can be added to the given concept
         /// </summary>
         internal static bool CheckPrefLabel(RDFSKOSConceptScheme conceptScheme,
-                                            RDFOntologyFact concept,
+                                            RDFOntologyIndividual concept,
                                             RDFOntologyLiteral literal)
         {
             var canAddPrefLabelInfo = false;
@@ -230,7 +230,7 @@ namespace RDFSharp.Semantics
         /// Checks if the skos:altLabel/skosxl:altLabel informations can be added to the given concept
         /// </summary>
         internal static bool CheckAltLabel(RDFSKOSConceptScheme conceptScheme,
-                                           RDFOntologyFact concept,
+                                           RDFOntologyIndividual concept,
                                            RDFOntologyLiteral literal)
         {
             var canAddAltLabelInfo = false;
@@ -267,7 +267,7 @@ namespace RDFSharp.Semantics
         /// Checks if the skos:hiddenLabel/skosxl:hiddenLabel informations can be added to the given concept
         /// </summary>
         internal static bool CheckHiddenLabel(RDFSKOSConceptScheme conceptScheme,
-                                              RDFOntologyFact concept,
+                                              RDFOntologyIndividual concept,
                                               RDFOntologyLiteral literal)
         {
             var canAddHiddenLabelInfo = false;

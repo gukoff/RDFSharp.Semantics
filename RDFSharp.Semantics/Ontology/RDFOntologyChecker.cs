@@ -127,7 +127,7 @@ namespace RDFSharp.Semantics
 
         #region Data
         /// <summary>
-        /// Checks if the given class can be assigned as classtype of facts
+        /// Checks if the given class can be assigned as classtype of individuals
         /// </summary>
         internal static bool CheckClassTypeCompatibility(RDFOntologyClass ontologyClass)
             =>  !ontologyClass.IsRestrictionClass() &&
@@ -136,47 +136,47 @@ namespace RDFSharp.Semantics
                            !ontologyClass.IsDataRangeClass();
 
         /// <summary>
-        /// Checks if the given afact can be set sameas the given bfact
+        /// Checks if the given aIndividual can be set sameas the given bIndividual
         /// </summary>
-        internal static bool CheckSameAsCompatibility(RDFOntologyData ontologyData, RDFOntologyFact aFact, RDFOntologyFact bFact)
-            => !ontologyData.CheckIsDifferentFactFrom(aFact, bFact);
+        internal static bool CheckSameAsCompatibility(RDFOntologyData ontologyData, RDFOntologyIndividual aIndividual, RDFOntologyIndividual bIndividual)
+            => !ontologyData.CheckIsDifferentIndividual(aIndividual, bIndividual);
 
         /// <summary>
-        /// Checks if the given afact can be set differentfrom the given bfact
+        /// Checks if the given aIndividual can be set differentfrom the given bIndividual
         /// </summary>
-        internal static bool CheckDifferentFromCompatibility(RDFOntologyData ontologyData, RDFOntologyFact aFact, RDFOntologyFact bFact)
-            => !ontologyData.CheckIsSameFactAs(aFact, bFact);
+        internal static bool CheckDifferentFromCompatibility(RDFOntologyData ontologyData, RDFOntologyIndividual aIndividual, RDFOntologyIndividual bIndividual)
+            => !ontologyData.CheckIsSameIndividual(aIndividual, bIndividual);
 
         /// <summary>
-        /// Checks if the given "aFact -> objectProperty -> bFact" has transitive assertions
+        /// Checks if the given "aIndividual -> objectProperty -> bIndividual" has transitive assertions
         /// which would cause transitive cycles (unallowed concept in OWL-DL)
         /// </summary>
-        internal static bool CheckTransitiveAssertionCompatibility(RDFOntologyData ontologyData, RDFOntologyFact aFact, RDFOntologyObjectProperty objProperty, RDFOntologyFact bFact)
-            => !ontologyData.CheckIsTransitiveAssertionOf(bFact, objProperty, aFact);
+        internal static bool CheckTransitiveAssertionCompatibility(RDFOntologyData ontologyData, RDFOntologyIndividual aIndividual, RDFOntologyObjectProperty objProperty, RDFOntologyIndividual bIndividual)
+            => !ontologyData.CheckIsTransitiveObjectAssertion(bIndividual, objProperty, aIndividual);
 
         /// <summary>
-        /// Checks if the given "aFact -> objectProperty -> bFact" can be an assertion
+        /// Checks if the given "aIndividual -> objectProperty -> bIndividual" can be an assertion
         /// </summary>
-        internal static bool CheckAssertionCompatibility(RDFOntologyData ontologyData, RDFOntologyFact aFact, RDFOntologyObjectProperty objProperty, RDFOntologyFact bFact)
-            => !ontologyData.CheckIsNegativeObjectAssertion(aFact, objProperty, bFact);
+        internal static bool CheckAssertionCompatibility(RDFOntologyData ontologyData, RDFOntologyIndividual aIndividual, RDFOntologyObjectProperty objProperty, RDFOntologyIndividual bIndividual)
+            => !ontologyData.CheckIsNegativeObjectAssertion(aIndividual, objProperty, bIndividual);
 
         /// <summary>
-        /// Checks if the given "aFact -> datatypeProperty -> ontologyLiteral" can be an assertion
+        /// Checks if the given "aIndividual -> datatypeProperty -> ontologyLiteral" can be an assertion
         /// </summary>
-        internal static bool CheckAssertionCompatibility(RDFOntologyData ontologyData, RDFOntologyFact aFact, RDFOntologyDatatypeProperty datatypeProperty, RDFOntologyLiteral ontologyLiteral)
-            => !ontologyData.CheckIsNegativeDataAssertion(aFact, datatypeProperty, ontologyLiteral);
+        internal static bool CheckAssertionCompatibility(RDFOntologyData ontologyData, RDFOntologyIndividual aIndividual, RDFOntologyDatatypeProperty datatypeProperty, RDFOntologyLiteral ontologyLiteral)
+            => !ontologyData.CheckIsNegativeDataAssertion(aIndividual, datatypeProperty, ontologyLiteral);
 
         /// <summary>
-        /// Checks if the given "aFact -> objectProperty -> bFact" can be a negative assertion
+        /// Checks if the given "aIndividual -> objectProperty -> bIndividual" can be a negative assertion
         /// </summary>
-        internal static bool CheckNegativeAssertionCompatibility(RDFOntologyData ontologyData, RDFOntologyFact aFact, RDFOntologyObjectProperty objProperty, RDFOntologyFact bFact)
-            => !ontologyData.CheckIsObjectAssertion(aFact, objProperty, bFact);
+        internal static bool CheckNegativeAssertionCompatibility(RDFOntologyData ontologyData, RDFOntologyIndividual aIndividual, RDFOntologyObjectProperty objProperty, RDFOntologyIndividual bIndividual)
+            => !ontologyData.CheckIsObjectAssertion(aIndividual, objProperty, bIndividual);
 
         /// <summary>
-        /// Checks if the given "aFact -> datatypeProperty -> ontologyLiteral" can be a negative assertion
+        /// Checks if the given "aIndividual -> datatypeProperty -> ontologyLiteral" can be a negative assertion
         /// </summary>
-        internal static bool CheckNegativeAssertionCompatibility(RDFOntologyData ontologyData, RDFOntologyFact aFact, RDFOntologyDatatypeProperty datatypeProperty, RDFOntologyLiteral ontologyLiteral)
-            => !ontologyData.CheckIsDataAssertion(aFact, datatypeProperty, ontologyLiteral);
+        internal static bool CheckNegativeAssertionCompatibility(RDFOntologyData ontologyData, RDFOntologyIndividual aIndividual, RDFOntologyDatatypeProperty datatypeProperty, RDFOntologyLiteral ontologyLiteral)
+            => !ontologyData.CheckIsDataAssertion(aIndividual, datatypeProperty, ontologyLiteral);
         #endregion
     }
 }

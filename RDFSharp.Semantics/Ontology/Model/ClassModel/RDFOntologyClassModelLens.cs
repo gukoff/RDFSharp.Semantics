@@ -211,7 +211,7 @@ namespace RDFSharp.Semantics
             => Task.Run(() => Keys());
 
         /// <summary>
-        /// Enlists the facts/literals which are directly (or indirectly, if inference is requested) members of the lens class
+        /// Enlists the individuals/literals which are directly (or indirectly, if inference is requested) members of the lens class
         /// </summary>
         public List<(bool, RDFOntologyResource)> Members(bool enableInference)
         {
@@ -238,10 +238,10 @@ namespace RDFSharp.Semantics
             if (enableInference)
             {
                 RDFOntologyData members = RDFOntologyDataHelper.GetMembersOf(this.Ontology, this.OntologyClass);
-                foreach (RDFOntologyFact fact in members)
+                foreach (RDFOntologyIndividual individual in members)
                 {
-                    if (!result.Any(f => f.Item2.Equals(fact)))
-                        result.Add((true, fact));
+                    if (!result.Any(f => f.Item2.Equals(individual)))
+                        result.Add((true, individual));
                 }
                 foreach (RDFOntologyLiteral literal in members.Literals.Values)
                 {
@@ -254,7 +254,7 @@ namespace RDFSharp.Semantics
         }
 
         /// <summary>
-        /// Asynchronously enlists the facts/literals which are directly (or indirectly, if inference is requested) members of the lens class
+        /// Asynchronously enlists the individuals/literals which are directly (or indirectly, if inference is requested) members of the lens class
         /// </summary>
         public Task<List<(bool, RDFOntologyResource)>> MembersAsync(bool enableInference)
             => Task.Run(() => Members(enableInference));

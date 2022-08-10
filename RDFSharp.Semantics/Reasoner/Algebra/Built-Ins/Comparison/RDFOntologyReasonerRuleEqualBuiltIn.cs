@@ -38,7 +38,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Default-ctor to build a swrlb:equal built-in with given arguments
         /// </summary>
-        public RDFOntologyReasonerRuleEqualBuiltIn(RDFVariable leftArgument, RDFOntologyFact rightArgument)
+        public RDFOntologyReasonerRuleEqualBuiltIn(RDFVariable leftArgument, RDFOntologyIndividual rightArgument)
             : this(leftArgument, rightArgument?.Value as RDFPatternMember) { }
 
         /// <summary>

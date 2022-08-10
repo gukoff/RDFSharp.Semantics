@@ -140,9 +140,9 @@ namespace RDFSharp.Semantics
         internal bool IsObjectProperty() => this is RDFOntologyObjectProperty;
 
         /// <summary>
-        /// Checks if this ontology resource represents an ontology fact
+        /// Checks if this ontology resource represents an ontology individual
         /// </summary>
-        internal bool IsFact() => this is RDFOntologyFact;
+        internal bool IsIndividual() => this is RDFOntologyIndividual;
 
         /// <summary>
         /// Checks if this ontology resource represents an ontology literal

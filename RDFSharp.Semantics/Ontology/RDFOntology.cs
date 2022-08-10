@@ -812,9 +812,9 @@ namespace RDFSharp.Semantics
 
             #endregion
 
-            #region Facts
+            #region Individuals
             //RDF+RDFS
-            Instance.Data.AddFact(RDFVocabulary.RDF.NIL.ToRDFOntologyFact());
+            Instance.Data.AddIndividual(RDFVocabulary.RDF.NIL.ToRDFontologyIndividual());
             #endregion
 
             #endregion
@@ -867,7 +867,7 @@ namespace RDFSharp.Semantics
             Instance.Model.ClassModel.Relations.SubClassOf.AddEntry(new RDFOntologyTaxonomyEntry(RDFVocabulary.XSD.UNSIGNED_BYTE.ToRDFOntologyClass(), subClassOf, RDFVocabulary.XSD.UNSIGNED_SHORT.ToRDFOntologyClass()));
 
             //ClassType
-            Instance.Data.Relations.ClassType.AddEntry(new RDFOntologyTaxonomyEntry(RDFVocabulary.RDF.NIL.ToRDFOntologyFact(), RDFVocabulary.RDF.TYPE.ToRDFOntologyObjectProperty(), RDFVocabulary.RDF.LIST.ToRDFOntologyClass()));
+            Instance.Data.Relations.ClassType.AddEntry(new RDFOntologyTaxonomyEntry(RDFVocabulary.RDF.NIL.ToRDFontologyIndividual(), RDFVocabulary.RDF.TYPE.ToRDFOntologyObjectProperty(), RDFVocabulary.RDF.LIST.ToRDFOntologyClass()));
 
             #endregion
 

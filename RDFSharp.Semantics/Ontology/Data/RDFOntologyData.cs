@@ -15,7 +15,6 @@
 */
 
 using RDFSharp.Model;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -25,50 +24,46 @@ namespace RDFSharp.Semantics
     /// <summary>
     /// RDFOntologyData represents the data component (A-BOX) of an ontology.
     /// </summary>
-    public class RDFOntologyData : IEnumerable<RDFOntologyFact>
+    public class RDFOntologyData : IEnumerable<RDFOntologyIndividual>
     {
         #region Properties
         /// <summary>
-        /// Count of the facts composing the data
+        /// Count of the individuals contained in the ontology data
         /// </summary>
-        public long FactsCount
-            => this.Facts.Count;
+        public long IndividualsCount => this.Individuals.Count;
 
         /// <summary>
-        /// Count of the literals composing the data
+        /// Count of the literals contained in the ontology data
         /// </summary>
-        public long LiteralsCount
-            => this.Literals.Count;
+        public long LiteralsCount => this.Literals.Count;
 
         /// <summary>
-        /// Gets the enumerator on the facts of the data for iteration
+        /// Gets the enumerator on the individuals of the ontology data for iteration
         /// </summary>
-        public IEnumerator<RDFOntologyFact> FactsEnumerator
-            => this.Facts.Values.GetEnumerator();
+        public IEnumerator<RDFOntologyIndividual> IndividualsEnumerator => this.Individuals.Values.GetEnumerator();
 
         /// <summary>
-        /// Gets the enumerator on the literals of the data for iteration
+        /// Gets the enumerator on the literals of the ontology data for iteration
         /// </summary>
-        public IEnumerator<RDFOntologyLiteral> LiteralsEnumerator
-            => this.Literals.Values.GetEnumerator();
+        public IEnumerator<RDFOntologyLiteral> LiteralsEnumerator => this.Literals.Values.GetEnumerator();
 
         /// <summary>
-        /// Annotations describing facts of the ontology data
+        /// Annotations describing individuals of the ontology data
         /// </summary>
         public RDFOntologyAnnotations Annotations { get; internal set; }
 
         /// <summary>
-        /// Relations describing facts of the ontology data
+        /// Relations describing individuals of the ontology data
         /// </summary>
         public RDFOntologyDataMetadata Relations { get; internal set; }
 
         /// <summary>
-        /// Dictionary of facts composing the ontology data
+        /// Individuals contained in the ontology data
         /// </summary>
-        internal Dictionary<long, RDFOntologyFact> Facts { get; set; }
+        internal Dictionary<long, RDFOntologyIndividual> Individuals { get; set; }
 
         /// <summary>
-        /// Dictionary of literals composing the ontology data
+        /// Literals contained in the ontology data
         /// </summary>
         internal Dictionary<long, RDFOntologyLiteral> Literals { get; set; }
         #endregion
@@ -79,7 +74,7 @@ namespace RDFSharp.Semantics
         /// </summary>
         public RDFOntologyData()
         {
-            this.Facts = new Dictionary<long, RDFOntologyFact>();
+            this.Individuals = new Dictionary<long, RDFOntologyIndividual>();
             this.Literals = new Dictionary<long, RDFOntologyLiteral>();
             this.Annotations = new RDFOntologyAnnotations();
             this.Relations = new RDFOntologyDataMetadata();
@@ -88,34 +83,34 @@ namespace RDFSharp.Semantics
 
         #region Interfaces
         /// <summary>
-        /// Exposes a typed enumerator on the data's facts
+        /// Exposes a typed enumerator on the ontology data's individuals
         /// </summary>
-        IEnumerator<RDFOntologyFact> IEnumerable<RDFOntologyFact>.GetEnumerator() => this.FactsEnumerator;
+        IEnumerator<RDFOntologyIndividual> IEnumerable<RDFOntologyIndividual>.GetEnumerator() => this.IndividualsEnumerator;
 
         /// <summary>
-        /// Exposes an untyped enumerator on the data's facts
+        /// Exposes an untyped enumerator on the data's individuals
         /// </summary>
-        IEnumerator IEnumerable.GetEnumerator() => this.FactsEnumerator;
+        IEnumerator IEnumerable.GetEnumerator() => this.IndividualsEnumerator;
         #endregion
 
         #region Methods
 
         #region Add
         /// <summary>
-        /// Adds the given fact to the data
+        /// Adds the given individual to the ontology data
         /// </summary>
-        public RDFOntologyData AddFact(RDFOntologyFact ontologyFact)
+        public RDFOntologyData AddIndividual(RDFOntologyIndividual ontologyIndividual)
         {
-            if (ontologyFact != null)
+            if (ontologyIndividual != null)
             {
-                if (!this.Facts.ContainsKey(ontologyFact.PatternMemberID))
-                    this.Facts.Add(ontologyFact.PatternMemberID, ontologyFact);
+                if (!this.Individuals.ContainsKey(ontologyIndividual.PatternMemberID))
+                    this.Individuals.Add(ontologyIndividual.PatternMemberID, ontologyIndividual);
             }
             return this;
         }
 
         /// <summary>
-        /// Adds the given literal to the data
+        /// Adds the given literal to the ontology data
         /// </summary>
         public RDFOntologyData AddLiteral(RDFOntologyLiteral ontologyLiteral)
         {
@@ -128,84 +123,72 @@ namespace RDFSharp.Semantics
         }
 
         /// <summary>
-        /// Adds the given standard annotation to the given ontology fact
+        /// Adds the given standard annotation to the given ontology individual
         /// </summary>
-        public RDFOntologyData AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation standardAnnotation, RDFOntologyFact ontologyFact, RDFOntologyResource annotationValue)
+        public RDFOntologyData AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation standardAnnotation, RDFOntologyIndividual ontologyIndividual, RDFOntologyResource annotationValue)
         {
-            if (ontologyFact != null && annotationValue != null)
+            if (ontologyIndividual != null && annotationValue != null)
             {
                 switch (standardAnnotation)
                 {
                     //owl:versionInfo
                     case RDFSemanticsEnums.RDFOntologyStandardAnnotation.VersionInfo:
                         if (annotationValue.IsLiteral())
-                        {
-                            this.Annotations.VersionInfo.AddEntry(new RDFOntologyTaxonomyEntry(ontologyFact, RDFVocabulary.OWL.VERSION_INFO.ToRDFOntologyAnnotationProperty(), annotationValue));
-                        }
+                            this.Annotations.VersionInfo.AddEntry(new RDFOntologyTaxonomyEntry(ontologyIndividual, RDFVocabulary.OWL.VERSION_INFO.ToRDFOntologyAnnotationProperty(), annotationValue));
                         else
-                        {
-                            RDFSemanticsEvents.RaiseSemanticsInfo(string.Format("Cannot annotate ontology fact with owl:versionInfo value '{0}' because it is not an ontology literal", annotationValue));
-                        }
+                            RDFSemanticsEvents.RaiseSemanticsInfo(string.Format("Cannot annotate ontology individual with owl:versionInfo value '{0}' because it is not an ontology literal", annotationValue));
                         break;
 
                     //rdfs:comment
                     case RDFSemanticsEnums.RDFOntologyStandardAnnotation.Comment:
                         if (annotationValue.IsLiteral())
-                        {
-                            this.Annotations.Comment.AddEntry(new RDFOntologyTaxonomyEntry(ontologyFact, RDFVocabulary.RDFS.COMMENT.ToRDFOntologyAnnotationProperty(), annotationValue));
-                        }
+                            this.Annotations.Comment.AddEntry(new RDFOntologyTaxonomyEntry(ontologyIndividual, RDFVocabulary.RDFS.COMMENT.ToRDFOntologyAnnotationProperty(), annotationValue));
                         else
-                        {
-                            RDFSemanticsEvents.RaiseSemanticsInfo(string.Format("Cannot annotate ontology fact with rdfs:comment value '{0}' because it is not an ontology literal", annotationValue));
-                        }
+                            RDFSemanticsEvents.RaiseSemanticsInfo(string.Format("Cannot annotate ontology individual with rdfs:comment value '{0}' because it is not an ontology literal", annotationValue));
                         break;
 
                     //rdfs:label
                     case RDFSemanticsEnums.RDFOntologyStandardAnnotation.Label:
                         if (annotationValue.IsLiteral())
-                        {
-                            this.Annotations.Label.AddEntry(new RDFOntologyTaxonomyEntry(ontologyFact, RDFVocabulary.RDFS.LABEL.ToRDFOntologyAnnotationProperty(), annotationValue));
-                        }
+                            this.Annotations.Label.AddEntry(new RDFOntologyTaxonomyEntry(ontologyIndividual, RDFVocabulary.RDFS.LABEL.ToRDFOntologyAnnotationProperty(), annotationValue));
                         else
-                        {
-                            RDFSemanticsEvents.RaiseSemanticsInfo(string.Format("Cannot annotate ontology fact with rdfs:label value '{0}' because it is not an ontology literal", annotationValue));
-                        }
+                            RDFSemanticsEvents.RaiseSemanticsInfo(string.Format("Cannot annotate ontology individual with rdfs:label value '{0}' because it is not an ontology literal", annotationValue));
                         break;
 
                     //rdfs:seeAlso
                     case RDFSemanticsEnums.RDFOntologyStandardAnnotation.SeeAlso:
-                        this.Annotations.SeeAlso.AddEntry(new RDFOntologyTaxonomyEntry(ontologyFact, RDFVocabulary.RDFS.SEE_ALSO.ToRDFOntologyAnnotationProperty(), annotationValue));
+                        this.Annotations.SeeAlso.AddEntry(new RDFOntologyTaxonomyEntry(ontologyIndividual, RDFVocabulary.RDFS.SEE_ALSO.ToRDFOntologyAnnotationProperty(), annotationValue));
                         break;
 
                     //rdfs:isDefinedBy
                     case RDFSemanticsEnums.RDFOntologyStandardAnnotation.IsDefinedBy:
-                        this.Annotations.IsDefinedBy.AddEntry(new RDFOntologyTaxonomyEntry(ontologyFact, RDFVocabulary.RDFS.IS_DEFINED_BY.ToRDFOntologyAnnotationProperty(), annotationValue));
+                        this.Annotations.IsDefinedBy.AddEntry(new RDFOntologyTaxonomyEntry(ontologyIndividual, RDFVocabulary.RDFS.IS_DEFINED_BY.ToRDFOntologyAnnotationProperty(), annotationValue));
                         break;
 
                     #region Unsupported
                     //owl:versionIRI
                     case RDFSemanticsEnums.RDFOntologyStandardAnnotation.VersionIRI:
-                        RDFSemanticsEvents.RaiseSemanticsInfo("Cannot annotate ontology fact with owl:versionIRI because it is reserved for ontologies");
+                        RDFSemanticsEvents.RaiseSemanticsInfo("Cannot annotate ontology individual with owl:versionIRI because it is reserved for ontologies");
                         break;
 
                     //owl:priorVersion
                     case RDFSemanticsEnums.RDFOntologyStandardAnnotation.PriorVersion:
-                        RDFSemanticsEvents.RaiseSemanticsInfo("Cannot annotate ontology fact with owl:priorVersion because it is reserved for ontologies");
+                        RDFSemanticsEvents.RaiseSemanticsInfo("Cannot annotate ontology individual with owl:priorVersion because it is reserved for ontologies");
                         break;
 
                     //owl:imports
                     case RDFSemanticsEnums.RDFOntologyStandardAnnotation.Imports:
-                        RDFSemanticsEvents.RaiseSemanticsInfo("Cannot annotate ontology fact with owl:imports because it is reserved for ontologies");
+                        RDFSemanticsEvents.RaiseSemanticsInfo("Cannot annotate ontology individual with owl:imports because it is reserved for ontologies");
                         break;
 
                     //owl:backwardCompatibleWith
                     case RDFSemanticsEnums.RDFOntologyStandardAnnotation.BackwardCompatibleWith:
-                        RDFSemanticsEvents.RaiseSemanticsInfo("Cannot annotate ontology fact with owl:backwardCompatibleWith because it is reserved for ontologies");
+                        RDFSemanticsEvents.RaiseSemanticsInfo("Cannot annotate ontology individual with owl:backwardCompatibleWith because it is reserved for ontologies");
                         break;
 
                     //owl:incompatibleWith
                     case RDFSemanticsEnums.RDFOntologyStandardAnnotation.IncompatibleWith:
-                        RDFSemanticsEvents.RaiseSemanticsInfo("Cannot annotate ontology fact with owl:incompatibleWith because it is reserved for ontologies");
+                        RDFSemanticsEvents.RaiseSemanticsInfo("Cannot annotate ontology individual with owl:incompatibleWith because it is reserved for ontologies");
                         break;
                     #endregion
                 }
@@ -214,71 +197,71 @@ namespace RDFSharp.Semantics
         }
 
         /// <summary>
-        /// Adds the given custom annotation to the given ontology fact
+        /// Adds the given custom annotation to the given ontology individual
         /// </summary>
-        public RDFOntologyData AddCustomAnnotation(RDFOntologyAnnotationProperty ontologyAnnotationProperty, RDFOntologyFact ontologyFact, RDFOntologyResource annotationValue)
+        public RDFOntologyData AddCustomAnnotation(RDFOntologyAnnotationProperty ontologyAnnotationProperty, RDFOntologyIndividual ontologyIndividual, RDFOntologyResource annotationValue)
         {
-            if (ontologyAnnotationProperty != null && ontologyFact != null && annotationValue != null)
+            if (ontologyAnnotationProperty != null && ontologyIndividual != null && annotationValue != null)
             {
                 //standard annotation
                 if (RDFSemanticsUtilities.StandardAnnotationProperties.Contains(ontologyAnnotationProperty.PatternMemberID))
                 {
                     //owl:versionInfo
                     if (ontologyAnnotationProperty.Equals(RDFVocabulary.OWL.VERSION_INFO))
-                        this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.VersionInfo, ontologyFact, annotationValue);
+                        this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.VersionInfo, ontologyIndividual, annotationValue);
 
                     //rdfs:comment
                     else if (ontologyAnnotationProperty.Equals(RDFVocabulary.RDFS.COMMENT))
-                        this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.Comment, ontologyFact, annotationValue);
+                        this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.Comment, ontologyIndividual, annotationValue);
 
                     //rdfs:label
                     else if (ontologyAnnotationProperty.Equals(RDFVocabulary.RDFS.LABEL))
-                        this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.Label, ontologyFact, annotationValue);
+                        this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.Label, ontologyIndividual, annotationValue);
 
                     //rdfs:seeAlso
                     else if (ontologyAnnotationProperty.Equals(RDFVocabulary.RDFS.SEE_ALSO))
-                        this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.SeeAlso, ontologyFact, annotationValue);
+                        this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.SeeAlso, ontologyIndividual, annotationValue);
 
                     //rdfs:isDefinedBy
                     else if (ontologyAnnotationProperty.Equals(RDFVocabulary.RDFS.IS_DEFINED_BY))
-                        this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.IsDefinedBy, ontologyFact, annotationValue);
+                        this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.IsDefinedBy, ontologyIndividual, annotationValue);
 
                     #region Unsupported
                     //owl:versionIRI
                     else if (ontologyAnnotationProperty.Equals(RDFVocabulary.OWL.VERSION_IRI))
-                        this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.VersionIRI, ontologyFact, annotationValue);
+                        this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.VersionIRI, ontologyIndividual, annotationValue);
 
                     //owl:imports
                     else if (ontologyAnnotationProperty.Equals(RDFVocabulary.OWL.IMPORTS))
-                        this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.Imports, ontologyFact, annotationValue);
+                        this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.Imports, ontologyIndividual, annotationValue);
 
                     //owl:backwardCompatibleWith
                     else if (ontologyAnnotationProperty.Equals(RDFVocabulary.OWL.BACKWARD_COMPATIBLE_WITH))
-                        this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.BackwardCompatibleWith, ontologyFact, annotationValue);
+                        this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.BackwardCompatibleWith, ontologyIndividual, annotationValue);
 
                     //owl:incompatibleWith
                     else if (ontologyAnnotationProperty.Equals(RDFVocabulary.OWL.INCOMPATIBLE_WITH))
-                        this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.IncompatibleWith, ontologyFact, annotationValue);
+                        this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.IncompatibleWith, ontologyIndividual, annotationValue);
 
                     //owl:priorVersion
                     else if (ontologyAnnotationProperty.Equals(RDFVocabulary.OWL.PRIOR_VERSION))
-                        this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.PriorVersion, ontologyFact, annotationValue);
+                        this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.PriorVersion, ontologyIndividual, annotationValue);
                     #endregion
                 }
 
                 //custom annotation
                 else
-                    this.Annotations.CustomAnnotations.AddEntry(new RDFOntologyTaxonomyEntry(ontologyFact, ontologyAnnotationProperty, annotationValue));
+                    this.Annotations.CustomAnnotations.AddEntry(new RDFOntologyTaxonomyEntry(ontologyIndividual, ontologyAnnotationProperty, annotationValue));
             }
             return this;
         }
 
         /// <summary>
-        /// Adds the "ontologyFact -> rdf:type -> ontologyClass" relation to the data (and links the given axiom annotation if provided)
+        /// Adds the "ontologyIndividual -> rdf:type -> ontologyClass" relation to the data (and links the given axiom annotation if provided)
         /// </summary>
-        public RDFOntologyData AddClassTypeRelation(RDFOntologyFact ontologyFact, RDFOntologyClass ontologyClass, RDFOntologyAxiomAnnotation axiomAnnotation=null)
+        public RDFOntologyData AddClassTypeRelation(RDFOntologyIndividual ontologyIndividual, RDFOntologyClass ontologyClass, RDFOntologyAxiomAnnotation axiomAnnotation=null)
         {
-            if (ontologyFact != null && ontologyClass != null)
+            if (ontologyIndividual != null && ontologyClass != null)
             {
                 //Enforce preliminary check on usage of BASE classes
                 if (!RDFOntologyChecker.CheckReservedClass(ontologyClass))
@@ -286,116 +269,105 @@ namespace RDFSharp.Semantics
                     //Enforce taxonomy checks before adding the ClassType relation
                     if (RDFOntologyChecker.CheckClassTypeCompatibility(ontologyClass))
                     {
-                        RDFOntologyTaxonomyEntry taxonomyEntry = new RDFOntologyTaxonomyEntry(ontologyFact, RDFVocabulary.RDF.TYPE.ToRDFOntologyObjectProperty(), ontologyClass);
+                        RDFOntologyTaxonomyEntry taxonomyEntry = new RDFOntologyTaxonomyEntry(ontologyIndividual, RDFVocabulary.RDF.TYPE.ToRDFOntologyObjectProperty(), ontologyClass);
                         this.Relations.ClassType.AddEntry(taxonomyEntry);
-                        this.AddFact(ontologyFact);
+                        this.AddIndividual(ontologyIndividual);
 
                         //Link owl:Axiom annotation
                         this.AddAxiomAnnotation(taxonomyEntry, axiomAnnotation, nameof(RDFOntologyDataMetadata.ClassType));
                     }
                     else
-                    {
-                        //Raise warning event to inform the user: ClassType relation cannot be added to the data because only plain classes can be explicitly assigned as class types of facts
-                        RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("ClassType relation between fact '{0}' and class '{1}' cannot be added to the data because only plain classes can be explicitly assigned as class types of facts.", ontologyFact, ontologyClass));
-                    }
+                        RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("ClassType relation between individual '{0}' and class '{1}' cannot be added to the data because only plain classes can be explicitly assigned as class types of individuals.", ontologyIndividual, ontologyClass));
                 }
                 else
-                {
-                    //Raise warning event to inform the user: ClassType relation cannot be added to the data because usage of BASE reserved classes compromises the taxonomy consistency
-                    RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("ClassType relation between fact '{0}' and class '{1}' cannot be added to the data because because usage of BASE reserved classes compromises the taxonomy consistency.", ontologyFact, ontologyClass));
-                }
+                    RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("ClassType relation between individual '{0}' and class '{1}' cannot be added to the data because because usage of BASE reserved classes compromises the taxonomy consistency.", ontologyIndividual, ontologyClass));
             }
             return this;
         }
 
         /// <summary>
-        /// Adds the "aFact -> owl:sameAs -> bFact" relation to the data (and links the given axiom annotation if provided)
+        /// Adds the "aIndividual -> owl:sameAs -> bIndividual" relation to the data (and links the given axiom annotation if provided)
         /// </summary>
-        public RDFOntologyData AddSameAsRelation(RDFOntologyFact aFact, RDFOntologyFact bFact, RDFOntologyAxiomAnnotation axiomAnnotation=null)
+        public RDFOntologyData AddSameAsRelation(RDFOntologyIndividual aIndividual, RDFOntologyIndividual bIndividual, RDFOntologyAxiomAnnotation axiomAnnotation=null)
         {
-            if (aFact != null && bFact != null && !aFact.Equals(bFact))
+            if (aIndividual != null && bIndividual != null && !aIndividual.Equals(bIndividual))
             {
                 //Enforce taxonomy checks before adding the SameAs relation
-                if (RDFOntologyChecker.CheckSameAsCompatibility(this, aFact, bFact))
+                if (RDFOntologyChecker.CheckSameAsCompatibility(this, aIndividual, bIndividual))
                 {
-                    RDFOntologyTaxonomyEntry sameAsLeft = new RDFOntologyTaxonomyEntry(aFact, RDFVocabulary.OWL.SAME_AS.ToRDFOntologyObjectProperty(), bFact);
+                    RDFOntologyTaxonomyEntry sameAsLeft = new RDFOntologyTaxonomyEntry(aIndividual, RDFVocabulary.OWL.SAME_AS.ToRDFOntologyObjectProperty(), bIndividual);
                     this.Relations.SameAs.AddEntry(sameAsLeft);
-                    RDFOntologyTaxonomyEntry sameAsRight = new RDFOntologyTaxonomyEntry(bFact, RDFVocabulary.OWL.SAME_AS.ToRDFOntologyObjectProperty(), aFact).SetInference(RDFSemanticsEnums.RDFOntologyInferenceType.API);
+                    RDFOntologyTaxonomyEntry sameAsRight = new RDFOntologyTaxonomyEntry(bIndividual, RDFVocabulary.OWL.SAME_AS.ToRDFOntologyObjectProperty(), aIndividual).SetInference(RDFSemanticsEnums.RDFOntologyInferenceType.API);
                     this.Relations.SameAs.AddEntry(sameAsRight);
 
                     //Link owl:Axiom annotation
                     this.AddAxiomAnnotation(sameAsLeft, axiomAnnotation, nameof(RDFOntologyDataMetadata.SameAs));
                 }
                 else
-                {
-                    //Raise warning event to inform the user: SameAs relation cannot be added to the data because it violates the taxonomy consistency
-                    RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("SameAs relation between fact '{0}' and fact '{1}' cannot be added to the data because it violates the taxonomy consistency.", aFact, bFact));
-                }
+                    RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("SameAs relation between individual '{0}' and individual '{1}' cannot be added to the data because it violates the taxonomy consistency.", aIndividual, bIndividual));
             }
             return this;
         }
 
         /// <summary>
-        /// Adds the "aFact -> owl:differentFrom -> bFact" relation to the data (and links the given axiom annotation if provided)
+        /// Adds the "aIndividual -> owl:differentFrom -> bIndividual" relation to the data (and links the given axiom annotation if provided)
         /// </summary>
-        public RDFOntologyData AddDifferentFromRelation(RDFOntologyFact aFact, RDFOntologyFact bFact, RDFOntologyAxiomAnnotation axiomAnnotation=null)
+        public RDFOntologyData AddDifferentFromRelation(RDFOntologyIndividual aIndividual, RDFOntologyIndividual bIndividual, RDFOntologyAxiomAnnotation axiomAnnotation=null)
         {
-            if (aFact != null && bFact != null && !aFact.Equals(bFact))
+            if (aIndividual != null && bIndividual != null && !aIndividual.Equals(bIndividual))
             {
                 //Enforce taxonomy checks before adding the DifferentFrom relation
-                if (RDFOntologyChecker.CheckDifferentFromCompatibility(this, aFact, bFact))
+                if (RDFOntologyChecker.CheckDifferentFromCompatibility(this, aIndividual, bIndividual))
                 {
-                    RDFOntologyTaxonomyEntry differentFromLeft = new RDFOntologyTaxonomyEntry(aFact, RDFVocabulary.OWL.DIFFERENT_FROM.ToRDFOntologyObjectProperty(), bFact);
+                    RDFOntologyTaxonomyEntry differentFromLeft = new RDFOntologyTaxonomyEntry(aIndividual, RDFVocabulary.OWL.DIFFERENT_FROM.ToRDFOntologyObjectProperty(), bIndividual);
                     this.Relations.DifferentFrom.AddEntry(differentFromLeft);
-                    RDFOntologyTaxonomyEntry differentFromRight = new RDFOntologyTaxonomyEntry(bFact, RDFVocabulary.OWL.DIFFERENT_FROM.ToRDFOntologyObjectProperty(), aFact).SetInference(RDFSemanticsEnums.RDFOntologyInferenceType.API);
+                    RDFOntologyTaxonomyEntry differentFromRight = new RDFOntologyTaxonomyEntry(bIndividual, RDFVocabulary.OWL.DIFFERENT_FROM.ToRDFOntologyObjectProperty(), aIndividual).SetInference(RDFSemanticsEnums.RDFOntologyInferenceType.API);
                     this.Relations.DifferentFrom.AddEntry(differentFromRight);
 
                     //Link owl:Axiom annotation
                     this.AddAxiomAnnotation(differentFromLeft, axiomAnnotation, nameof(RDFOntologyDataMetadata.DifferentFrom));
                 }
                 else
-                {
-                    //Raise warning event to inform the user: DifferentFrom relation cannot be added to the data because it violates the taxonomy consistency
-                    RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("DifferentFrom relation between fact '{0}' and fact '{1}' cannot be added to the data because it violates the taxonomy consistency.", aFact, bFact));
-                }
+                    RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("DifferentFrom relation between individual '{0}' and individual '{1}' cannot be added to the data because it violates the taxonomy consistency.", aIndividual, bIndividual));
             }
             return this;
         }
 
         /// <summary>
-        /// Foreach of the given list of facts, adds the "aFact -> owl:differentFrom -> bFact" relation to the data [OWL2]
+        /// Foreach of the given list of individuals, adds the "aIndividual -> owl:differentFrom -> bIndividual" relation to the data [OWL2]
         /// </summary>
-        public RDFOntologyData AddAllDifferentRelation(List<RDFOntologyFact> ontologyFacts)
+        public RDFOntologyData AddAllDifferentRelation(List<RDFOntologyIndividual> ontologyIndividuals)
         {
-            ontologyFacts?.ForEach(outerFact =>
-                ontologyFacts?.ForEach(innerFact => this.AddDifferentFromRelation(innerFact, outerFact)));
+            ontologyIndividuals?.ForEach(outerIndividual =>
+                ontologyIndividuals?.ForEach(innerIndividual => 
+                    this.AddDifferentFromRelation(innerIndividual, outerIndividual)));
             return this;
         }
 
         /// <summary>
-        /// Adds the "aFact -> objectProperty -> bFact" relation to the data (and links the given axiom annotation if provided)
+        /// Adds the "aIndividual -> objectProperty -> bIndividual" relation to the data (and links the given axiom annotation if provided)
         /// </summary>
-        public RDFOntologyData AddAssertionRelation(RDFOntologyFact aFact, RDFOntologyObjectProperty objectProperty, RDFOntologyFact bFact, RDFOntologyAxiomAnnotation axiomAnnotation=null)
+        public RDFOntologyData AddObjectAssertion(RDFOntologyIndividual aIndividual, RDFOntologyObjectProperty objectProperty, RDFOntologyIndividual bIndividual, RDFOntologyAxiomAnnotation axiomAnnotation=null)
         {
-            if (aFact != null && objectProperty != null && bFact != null)
+            if (aIndividual != null && objectProperty != null && bIndividual != null)
             {
                 //Enforce preliminary check on usage of BASE properties
                 if (!RDFOntologyChecker.CheckReservedProperty(objectProperty))
                 {
                     //Enforce taxonomy checks before adding the assertion
                     //Creation of transitive cycles is not allowed [OWL-DL]
-                    if (RDFOntologyChecker.CheckTransitiveAssertionCompatibility(this, aFact, objectProperty, bFact))
+                    if (RDFOntologyChecker.CheckTransitiveAssertionCompatibility(this, aIndividual, objectProperty, bIndividual))
                     {
                         //Collision with negative assertions must be avoided [OWL2]
-                        if (RDFOntologyChecker.CheckAssertionCompatibility(this, aFact, objectProperty, bFact))
+                        if (RDFOntologyChecker.CheckAssertionCompatibility(this, aIndividual, objectProperty, bIndividual))
                         {
                             if (objectProperty.Equals(RDFVocabulary.SKOS.MEMBER))
-                                this.AddMemberRelation(aFact, bFact, axiomAnnotation);
+                                this.AddMemberRelation(aIndividual, bIndividual, axiomAnnotation);
                             else if (objectProperty.Equals(RDFVocabulary.SKOS.MEMBER_LIST))
-                                this.AddMemberListRelation(aFact, bFact, axiomAnnotation);
+                                this.AddMemberListRelation(aIndividual, bIndividual, axiomAnnotation);
                             else
                             {
-                                RDFOntologyTaxonomyEntry taxonomyEntry = new RDFOntologyTaxonomyEntry(aFact, objectProperty, bFact);
+                                RDFOntologyTaxonomyEntry taxonomyEntry = new RDFOntologyTaxonomyEntry(aIndividual, objectProperty, bIndividual);
                                 this.Relations.Assertions.AddEntry(taxonomyEntry);
 
                                 //Link owl:Axiom annotation
@@ -403,44 +375,35 @@ namespace RDFSharp.Semantics
                             }
                         }
                         else
-                        {
-                            //Raise warning event to inform the user: Assertion relation cannot be added to the data because it violates the taxonomy consistency
-                            RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("Assertion relation between fact '{0}' and fact '{1}' with property '{2}' cannot be added to the data because it would violate the taxonomy consistency (negative assertion detected).", aFact, bFact, objectProperty));
-                        }
+                            RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("Assertion relation between individual '{0}' and individual '{1}' with property '{2}' cannot be added to the data because it would violate the taxonomy consistency (negative assertion detected).", aIndividual, bIndividual, objectProperty));
                     }
                     else
-                    {
-                        //Raise warning event to inform the user: Assertion relation cannot be added to the data because it violates the taxonomy transitive consistency
-                        RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("Assertion relation between fact '{0}' and fact '{1}' with transitive property '{2}' cannot be added to the data because it would violate the taxonomy consistency (transitive cycle detected).", aFact, bFact, objectProperty));
-                    }
+                        RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("Assertion relation between individual '{0}' and individual '{1}' with transitive property '{2}' cannot be added to the data because it would violate the taxonomy consistency (transitive cycle detected).", aIndividual, bIndividual, objectProperty));
                 }
                 else
-                {
-                    //Raise warning event to inform the user: Assertion relation cannot be added to the data because usage of BASE reserved properties compromises the taxonomy consistency
-                    RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("Assertion relation between fact '{0}' and fact '{1}' cannot be added to the data because usage of BASE reserved properties compromises the taxonomy consistency.", aFact, bFact));
-                }
+                    RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("Assertion relation between individual '{0}' and individual '{1}' cannot be added to the data because usage of BASE reserved properties compromises the taxonomy consistency.", aIndividual, bIndividual));
             }
             return this;
         }
 
         /// <summary>
-        /// Adds the "ontologyFact -> datatypeProperty -> ontologyLiteral" relation to the data (and links the given axiom annotation if provided)
+        /// Adds the "ontologyIndividual -> datatypeProperty -> ontologyLiteral" relation to the data (and links the given axiom annotation if provided)
         /// </summary>
-        public RDFOntologyData AddAssertionRelation(RDFOntologyFact ontologyFact, RDFOntologyDatatypeProperty datatypeProperty, RDFOntologyLiteral ontologyLiteral, RDFOntologyAxiomAnnotation axiomAnnotation = null)
+        public RDFOntologyData AddDataAssertion(RDFOntologyIndividual ontologyIndividual, RDFOntologyDatatypeProperty datatypeProperty, RDFOntologyLiteral ontologyLiteral, RDFOntologyAxiomAnnotation axiomAnnotation = null)
         {
-            if (ontologyFact != null && datatypeProperty != null && ontologyLiteral != null)
+            if (ontologyIndividual != null && datatypeProperty != null && ontologyLiteral != null)
             {
                 //Enforce preliminary check on usage of BASE properties
                 if (!RDFOntologyChecker.CheckReservedProperty(datatypeProperty))
                 {
                     //Collision with negative assertions must be avoided [OWL2]
-                    if (RDFOntologyChecker.CheckAssertionCompatibility(this, ontologyFact, datatypeProperty, ontologyLiteral))
+                    if (RDFOntologyChecker.CheckAssertionCompatibility(this, ontologyIndividual, datatypeProperty, ontologyLiteral))
                     {
                         //Cannot accept assertion in case of SKOS collection predicates
                         if (!datatypeProperty.Equals(RDFVocabulary.SKOS.MEMBER)
                                 && !datatypeProperty.Equals(RDFVocabulary.SKOS.MEMBER_LIST))
                         {
-                            RDFOntologyTaxonomyEntry taxonomyEntry = new RDFOntologyTaxonomyEntry(ontologyFact, datatypeProperty, ontologyLiteral);
+                            RDFOntologyTaxonomyEntry taxonomyEntry = new RDFOntologyTaxonomyEntry(ontologyIndividual, datatypeProperty, ontologyLiteral);
                             this.Relations.Assertions.AddEntry(taxonomyEntry);
                             this.AddLiteral(ontologyLiteral);
 
@@ -448,101 +411,74 @@ namespace RDFSharp.Semantics
                             this.AddAxiomAnnotation(taxonomyEntry, axiomAnnotation, nameof(RDFOntologyDataMetadata.Assertions));
                         }
                         else
-                        {
-                            //Raise warning event to inform the user: Assertion relation cannot be added to the data because it violates the taxonomy consistency
-                            RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("Assertion relation between fact '{0}' and literal '{1}' with property '{2}' cannot be added to the data because it would violate the taxonomy consistency (SKOS collection detected).", ontologyFact, ontologyLiteral, datatypeProperty));
-                        }
+                            RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("Assertion relation between individual '{0}' and literal '{1}' with property '{2}' cannot be added to the data because it would violate the taxonomy consistency (SKOS collection detected).", ontologyIndividual, ontologyLiteral, datatypeProperty));
                     }
                     else
-                    {
-                        //Raise warning event to inform the user: Assertion relation cannot be added to the data because it violates the taxonomy consistency
-                        RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("Assertion relation between fact '{0}' and literal '{1}' with property '{2}' cannot be added to the data because it would violate the taxonomy consistency (negative assertion detected).", ontologyFact, ontologyLiteral, datatypeProperty));
-                    }
+                        RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("Assertion relation between individual '{0}' and literal '{1}' with property '{2}' cannot be added to the data because it would violate the taxonomy consistency (negative assertion detected).", ontologyIndividual, ontologyLiteral, datatypeProperty));
                 }
                 else
-                {
-                    //Raise warning event to inform the user: Assertion relation cannot be added to the data because usage of BASE reserved properties compromises the taxonomy consistency
-                    RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("Assertion relation between fact '{0}' and literal '{1}' cannot be added to the data because usage of BASE reserved properties compromises the taxonomy consistency.", ontologyFact, ontologyLiteral));
-                }
+                    RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("Assertion relation between individual '{0}' and literal '{1}' cannot be added to the data because usage of BASE reserved properties compromises the taxonomy consistency.", ontologyIndividual, ontologyLiteral));
             }
             return this;
         }
 
         /// <summary>
-        /// Adds the "aFact -> objectProperty -> bFact" negative relation to the data [OWL2]
+        /// Adds the "aIndividual -> objectProperty -> bIndividual" negative relation to the data [OWL2]
         /// </summary>
-        public RDFOntologyData AddNegativeAssertionRelation(RDFOntologyFact aFact, RDFOntologyObjectProperty objectProperty, RDFOntologyFact bFact)
+        public RDFOntologyData AddNegativeObjectAssertion(RDFOntologyIndividual aIndividual, RDFOntologyObjectProperty objectProperty, RDFOntologyIndividual bIndividual)
         {
-            if (aFact != null && objectProperty != null && bFact != null)
+            if (aIndividual != null && objectProperty != null && bIndividual != null)
             {
                 //Enforce preliminary check on usage of BASE properties
                 if (!RDFOntologyChecker.CheckReservedProperty(objectProperty))
                 {
                     //Collision with assertions must be avoided [OWL2]
-                    if (RDFOntologyChecker.CheckNegativeAssertionCompatibility(this, aFact, objectProperty, bFact))
+                    if (RDFOntologyChecker.CheckNegativeAssertionCompatibility(this, aIndividual, objectProperty, bIndividual))
                     {
                         //Cannot accept negative assertion in case of SKOS collection predicates
                         if (!objectProperty.Equals(RDFVocabulary.SKOS.MEMBER)
                                 && !objectProperty.Equals(RDFVocabulary.SKOS.MEMBER_LIST))
-                            this.Relations.NegativeAssertions.AddEntry(new RDFOntologyTaxonomyEntry(aFact, objectProperty, bFact));
+                            this.Relations.NegativeAssertions.AddEntry(new RDFOntologyTaxonomyEntry(aIndividual, objectProperty, bIndividual));
                         else
-                        {
-                            //Raise warning event to inform the user: NegativeAssertion relation cannot be added to the data because it violates the taxonomy consistency
-                            RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("NegativeAssertion relation between fact '{0}' and fact '{1}' with property '{2}' cannot be added to the data because it would violate the taxonomy consistency (SKOS collection detected).", aFact, bFact, objectProperty));
-                        }
+                            RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("NegativeAssertion relation between individual '{0}' and individual '{1}' with property '{2}' cannot be added to the data because it would violate the taxonomy consistency (SKOS collection detected).", aIndividual, bIndividual, objectProperty));
                     }
                     else
-                    {
-                        //Raise warning event to inform the user: NegativeAssertion relation cannot be added to the data because it violates the taxonomy consistency
-                        RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("NegativeAssertion relation between fact '{0}' and fact '{1}' with property '{2}' cannot be added to the data because it would violate the taxonomy consistency (assertion detected).", aFact, bFact, objectProperty));
-                    }
+                        RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("NegativeAssertion relation between individual '{0}' and individual '{1}' with property '{2}' cannot be added to the data because it would violate the taxonomy consistency (assertion detected).", aIndividual, bIndividual, objectProperty));
                 }
                 else
-                {
-                    //Raise warning event to inform the user: NegativeAssertion relation cannot be added to the data because usage of BASE reserved properties compromises the taxonomy consistency
-                    RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("NegativeAssertion relation between fact '{0}' and fact '{1}' cannot be added to the data because usage of BASE reserved properties compromises the taxonomy consistency.", aFact, bFact));
-                }
+                    RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("NegativeAssertion relation between individual '{0}' and individual '{1}' cannot be added to the data because usage of BASE reserved properties compromises the taxonomy consistency.", aIndividual, bIndividual));
             }
             return this;
         }
 
         /// <summary>
-        /// Adds the "ontologyFact -> datatypeProperty -> ontologyLiteral" negative relation to the data [OWL2]
+        /// Adds the "ontologyIndividual -> datatypeProperty -> ontologyLiteral" negative relation to the data [OWL2]
         /// </summary>
-        public RDFOntologyData AddNegativeAssertionRelation(RDFOntologyFact ontologyFact, RDFOntologyDatatypeProperty datatypeProperty, RDFOntologyLiteral ontologyLiteral)
+        public RDFOntologyData AddNegativeDataAssertion(RDFOntologyIndividual ontologyIndividual, RDFOntologyDatatypeProperty datatypeProperty, RDFOntologyLiteral ontologyLiteral)
         {
-            if (ontologyFact != null && datatypeProperty != null && ontologyLiteral != null)
+            if (ontologyIndividual != null && datatypeProperty != null && ontologyLiteral != null)
             {
                 //Enforce preliminary check on usage of BASE properties
                 if (!RDFOntologyChecker.CheckReservedProperty(datatypeProperty))
                 {
                     //Collision with assertions must be avoided [OWL2]
-                    if (RDFOntologyChecker.CheckNegativeAssertionCompatibility(this, ontologyFact, datatypeProperty, ontologyLiteral))
+                    if (RDFOntologyChecker.CheckNegativeAssertionCompatibility(this, ontologyIndividual, datatypeProperty, ontologyLiteral))
                     {
                         //Cannot accept negative assertion in case of SKOS collection predicates
                         if (!datatypeProperty.Equals(RDFVocabulary.SKOS.MEMBER)
                                 && !datatypeProperty.Equals(RDFVocabulary.SKOS.MEMBER_LIST))
                         {
-                            this.Relations.NegativeAssertions.AddEntry(new RDFOntologyTaxonomyEntry(ontologyFact, datatypeProperty, ontologyLiteral));
+                            this.Relations.NegativeAssertions.AddEntry(new RDFOntologyTaxonomyEntry(ontologyIndividual, datatypeProperty, ontologyLiteral));
                             this.AddLiteral(ontologyLiteral);
                         }
                         else
-                        {
-                            //Raise warning event to inform the user: NegativeAssertion relation cannot be added to the data because it violates the taxonomy consistency
-                            RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("NegativeAssertion relation between fact '{0}' and literal '{1}' with property '{2}' cannot be added to the data because it would violate the taxonomy consistency (SKOS collection detected).", ontologyFact, ontologyLiteral, datatypeProperty));
-                        }
+                            RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("NegativeAssertion relation between individual '{0}' and literal '{1}' with property '{2}' cannot be added to the data because it would violate the taxonomy consistency (SKOS collection detected).", ontologyIndividual, ontologyLiteral, datatypeProperty));
                     }
                     else
-                    {
-                        //Raise warning event to inform the user: NegativeAssertion relation cannot be added to the data because it violates the taxonomy consistency
-                        RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("NegativeAssertion relation between fact '{0}' and literal '{1}' with property '{2}' cannot be added to the data because it would violate the taxonomy consistency (assertion detected).", ontologyFact, ontologyLiteral, datatypeProperty));
-                    }
+                        RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("NegativeAssertion relation between individual '{0}' and literal '{1}' with property '{2}' cannot be added to the data because it would violate the taxonomy consistency (assertion detected).", ontologyIndividual, ontologyLiteral, datatypeProperty));
                 }
                 else
-                {
-                    //Raise warning event to inform the user: NegativeAssertion relation cannot be added to the data because usage of BASE reserved properties compromises the taxonomy consistency
-                    RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("NegativeAssertion relation between fact '{0}' and literal '{1}' cannot be added to the data because usage of BASE reserved properties compromises the taxonomy consistency.", ontologyFact, ontologyLiteral));
-                }
+                    RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("NegativeAssertion relation between individual '{0}' and literal '{1}' cannot be added to the data because usage of BASE reserved properties compromises the taxonomy consistency.", ontologyIndividual, ontologyLiteral));
             }
             return this;
         }
@@ -590,18 +526,18 @@ namespace RDFSharp.Semantics
 
         #region Remove
         /// <summary>
-        /// Removes the given fact from the data
+        /// Removes the given individual from the data
         /// </summary>
-        public RDFOntologyData RemoveFact(RDFOntologyFact ontologyFact)
+        public RDFOntologyData RemoveIndividual(RDFOntologyIndividual ontologyIndividual)
         {
-            if (ontologyFact != null)
+            if (ontologyIndividual != null)
             {
                 //Declaration
-                if (this.Facts.ContainsKey(ontologyFact.PatternMemberID))
-                    this.Facts.Remove(ontologyFact.PatternMemberID);
+                if (this.Individuals.ContainsKey(ontologyIndividual.PatternMemberID))
+                    this.Individuals.Remove(ontologyIndividual.PatternMemberID);
 
                 //ClassType
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.ClassType.SelectEntriesBySubject(ontologyFact))
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.ClassType.SelectEntriesBySubject(ontologyIndividual))
                 {
                     this.Relations.ClassType.RemoveEntry(taxonomyEntry);
 
@@ -610,14 +546,14 @@ namespace RDFSharp.Semantics
                 }   
 
                 //SameAs
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.SameAs.SelectEntriesBySubject(ontologyFact))
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.SameAs.SelectEntriesBySubject(ontologyIndividual))
                 {
                     this.Relations.SameAs.RemoveEntry(taxonomyEntry);
 
                     //Unlink owl:Axiom annotation
                     this.RemoveAxiomAnnotation(taxonomyEntry);
                 }
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.SameAs.SelectEntriesByObject(ontologyFact))
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.SameAs.SelectEntriesByObject(ontologyIndividual))
                 { 
                     this.Relations.SameAs.RemoveEntry(taxonomyEntry);
 
@@ -626,14 +562,14 @@ namespace RDFSharp.Semantics
                 }
 
                 //DifferentFrom
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.DifferentFrom.SelectEntriesBySubject(ontologyFact))
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.DifferentFrom.SelectEntriesBySubject(ontologyIndividual))
                 {
                     this.Relations.DifferentFrom.RemoveEntry(taxonomyEntry);
 
                     //Unlink owl:Axiom annotation
                     this.RemoveAxiomAnnotation(taxonomyEntry);
                 }                    
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.DifferentFrom.SelectEntriesByObject(ontologyFact))
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.DifferentFrom.SelectEntriesByObject(ontologyIndividual))
                 {
                     this.Relations.DifferentFrom.RemoveEntry(taxonomyEntry);
 
@@ -642,14 +578,14 @@ namespace RDFSharp.Semantics
                 }   
 
                 //Assertions
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.Assertions.SelectEntriesBySubject(ontologyFact))
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.Assertions.SelectEntriesBySubject(ontologyIndividual))
                 { 
                     this.Relations.Assertions.RemoveEntry(taxonomyEntry);
 
                     //Unlink owl:Axiom annotation
                     this.RemoveAxiomAnnotation(taxonomyEntry);
                 }
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.Assertions.SelectEntriesByObject(ontologyFact))
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.Assertions.SelectEntriesByObject(ontologyIndividual))
                 { 
                     this.Relations.Assertions.RemoveEntry(taxonomyEntry);
 
@@ -658,14 +594,14 @@ namespace RDFSharp.Semantics
                 }
 
                 //Member [SKOS]
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.Member.SelectEntriesBySubject(ontologyFact))
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.Member.SelectEntriesBySubject(ontologyIndividual))
                 {
                     this.Relations.Member.RemoveEntry(taxonomyEntry);
 
                     //Unlink owl:Axiom annotation
                     this.RemoveAxiomAnnotation(taxonomyEntry);
                 }                    
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.Member.SelectEntriesByObject(ontologyFact))
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.Member.SelectEntriesByObject(ontologyIndividual))
                 {
                     this.Relations.Member.RemoveEntry(taxonomyEntry);
 
@@ -674,14 +610,14 @@ namespace RDFSharp.Semantics
                 }                    
 
                 //MemberList [SKOS]
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.MemberList.SelectEntriesBySubject(ontologyFact))
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.MemberList.SelectEntriesBySubject(ontologyIndividual))
                 {
                     this.Relations.MemberList.RemoveEntry(taxonomyEntry);
 
                     //Unlink owl:Axiom annotation
                     this.RemoveAxiomAnnotation(taxonomyEntry);
                 }   
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.MemberList.SelectEntriesByObject(ontologyFact))
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.MemberList.SelectEntriesByObject(ontologyIndividual))
                 {
                     this.Relations.MemberList.RemoveEntry(taxonomyEntry);
 
@@ -690,108 +626,108 @@ namespace RDFSharp.Semantics
                 }   
 
                 //NegativeAssertions [OWL2]
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.NegativeAssertions.SelectEntriesBySubject(ontologyFact))
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.NegativeAssertions.SelectEntriesBySubject(ontologyIndividual))
                     this.Relations.NegativeAssertions.RemoveEntry(taxonomyEntry);
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.NegativeAssertions.SelectEntriesByObject(ontologyFact))
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.NegativeAssertions.SelectEntriesByObject(ontologyIndividual))
                     this.Relations.NegativeAssertions.RemoveEntry(taxonomyEntry);
 
                 //Annotations
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Annotations.VersionInfo.SelectEntriesBySubject(ontologyFact))
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Annotations.VersionInfo.SelectEntriesBySubject(ontologyIndividual))
                     this.Annotations.VersionInfo.RemoveEntry(taxonomyEntry);
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Annotations.Comment.SelectEntriesBySubject(ontologyFact))
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Annotations.Comment.SelectEntriesBySubject(ontologyIndividual))
                     this.Annotations.Comment.RemoveEntry(taxonomyEntry);
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Annotations.Label.SelectEntriesBySubject(ontologyFact))
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Annotations.Label.SelectEntriesBySubject(ontologyIndividual))
                     this.Annotations.Label.RemoveEntry(taxonomyEntry);
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Annotations.SeeAlso.SelectEntriesBySubject(ontologyFact))
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Annotations.SeeAlso.SelectEntriesBySubject(ontologyIndividual))
                     this.Annotations.SeeAlso.RemoveEntry(taxonomyEntry);
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Annotations.IsDefinedBy.SelectEntriesBySubject(ontologyFact))
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Annotations.IsDefinedBy.SelectEntriesBySubject(ontologyIndividual))
                     this.Annotations.IsDefinedBy.RemoveEntry(taxonomyEntry);
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Annotations.CustomAnnotations.SelectEntriesBySubject(ontologyFact))
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Annotations.CustomAnnotations.SelectEntriesBySubject(ontologyIndividual))
                     this.Annotations.CustomAnnotations.RemoveEntry(taxonomyEntry);
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Annotations.CustomAnnotations.SelectEntriesByObject(ontologyFact))
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Annotations.CustomAnnotations.SelectEntriesByObject(ontologyIndividual))
                     this.Annotations.CustomAnnotations.RemoveEntry(taxonomyEntry);
             }
             return this;
         }
 
         /// <summary>
-        /// Replaces all the occurrences of the given fact with the given new fact in the data
+        /// Replaces all the occurrences of the given individual with the given new individual in the data
         /// </summary>
-        public RDFOntologyData ReplaceFact(RDFOntologyFact ontologyFact, RDFOntologyFact newOntologyFact)
+        public RDFOntologyData ReplaceIndividual(RDFOntologyIndividual ontologyIndividual, RDFOntologyIndividual newOntologyIndividual)
         {
-            if (ontologyFact != null && newOntologyFact != null && !ontologyFact.Equals(newOntologyFact))
+            if (ontologyIndividual != null && newOntologyIndividual != null && !ontologyIndividual.Equals(newOntologyIndividual))
             {
                 //Declarations
-                this.AddFact(newOntologyFact);
+                this.AddIndividual(newOntologyIndividual);
 
                 //ClassType
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.ClassType.SelectEntriesBySubject(ontologyFact))
-                    this.AddClassTypeRelation(newOntologyFact, (RDFOntologyClass)taxonomyEntry.TaxonomyObject);
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.ClassType.SelectEntriesBySubject(ontologyIndividual))
+                    this.AddClassTypeRelation(newOntologyIndividual, (RDFOntologyClass)taxonomyEntry.TaxonomyObject);
 
                 //SameAs
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.SameAs.SelectEntriesBySubject(ontologyFact))
-                    this.AddSameAsRelation(newOntologyFact, (RDFOntologyFact)taxonomyEntry.TaxonomyObject);
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.SameAs.SelectEntriesByObject(ontologyFact))
-                    this.AddSameAsRelation((RDFOntologyFact)taxonomyEntry.TaxonomySubject, newOntologyFact);
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.SameAs.SelectEntriesBySubject(ontologyIndividual))
+                    this.AddSameAsRelation(newOntologyIndividual, (RDFOntologyIndividual)taxonomyEntry.TaxonomyObject);
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.SameAs.SelectEntriesByObject(ontologyIndividual))
+                    this.AddSameAsRelation((RDFOntologyIndividual)taxonomyEntry.TaxonomySubject, newOntologyIndividual);
 
                 //DifferentFrom
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.DifferentFrom.SelectEntriesBySubject(ontologyFact))
-                    this.AddDifferentFromRelation(newOntologyFact, (RDFOntologyFact)taxonomyEntry.TaxonomyObject);
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.DifferentFrom.SelectEntriesByObject(ontologyFact))
-                    this.AddDifferentFromRelation((RDFOntologyFact)taxonomyEntry.TaxonomySubject, newOntologyFact);
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.DifferentFrom.SelectEntriesBySubject(ontologyIndividual))
+                    this.AddDifferentFromRelation(newOntologyIndividual, (RDFOntologyIndividual)taxonomyEntry.TaxonomyObject);
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.DifferentFrom.SelectEntriesByObject(ontologyIndividual))
+                    this.AddDifferentFromRelation((RDFOntologyIndividual)taxonomyEntry.TaxonomySubject, newOntologyIndividual);
 
                 //Assertions
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.Assertions.SelectEntriesBySubject(ontologyFact))
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.Assertions.SelectEntriesBySubject(ontologyIndividual))
                 {
                     if (taxonomyEntry.TaxonomyObject.Value is RDFLiteral)
-                        this.AddAssertionRelation(newOntologyFact, (RDFOntologyDatatypeProperty)taxonomyEntry.TaxonomyPredicate, (RDFOntologyLiteral)taxonomyEntry.TaxonomyObject);
+                        this.AddDataAssertion(newOntologyIndividual, (RDFOntologyDatatypeProperty)taxonomyEntry.TaxonomyPredicate, (RDFOntologyLiteral)taxonomyEntry.TaxonomyObject);
                     else
-                        this.AddAssertionRelation(newOntologyFact, (RDFOntologyObjectProperty)taxonomyEntry.TaxonomyPredicate, (RDFOntologyFact)taxonomyEntry.TaxonomyObject);
+                        this.AddObjectAssertion(newOntologyIndividual, (RDFOntologyObjectProperty)taxonomyEntry.TaxonomyPredicate, (RDFOntologyIndividual)taxonomyEntry.TaxonomyObject);
                 }
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.Assertions.SelectEntriesByObject(ontologyFact))
-                    this.AddAssertionRelation((RDFOntologyFact)taxonomyEntry.TaxonomySubject, (RDFOntologyObjectProperty)taxonomyEntry.TaxonomyPredicate, newOntologyFact);
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.Assertions.SelectEntriesByObject(ontologyIndividual))
+                    this.AddObjectAssertion((RDFOntologyIndividual)taxonomyEntry.TaxonomySubject, (RDFOntologyObjectProperty)taxonomyEntry.TaxonomyPredicate, newOntologyIndividual);
 
                 //Member [SKOS]
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.Member.SelectEntriesBySubject(ontologyFact))
-                    this.AddMemberRelation(newOntologyFact, (RDFOntologyFact)taxonomyEntry.TaxonomyObject);
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.Member.SelectEntriesByObject(ontologyFact))
-                    this.AddMemberRelation((RDFOntologyFact)taxonomyEntry.TaxonomySubject, newOntologyFact);
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.Member.SelectEntriesBySubject(ontologyIndividual))
+                    this.AddMemberRelation(newOntologyIndividual, (RDFOntologyIndividual)taxonomyEntry.TaxonomyObject);
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.Member.SelectEntriesByObject(ontologyIndividual))
+                    this.AddMemberRelation((RDFOntologyIndividual)taxonomyEntry.TaxonomySubject, newOntologyIndividual);
 
                 //MemberList [SKOS]
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.MemberList.SelectEntriesBySubject(ontologyFact))
-                    this.AddMemberListRelation(newOntologyFact, (RDFOntologyFact)taxonomyEntry.TaxonomyObject);
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.MemberList.SelectEntriesByObject(ontologyFact))
-                    this.AddMemberListRelation((RDFOntologyFact)taxonomyEntry.TaxonomySubject, newOntologyFact);
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.MemberList.SelectEntriesBySubject(ontologyIndividual))
+                    this.AddMemberListRelation(newOntologyIndividual, (RDFOntologyIndividual)taxonomyEntry.TaxonomyObject);
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.MemberList.SelectEntriesByObject(ontologyIndividual))
+                    this.AddMemberListRelation((RDFOntologyIndividual)taxonomyEntry.TaxonomySubject, newOntologyIndividual);
 
                 //NegativeAssertions [OWL2]
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.NegativeAssertions.SelectEntriesBySubject(ontologyFact))
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.NegativeAssertions.SelectEntriesBySubject(ontologyIndividual))
                 {
                     if (taxonomyEntry.TaxonomyObject.Value is RDFLiteral)
-                        this.AddNegativeAssertionRelation(newOntologyFact, (RDFOntologyDatatypeProperty)taxonomyEntry.TaxonomyPredicate, (RDFOntologyLiteral)taxonomyEntry.TaxonomyObject);
+                        this.AddNegativeDataAssertion(newOntologyIndividual, (RDFOntologyDatatypeProperty)taxonomyEntry.TaxonomyPredicate, (RDFOntologyLiteral)taxonomyEntry.TaxonomyObject);
                     else
-                        this.AddNegativeAssertionRelation(newOntologyFact, (RDFOntologyObjectProperty)taxonomyEntry.TaxonomyPredicate, (RDFOntologyFact)taxonomyEntry.TaxonomyObject);
+                        this.AddNegativeObjectAssertion(newOntologyIndividual, (RDFOntologyObjectProperty)taxonomyEntry.TaxonomyPredicate, (RDFOntologyIndividual)taxonomyEntry.TaxonomyObject);
                 }
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.NegativeAssertions.SelectEntriesByObject(ontologyFact))
-                    this.AddNegativeAssertionRelation((RDFOntologyFact)taxonomyEntry.TaxonomySubject, (RDFOntologyObjectProperty)taxonomyEntry.TaxonomyPredicate, newOntologyFact);
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.NegativeAssertions.SelectEntriesByObject(ontologyIndividual))
+                    this.AddNegativeObjectAssertion((RDFOntologyIndividual)taxonomyEntry.TaxonomySubject, (RDFOntologyObjectProperty)taxonomyEntry.TaxonomyPredicate, newOntologyIndividual);
 
                 //Annotations
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Annotations.VersionInfo.SelectEntriesBySubject(ontologyFact))
-                    this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.VersionInfo, newOntologyFact, taxonomyEntry.TaxonomyObject);
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Annotations.Comment.SelectEntriesBySubject(ontologyFact))
-                    this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.Comment, newOntologyFact, taxonomyEntry.TaxonomyObject);
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Annotations.Label.SelectEntriesBySubject(ontologyFact))
-                    this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.Label, newOntologyFact, taxonomyEntry.TaxonomyObject);
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Annotations.SeeAlso.SelectEntriesBySubject(ontologyFact))
-                    this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.SeeAlso, newOntologyFact, taxonomyEntry.TaxonomyObject);
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Annotations.IsDefinedBy.SelectEntriesBySubject(ontologyFact))
-                    this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.IsDefinedBy, newOntologyFact, taxonomyEntry.TaxonomyObject);
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Annotations.CustomAnnotations.SelectEntriesBySubject(ontologyFact))
-                    this.AddCustomAnnotation((RDFOntologyAnnotationProperty)taxonomyEntry.TaxonomyPredicate, newOntologyFact, taxonomyEntry.TaxonomyObject);
-                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Annotations.CustomAnnotations.SelectEntriesByObject(ontologyFact))
-                    this.AddCustomAnnotation((RDFOntologyAnnotationProperty)taxonomyEntry.TaxonomyPredicate, (RDFOntologyFact)taxonomyEntry.TaxonomySubject, newOntologyFact);
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Annotations.VersionInfo.SelectEntriesBySubject(ontologyIndividual))
+                    this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.VersionInfo, newOntologyIndividual, taxonomyEntry.TaxonomyObject);
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Annotations.Comment.SelectEntriesBySubject(ontologyIndividual))
+                    this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.Comment, newOntologyIndividual, taxonomyEntry.TaxonomyObject);
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Annotations.Label.SelectEntriesBySubject(ontologyIndividual))
+                    this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.Label, newOntologyIndividual, taxonomyEntry.TaxonomyObject);
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Annotations.SeeAlso.SelectEntriesBySubject(ontologyIndividual))
+                    this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.SeeAlso, newOntologyIndividual, taxonomyEntry.TaxonomyObject);
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Annotations.IsDefinedBy.SelectEntriesBySubject(ontologyIndividual))
+                    this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.IsDefinedBy, newOntologyIndividual, taxonomyEntry.TaxonomyObject);
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Annotations.CustomAnnotations.SelectEntriesBySubject(ontologyIndividual))
+                    this.AddCustomAnnotation((RDFOntologyAnnotationProperty)taxonomyEntry.TaxonomyPredicate, newOntologyIndividual, taxonomyEntry.TaxonomyObject);
+                foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Annotations.CustomAnnotations.SelectEntriesByObject(ontologyIndividual))
+                    this.AddCustomAnnotation((RDFOntologyAnnotationProperty)taxonomyEntry.TaxonomyPredicate, (RDFOntologyIndividual)taxonomyEntry.TaxonomySubject, newOntologyIndividual);
 
-                //Drop replaced fact
-                this.RemoveFact(ontologyFact);                
+                //Drop replaced individual
+                this.RemoveIndividual(ontologyIndividual);                
             }
             return this;
         }
@@ -828,83 +764,83 @@ namespace RDFSharp.Semantics
                     //Unlink owl:Axiom annotation
                     this.RemoveAxiomAnnotation(taxonomyEntry);
 
-                    this.AddAssertionRelation((RDFOntologyFact)taxonomyEntry.TaxonomySubject, (RDFOntologyDatatypeProperty)taxonomyEntry.TaxonomyPredicate, newOntologyLiteral);
+                    this.AddDataAssertion((RDFOntologyIndividual)taxonomyEntry.TaxonomySubject, (RDFOntologyDatatypeProperty)taxonomyEntry.TaxonomyPredicate, newOntologyLiteral);
                 }
 
                 //NegativeAssertions [OWL2]
                 foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Relations.NegativeAssertions.SelectEntriesByObject(ontologyLiteral))
                 {
                     this.Relations.NegativeAssertions.RemoveEntry(taxonomyEntry);
-                    this.AddNegativeAssertionRelation((RDFOntologyFact)taxonomyEntry.TaxonomySubject, (RDFOntologyDatatypeProperty)taxonomyEntry.TaxonomyPredicate, newOntologyLiteral);
+                    this.AddNegativeDataAssertion((RDFOntologyIndividual)taxonomyEntry.TaxonomySubject, (RDFOntologyDatatypeProperty)taxonomyEntry.TaxonomyPredicate, newOntologyLiteral);
                 }
 
                 //Annotations
                 foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Annotations.VersionInfo.SelectEntriesByObject(ontologyLiteral))
                 {
                     this.Annotations.VersionInfo.RemoveEntry(taxonomyEntry);
-                    this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.VersionInfo, (RDFOntologyFact)taxonomyEntry.TaxonomySubject, newOntologyLiteral);
+                    this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.VersionInfo, (RDFOntologyIndividual)taxonomyEntry.TaxonomySubject, newOntologyLiteral);
                 }
                 foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Annotations.Comment.SelectEntriesByObject(ontologyLiteral))
                 {
                     this.Annotations.Comment.RemoveEntry(taxonomyEntry);
-                    this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.Comment, (RDFOntologyFact)taxonomyEntry.TaxonomySubject, newOntologyLiteral);
+                    this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.Comment, (RDFOntologyIndividual)taxonomyEntry.TaxonomySubject, newOntologyLiteral);
                 }
                 foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Annotations.Label.SelectEntriesByObject(ontologyLiteral))
                 {
                     this.Annotations.Label.RemoveEntry(taxonomyEntry);
-                    this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.Label, (RDFOntologyFact)taxonomyEntry.TaxonomySubject, newOntologyLiteral);
+                    this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.Label, (RDFOntologyIndividual)taxonomyEntry.TaxonomySubject, newOntologyLiteral);
                 }   
                 foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Annotations.SeeAlso.SelectEntriesByObject(ontologyLiteral))
                 {
                     this.Annotations.SeeAlso.RemoveEntry(taxonomyEntry);
-                    this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.SeeAlso, (RDFOntologyFact)taxonomyEntry.TaxonomySubject, newOntologyLiteral);
+                    this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.SeeAlso, (RDFOntologyIndividual)taxonomyEntry.TaxonomySubject, newOntologyLiteral);
                 }
                 foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Annotations.IsDefinedBy.SelectEntriesByObject(ontologyLiteral))
                 {
                     this.Annotations.IsDefinedBy.RemoveEntry(taxonomyEntry);
-                    this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.IsDefinedBy, (RDFOntologyFact)taxonomyEntry.TaxonomySubject, newOntologyLiteral);
+                    this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.IsDefinedBy, (RDFOntologyIndividual)taxonomyEntry.TaxonomySubject, newOntologyLiteral);
                 }
                 foreach (RDFOntologyTaxonomyEntry taxonomyEntry in this.Annotations.CustomAnnotations.SelectEntriesByObject(ontologyLiteral))
                 {
                     this.Annotations.CustomAnnotations.RemoveEntry(taxonomyEntry);
-                    this.AddCustomAnnotation((RDFOntologyAnnotationProperty)taxonomyEntry.TaxonomyPredicate, (RDFOntologyFact)taxonomyEntry.TaxonomySubject, newOntologyLiteral);
+                    this.AddCustomAnnotation((RDFOntologyAnnotationProperty)taxonomyEntry.TaxonomyPredicate, (RDFOntologyIndividual)taxonomyEntry.TaxonomySubject, newOntologyLiteral);
                 }
             }
             return this;
         }
 
         /// <summary>
-        /// Removes the given standard annotation from the given ontology fact
+        /// Removes the given standard annotation from the given ontology individual
         /// </summary>
-        public RDFOntologyData RemoveStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation standardAnnotation, RDFOntologyFact ontologyFact, RDFOntologyResource annotationValue)
+        public RDFOntologyData RemoveStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation standardAnnotation, RDFOntologyIndividual ontologyIndividual, RDFOntologyResource annotationValue)
         {
-            if (ontologyFact != null && annotationValue != null)
+            if (ontologyIndividual != null && annotationValue != null)
             {
                 switch (standardAnnotation)
                 {
                     //owl:versionInfo
                     case RDFSemanticsEnums.RDFOntologyStandardAnnotation.VersionInfo:
-                        this.Annotations.VersionInfo.RemoveEntry(new RDFOntologyTaxonomyEntry(ontologyFact, RDFVocabulary.OWL.VERSION_INFO.ToRDFOntologyAnnotationProperty(), annotationValue));
+                        this.Annotations.VersionInfo.RemoveEntry(new RDFOntologyTaxonomyEntry(ontologyIndividual, RDFVocabulary.OWL.VERSION_INFO.ToRDFOntologyAnnotationProperty(), annotationValue));
                         break;
 
                     //rdfs:comment
                     case RDFSemanticsEnums.RDFOntologyStandardAnnotation.Comment:
-                        this.Annotations.Comment.RemoveEntry(new RDFOntologyTaxonomyEntry(ontologyFact, RDFVocabulary.RDFS.COMMENT.ToRDFOntologyAnnotationProperty(), annotationValue));
+                        this.Annotations.Comment.RemoveEntry(new RDFOntologyTaxonomyEntry(ontologyIndividual, RDFVocabulary.RDFS.COMMENT.ToRDFOntologyAnnotationProperty(), annotationValue));
                         break;
 
                     //rdfs:label
                     case RDFSemanticsEnums.RDFOntologyStandardAnnotation.Label:
-                        this.Annotations.Label.RemoveEntry(new RDFOntologyTaxonomyEntry(ontologyFact, RDFVocabulary.RDFS.LABEL.ToRDFOntologyAnnotationProperty(), annotationValue));
+                        this.Annotations.Label.RemoveEntry(new RDFOntologyTaxonomyEntry(ontologyIndividual, RDFVocabulary.RDFS.LABEL.ToRDFOntologyAnnotationProperty(), annotationValue));
                         break;
 
                     //rdfs:seeAlso
                     case RDFSemanticsEnums.RDFOntologyStandardAnnotation.SeeAlso:
-                        this.Annotations.SeeAlso.RemoveEntry(new RDFOntologyTaxonomyEntry(ontologyFact, RDFVocabulary.RDFS.SEE_ALSO.ToRDFOntologyAnnotationProperty(), annotationValue));
+                        this.Annotations.SeeAlso.RemoveEntry(new RDFOntologyTaxonomyEntry(ontologyIndividual, RDFVocabulary.RDFS.SEE_ALSO.ToRDFOntologyAnnotationProperty(), annotationValue));
                         break;
 
                     //rdfs:isDefinedBy
                     case RDFSemanticsEnums.RDFOntologyStandardAnnotation.IsDefinedBy:
-                        this.Annotations.IsDefinedBy.RemoveEntry(new RDFOntologyTaxonomyEntry(ontologyFact, RDFVocabulary.RDFS.IS_DEFINED_BY.ToRDFOntologyAnnotationProperty(), annotationValue));
+                        this.Annotations.IsDefinedBy.RemoveEntry(new RDFOntologyTaxonomyEntry(ontologyIndividual, RDFVocabulary.RDFS.IS_DEFINED_BY.ToRDFOntologyAnnotationProperty(), annotationValue));
                         break;
                 }
             }
@@ -912,69 +848,69 @@ namespace RDFSharp.Semantics
         }
 
         /// <summary>
-        /// Removes the given custom annotation from the given ontology fact
+        /// Removes the given custom annotation from the given ontology individual
         /// </summary>
-        public RDFOntologyData RemoveCustomAnnotation(RDFOntologyAnnotationProperty ontologyAnnotationProperty, RDFOntologyFact ontologyFact, RDFOntologyResource annotationValue)
+        public RDFOntologyData RemoveCustomAnnotation(RDFOntologyAnnotationProperty ontologyAnnotationProperty, RDFOntologyIndividual ontologyIndividual, RDFOntologyResource annotationValue)
         {
-            if (ontologyAnnotationProperty != null && ontologyFact != null && annotationValue != null)
+            if (ontologyAnnotationProperty != null && ontologyIndividual != null && annotationValue != null)
             {
                 //owl:versionInfo
                 if (ontologyAnnotationProperty.Equals(RDFVocabulary.OWL.VERSION_INFO.ToRDFOntologyAnnotationProperty()))
-                    this.RemoveStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.VersionInfo, ontologyFact, annotationValue);
+                    this.RemoveStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.VersionInfo, ontologyIndividual, annotationValue);
                 
                 //rdfs:comment
                 else if (ontologyAnnotationProperty.Equals(RDFVocabulary.RDFS.COMMENT.ToRDFOntologyAnnotationProperty()))
-                    this.RemoveStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.Comment, ontologyFact, annotationValue);
+                    this.RemoveStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.Comment, ontologyIndividual, annotationValue);
                 
                 //rdfs:label
                 else if (ontologyAnnotationProperty.Equals(RDFVocabulary.RDFS.LABEL.ToRDFOntologyAnnotationProperty()))
-                    this.RemoveStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.Label, ontologyFact, annotationValue);
+                    this.RemoveStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.Label, ontologyIndividual, annotationValue);
                 
                 //rdfs:seeAlso
                 else if (ontologyAnnotationProperty.Equals(RDFVocabulary.RDFS.SEE_ALSO.ToRDFOntologyAnnotationProperty()))
-                    this.RemoveStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.SeeAlso, ontologyFact, annotationValue);
+                    this.RemoveStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.SeeAlso, ontologyIndividual, annotationValue);
                 
                 //rdfs:isDefinedBy
                 else if (ontologyAnnotationProperty.Equals(RDFVocabulary.RDFS.IS_DEFINED_BY.ToRDFOntologyAnnotationProperty()))
-                    this.RemoveStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.IsDefinedBy, ontologyFact, annotationValue);
+                    this.RemoveStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.IsDefinedBy, ontologyIndividual, annotationValue);
 
                 #region Unsupported
                 //owl:versionIRI
                 else if (ontologyAnnotationProperty.Equals(RDFVocabulary.OWL.VERSION_IRI.ToRDFOntologyAnnotationProperty()))
-                    this.RemoveStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.VersionIRI, ontologyFact, annotationValue);
+                    this.RemoveStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.VersionIRI, ontologyIndividual, annotationValue);
 
                 //owl:imports
                 else if (ontologyAnnotationProperty.Equals(RDFVocabulary.OWL.IMPORTS.ToRDFOntologyAnnotationProperty()))
-                    this.RemoveStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.Imports, ontologyFact, annotationValue);
+                    this.RemoveStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.Imports, ontologyIndividual, annotationValue);
                 
                 //owl:backwardCompatibleWith
                 else if (ontologyAnnotationProperty.Equals(RDFVocabulary.OWL.BACKWARD_COMPATIBLE_WITH.ToRDFOntologyAnnotationProperty()))
-                    this.RemoveStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.BackwardCompatibleWith, ontologyFact, annotationValue);
+                    this.RemoveStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.BackwardCompatibleWith, ontologyIndividual, annotationValue);
                 
                 //owl:incompatibleWith
                 else if (ontologyAnnotationProperty.Equals(RDFVocabulary.OWL.INCOMPATIBLE_WITH.ToRDFOntologyAnnotationProperty()))
-                    this.RemoveStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.IncompatibleWith, ontologyFact, annotationValue);
+                    this.RemoveStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.IncompatibleWith, ontologyIndividual, annotationValue);
                 
                 //owl:priorVersion
                 else if (ontologyAnnotationProperty.Equals(RDFVocabulary.OWL.PRIOR_VERSION.ToRDFOntologyAnnotationProperty()))
-                    this.RemoveStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.PriorVersion, ontologyFact, annotationValue);
+                    this.RemoveStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.PriorVersion, ontologyIndividual, annotationValue);
                 #endregion
 
                 //custom annotation
                 else
-                    this.Annotations.CustomAnnotations.RemoveEntry(new RDFOntologyTaxonomyEntry(ontologyFact, ontologyAnnotationProperty, annotationValue));
+                    this.Annotations.CustomAnnotations.RemoveEntry(new RDFOntologyTaxonomyEntry(ontologyIndividual, ontologyAnnotationProperty, annotationValue));
             }
             return this;
         }
 
         /// <summary>
-        /// Removes the "ontologyFact -> rdf:type -> ontologyClass" relation from the data
+        /// Removes the "ontologyIndividual -> rdf:type -> ontologyClass" relation from the data
         /// </summary>
-        public RDFOntologyData RemoveClassTypeRelation(RDFOntologyFact ontologyFact, RDFOntologyClass ontologyClass)
+        public RDFOntologyData RemoveClassTypeRelation(RDFOntologyIndividual ontologyIndividual, RDFOntologyClass ontologyClass)
         {
-            if (ontologyFact != null && ontologyClass != null)
+            if (ontologyIndividual != null && ontologyClass != null)
             {
-                RDFOntologyTaxonomyEntry taxonomyEntry = new RDFOntologyTaxonomyEntry(ontologyFact, RDFVocabulary.RDF.TYPE.ToRDFOntologyObjectProperty(), ontologyClass);
+                RDFOntologyTaxonomyEntry taxonomyEntry = new RDFOntologyTaxonomyEntry(ontologyIndividual, RDFVocabulary.RDF.TYPE.ToRDFOntologyObjectProperty(), ontologyClass);
                 this.Relations.ClassType.RemoveEntry(taxonomyEntry);
 
                 //Unlink owl:Axiom annotation
@@ -984,15 +920,15 @@ namespace RDFSharp.Semantics
         }
 
         /// <summary>
-        /// Removes the "aFact -> owl:sameAs -> bFact" relation from the data
+        /// Removes the "aIndividual -> owl:sameAs -> bIndividual" relation from the data
         /// </summary>
-        public RDFOntologyData RemoveSameAsRelation(RDFOntologyFact aFact, RDFOntologyFact bFact)
+        public RDFOntologyData RemoveSameAsRelation(RDFOntologyIndividual aIndividual, RDFOntologyIndividual bIndividual)
         {
-            if (aFact != null && bFact != null)
+            if (aIndividual != null && bIndividual != null)
             {
-                RDFOntologyTaxonomyEntry sameAsLeft = new RDFOntologyTaxonomyEntry(aFact, RDFVocabulary.OWL.SAME_AS.ToRDFOntologyObjectProperty(), bFact);
+                RDFOntologyTaxonomyEntry sameAsLeft = new RDFOntologyTaxonomyEntry(aIndividual, RDFVocabulary.OWL.SAME_AS.ToRDFOntologyObjectProperty(), bIndividual);
                 this.Relations.SameAs.RemoveEntry(sameAsLeft);
-                RDFOntologyTaxonomyEntry sameAsRight = new RDFOntologyTaxonomyEntry(bFact, RDFVocabulary.OWL.SAME_AS.ToRDFOntologyObjectProperty(), aFact);
+                RDFOntologyTaxonomyEntry sameAsRight = new RDFOntologyTaxonomyEntry(bIndividual, RDFVocabulary.OWL.SAME_AS.ToRDFOntologyObjectProperty(), aIndividual);
                 this.Relations.SameAs.RemoveEntry(sameAsRight);
 
                 //Unlink owl:Axiom annotations
@@ -1003,15 +939,15 @@ namespace RDFSharp.Semantics
         }
 
         /// <summary>
-        /// Removes the "aFact -> owl:differentFrom -> bFact" relation from the data
+        /// Removes the "aIndividual -> owl:differentFrom -> bIndividual" relation from the data
         /// </summary>
-        public RDFOntologyData RemoveDifferentFromRelation(RDFOntologyFact aFact, RDFOntologyFact bFact)
+        public RDFOntologyData RemoveDifferentFromRelation(RDFOntologyIndividual aIndividual, RDFOntologyIndividual bIndividual)
         {
-            if (aFact != null && bFact != null)
+            if (aIndividual != null && bIndividual != null)
             {
-                RDFOntologyTaxonomyEntry differentFromLeft = new RDFOntologyTaxonomyEntry(aFact, RDFVocabulary.OWL.DIFFERENT_FROM.ToRDFOntologyObjectProperty(), bFact);
+                RDFOntologyTaxonomyEntry differentFromLeft = new RDFOntologyTaxonomyEntry(aIndividual, RDFVocabulary.OWL.DIFFERENT_FROM.ToRDFOntologyObjectProperty(), bIndividual);
                 this.Relations.DifferentFrom.RemoveEntry(differentFromLeft);
-                RDFOntologyTaxonomyEntry differentFromRight = new RDFOntologyTaxonomyEntry(bFact, RDFVocabulary.OWL.DIFFERENT_FROM.ToRDFOntologyObjectProperty(), aFact);
+                RDFOntologyTaxonomyEntry differentFromRight = new RDFOntologyTaxonomyEntry(bIndividual, RDFVocabulary.OWL.DIFFERENT_FROM.ToRDFOntologyObjectProperty(), aIndividual);
                 this.Relations.DifferentFrom.RemoveEntry(differentFromRight);
 
                 //Unlink owl:Axiom annotations
@@ -1022,34 +958,30 @@ namespace RDFSharp.Semantics
         }
 
         /// <summary>
-        /// Foreach of the given list of facts, removes the "aFact -> owl:differentFrom -> bFact" relation from the data [OWL2]
+        /// Foreach of the given list of individuals, removes the "aIndividual -> owl:differentFrom -> bIndividual" relation from the data [OWL2]
         /// </summary>
-        public RDFOntologyData RemoveAllDifferentRelation(List<RDFOntologyFact> ontologyFacts)
+        public RDFOntologyData RemoveAllDifferentRelation(List<RDFOntologyIndividual> ontologyIndividuals)
         {
-            ontologyFacts?.ForEach(outerFact =>
-            {
-                ontologyFacts?.ForEach(innerFact =>
-                {
-                    this.RemoveDifferentFromRelation(innerFact, outerFact);
-                });
-            });
+            ontologyIndividuals?.ForEach(outerIndividual =>
+                ontologyIndividuals?.ForEach(innerIndividual =>
+                    this.RemoveDifferentFromRelation(innerIndividual, outerIndividual)));
             return this;
         }
 
         /// <summary>
-        /// Removes the "aFact -> objectProperty -> bFact" relation from the data
+        /// Removes the "aIndividual -> objectProperty -> bIndividual" relation from the data
         /// </summary>
-        public RDFOntologyData RemoveAssertionRelation(RDFOntologyFact aFact, RDFOntologyObjectProperty objectProperty, RDFOntologyFact bFact)
+        public RDFOntologyData RemoveObjectAssertion(RDFOntologyIndividual aIndividual, RDFOntologyObjectProperty objectProperty, RDFOntologyIndividual bIndividual)
         {
-            if (aFact != null && objectProperty != null && bFact != null)
+            if (aIndividual != null && objectProperty != null && bIndividual != null)
             {
                 if (objectProperty.Equals(RDFVocabulary.SKOS.MEMBER))
-                    this.RemoveMemberRelation(aFact, bFact);
+                    this.RemoveMemberRelation(aIndividual, bIndividual);
                 else if (objectProperty.Equals(RDFVocabulary.SKOS.MEMBER_LIST))
-                    this.RemoveMemberListRelation(aFact, bFact);
+                    this.RemoveMemberListRelation(aIndividual, bIndividual);
                 else
                 {
-                    RDFOntologyTaxonomyEntry taxonomyEntry = new RDFOntologyTaxonomyEntry(aFact, objectProperty, bFact);
+                    RDFOntologyTaxonomyEntry taxonomyEntry = new RDFOntologyTaxonomyEntry(aIndividual, objectProperty, bIndividual);
                     this.Relations.Assertions.RemoveEntry(taxonomyEntry);
 
                     //Unlink owl:Axiom annotation
@@ -1060,13 +992,13 @@ namespace RDFSharp.Semantics
         }
 
         /// <summary>
-        /// Removes the "ontologyFact -> datatypeProperty -> ontologyLiteral" relation from the data
+        /// Removes the "ontologyIndividual -> datatypeProperty -> ontologyLiteral" relation from the data
         /// </summary>
-        public RDFOntologyData RemoveAssertionRelation(RDFOntologyFact ontologyFact, RDFOntologyDatatypeProperty datatypeProperty, RDFOntologyLiteral ontologyLiteral)
+        public RDFOntologyData RemoveDataAssertion(RDFOntologyIndividual ontologyIndividual, RDFOntologyDatatypeProperty datatypeProperty, RDFOntologyLiteral ontologyLiteral)
         {
-            if (ontologyFact != null && datatypeProperty != null && ontologyLiteral != null)
+            if (ontologyIndividual != null && datatypeProperty != null && ontologyLiteral != null)
             {
-                RDFOntologyTaxonomyEntry taxonomyEntry = new RDFOntologyTaxonomyEntry(ontologyFact, datatypeProperty, ontologyLiteral);
+                RDFOntologyTaxonomyEntry taxonomyEntry = new RDFOntologyTaxonomyEntry(ontologyIndividual, datatypeProperty, ontologyLiteral);
                 this.Relations.Assertions.RemoveEntry(taxonomyEntry);
 
                 //Unlink owl:Axiom annotation
@@ -1076,22 +1008,22 @@ namespace RDFSharp.Semantics
         }
 
         /// <summary>
-        /// Removes the "aFact -> objectProperty -> bFact" negative relation from the data [OWL2]
+        /// Removes the "aIndividual -> objectProperty -> bIndividual" negative relation from the data [OWL2]
         /// </summary>
-        public RDFOntologyData RemoveNegativeAssertionRelation(RDFOntologyFact aFact, RDFOntologyObjectProperty objectProperty, RDFOntologyFact bFact)
+        public RDFOntologyData RemoveNegativeObjectAssertion(RDFOntologyIndividual aIndividual, RDFOntologyObjectProperty objectProperty, RDFOntologyIndividual bIndividual)
         {
-            if (aFact != null && objectProperty != null && bFact != null)
-                this.Relations.NegativeAssertions.RemoveEntry(new RDFOntologyTaxonomyEntry(aFact, objectProperty, bFact));
+            if (aIndividual != null && objectProperty != null && bIndividual != null)
+                this.Relations.NegativeAssertions.RemoveEntry(new RDFOntologyTaxonomyEntry(aIndividual, objectProperty, bIndividual));
             return this;
         }
 
         /// <summary>
-        /// Removes the "ontologyFact -> datatypeProperty -> ontologyLiteral" negative relation from the data [OWL2]
+        /// Removes the "ontologyIndividual -> datatypeProperty -> ontologyLiteral" negative relation from the data [OWL2]
         /// </summary>
-        public RDFOntologyData RemoveNegativeAssertionRelation(RDFOntologyFact ontologyFact, RDFOntologyDatatypeProperty datatypeProperty, RDFOntologyLiteral ontologyLiteral)
+        public RDFOntologyData RemoveNegativeDataAssertion(RDFOntologyIndividual ontologyIndividual, RDFOntologyDatatypeProperty datatypeProperty, RDFOntologyLiteral ontologyLiteral)
         {
-            if (ontologyFact != null && datatypeProperty != null && ontologyLiteral != null)
-                this.Relations.NegativeAssertions.RemoveEntry(new RDFOntologyTaxonomyEntry(ontologyFact, datatypeProperty, ontologyLiteral));
+            if (ontologyIndividual != null && datatypeProperty != null && ontologyLiteral != null)
+                this.Relations.NegativeAssertions.RemoveEntry(new RDFOntologyTaxonomyEntry(ontologyIndividual, datatypeProperty, ontologyLiteral));
             return this;
         }
 
@@ -1108,16 +1040,16 @@ namespace RDFSharp.Semantics
 
         #region Select
         /// <summary>
-        /// Selects the fact represented by the given identifier
+        /// Selects the individual represented by the given identifier
         /// </summary>
-        public RDFOntologyFact SelectFact(long factID)
-            => this.Facts.ContainsKey(factID) ? this.Facts[factID] : null;
+        public RDFOntologyIndividual SelectIndividual(long individualID)
+            => this.Individuals.ContainsKey(individualID) ? this.Individuals[individualID] : null;
 
         /// <summary>
-        /// Selects the fact represented by the given string
+        /// Selects the individual represented by the given string
         /// </summary>
-        public RDFOntologyFact SelectFact(string fact)
-            => fact != null ? SelectFact(RDFModelUtilities.CreateHash(fact)) : null;
+        public RDFOntologyIndividual SelectIndividual(string individual)
+            => individual != null ? SelectIndividual(RDFModelUtilities.CreateHash(individual)) : null;
 
         /// <summary>
         /// Selects the literal represented by the given identifier
@@ -1134,8 +1066,8 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets the representative of the given taxonomy entry
         /// </summary>
-        internal RDFOntologyFact GetTaxonomyEntryRepresentative(RDFOntologyTaxonomyEntry taxonomyEntry)
-            => new RDFOntologyFact(new RDFResource($"bnode:semref{taxonomyEntry.TaxonomyEntryID}"));
+        internal RDFOntologyIndividual GetTaxonomyEntryRepresentative(RDFOntologyTaxonomyEntry taxonomyEntry)
+            => new RDFOntologyIndividual(new RDFResource($"bnode:semref{taxonomyEntry.TaxonomyEntryID}"));
         #endregion
 
         #region Set
@@ -1148,15 +1080,15 @@ namespace RDFSharp.Semantics
 
             if (ontologyData != null)
             {
-                //Add intersection facts
-                foreach (RDFOntologyFact f in this)
-                    if (ontologyData.Facts.ContainsKey(f.PatternMemberID))
-                        result.AddFact(f);
+                //Add intersection individuals
+                foreach (RDFOntologyIndividual individual in this)
+                    if (ontologyData.Individuals.ContainsKey(individual.PatternMemberID))
+                        result.AddIndividual(individual);
 
                 //Add intersection literals
-                foreach (RDFOntologyLiteral l in this.Literals.Values)
-                    if (ontologyData.Literals.ContainsKey(l.PatternMemberID))
-                        result.AddLiteral(l);
+                foreach (RDFOntologyLiteral literal in this.Literals.Values)
+                    if (ontologyData.Literals.ContainsKey(literal.PatternMemberID))
+                        result.AddLiteral(literal);
 
                 //Add intersection relations
                 result.Relations.ClassType = this.Relations.ClassType.IntersectWith(ontologyData.Relations.ClassType);
@@ -1187,13 +1119,13 @@ namespace RDFSharp.Semantics
         {
             RDFOntologyData result = new RDFOntologyData();
 
-            //Add facts from this data
-            foreach (RDFOntologyFact f in this)
-                result.AddFact(f);
+            //Add individuals from this data
+            foreach (RDFOntologyIndividual individual in this)
+                result.AddIndividual(individual);
 
             //Add literals from this data
-            foreach (RDFOntologyLiteral l in this.Literals.Values)
-                result.AddLiteral(l);
+            foreach (RDFOntologyLiteral literal in this.Literals.Values)
+                result.AddLiteral(literal);
 
             //Add relations from this data
             result.Relations.ClassType = result.Relations.ClassType.UnionWith(this.Relations.ClassType);
@@ -1216,13 +1148,13 @@ namespace RDFSharp.Semantics
             //Manage the given data
             if (ontologyData != null)
             {
-                //Add facts from the given data
-                foreach (RDFOntologyFact f in ontologyData)
-                    result.AddFact(f);
+                //Add individuals from the given data
+                foreach (RDFOntologyIndividual individual in ontologyData)
+                    result.AddIndividual(individual);
 
                 //Add literals from the given data
-                foreach (RDFOntologyLiteral l in ontologyData.Literals.Values)
-                    result.AddLiteral(l);
+                foreach (RDFOntologyLiteral literal in ontologyData.Literals.Values)
+                    result.AddLiteral(literal);
 
                 //Add relations from the given data
                 result.Relations.ClassType = result.Relations.ClassType.UnionWith(ontologyData.Relations.ClassType);
@@ -1255,15 +1187,15 @@ namespace RDFSharp.Semantics
 
             if (ontologyData != null)
             {
-                //Add difference facts
-                foreach (RDFOntologyFact f in this)
-                    if (!ontologyData.Facts.ContainsKey(f.PatternMemberID))
-                        result.AddFact(f);
+                //Add difference individuals
+                foreach (RDFOntologyIndividual individual in this)
+                    if (!ontologyData.Individuals.ContainsKey(individual.PatternMemberID))
+                        result.AddIndividual(individual);
 
                 //Add difference literals
-                foreach (RDFOntologyLiteral l in this.Literals.Values)
-                    if (!ontologyData.Literals.ContainsKey(l.PatternMemberID))
-                        result.AddLiteral(l);
+                foreach (RDFOntologyLiteral literal in this.Literals.Values)
+                    if (!ontologyData.Literals.ContainsKey(literal.PatternMemberID))
+                        result.AddLiteral(literal);
 
                 //Add difference relations
                 result.Relations.ClassType = this.Relations.ClassType.DifferenceWith(ontologyData.Relations.ClassType);
@@ -1285,13 +1217,13 @@ namespace RDFSharp.Semantics
             }
             else
             {
-                //Add facts from this data
-                foreach (RDFOntologyFact f in this)
-                    result.AddFact(f);
+                //Add individuals from this data
+                foreach (RDFOntologyIndividual individual in this)
+                    result.AddIndividual(individual);
 
                 //Add literals from this data
-                foreach (RDFOntologyLiteral l in this.Literals.Values)
-                    result.AddLiteral(l);
+                foreach (RDFOntologyLiteral literal in this.Literals.Values)
+                    result.AddLiteral(literal);
 
                 //Add relations from this data
                 result.Relations.ClassType = result.Relations.ClassType.UnionWith(this.Relations.ClassType);

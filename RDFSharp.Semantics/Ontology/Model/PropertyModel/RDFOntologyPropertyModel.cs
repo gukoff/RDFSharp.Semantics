@@ -1078,8 +1078,8 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets the representative of the given taxonomy entry
         /// </summary>
-        internal RDFOntologyFact GetTaxonomyEntryRepresentative(RDFOntologyTaxonomyEntry taxonomyEntry)
-            => new RDFOntologyFact(new RDFResource($"bnode:semref{taxonomyEntry.TaxonomyEntryID}"));
+        internal RDFOntologyIndividual GetTaxonomyEntryRepresentative(RDFOntologyTaxonomyEntry taxonomyEntry)
+            => new RDFOntologyIndividual(new RDFResource($"bnode:semref{taxonomyEntry.TaxonomyEntryID}"));
         #endregion
 
         #region Set

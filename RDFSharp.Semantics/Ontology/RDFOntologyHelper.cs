@@ -297,10 +297,10 @@ namespace RDFSharp.Semantics
             => new RDFOntologyAnnotationProperty(ontResource);
 
         /// <summary>
-        /// Gets an ontology fact from the given RDF resource
+        /// Gets an ontology individual from the given RDF resource
         /// </summary>
-        public static RDFOntologyFact ToRDFOntologyFact(this RDFResource ontResource)
-            => new RDFOntologyFact(ontResource);
+        public static RDFOntologyIndividual ToRDFontologyIndividual(this RDFResource ontResource)
+            => new RDFOntologyIndividual(ontResource);
 
         /// <summary>
         /// Gets an ontology literal from the given RDF literal

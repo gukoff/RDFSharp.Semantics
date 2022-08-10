@@ -25,7 +25,7 @@ namespace RDFSharp.Semantics
     /// <summary>
     /// RDFSKOSCollection represents an instance of skos:Collection within an instance of skos:ConceptScheme
     /// </summary>
-    public class RDFSKOSCollection : RDFOntologyFact
+    public class RDFSKOSCollection : RDFOntologyIndividual
     {
 
         #region Properties
@@ -202,13 +202,13 @@ namespace RDFSharp.Semantics
             RDFOntologyData result = new RDFOntologyData();
 
             //Collection
-            result.AddFact(this);
+            result.AddIndividual(this);
             result.AddClassTypeRelation(this, RDFVocabulary.SKOS.COLLECTION.ToRDFOntologyClass());
 
             //Concepts
             foreach (RDFSKOSConcept cn in this.Concepts.Values)
             {
-                result.AddFact(cn);
+                result.AddIndividual(cn);
                 result.AddClassTypeRelation(cn, RDFVocabulary.SKOS.CONCEPT.ToRDFOntologyClass());
                 result.AddMemberRelation(this, cn);
             }

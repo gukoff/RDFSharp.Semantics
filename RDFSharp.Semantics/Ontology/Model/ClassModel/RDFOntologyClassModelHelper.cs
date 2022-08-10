@@ -263,7 +263,7 @@ namespace RDFSharp.Semantics
                 //Fetch owl:hasKey property values for each of owl:haskey class members
                 foreach (RDFOntologyTaxonomyEntry hasKeyClassTaxonomyEntry in hasKeyClassTaxonomy)
                 {
-                    foreach (RDFOntologyFact hasKeyClassMember in hasKeyClassMembers)
+                    foreach (RDFOntologyIndividual hasKeyClassMember in hasKeyClassMembers)
                     {
                         List<RDFOntologyResource> keyPropertyValues = ontology.Data.Relations.Assertions.SelectEntriesBySubject(hasKeyClassMember)
                                                                                                         .SelectEntriesByPredicate(hasKeyClassTaxonomyEntry.TaxonomyObject)

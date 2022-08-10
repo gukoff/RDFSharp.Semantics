@@ -25,7 +25,7 @@ namespace RDFSharp.Semantics
     /// <summary>
     /// RDFSKOSOrderedCollection represents an instance of skos:OrderedCollection within an instance of skos:ConceptScheme
     /// </summary>
-    public class RDFSKOSOrderedCollection : RDFOntologyFact
+    public class RDFSKOSOrderedCollection : RDFOntologyIndividual
     {
 
         #region Properties
@@ -54,7 +54,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Reification representative of the collection
         /// </summary>
-        internal RDFOntologyFact Representative { get; set; }
+        internal RDFOntologyIndividual Representative { get; set; }
         #endregion
 
         #region Ctors
@@ -65,7 +65,7 @@ namespace RDFSharp.Semantics
         {
             this.ConceptsSequentialCounter = 0;
             this.Concepts = new Dictionary<long, Tuple<int, RDFSKOSConcept>>();
-            this.Representative = new RDFOntologyFact(new RDFResource(string.Concat("bnode:", this.PatternMemberID.ToString())));
+            this.Representative = new RDFOntologyIndividual(new RDFResource(string.Concat("bnode:", this.PatternMemberID.ToString())));
         }
         #endregion
 
@@ -151,13 +151,13 @@ namespace RDFSharp.Semantics
             RDFOntologyData result = new RDFOntologyData();
 
             //OrderedCollection
-            result.AddFact(this);
+            result.AddIndividual(this);
             result.AddClassTypeRelation(this, RDFVocabulary.SKOS.ORDERED_COLLECTION.ToRDFOntologyClass());
 
             //Concepts
             foreach (RDFSKOSConcept cn in this.GetMembers())
             {
-                result.AddFact(cn);
+                result.AddIndividual(cn);
                 result.AddClassTypeRelation(cn, RDFVocabulary.SKOS.CONCEPT.ToRDFOntologyClass());
                 result.AddMemberListRelation(this, cn);
             }

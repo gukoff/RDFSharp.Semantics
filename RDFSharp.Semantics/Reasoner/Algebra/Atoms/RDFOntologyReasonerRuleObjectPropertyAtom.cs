@@ -24,7 +24,7 @@ namespace RDFSharp.Semantics
 {
 
     /// <summary>
-    /// RDFOntologyReasonerRuleObjectPropertyAtom represents an atom inferring assertions between ontology facts 
+    /// RDFOntologyReasonerRuleObjectPropertyAtom represents an atom inferring assertions between ontology individuals 
     /// </summary>
     public class RDFOntologyReasonerRuleObjectPropertyAtom : RDFOntologyReasonerRuleAtom
     {
@@ -38,7 +38,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Default-ctor to build an object property atom with the given property and arguments
         /// </summary>
-        public RDFOntologyReasonerRuleObjectPropertyAtom(RDFOntologyObjectProperty ontologyObjectProperty, RDFVariable leftArgument, RDFOntologyFact rightArgument)
+        public RDFOntologyReasonerRuleObjectPropertyAtom(RDFOntologyObjectProperty ontologyObjectProperty, RDFVariable leftArgument, RDFOntologyIndividual rightArgument)
             : base(ontologyObjectProperty, leftArgument, rightArgument) { }
         #endregion
 
@@ -56,8 +56,8 @@ namespace RDFSharp.Semantics
 
             //Materialize object property assertions of the atom predicate
             RDFOntologyTaxonomy assertions = ontology.Data.Relations.Assertions.SelectEntriesByPredicate(this.Predicate);
-            if (this.RightArgument is RDFOntologyFact rightArgumentFact)
-                assertions = assertions.SelectEntriesByObject(rightArgumentFact);
+            if (this.RightArgument is RDFOntologyIndividual rightArgumentIndividual)
+                assertions = assertions.SelectEntriesByObject(rightArgumentIndividual);
             foreach (RDFOntologyTaxonomyEntry assertion in assertions)
             {
                 Dictionary<string, string> bindings = new Dictionary<string, string>();
@@ -113,26 +113,26 @@ namespace RDFSharp.Semantics
                 //Parse the value of the column corresponding to the atom's right argument
                 RDFPatternMember rightArgumentValue =
                     this.RightArgument is RDFVariable ? RDFQueryUtilities.ParseRDFPatternMember(currentRow[rightArgumentString].ToString())
-                                                      : ((RDFOntologyFact)this.RightArgument).Value;
+                                                      : ((RDFOntologyIndividual)this.RightArgument).Value;
 
                 if (leftArgumentValue is RDFResource leftArgumentValueResource
                         && rightArgumentValue is RDFResource rightArgumentValueResource)
                 {
-                    //Search the left fact in the ontology
-                    RDFOntologyFact leftFact = ontology.Data.SelectFact(leftArgumentValueResource.ToString());
-                    if (leftFact == null)
-                        leftFact = new RDFOntologyFact(leftArgumentValueResource);
+                    //Search the left individual in the ontology
+                    RDFOntologyIndividual leftIndividual = ontology.Data.SelectIndividual(leftArgumentValueResource.ToString());
+                    if (leftIndividual == null)
+                        leftIndividual = new RDFOntologyIndividual(leftArgumentValueResource);
 
-                    //Search the right fact in the ontology
-                    RDFOntologyFact rightFact = ontology.Data.SelectFact(rightArgumentValueResource.ToString());
-                    if (rightFact == null)
-                        rightFact = new RDFOntologyFact(rightArgumentValueResource);
+                    //Search the right individual in the ontology
+                    RDFOntologyIndividual rightIndividual = ontology.Data.SelectIndividual(rightArgumentValueResource.ToString());
+                    if (rightIndividual == null)
+                        rightIndividual = new RDFOntologyIndividual(rightArgumentValueResource);
 
                     //Protect atom's inferences with implicit taxonomy checks (only if taxonomy protection has been requested)
-                    if (!options.EnforceTaxonomyProtection || RDFOntologyChecker.CheckAssertionCompatibility(ontology.Data, leftFact, (RDFOntologyObjectProperty)this.Predicate, rightFact))
+                    if (!options.EnforceTaxonomyProtection || RDFOntologyChecker.CheckAssertionCompatibility(ontology.Data, leftIndividual, (RDFOntologyObjectProperty)this.Predicate, rightIndividual))
                     {
                         //Create the inference as a taxonomy entry
-                        RDFOntologyTaxonomyEntry sem_inf = new RDFOntologyTaxonomyEntry(leftFact, (RDFOntologyObjectProperty)this.Predicate, rightFact)
+                        RDFOntologyTaxonomyEntry sem_inf = new RDFOntologyTaxonomyEntry(leftIndividual, (RDFOntologyObjectProperty)this.Predicate, rightIndividual)
                                                                 .SetInference(RDFSemanticsEnums.RDFOntologyInferenceType.Reasoner);
 
                         //Add the inference to the report

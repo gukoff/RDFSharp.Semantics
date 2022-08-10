@@ -81,9 +81,9 @@ namespace RDFSharp.Semantics
             sb.Append($"({this.LeftArgument}");
             if (this.RightArgument != null)
             {
-                //When the right argument is a fact, it is printened in a SWRL-shortened form
-                if (this.RightArgument is RDFOntologyFact rightArgumentFact)
-                    sb.Append($",{RDFModelUtilities.GetShortUri(((RDFResource)rightArgumentFact.Value).URI)}");
+                //When the right argument is an ontology individual, it is printed in a SWRL-shortened form
+                if (this.RightArgument is RDFOntologyIndividual rightArgumentIndividual)
+                    sb.Append($",{RDFModelUtilities.GetShortUri(((RDFResource)rightArgumentIndividual.Value).URI)}");
                 //When the right argument is an ontology literal, its value is printed in normal form
                 else if (this.RightArgument is RDFOntologyLiteral rightArgumentLiteral)
                     sb.Append($",{RDFQueryPrinter.PrintPatternMember(rightArgumentLiteral.Value, RDFNamespaceRegister.Instance.Register)}");

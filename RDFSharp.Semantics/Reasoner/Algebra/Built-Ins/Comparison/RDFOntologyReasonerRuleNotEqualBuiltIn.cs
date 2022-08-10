@@ -38,7 +38,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Default-ctor to build a swrlb:notEqual built-in with given arguments
         /// </summary>
-        public RDFOntologyReasonerRuleNotEqualBuiltIn(RDFVariable leftArgument, RDFOntologyFact rightArgument)
+        public RDFOntologyReasonerRuleNotEqualBuiltIn(RDFVariable leftArgument, RDFOntologyIndividual rightArgument)
             : this(leftArgument, rightArgument?.Value as RDFPatternMember) { }
 
         /// <summary>
