@@ -16,9 +16,6 @@
 
 using RDFSharp.Model;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace RDFSharp.Semantics
 {
@@ -59,36 +56,20 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Default-ctor to build a taxonomy entry with the given subject, predicate and object resources
         /// </summary>
-        public RDFOntologyTaxonomyEntry(RDFOntologyResource taxonomySubject,
-                                        RDFOntologyResource taxonomyPredicate,
-                                        RDFOntologyResource taxonomyObject)
+        public RDFOntologyTaxonomyEntry(RDFOntologyResource taxonomySubject, RDFOntologyResource taxonomyPredicate, RDFOntologyResource taxonomyObject)
         {
-            if (taxonomySubject != null)
-            {
-                if (taxonomyPredicate != null)
-                {
-                    if (taxonomyObject != null)
-                    {
-                        this.TaxonomySubject = taxonomySubject;
-                        this.TaxonomyPredicate = taxonomyPredicate;
-                        this.TaxonomyObject = taxonomyObject;
-                        this.InferenceType = RDFSemanticsEnums.RDFOntologyInferenceType.None;
-                        this.LazyTaxonomyEntryID = new Lazy<long>(() => RDFModelUtilities.CreateHash(this.ToString()));
-                    }
-                    else
-                    {
-                        throw new RDFSemanticsException("Cannot create RDFOntologyTaxonomyEntry because given \"taxonomyObject\" parameter is null.");
-                    }
-                }
-                else
-                {
-                    throw new RDFSemanticsException("Cannot create RDFOntologyTaxonomyEntry because given \"taxonomyPredicate\" parameter is null.");
-                }
-            }
-            else
-            {
+            if (taxonomySubject == null)
                 throw new RDFSemanticsException("Cannot create RDFOntologyTaxonomyEntry because given \"taxonomySubject\" parameter is null.");
-            }
+            if (taxonomyPredicate == null)
+                throw new RDFSemanticsException("Cannot create RDFOntologyTaxonomyEntry because given \"taxonomyPredicate\" parameter is null.");
+            if (taxonomyObject == null)
+                throw new RDFSemanticsException("Cannot create RDFOntologyTaxonomyEntry because given \"taxonomyObject\" parameter is null.");
+
+            this.TaxonomySubject = taxonomySubject;
+            this.TaxonomyPredicate = taxonomyPredicate;
+            this.TaxonomyObject = taxonomyObject;
+            this.InferenceType = RDFSemanticsEnums.RDFOntologyInferenceType.None;
+            this.LazyTaxonomyEntryID = new Lazy<long>(() => RDFModelUtilities.CreateHash(this.ToString()));
         }
         #endregion
 

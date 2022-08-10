@@ -15,17 +15,14 @@
 */
 
 using RDFSharp.Query;
-using System;
 
 namespace RDFSharp.Semantics
 {
-
     /// <summary>
     /// RDFOntologyResource represents a generic resource definition within an ontology.
     /// </summary>
     public class RDFOntologyResource : RDFPatternMember
     {
-
         #region Properties
         /// <summary>
         /// Value of the ontology resource
@@ -157,7 +154,5 @@ namespace RDFSharp.Semantics
         /// </summary>
         internal bool IsOntology() => this is RDFOntology;
         #endregion
-
     }
-
 }

@@ -34,14 +34,12 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Count of the taxonomy entries
         /// </summary>
-        public long EntriesCount
-            => this.Entries.Count;
+        public long EntriesCount => this.Entries.Count;
 
         /// <summary>
         /// Gets the enumerator on the taxonomy entries for iteration
         /// </summary>
-        public IEnumerator<RDFOntologyTaxonomyEntry> EntriesEnumerator
-            => this.Entries.GetEnumerator();
+        public IEnumerator<RDFOntologyTaxonomyEntry> EntriesEnumerator => this.Entries.GetEnumerator();
 
         /// <summary>
         /// Dictionary of ontology entries composing the taxonomy
@@ -76,14 +74,12 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Exposes a typed enumerator on the taxonomy entries
         /// </summary>
-        IEnumerator<RDFOntologyTaxonomyEntry> IEnumerable<RDFOntologyTaxonomyEntry>.GetEnumerator()
-            => this.EntriesEnumerator;
+        IEnumerator<RDFOntologyTaxonomyEntry> IEnumerable<RDFOntologyTaxonomyEntry>.GetEnumerator() => this.EntriesEnumerator;
 
         /// <summary>
         /// Exposes an untyped enumerator on the taxonomy entries
         /// </summary>
-        IEnumerator IEnumerable.GetEnumerator()
-            => this.EntriesEnumerator;
+        IEnumerator IEnumerable.GetEnumerator() => this.EntriesEnumerator;
         #endregion
 
         #region Methods
