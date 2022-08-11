@@ -19,13 +19,11 @@ using System.Threading.Tasks;
 
 namespace RDFSharp.Semantics
 {
-
     /// <summary>
     /// RDFSemanticsEvents represents a collector for all the events generated within the "RDFSharp.Semantics" namespace
     /// </summary>
     public static class RDFSemanticsEvents
     {
-
         #region OnSemanticsInfo
         /// <summary>
         /// Event representing an information message generated within the "RDFSharp.Semantics" namespace
@@ -61,7 +59,5 @@ namespace RDFSharp.Semantics
         internal static void RaiseSemanticsWarning(string eventMessage)
             => Parallel.Invoke(() => OnSemanticsWarning(string.Concat(DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"), ";SEMANTICS_WARNING;", eventMessage)));
         #endregion
-
     }
-
 }

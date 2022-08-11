@@ -18,13 +18,11 @@ using RDFSharp.Model;
 
 namespace RDFSharp.Semantics
 {
-
     /// <summary>
     /// RDFOntologyHasValueRestriction represents an "owl:HasValue" restriction class definition within an ontology model.
     /// </summary>
     public class RDFOntologyHasValueRestriction : RDFOntologyRestriction
     {
-
         #region Properties
         /// <summary>
         /// Ontology resource representing the accepted value of the restricted property's range members
@@ -36,18 +34,12 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Default-ctor to build an "owl:HasValue" ontology restriction with the given name on the given property and the given requiredValue
         /// </summary>
-        public RDFOntologyHasValueRestriction(RDFResource restrictionName,
-                                              RDFOntologyProperty onProperty,
-                                              RDFOntologyIndividual requiredValue) : base(restrictionName, onProperty)
+        public RDFOntologyHasValueRestriction(RDFResource restrictionName, RDFOntologyProperty onProperty, RDFOntologyIndividual requiredValue) : base(restrictionName, onProperty)
         {
-            if (requiredValue != null)
-            {
-                this.RequiredValue = requiredValue;
-            }
-            else
-            {
+            if (requiredValue == null)
                 throw new RDFSemanticsException("Cannot create RDFOntologyHasValueRestriction because given \"requiredValue\" parameter is null.");
-            }
+
+            this.RequiredValue = requiredValue;
         }
 
         /// <summary>
@@ -55,17 +47,11 @@ namespace RDFSharp.Semantics
         /// </summary>
         public RDFOntologyHasValueRestriction(RDFResource restrictionName, RDFOntologyProperty onProperty, RDFOntologyLiteral requiredValue) : base(restrictionName, onProperty)
         {
-            if (requiredValue != null)
-            {
-                this.RequiredValue = requiredValue;
-            }
-            else
-            {
+            if (requiredValue == null)
                 throw new RDFSemanticsException("Cannot create RDFOntologyHasValueRestriction because given \"requiredValue\" parameter is null.");
-            }
+
+            this.RequiredValue = requiredValue;
         }
         #endregion
-
     }
-
 }

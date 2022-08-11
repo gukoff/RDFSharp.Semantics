@@ -18,20 +18,16 @@ using RDFSharp.Model;
 
 namespace RDFSharp.Semantics
 {
-
     /// <summary>
     /// RDFOntologyDataRangeClass represents a datarange class definition within an ontology model.
     /// </summary>
     public class RDFOntologyDataRangeClass : RDFOntologyClass
     {
-
         #region Ctors
         /// <summary>
         /// Default-ctor to build an empty ontology datarange class with the given name
         /// </summary>
         public RDFOntologyDataRangeClass(RDFResource className) : base(className) { }
         #endregion
-
     }
-
 }

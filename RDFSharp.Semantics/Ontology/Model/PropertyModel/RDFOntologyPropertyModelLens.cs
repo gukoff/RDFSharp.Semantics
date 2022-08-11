@@ -46,22 +46,12 @@ namespace RDFSharp.Semantics
         /// </summary>
         public RDFOntologyPropertyModelLens(RDFOntologyProperty ontologyProperty, RDFOntology ontology)
         {
-            if (ontologyProperty != null)
-            {
-                if (ontology != null)
-                {
-                    this.OntologyProperty = ontologyProperty;
-                    this.Ontology = ontology.UnionWith(RDFBASEOntology.Instance);
-                }
-                else
-                {
-                    throw new RDFSemanticsException("Cannot create property model lens because given \"ontology\" parameter is null");
-                }
-            }
-            else
-            {
+            if (ontologyProperty == null)
                 throw new RDFSemanticsException("Cannot create property model lens because given \"ontologyProperty\" parameter is null");
-            }
+            if (ontology == null)
+                throw new RDFSemanticsException("Cannot create property model lens because given \"ontology\" parameter is null");
+
+            this.OntologyProperty = ontologyProperty;
         }
         #endregion
 
@@ -74,8 +64,8 @@ namespace RDFSharp.Semantics
             List<(bool, RDFOntologyProperty)> result = new List<(bool, RDFOntologyProperty)>();
 
             //First-level enlisting of subproperties
-            foreach (RDFOntologyTaxonomyEntry sf in this.Ontology.Model.PropertyModel.Relations.SubPropertyOf.SelectEntriesByObject(this.OntologyProperty).Where(te => !te.IsInference()))
-                result.Add((false, (RDFOntologyProperty)sf.TaxonomySubject));
+            foreach (RDFOntologyTaxonomyEntry subProperty in this.Ontology.Model.PropertyModel.Relations.SubPropertyOf.SelectEntriesByObject(this.OntologyProperty).Where(te => !te.IsInference()))
+                result.Add((false, (RDFOntologyProperty)subProperty.TaxonomySubject));
 
             //Inference-enabled discovery of subproperties
             if (enableInference)
@@ -83,7 +73,7 @@ namespace RDFSharp.Semantics
                 List<RDFOntologyProperty> subProperties = RDFOntologyPropertyModelHelper.GetSubPropertiesOf(this.Ontology.Model.PropertyModel, this.OntologyProperty).ToList();
                 foreach (RDFOntologyProperty subProperty in subProperties)
                 {
-                    if (!result.Any(f => f.Item2.Equals(subProperty)))
+                    if (!result.Any(p => p.Item2.Equals(subProperty)))
                         result.Add((true, subProperty));
                 }
             }
@@ -105,8 +95,8 @@ namespace RDFSharp.Semantics
             List<(bool, RDFOntologyProperty)> result = new List<(bool, RDFOntologyProperty)>();
 
             //First-level enlisting of superproperties
-            foreach (RDFOntologyTaxonomyEntry sf in this.Ontology.Model.PropertyModel.Relations.SubPropertyOf.SelectEntriesBySubject(this.OntologyProperty).Where(te => !te.IsInference()))
-                result.Add((false, (RDFOntologyProperty)sf.TaxonomyObject));
+            foreach (RDFOntologyTaxonomyEntry subProperty in this.Ontology.Model.PropertyModel.Relations.SubPropertyOf.SelectEntriesBySubject(this.OntologyProperty).Where(te => !te.IsInference()))
+                result.Add((false, (RDFOntologyProperty)subProperty.TaxonomyObject));
 
             //Inference-enabled discovery of superproperties
             if (enableInference)
@@ -114,7 +104,7 @@ namespace RDFSharp.Semantics
                 List<RDFOntologyProperty> superProperties = RDFOntologyPropertyModelHelper.GetSuperPropertiesOf(this.Ontology.Model.PropertyModel, this.OntologyProperty).ToList();
                 foreach (RDFOntologyProperty superProperty in superProperties)
                 {
-                    if (!result.Any(f => f.Item2.Equals(superProperty)))
+                    if (!result.Any(p => p.Item2.Equals(superProperty)))
                         result.Add((true, superProperty));
                 }
             }
@@ -136,8 +126,8 @@ namespace RDFSharp.Semantics
             List<(bool, RDFOntologyProperty)> result = new List<(bool, RDFOntologyProperty)>();
 
             //First-level enlisting of equivalent properties
-            foreach (RDFOntologyTaxonomyEntry sf in this.Ontology.Model.PropertyModel.Relations.EquivalentProperty.SelectEntriesBySubject(this.OntologyProperty).Where(te => !te.IsInference()))
-                result.Add((false, (RDFOntologyProperty)sf.TaxonomyObject));
+            foreach (RDFOntologyTaxonomyEntry equivalentProperty in this.Ontology.Model.PropertyModel.Relations.EquivalentProperty.SelectEntriesBySubject(this.OntologyProperty).Where(te => !te.IsInference()))
+                result.Add((false, (RDFOntologyProperty)equivalentProperty.TaxonomyObject));
 
             //Inference-enabled discovery of equivalent properties
             if (enableInference)
@@ -145,7 +135,7 @@ namespace RDFSharp.Semantics
                 List<RDFOntologyProperty> equivalentProperties = RDFOntologyPropertyModelHelper.GetEquivalentPropertiesOf(this.Ontology.Model.PropertyModel, this.OntologyProperty).ToList();
                 foreach (RDFOntologyProperty equivalentProperty in equivalentProperties)
                 {
-                    if (!result.Any(f => f.Item2.Equals(equivalentProperty)))
+                    if (!result.Any(p => p.Item2.Equals(equivalentProperty)))
                         result.Add((true, equivalentProperty));
                 }
             }
@@ -169,8 +159,8 @@ namespace RDFSharp.Semantics
             if (this.OntologyProperty.IsObjectProperty())
             {
                 //First-level enlisting of inverse properties
-                foreach (RDFOntologyTaxonomyEntry sf in this.Ontology.Model.PropertyModel.Relations.InverseOf.SelectEntriesBySubject(this.OntologyProperty).Where(te => !te.IsInference()))
-                    result.Add((false, (RDFOntologyObjectProperty)sf.TaxonomyObject));
+                foreach (RDFOntologyTaxonomyEntry inverseProperty in this.Ontology.Model.PropertyModel.Relations.InverseOf.SelectEntriesBySubject(this.OntologyProperty).Where(te => !te.IsInference()))
+                    result.Add((false, (RDFOntologyObjectProperty)inverseProperty.TaxonomyObject));
 
                 //Inference-enabled discovery of inverse properties
                 if (enableInference)
@@ -180,7 +170,7 @@ namespace RDFSharp.Semantics
                                                                                                       .ToList();
                     foreach (RDFOntologyObjectProperty inverseProperty in inverseProperties)
                     {
-                        if (!result.Any(f => f.Item2.Equals(inverseProperty)))
+                        if (!result.Any(p => p.Item2.Equals(inverseProperty)))
                             result.Add((true, inverseProperty));
                     }
                 }
@@ -203,8 +193,8 @@ namespace RDFSharp.Semantics
             List<(bool, RDFOntologyProperty)> result = new List<(bool, RDFOntologyProperty)>();
 
             //First-level enlisting of disjoint properties
-            foreach (RDFOntologyTaxonomyEntry sf in this.Ontology.Model.PropertyModel.Relations.PropertyDisjointWith.SelectEntriesBySubject(this.OntologyProperty).Where(te => !te.IsInference()))
-                result.Add((false, (RDFOntologyProperty)sf.TaxonomyObject));
+            foreach (RDFOntologyTaxonomyEntry disjointProperty in this.Ontology.Model.PropertyModel.Relations.PropertyDisjointWith.SelectEntriesBySubject(this.OntologyProperty).Where(te => !te.IsInference()))
+                result.Add((false, (RDFOntologyProperty)disjointProperty.TaxonomyObject));
 
             //Inference-enabled discovery of disjoint properties
             if (enableInference)
@@ -212,7 +202,7 @@ namespace RDFSharp.Semantics
                 List<RDFOntologyProperty> disjointProperties = RDFOntologyPropertyModelHelper.GetPropertiesDisjointWith(this.Ontology.Model.PropertyModel, this.OntologyProperty).ToList();
                 foreach (RDFOntologyProperty disjointProperty in disjointProperties)
                 {
-                    if (!result.Any(f => f.Item2.Equals(disjointProperty)))
+                    if (!result.Any(p => p.Item2.Equals(disjointProperty)))
                         result.Add((true, disjointProperty));
                 }
             }
@@ -236,8 +226,8 @@ namespace RDFSharp.Semantics
             if (this.OntologyProperty.IsObjectProperty())
             {
                 //First-level enlisting of chain axioms (reasoning is not available on this concept)
-                foreach (RDFOntologyTaxonomyEntry sf in this.Ontology.Model.PropertyModel.Relations.PropertyChainAxiom.SelectEntriesBySubject(this.OntologyProperty).Where(te => !te.IsInference()))
-                    result.Add((false, (RDFOntologyObjectProperty)sf.TaxonomyObject));
+                foreach (RDFOntologyTaxonomyEntry propertyChainAxiom in this.Ontology.Model.PropertyModel.Relations.PropertyChainAxiom.SelectEntriesBySubject(this.OntologyProperty).Where(te => !te.IsInference()))
+                    result.Add((false, (RDFOntologyObjectProperty)propertyChainAxiom.TaxonomyObject));
 
             }
 
@@ -258,16 +248,16 @@ namespace RDFSharp.Semantics
             List<(RDFOntologyAnnotationProperty, RDFOntologyResource)> result = new List<(RDFOntologyAnnotationProperty, RDFOntologyResource)>();
 
             //SeeAlso
-            foreach (RDFOntologyTaxonomyEntry sf in this.Ontology.Model.PropertyModel.Annotations.SeeAlso.SelectEntriesBySubject(this.OntologyProperty).Where(te => !te.TaxonomyObject.IsLiteral()))
-                result.Add(((RDFOntologyAnnotationProperty)sf.TaxonomyPredicate, sf.TaxonomyObject));
+            foreach (RDFOntologyTaxonomyEntry seeAlso in this.Ontology.Model.PropertyModel.Annotations.SeeAlso.SelectEntriesBySubject(this.OntologyProperty).Where(te => !te.TaxonomyObject.IsLiteral()))
+                result.Add(((RDFOntologyAnnotationProperty)seeAlso.TaxonomyPredicate, seeAlso.TaxonomyObject));
 
             //IsDefinedBy
-            foreach (RDFOntologyTaxonomyEntry sf in this.Ontology.Model.PropertyModel.Annotations.IsDefinedBy.SelectEntriesBySubject(this.OntologyProperty).Where(te => !te.TaxonomyObject.IsLiteral()))
-                result.Add(((RDFOntologyAnnotationProperty)sf.TaxonomyPredicate, sf.TaxonomyObject));
+            foreach (RDFOntologyTaxonomyEntry isDefinedBy in this.Ontology.Model.PropertyModel.Annotations.IsDefinedBy.SelectEntriesBySubject(this.OntologyProperty).Where(te => !te.TaxonomyObject.IsLiteral()))
+                result.Add(((RDFOntologyAnnotationProperty)isDefinedBy.TaxonomyPredicate, isDefinedBy.TaxonomyObject));
 
             //Custom Annotations
-            foreach (RDFOntologyTaxonomyEntry sf in this.Ontology.Model.PropertyModel.Annotations.CustomAnnotations.SelectEntriesBySubject(this.OntologyProperty).Where(te => !te.TaxonomyObject.IsLiteral()))
-                result.Add(((RDFOntologyAnnotationProperty)sf.TaxonomyPredicate, sf.TaxonomyObject));
+            foreach (RDFOntologyTaxonomyEntry customAnnotation in this.Ontology.Model.PropertyModel.Annotations.CustomAnnotations.SelectEntriesBySubject(this.OntologyProperty).Where(te => !te.TaxonomyObject.IsLiteral()))
+                result.Add(((RDFOntologyAnnotationProperty)customAnnotation.TaxonomyPredicate, customAnnotation.TaxonomyObject));
 
             return result;
         }
@@ -286,28 +276,28 @@ namespace RDFSharp.Semantics
             List<(RDFOntologyAnnotationProperty, RDFOntologyLiteral)> result = new List<(RDFOntologyAnnotationProperty, RDFOntologyLiteral)>();
 
             //VersionInfo
-            foreach (RDFOntologyTaxonomyEntry sf in this.Ontology.Model.PropertyModel.Annotations.VersionInfo.SelectEntriesBySubject(this.OntologyProperty).Where(te => te.TaxonomyObject.IsLiteral()))
-                result.Add(((RDFOntologyAnnotationProperty)sf.TaxonomyPredicate, (RDFOntologyLiteral)sf.TaxonomyObject));
+            foreach (RDFOntologyTaxonomyEntry versionInfo in this.Ontology.Model.PropertyModel.Annotations.VersionInfo.SelectEntriesBySubject(this.OntologyProperty).Where(te => te.TaxonomyObject.IsLiteral()))
+                result.Add(((RDFOntologyAnnotationProperty)versionInfo.TaxonomyPredicate, (RDFOntologyLiteral)versionInfo.TaxonomyObject));
 
             //Comment
-            foreach (RDFOntologyTaxonomyEntry sf in this.Ontology.Model.PropertyModel.Annotations.Comment.SelectEntriesBySubject(this.OntologyProperty).Where(te => te.TaxonomyObject.IsLiteral()))
-                result.Add(((RDFOntologyAnnotationProperty)sf.TaxonomyPredicate, (RDFOntologyLiteral)sf.TaxonomyObject));
+            foreach (RDFOntologyTaxonomyEntry comment in this.Ontology.Model.PropertyModel.Annotations.Comment.SelectEntriesBySubject(this.OntologyProperty).Where(te => te.TaxonomyObject.IsLiteral()))
+                result.Add(((RDFOntologyAnnotationProperty)comment.TaxonomyPredicate, (RDFOntologyLiteral)comment.TaxonomyObject));
 
             //Label
-            foreach (RDFOntologyTaxonomyEntry sf in this.Ontology.Model.PropertyModel.Annotations.Label.SelectEntriesBySubject(this.OntologyProperty).Where(te => te.TaxonomyObject.IsLiteral()))
-                result.Add(((RDFOntologyAnnotationProperty)sf.TaxonomyPredicate, (RDFOntologyLiteral)sf.TaxonomyObject));
+            foreach (RDFOntologyTaxonomyEntry label in this.Ontology.Model.PropertyModel.Annotations.Label.SelectEntriesBySubject(this.OntologyProperty).Where(te => te.TaxonomyObject.IsLiteral()))
+                result.Add(((RDFOntologyAnnotationProperty)label.TaxonomyPredicate, (RDFOntologyLiteral)label.TaxonomyObject));
 
             //SeeAlso
-            foreach (RDFOntologyTaxonomyEntry sf in this.Ontology.Model.PropertyModel.Annotations.SeeAlso.SelectEntriesBySubject(this.OntologyProperty).Where(te => te.TaxonomyObject.IsLiteral()))
-                result.Add(((RDFOntologyAnnotationProperty)sf.TaxonomyPredicate, (RDFOntologyLiteral)sf.TaxonomyObject));
+            foreach (RDFOntologyTaxonomyEntry seeAlso in this.Ontology.Model.PropertyModel.Annotations.SeeAlso.SelectEntriesBySubject(this.OntologyProperty).Where(te => te.TaxonomyObject.IsLiteral()))
+                result.Add(((RDFOntologyAnnotationProperty)seeAlso.TaxonomyPredicate, (RDFOntologyLiteral)seeAlso.TaxonomyObject));
 
             //IsDefinedBy
-            foreach (RDFOntologyTaxonomyEntry sf in this.Ontology.Model.PropertyModel.Annotations.IsDefinedBy.SelectEntriesBySubject(this.OntologyProperty).Where(te => te.TaxonomyObject.IsLiteral()))
-                result.Add(((RDFOntologyAnnotationProperty)sf.TaxonomyPredicate, (RDFOntologyLiteral)sf.TaxonomyObject));
+            foreach (RDFOntologyTaxonomyEntry isDefinedBy in this.Ontology.Model.PropertyModel.Annotations.IsDefinedBy.SelectEntriesBySubject(this.OntologyProperty).Where(te => te.TaxonomyObject.IsLiteral()))
+                result.Add(((RDFOntologyAnnotationProperty)isDefinedBy.TaxonomyPredicate, (RDFOntologyLiteral)isDefinedBy.TaxonomyObject));
 
             //Custom Annotations
-            foreach (RDFOntologyTaxonomyEntry sf in this.Ontology.Model.PropertyModel.Annotations.CustomAnnotations.SelectEntriesBySubject(this.OntologyProperty).Where(te => te.TaxonomyObject.IsLiteral()))
-                result.Add(((RDFOntologyAnnotationProperty)sf.TaxonomyPredicate, (RDFOntologyLiteral)sf.TaxonomyObject));
+            foreach (RDFOntologyTaxonomyEntry customAnnotation in this.Ontology.Model.PropertyModel.Annotations.CustomAnnotations.SelectEntriesBySubject(this.OntologyProperty).Where(te => te.TaxonomyObject.IsLiteral()))
+                result.Add(((RDFOntologyAnnotationProperty)customAnnotation.TaxonomyPredicate, (RDFOntologyLiteral)customAnnotation.TaxonomyObject));
 
             return result;
         }

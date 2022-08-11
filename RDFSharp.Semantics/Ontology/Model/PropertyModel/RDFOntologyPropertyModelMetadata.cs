@@ -16,13 +16,11 @@
 
 namespace RDFSharp.Semantics
 {
-
     /// <summary>
     /// RDFOntologyPropertyModelMetadata represents a collector for relations describing ontology properties.
     /// </summary>
     public class RDFOntologyPropertyModelMetadata
     {
-
         #region Properties
         /// <summary>
         /// "rdfs:subPropertyOf" relations
@@ -64,5 +62,4 @@ namespace RDFSharp.Semantics
         }
         #endregion
     }
-
 }

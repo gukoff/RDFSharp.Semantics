@@ -20,7 +20,6 @@ using System.Text;
 
 namespace RDFSharp.Semantics
 {
-
     /// <summary>
     /// RDFOntologyClass represents a class definition within an ontology model.
     /// </summary>
@@ -44,31 +43,24 @@ namespace RDFSharp.Semantics
         /// </summary>
         public RDFOntologyClass(RDFResource className, RDFSemanticsEnums.RDFOntologyClassNature nature = RDFSemanticsEnums.RDFOntologyClassNature.OWL)
         {
-            if (className != null)
-            {
-                this.Value = className;
-                this.Nature = nature;
-            }
-            else
-            {
+            if (className == null)
                 throw new RDFSemanticsException("Cannot create RDFOntologyClass because given \"className\" parameter is null.");
-            }
+
+            this.Value = className;
+            this.Nature = nature;
         }
         #endregion
 
         #region Methods
         /// <summary>
-        /// Sets or unsets this ontology class as "owl:DeprecatedClass"
+        /// Sets or unsets this ontology class as "owl:DeprecatedClass" (only simple classes can be deprecated)
         /// </summary>
         public RDFOntologyClass SetDeprecated(bool deprecated)
         {
-            if (!this.IsRestrictionClass() && !this.IsCompositeClass() && !this.IsDataRangeClass() && !this.IsEnumerateClass())
-            {
+            if (this.IsSimpleClass())
                 this.Deprecated = deprecated;
-            }
             return this;
         }
         #endregion
     }
-
 }

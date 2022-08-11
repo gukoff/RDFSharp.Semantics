@@ -18,20 +18,16 @@ using RDFSharp.Model;
 
 namespace RDFSharp.Semantics
 {
-
     /// <summary>
     /// RDFOntologyEnumerateClass represents an enumerate class definition within an ontology model.
     /// </summary>
     public class RDFOntologyEnumerateClass : RDFOntologyClass
     {
-
         #region Ctors
         /// <summary>
         /// Default-ctor to build an empty ontology enumerate class with the given name
         /// </summary>
         public RDFOntologyEnumerateClass(RDFResource className) : base(className) { }
         #endregion
-
     }
-
 }

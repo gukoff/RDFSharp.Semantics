@@ -18,20 +18,16 @@ using RDFSharp.Model;
 
 namespace RDFSharp.Semantics
 {
-
     /// <summary>
     /// RDFOntologyIntersectionClass represents an intersection class definition within an ontology model.
     /// </summary>
     public class RDFOntologyIntersectionClass : RDFOntologyClass
     {
-
         #region Ctors
         /// <summary>
         /// Default-ctor to build an empty ontology intersection class with the given className
         /// </summary>
         public RDFOntologyIntersectionClass(RDFResource className) : base(className) { }
         #endregion
-
     }
-
 }

@@ -16,13 +16,11 @@
 
 namespace RDFSharp.Semantics
 {
-
     /// <summary>
     /// RDFSemanticsEnums represents a collector for all the enumerations used by the "RDFSharp.Semantics" namespace
     /// </summary>
     public static class RDFSemanticsEnums
     {
-
         /// <summary>
         /// RDFOntologyStandardAnnotation represents an enumeration for predefined ontology annotation properties
         /// </summary>
@@ -280,7 +278,5 @@ namespace RDFSharp.Semantics
             /// </summary>
             PropertyChainEntailment = 21
         }
-
     }
-
 }
