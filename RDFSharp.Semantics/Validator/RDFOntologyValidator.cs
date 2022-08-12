@@ -19,14 +19,12 @@ using System.Threading.Tasks;
 
 namespace RDFSharp.Semantics
 {
-
     /// <summary>
     /// RDFOntologyValidator analyzes a given ontology through a set of RDFS/OWL-DL rules
     /// in order to find error and inconsistency evidences affecting its model and data.
     /// </summary>
     public static class RDFOntologyValidator
     {
-
         #region Properties
         /// <summary>
         /// List of rules applied by the ontology validator
@@ -171,7 +169,5 @@ namespace RDFSharp.Semantics
         public static Task<RDFOntologyValidatorReport> ValidateAsync(this RDFOntology ontology)
             => Task.Run(() => Validate(ontology));
         #endregion
-
     }
-
 }

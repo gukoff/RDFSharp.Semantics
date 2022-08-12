@@ -22,7 +22,6 @@ using System.Data;
 
 namespace RDFSharp.Semantics
 {
-
     /// <summary>
     /// RDFOntologyReasonerRuleDataPropertyAtom represents an atom inferring assertions relating ontology individuals to literals
     /// </summary>
@@ -146,5 +145,4 @@ namespace RDFSharp.Semantics
         }
         #endregion
     }
-
 }

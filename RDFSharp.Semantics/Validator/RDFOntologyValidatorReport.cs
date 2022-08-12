@@ -20,13 +20,11 @@ using System.Collections.Generic;
 
 namespace RDFSharp.Semantics
 {
-
     /// <summary>
     /// RDFOntologyValidatorReport represents a detailed report of an ontology analysis.
     /// </summary>
     public class RDFOntologyValidatorReport : IEnumerable<RDFOntologyValidatorEvidence>
     {
-
         #region Properties
         /// <summary>
         /// Counter of the evidences
@@ -123,7 +121,5 @@ namespace RDFSharp.Semantics
         #endregion
 
         #endregion
-
     }
-
 }

@@ -16,7 +16,6 @@
 
 namespace RDFSharp.Semantics
 {
-
     /// <summary>
     /// RDFOntologyReasonerOptions represents a customization of the execution behavior of a reasoner
     /// </summary>
@@ -37,5 +36,4 @@ namespace RDFSharp.Semantics
             => this.EnforceTaxonomyProtection = true;
         #endregion
     }
-
 }
