@@ -22,7 +22,6 @@ using System.Threading.Tasks;
 
 namespace RDFSharp.Semantics
 {
-
     /// <summary>
     /// RDFOntologyReasoner represents a SWRL inference engine applied on a given ontology
     /// </summary>
@@ -52,7 +51,6 @@ namespace RDFSharp.Semantics
         #endregion
 
         #region Methods
-
         /// <summary>
         /// Adds the given standard rule to the reasoner
         /// </summary>
@@ -199,8 +197,6 @@ namespace RDFSharp.Semantics
         /// </summary>
         public Task<RDFOntologyReasonerReport> ApplyToOntologyAsync(RDFOntology ontology, RDFOntologyReasonerOptions options)
             => Task.Run(() => ApplyToOntology(ontology, options));
-
         #endregion
     }
-
 }

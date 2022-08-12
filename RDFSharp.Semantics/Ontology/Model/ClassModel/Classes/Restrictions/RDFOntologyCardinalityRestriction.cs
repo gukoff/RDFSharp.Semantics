@@ -19,13 +19,11 @@ using System;
 
 namespace RDFSharp.Semantics
 {
-
     /// <summary>
     /// RDFOntologyCardinalityRestriction represents an "owl:Cardinality" restriction class definition within an ontology model.
     /// </summary>
     public class RDFOntologyCardinalityRestriction : RDFOntologyRestriction
     {
-
         #region Properties
         /// <summary>
         /// Minimum accepted cardinality for the restriction to be satisfied
@@ -42,59 +40,35 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Default-ctor to build an ontology cardinality restriction with the given name on the given property
         /// </summary>
-        public RDFOntologyCardinalityRestriction(RDFResource restrictionName,
-                                                 RDFOntologyProperty onProperty,
-                                                 int minCardinality,
-                                                 int maxCardinality) : base(restrictionName, onProperty)
+        public RDFOntologyCardinalityRestriction(RDFResource restrictionName, RDFOntologyProperty onProperty, int minCardinality, int maxCardinality) : base(restrictionName, onProperty)
         {
-
             //MinCardinality
             if (minCardinality > 0)
-            {
                 if (maxCardinality > 0)
                 {
-                    if (minCardinality <= maxCardinality)
-                    {
-                        this.MinCardinality = minCardinality;
-                    }
-                    else
-                    {
+                    if (minCardinality > maxCardinality)
                         throw new RDFSemanticsException("Cannot create RDFOntologyCardinalityRestriction because given \"minCardinality\" parameter (" + minCardinality + ") must be less or equal than given \"maxCardinality\" parameter (" + maxCardinality + ")");
-                    }
-                }
-                else
-                {
+
                     this.MinCardinality = minCardinality;
                 }
-            }
+                else
+                    this.MinCardinality = minCardinality;
 
             //MaxCardinality
             if (maxCardinality > 0)
-            {
                 if (minCardinality > 0)
                 {
-                    if (maxCardinality >= minCardinality)
-                    {
-                        this.MaxCardinality = maxCardinality;
-                    }
-                    else
-                    {
+                    if (maxCardinality < minCardinality)
                         throw new RDFSemanticsException("Cannot create RDFOntologyCardinalityRestriction because given \"maxCardinality\" parameter (" + maxCardinality + ") must be greater or equal than given \"minCardinality\" parameter (" + minCardinality + ")");
-                    }
-                }
-                else
-                {
+                    
                     this.MaxCardinality = maxCardinality;
                 }
-            }
+                else
+                    this.MaxCardinality = maxCardinality;
 
             if (this.MinCardinality == 0 && this.MaxCardinality == 0)
-            {
                 throw new RDFSemanticsException("Cannot create RDFOntologyCardinalityRestriction because at least one of the given \"minCardinality\" and \"maxCardinality\" parameters must be greater than 0.");
-            }
         }
         #endregion
-
     }
-
 }

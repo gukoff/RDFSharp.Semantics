@@ -14,16 +14,13 @@
    limitations under the License.
 */
 
-using System;
 namespace RDFSharp.Semantics
 {
-
     /// <summary>
     /// RDFOntologyClassModelMetadata represents a collector for relations describing ontology classes.
     /// </summary>
     public class RDFOntologyClassModelMetadata
     {
-
         #region Properties
         /// <summary>
         /// "rdfs:subClassOf" relations
@@ -77,5 +74,4 @@ namespace RDFSharp.Semantics
         }
         #endregion
     }
-
 }

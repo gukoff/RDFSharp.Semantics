@@ -23,7 +23,6 @@ using System.Threading.Tasks;
 
 namespace RDFSharp.Semantics
 {
-
     /// <summary>
     /// RDFOntologyReasonerReport represents a detailed report of an ontology reasoner's activity.
     /// </summary>
@@ -276,5 +275,4 @@ namespace RDFSharp.Semantics
 
         #endregion
     }
-
 }

@@ -15,7 +15,6 @@
 */
 
 using RDFSharp.Model;
-using System;
 
 namespace RDFSharp.Semantics
 {
@@ -24,7 +23,6 @@ namespace RDFSharp.Semantics
     /// </summary>
     public class RDFOntologyQualifiedCardinalityRestriction : RDFOntologyRestriction
     {
-
         #region Properties
         /// <summary>
         /// Minimum accepted qualified cardinality for the restriction to be satisfied
@@ -46,70 +44,40 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Default-ctor to build an ontology qualified cardinality restriction with the given name on the given property and given class
         /// </summary>
-        public RDFOntologyQualifiedCardinalityRestriction(RDFResource restrictionName,
-                                                          RDFOntologyProperty onProperty,
-                                                          RDFOntologyClass onClass,
-                                                          int minQualifiedCardinality,
-                                                          int maxQualifiedCardinality) : base(restrictionName, onProperty)
+        public RDFOntologyQualifiedCardinalityRestriction(RDFResource restrictionName, RDFOntologyProperty onProperty, RDFOntologyClass onClass, int minQualifiedCardinality, int maxQualifiedCardinality) : base(restrictionName, onProperty)
         {
-
             //OnClass
-            if (onClass != null)
-            {
-                this.OnClass = onClass;
-            }
-            else
-            {
+            if (onClass == null)
                 throw new RDFSemanticsException("Cannot create RDFOntologyQualifiedCardinalityRestriction because given \"onClass\" parameter is null.");
-            }
+            this.OnClass = onClass;
 
             //MinQualifiedCardinality
             if (minQualifiedCardinality > 0)
-            {
                 if (maxQualifiedCardinality > 0)
                 {
-                    if (minQualifiedCardinality <= maxQualifiedCardinality)
-                    {
-                        this.MinQualifiedCardinality = minQualifiedCardinality;
-                    }
-                    else
-                    {
+                    if (minQualifiedCardinality > maxQualifiedCardinality)
                         throw new RDFSemanticsException("Cannot create RDFOntologyQualifiedCardinalityRestriction because given \"minQualifiedCardinality\" parameter (" + minQualifiedCardinality + ") must be less or equal than given \"maxQualifiedCardinality\" parameter (" + maxQualifiedCardinality + ")");
-                    }
-                }
-                else
-                {
+                    
                     this.MinQualifiedCardinality = minQualifiedCardinality;
                 }
-            }
+                else
+                    this.MinQualifiedCardinality = minQualifiedCardinality;
 
             //MaxQualifiedCardinality
             if (maxQualifiedCardinality > 0)
-            {
                 if (minQualifiedCardinality > 0)
                 {
-                    if (maxQualifiedCardinality >= minQualifiedCardinality)
-                    {
-                        this.MaxQualifiedCardinality = maxQualifiedCardinality;
-                    }
-                    else
-                    {
+                    if (maxQualifiedCardinality < minQualifiedCardinality)
                         throw new RDFSemanticsException("Cannot create RDFOntologyQualifiedCardinalityRestriction because given \"maxQualifiedCardinality\" parameter (" + maxQualifiedCardinality + ") must be greater or equal than given \"minQualifiedCardinality\" parameter (" + minQualifiedCardinality + ")");
-                    }
-                }
-                else
-                {
+                    
                     this.MaxQualifiedCardinality = maxQualifiedCardinality;
                 }
-            }
+                else
+                    this.MaxQualifiedCardinality = maxQualifiedCardinality;
 
             if (this.MinQualifiedCardinality == 0 && this.MaxQualifiedCardinality == 0)
-            {
                 throw new RDFSemanticsException("Cannot create RDFOntologyQualifiedCardinalityRestriction because at least one of the given \"minQualifiedCardinality\" and \"maxQualifiedCardinality\" parameters must be greater than 0.");
-            }
-
         }
         #endregion
-
     }
 }

@@ -15,17 +15,14 @@
 */
 
 using RDFSharp.Model;
-using System;
 
 namespace RDFSharp.Semantics
 {
-
     /// <summary>
     /// RDFOntologyProperty represents a property definition within an ontology model.
     /// </summary>
     public class RDFOntologyProperty : RDFOntologyResource
     {
-
         #region Properties
         /// <summary>
         /// Flag indicating that this ontology property is "owl:DeprecatedProperty"
@@ -54,21 +51,12 @@ namespace RDFSharp.Semantics
         /// </summary>
         internal RDFOntologyProperty(RDFResource propertyName)
         {
-            if (propertyName != null)
-            {
-                if (!propertyName.IsBlank)
-                {
-                    this.Value = propertyName;
-                }
-                else
-                {
-                    throw new RDFSemanticsException("Cannot create RDFOntologyProperty because given \"propertyName\" parameter is a blank resource.");
-                }
-            }
-            else
-            {
+            if (propertyName == null)
                 throw new RDFSemanticsException("Cannot create RDFOntologyProperty because given \"propertyName\" parameter is null.");
-            }
+            if (propertyName.IsBlank)
+                throw new RDFSemanticsException("Cannot create RDFOntologyProperty because given \"propertyName\" parameter is a blank resource.");
+
+            this.Value = propertyName;
         }
         #endregion
 
@@ -113,7 +101,5 @@ namespace RDFSharp.Semantics
             return this;
         }
         #endregion
-
     }
-
 }

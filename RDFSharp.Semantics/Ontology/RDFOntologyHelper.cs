@@ -16,8 +16,6 @@
 
 using RDFSharp.Model;
 using RDFSharp.Query;
-using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
@@ -299,7 +297,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets an ontology individual from the given RDF resource
         /// </summary>
-        public static RDFOntologyIndividual ToRDFontologyIndividual(this RDFResource ontResource)
+        public static RDFOntologyIndividual ToRDFOntologyIndividual(this RDFResource ontResource)
             => new RDFOntologyIndividual(ontResource);
 
         /// <summary>

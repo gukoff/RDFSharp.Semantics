@@ -23,14 +23,11 @@ namespace RDFSharp.Semantics
     /// </summary>
     public class RDFOntologyHasSelfRestriction : RDFOntologyRestriction
     {
-
         #region Ctors
         /// <summary>
         /// Default-ctor to build an "owl:HasSelf" ontology restriction with the given name on the given property
         /// </summary>
         public RDFOntologyHasSelfRestriction(RDFResource restrictionName, RDFOntologyProperty onProperty) : base(restrictionName, onProperty) { }
         #endregion
-
     }
-
 }

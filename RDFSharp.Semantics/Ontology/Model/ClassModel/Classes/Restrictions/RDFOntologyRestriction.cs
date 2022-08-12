@@ -18,13 +18,11 @@ using RDFSharp.Model;
 
 namespace RDFSharp.Semantics
 {
-
     /// <summary>
     /// RDFOntologyRestriction represents a restriction class definition within an ontology model.
     /// </summary>
     public class RDFOntologyRestriction : RDFOntologyClass
     {
-
         #region Properties
         /// <summary>
         /// Ontology property on which the ontology restriction is applied
@@ -36,30 +34,17 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Default-ctor to build an ontology restriction with the given name on the given ontology property
         /// </summary>
-        internal RDFOntologyRestriction(RDFResource restrictionName,
-                                         RDFOntologyProperty onProperty) : base(restrictionName)
+        internal RDFOntologyRestriction(RDFResource restrictionName, RDFOntologyProperty onProperty) : base(restrictionName)
         {
-            if (onProperty != null)
-            {
-
-                //Annotation properties cannot be restricted (OWL-DL)
-                if (!onProperty.IsAnnotationProperty())
-                {
-                    this.OnProperty = onProperty;
-                }
-                else
-                {
-                    throw new RDFSemanticsException("Cannot create RDFOntologyRestriction because given \"onProperty\" parameter is an annotation property (this is forbidden in OWL-DL).");
-                }
-
-            }
-            else
-            {
+            if (onProperty == null)
                 throw new RDFSemanticsException("Cannot create RDFOntologyRestriction because given \"onProperty\" parameter is null.");
-            }
+            
+            //Annotation properties cannot be restricted (OWL-DL)
+            if (onProperty.IsAnnotationProperty())
+                throw new RDFSemanticsException("Cannot create RDFOntologyRestriction because given \"onProperty\" parameter is an annotation property (this is forbidden in OWL-DL).");
+            
+            this.OnProperty = onProperty;
         }
         #endregion
-
     }
-
 }

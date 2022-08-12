@@ -18,13 +18,11 @@ using RDFSharp.Model;
 
 namespace RDFSharp.Semantics
 {
-
     /// <summary>
     /// RDFOntologySomeValuesFromRestriction represents an "owl:SomeValuesFrom" restriction class definition within an ontology model.
     /// </summary>
     public class RDFOntologySomeValuesFromRestriction : RDFOntologyRestriction
     {
-
         #region Properties
         /// <summary>
         /// Ontology class representing the accepted class type of the restricted property's range members
@@ -36,21 +34,13 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Default-ctor to build an "owl:SomeValuesFrom" ontology restriction with the given name on the given property and the given fromClass
         /// </summary>
-        public RDFOntologySomeValuesFromRestriction(RDFResource restrictionName,
-                                                    RDFOntologyProperty onProperty,
-                                                    RDFOntologyClass fromClass) : base(restrictionName, onProperty)
+        public RDFOntologySomeValuesFromRestriction(RDFResource restrictionName, RDFOntologyProperty onProperty, RDFOntologyClass fromClass) : base(restrictionName, onProperty)
         {
-            if (fromClass != null)
-            {
-                this.FromClass = fromClass;
-            }
-            else
-            {
+            if (fromClass == null)
                 throw new RDFSemanticsException("Cannot create RDFOntologySomeValuesFromRestriction because given \"fromClass\" parameter is null.");
-            }
+
+            this.FromClass = fromClass;
         }
         #endregion
-
     }
-
 }

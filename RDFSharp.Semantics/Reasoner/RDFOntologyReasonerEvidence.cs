@@ -19,7 +19,6 @@ using System;
 
 namespace RDFSharp.Semantics
 {
-
     /// <summary>
     /// RDFOntologyReasonerEvidence represents an inference evidence generated during execution of a rule
     /// </summary>
@@ -56,22 +55,17 @@ namespace RDFSharp.Semantics
                                            string evidenceDestination,
                                            RDFOntologyTaxonomyEntry evidenceContent)
         {
-            this.EvidenceCategory = evidenceCategory;
-
-            if (!string.IsNullOrEmpty(evidenceProvenance))
-                this.EvidenceProvenance = evidenceProvenance;
-            else
+            if (string.IsNullOrEmpty(evidenceProvenance))
                 throw new RDFSemanticsException("Cannot create reasoner evidence without evidenceProvenance!");
-
-            if (!string.IsNullOrEmpty(evidenceDestination))
-                this.EvidenceDestination = evidenceDestination;
-            else
+            if (string.IsNullOrEmpty(evidenceDestination))
                 throw new RDFSemanticsException("Cannot create reasoner evidence without evidenceDestination!");
-
-            if (evidenceContent != null)
-                this.EvidenceContent = evidenceContent;
-            else
+            if (evidenceContent == null)
                 throw new RDFSemanticsException("Cannot create reasoner evidence without evidenceContent!");
+
+            this.EvidenceCategory = evidenceCategory;
+            this.EvidenceProvenance = evidenceProvenance;
+            this.EvidenceDestination = evidenceDestination;
+            this.EvidenceContent = evidenceContent;
         }
         #endregion
 
@@ -83,5 +77,4 @@ namespace RDFSharp.Semantics
         public RDFTriple ToRDFTriple() => EvidenceContent.ToRDFTriple();
         #endregion
     }
-
 }

@@ -18,13 +18,11 @@ using System;
 
 namespace RDFSharp.Semantics
 {
-
     /// <summary>
     /// RDFOntologyValidatorRule represents a rule which analyzes a specific syntactic/semantic aspect of an ontology.
     /// </summary>
     internal class RDFOntologyValidatorRule
     {
-
         #region Properties
         /// <summary>
         /// Name of the rule
@@ -51,16 +49,12 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Default-ctor to build an empty validation rule with given name, description and delegate
         /// </summary>
-        internal RDFOntologyValidatorRule(string ruleName,
-                                          string ruleDescription,
-                                          ValidationRuleDelegate ruleDelegate)
+        internal RDFOntologyValidatorRule(string ruleName, string ruleDescription, ValidationRuleDelegate ruleDelegate)
         {
             this.RuleName = ruleName;
             this.RuleDescription = ruleDescription;
             this.ExecuteRule = ruleDelegate;
         }
         #endregion
-
     }
-
 }

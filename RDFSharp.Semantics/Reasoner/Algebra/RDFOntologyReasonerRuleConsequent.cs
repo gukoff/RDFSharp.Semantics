@@ -21,7 +21,6 @@ using System.Linq;
 
 namespace RDFSharp.Semantics
 {
-
     /// <summary>
     /// RDFOntologyReasonerRuleConsequent represents the consequent of a rule
     /// </summary>
@@ -76,5 +75,4 @@ namespace RDFSharp.Semantics
         }
         #endregion
     }
-
 }

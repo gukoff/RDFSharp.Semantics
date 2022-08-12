@@ -15,17 +15,14 @@
 */
 
 using RDFSharp.Model;
-using System;
 
 namespace RDFSharp.Semantics
 {
-
     /// <summary>
     /// RDFOntologyObjectProperty represents an object property definition within an ontology model.
     /// </summary>
     public class RDFOntologyObjectProperty : RDFOntologyProperty
     {
-
         #region Properties
         /// <summary>
         /// Flag indicating that the ontology property is "owl:SymmetricProperty"
@@ -128,7 +125,5 @@ namespace RDFSharp.Semantics
             return this;
         }
         #endregion
-
     }
-
 }

@@ -18,20 +18,16 @@ using RDFSharp.Model;
 
 namespace RDFSharp.Semantics
 {
-
     /// <summary>
     /// RDFOntologyDatatypeProperty represents a datatype property definition within an ontology model.
     /// </summary>
     public class RDFOntologyDatatypeProperty : RDFOntologyProperty
     {
-
         #region Ctors
         /// <summary>
         /// Default-ctor to build an ontology datatype property from the given non-blank resource
         /// </summary>
         public RDFOntologyDatatypeProperty(RDFResource propertyName) : base(propertyName) { }
         #endregion
-
     }
-
 }

@@ -18,13 +18,11 @@ using RDFSharp.Model;
 
 namespace RDFSharp.Semantics
 {
-
     /// <summary>
     /// RDFOntologyComplementClass represents a complement class definition within an ontology model.
     /// </summary>
     public class RDFOntologyComplementClass : RDFOntologyClass
     {
-
         #region Properties
         /// <summary>
         /// Ontology class for which this class represents the complement
@@ -38,17 +36,11 @@ namespace RDFSharp.Semantics
         /// </summary>
         public RDFOntologyComplementClass(RDFResource className, RDFOntologyClass complementOf) : base(className)
         {
-            if (complementOf != null)
-            {
-                this.ComplementOf = complementOf;
-            }
-            else
-            {
+            if (complementOf == null)
                 throw new RDFSemanticsException("Cannot create RDFOntologyComplementClass because given \"complementOf\" parameter is null.");
-            }
+
+            this.ComplementOf = complementOf;
         }
         #endregion
-
     }
-
 }

@@ -18,13 +18,11 @@ using System;
 
 namespace RDFSharp.Semantics
 {
-
     /// <summary>
     /// RDFOntologyValidatorEvidence represents an evidence reported by a validation rule.
     /// </summary>
     public class RDFOntologyValidatorEvidence
     {
-
         #region Properties
         /// <summary>
         /// Category of this evidence
@@ -62,7 +60,5 @@ namespace RDFSharp.Semantics
             this.EvidenceSuggestion = evidenceSuggestion;
         }
         #endregion
-
     }
-
 }

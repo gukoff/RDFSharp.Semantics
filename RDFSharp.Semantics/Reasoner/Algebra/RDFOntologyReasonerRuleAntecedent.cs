@@ -22,7 +22,6 @@ using System.Linq;
 
 namespace RDFSharp.Semantics
 {
-
     /// <summary>
     /// RDFSWRLRuleAntecedent represents the antecedent of a rule
     /// </summary>
@@ -93,5 +92,4 @@ namespace RDFSharp.Semantics
         }
         #endregion
     }
-
 }
