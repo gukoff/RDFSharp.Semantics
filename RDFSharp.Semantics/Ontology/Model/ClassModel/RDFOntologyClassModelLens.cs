@@ -15,305 +15,158 @@
 */
 
 using RDFSharp.Model;
+using RDFSharp.Query;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// RDFOntologyClassModelLens represents a magnifying glass on the knowledge available for a class within an ontology
+    /// RDFOntologyClassModelLens represents a magnifying glass on the knowledge available for a given owl:Class instance within an ontology
     /// </summary>
     public class RDFOntologyClassModelLens
     {
         #region Properties
         /// <summary>
-        /// Class being observed by the class model lens
+        /// Class observed by the lens
         /// </summary>
-        public RDFOntologyClass OntologyClass { get; internal set; }
+        public RDFResource Class { get; internal set; }
 
         /// <summary>
-        /// Ontology being observed by the class model lens
+        /// Ontology observed by the lens
         /// </summary>
         public RDFOntology Ontology { get; internal set; }
         #endregion
 
         #region Ctors
         /// <summary>
-        /// Builds a class model lens for the given class on the given ontology
+        /// Builds a class model lens for the given owl:Class instance on the given ontology
         /// </summary>
-        public RDFOntologyClassModelLens(RDFOntologyClass ontologyClass, RDFOntology ontology)
+        public RDFOntologyClassModelLens(RDFResource owlClass, RDFOntology ontology)
         {
-            if (ontologyClass == null)
-                throw new RDFSemanticsException("Cannot create class model lens because given \"ontologyClass\" parameter is null");
+            if (owlClass == null)
+                throw new RDFSemanticsException("Cannot create class model lens because given \"owlClass\" parameter is null");
             if (ontology == null)
                 throw new RDFSemanticsException("Cannot create class model lens because given \"ontology\" parameter is null");
 
-            this.OntologyClass = ontologyClass;
-            this.Ontology = ontology.UnionWith(RDFBASEOntology.Instance);
+            Class = owlClass;
+            Ontology = ontology;
         }
         #endregion
 
         #region Methods
         /// <summary>
-        /// Enlists the classes which are directly (or indirectly, if inference is requested) children of the lens class
+        /// Enlists the classes which are related with the lens class by rdfs:subClassOf
         /// </summary>
-        public List<(bool, RDFOntologyClass)> SubClasses(bool enableInference)
+        public List<RDFResource> SubClasses()
+            => Ontology.Model.ClassModel.AnswerSubClasses(Class);
+
+        /// <summary>
+        /// Asynchronously enlists the classes which are related with the lens class by rdfs:subClassOf
+        /// </summary>
+        public Task<List<RDFResource>> SubClassesAsync()
+            => Task.Run(() => SubClasses());
+
+        /// <summary>
+        /// Enlists the classes to which the lens class is related by rdfs:subClassOf
+        /// </summary>
+        public List<RDFResource> SuperClasses()
+            => Ontology.Model.ClassModel.AnswerSuperClasses(Class);
+
+        /// <summary>
+        /// Asynchronously enlists the classes to which the lens class is related by rdfs:subClassOf
+        /// </summary>
+        public Task<List<RDFResource>> SuperClassesAsync()
+            => Task.Run(() => SuperClasses());
+
+        /// <summary>
+        /// Enlists the classes which are related with the lens class by owl:equivalentClass
+        /// </summary>
+        public List<RDFResource> EquivalentClasses()
+            => Ontology.Model.ClassModel.AnswerEquivalentClasses(Class);
+
+        /// <summary>
+        /// Asynchronously enlists the classes which are related with the lens class by owl:equivalentClass
+        /// </summary>
+        public Task<List<RDFResource>> EquivalentClassesAsync()
+            => Task.Run(() => EquivalentClasses());
+
+        /// <summary>
+        /// Enlists the classes which are related with the lens class by owl:disjointWith
+        /// </summary>
+        public List<RDFResource> DisjointClasses()
+            => Ontology.Model.ClassModel.AnswerDisjointClasses(Class);
+
+        /// <summary>
+        /// Asynchronously enlists the classes which are related with the lens class by owl:disjointWith
+        /// </summary>
+        public Task<List<RDFResource>> DisjointClassesAsync()
+            => Task.Run(() => DisjointClasses());
+
+        /// <summary>
+        /// Enlists the properties which are related with the lens class by owl:hasKey [OWL2]
+        /// </summary>
+        public List<RDFResource> KeyProperties()
+            => Ontology.Model.ClassModel.AnswerKeyProperties(Class);
+
+        /// <summary>
+        /// Asynchronously enlists the properties which are related with the lens class by owl:hasKey [OWL2]
+        /// </summary>
+        public Task<List<RDFResource>> KeyPropertiesAsync()
+            => Task.Run(() => KeyProperties());
+
+        /// <summary>
+        /// Enlists the individuals which are related with the lens class by rdf:type
+        /// </summary>
+        public List<RDFResource> Individuals()
+            => Ontology.Data.AnswerIndividualsOfClass(Ontology.Model, Class);
+
+        /// <summary>
+        /// Asynchronously enlists the individuals which are related with the lens class by rdf:type
+        /// </summary>
+        public Task<List<RDFResource>> IndividualsAsync()
+            => Task.Run(() => Individuals());
+
+        /// <summary>
+        /// Enlists the object annotations to which the lens class is related as subject
+        /// </summary>
+        public List<RDFTriple> ObjectAnnotations()
         {
-            List<(bool, RDFOntologyClass)> result = new List<(bool, RDFOntologyClass)>();
+            List<RDFTriple> result = new List<RDFTriple>();
 
-            //First-level enlisting of subclasses
-            foreach (RDFOntologyTaxonomyEntry subClass in this.Ontology.Model.ClassModel.Relations.SubClassOf.SelectEntriesByObject(this.OntologyClass).Where(te => !te.IsInference()))
-                result.Add((false, (RDFOntologyClass)subClass.TaxonomySubject));
-
-            //Inference-enabled discovery of subclasses
-            if (enableInference)
-            {
-                List<RDFOntologyClass> subClasses = RDFOntologyClassModelHelper.GetSubClassesOf(this.Ontology.Model.ClassModel, this.OntologyClass).ToList();
-                foreach (RDFOntologyClass subClass in subClasses)
-                {
-                    if (!result.Any(c => c.Item2.Equals(subClass)))
-                        result.Add((true, subClass));
-                }
-            }
+            result.AddRange(Ontology.Model.ClassModel.TBoxGraph.Where(ann => ann.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPO
+                                                                                && Ontology.Model.PropertyModel.CheckHasAnnotationProperty((RDFResource)ann.Predicate)
+                                                                                    && ann.Subject.Equals(Class)));
 
             return result;
         }
 
         /// <summary>
-        /// Asynchronously enlists the classes which are directly (or indirectly, if inference is requested) children of the lens class
+        /// Asynchronously enlists the object annotations to which the lens class is related as subject
         /// </summary>
-        public Task<List<(bool, RDFOntologyClass)>> SubClassesAsync(bool enableInference)
-            => Task.Run(() => SubClasses(enableInference));
-
-        /// <summary>
-        /// Enlists the classes which are directly (or indirectly, if inference is requested) parents of the lens class
-        /// </summary>
-        public List<(bool, RDFOntologyClass)> SuperClasses(bool enableInference)
-        {
-            List<(bool, RDFOntologyClass)> result = new List<(bool, RDFOntologyClass)>();
-
-            //First-level enlisting of superclasses
-            foreach (RDFOntologyTaxonomyEntry subClass in this.Ontology.Model.ClassModel.Relations.SubClassOf.SelectEntriesBySubject(this.OntologyClass).Where(te => !te.IsInference()))
-                result.Add((false, (RDFOntologyClass)subClass.TaxonomyObject));
-
-            //Inference-enabled discovery of superclasses
-            if (enableInference)
-            {
-                List<RDFOntologyClass> superClasses = RDFOntologyClassModelHelper.GetSuperClassesOf(this.Ontology.Model.ClassModel, this.OntologyClass).ToList();
-                foreach (RDFOntologyClass superClass in superClasses)
-                {
-                    if (!result.Any(c => c.Item2.Equals(superClass)))
-                        result.Add((true, superClass));
-                }
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Asynchronously enlists the classes which are directly (or indirectly, if inference is requested) parents of the lens class
-        /// </summary>
-        public Task<List<(bool, RDFOntologyClass)>> SuperClassesAsync(bool enableInference)
-            => Task.Run(() => SuperClasses(enableInference));
-
-        /// <summary>
-        /// Enlists the classes which are directly (or indirectly, if inference is requested) equivalent to the lens class
-        /// </summary>
-        public List<(bool, RDFOntologyClass)> EquivalentClasses(bool enableInference)
-        {
-            List<(bool, RDFOntologyClass)> result = new List<(bool, RDFOntologyClass)>();
-
-            //First-level enlisting of equivalent classes
-            foreach (RDFOntologyTaxonomyEntry equivalentClass in this.Ontology.Model.ClassModel.Relations.EquivalentClass.SelectEntriesBySubject(this.OntologyClass).Where(te => !te.IsInference()))
-                result.Add((false, (RDFOntologyClass)equivalentClass.TaxonomyObject));
-
-            //Inference-enabled discovery of equivalent classes
-            if (enableInference)
-            {
-                List<RDFOntologyClass> equivalentClasses = RDFOntologyClassModelHelper.GetEquivalentClassesOf(this.Ontology.Model.ClassModel, this.OntologyClass).ToList();
-                foreach (RDFOntologyClass equivalentClass in equivalentClasses)
-                {
-                    if (!result.Any(c => c.Item2.Equals(equivalentClass)))
-                        result.Add((true, equivalentClass));
-                }
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Asynchronously enlists the classes which are directly (or indirectly, if inference is requested) equivalent to the lens class
-        /// </summary>
-        public Task<List<(bool, RDFOntologyClass)>> EquivalentClassesAsync(bool enableInference)
-            => Task.Run(() => EquivalentClasses(enableInference));
-
-        /// <summary>
-        /// Enlists the classes which are directly (or indirectly, if inference is requested) disjoint from the lens class
-        /// </summary>
-        public List<(bool, RDFOntologyClass)> DisjointClasses(bool enableInference)
-        {
-            List<(bool, RDFOntologyClass)> result = new List<(bool, RDFOntologyClass)>();
-
-            //First-level enlisting of disjoint classes
-            foreach (RDFOntologyTaxonomyEntry disjointClass in this.Ontology.Model.ClassModel.Relations.DisjointWith.SelectEntriesBySubject(this.OntologyClass).Where(te => !te.IsInference()))
-                result.Add((false, (RDFOntologyClass)disjointClass.TaxonomyObject));
-
-            //Inference-enabled discovery of disjoint classes
-            if (enableInference)
-            {
-                List<RDFOntologyClass> disjointClasses = RDFOntologyClassModelHelper.GetDisjointClassesWith(this.Ontology.Model.ClassModel, this.OntologyClass).ToList();
-                foreach (RDFOntologyClass disjointClass in disjointClasses)
-                {
-                    if (!result.Any(c => c.Item2.Equals(disjointClass)))
-                        result.Add((true, disjointClass));
-                }
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Asynchronously enlists the classes which are directly (or indirectly, if inference is requested) disjoint from the lens class
-        /// </summary>
-        public Task<List<(bool, RDFOntologyClass)>> DisjointClassesAsync(bool enableInference)
-            => Task.Run(() => DisjointClasses(enableInference));
-
-        /// <summary>
-        /// Enlists the properties which are keys of the lens class
-        /// </summary>
-        public List<(bool, RDFOntologyProperty)> Keys()
-        {
-            List<(bool, RDFOntologyProperty)> result = new List<(bool, RDFOntologyProperty)>();
-
-            //First-level enlisting of keys (reasoning is not available on this concept)
-            foreach (RDFOntologyTaxonomyEntry hasKey in this.Ontology.Model.ClassModel.Relations.HasKey.SelectEntriesBySubject(this.OntologyClass).Where(te => !te.IsInference()))
-                result.Add((false, (RDFOntologyProperty)hasKey.TaxonomyObject));
-
-            return result;
-        }
-
-        /// <summary>
-        /// Asynchronously enlists the properties which are keys of the lens class
-        /// </summary>
-        public Task<List<(bool, RDFOntologyProperty)>> KeysAsync()
-            => Task.Run(() => Keys());
-
-        /// <summary>
-        /// Enlists the individuals/literals which are directly (or indirectly, if inference is requested) members of the lens class
-        /// </summary>
-        public List<(bool, RDFOntologyResource)> Members(bool enableInference)
-        {
-            List<(bool, RDFOntologyResource)> result = new List<(bool, RDFOntologyResource)>();
-
-            //First-level enlisting of members (datatype class)
-            if (RDFOntologyClassModelHelper.CheckIsLiteralCompatibleClass(this.Ontology.Model.ClassModel, this.OntologyClass))
-            {
-                IEnumerable<RDFOntologyLiteral> literals = this.Ontology.Data.Literals.Values.Where(ol => ol.Value is RDFTypedLiteral);
-                foreach (RDFOntologyLiteral literal in literals.Where(ol => RDFModelUtilities.GetDatatypeFromEnum(((RDFTypedLiteral)ol.Value).Datatype).Equals(this.OntologyClass.ToString())))
-                {
-                    if (!result.Any(ol => ol.Equals(literal)))
-                        result.Add((false, literal));
-                }
-            }
-            //First-level enlisting of members (object class)
-            else
-            {
-                foreach (RDFOntologyTaxonomyEntry classType in this.Ontology.Data.Relations.ClassType.SelectEntriesByObject(this.OntologyClass).Where(te => !te.IsInference()))
-                    result.Add((false, classType.TaxonomySubject));
-            }
-
-            //Inference-enabled discovery of members
-            if (enableInference)
-            {
-                RDFOntologyData members = RDFOntologyDataHelper.GetMembersOf(this.Ontology, this.OntologyClass);
-                foreach (RDFOntologyIndividual individual in members)
-                {
-                    if (!result.Any(r => r.Item2.Equals(individual)))
-                        result.Add((true, individual));
-                }
-                foreach (RDFOntologyLiteral literal in members.Literals.Values)
-                {
-                    if (!result.Any(r => r.Item2.Equals(literal)))
-                        result.Add((true, literal));
-                }
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Asynchronously enlists the individuals/literals which are directly (or indirectly, if inference is requested) members of the lens class
-        /// </summary>
-        public Task<List<(bool, RDFOntologyResource)>> MembersAsync(bool enableInference)
-            => Task.Run(() => Members(enableInference));
-
-        /// <summary>
-        /// Enlists the object annotations which are assigned to the lens class
-        /// </summary>
-        public List<(RDFOntologyAnnotationProperty, RDFOntologyResource)> ObjectAnnotations()
-        {
-            List<(RDFOntologyAnnotationProperty, RDFOntologyResource)> result = new List<(RDFOntologyAnnotationProperty, RDFOntologyResource)>();
-
-            //SeeAlso
-            foreach (RDFOntologyTaxonomyEntry seeAlso in this.Ontology.Model.ClassModel.Annotations.SeeAlso.SelectEntriesBySubject(this.OntologyClass).Where(te => !te.TaxonomyObject.IsLiteral()))
-                result.Add(((RDFOntologyAnnotationProperty)seeAlso.TaxonomyPredicate, seeAlso.TaxonomyObject));
-
-            //IsDefinedBy
-            foreach (RDFOntologyTaxonomyEntry isDefinedBy in this.Ontology.Model.ClassModel.Annotations.IsDefinedBy.SelectEntriesBySubject(this.OntologyClass).Where(te => !te.TaxonomyObject.IsLiteral()))
-                result.Add(((RDFOntologyAnnotationProperty)isDefinedBy.TaxonomyPredicate, isDefinedBy.TaxonomyObject));
-
-            //Custom Annotations
-            foreach (RDFOntologyTaxonomyEntry customAnnotation in this.Ontology.Model.ClassModel.Annotations.CustomAnnotations.SelectEntriesBySubject(this.OntologyClass).Where(te => !te.TaxonomyObject.IsLiteral()))
-                result.Add(((RDFOntologyAnnotationProperty)customAnnotation.TaxonomyPredicate, customAnnotation.TaxonomyObject));
-
-            return result;
-        }
-
-        /// <summary>
-        /// Asynchronously enlists the object annotations which are assigned to the lens class
-        /// </summary>
-        public Task<List<(RDFOntologyAnnotationProperty, RDFOntologyResource)>> ObjectAnnotationsAsync()
+        public Task<List<RDFTriple>> ObjectAnnotationsAsync()
             => Task.Run(() => ObjectAnnotations());
 
         /// <summary>
-        /// Enlists the literal annotations which are assigned to the lens class
+        /// Enlists the data annotations to which the lens class is related as subject
         /// </summary>
-        public List<(RDFOntologyAnnotationProperty, RDFOntologyLiteral)> DataAnnotations()
+        public List<RDFTriple> DataAnnotations()
         {
-            List<(RDFOntologyAnnotationProperty, RDFOntologyLiteral)> result = new List<(RDFOntologyAnnotationProperty, RDFOntologyLiteral)>();
+            List<RDFTriple> result = new List<RDFTriple>();
 
-            //VersionInfo
-            foreach (RDFOntologyTaxonomyEntry versionInfo in this.Ontology.Model.ClassModel.Annotations.VersionInfo.SelectEntriesBySubject(this.OntologyClass).Where(te => te.TaxonomyObject.IsLiteral()))
-                result.Add(((RDFOntologyAnnotationProperty)versionInfo.TaxonomyPredicate, (RDFOntologyLiteral)versionInfo.TaxonomyObject));
-
-            //Comment
-            foreach (RDFOntologyTaxonomyEntry comment in this.Ontology.Model.ClassModel.Annotations.Comment.SelectEntriesBySubject(this.OntologyClass).Where(te => te.TaxonomyObject.IsLiteral()))
-                result.Add(((RDFOntologyAnnotationProperty)comment.TaxonomyPredicate, (RDFOntologyLiteral)comment.TaxonomyObject));
-
-            //Label
-            foreach (RDFOntologyTaxonomyEntry label in this.Ontology.Model.ClassModel.Annotations.Label.SelectEntriesBySubject(this.OntologyClass).Where(te => te.TaxonomyObject.IsLiteral()))
-                result.Add(((RDFOntologyAnnotationProperty)label.TaxonomyPredicate, (RDFOntologyLiteral)label.TaxonomyObject));
-
-            //SeeAlso
-            foreach (RDFOntologyTaxonomyEntry seeAlso in this.Ontology.Model.ClassModel.Annotations.SeeAlso.SelectEntriesBySubject(this.OntologyClass).Where(te => te.TaxonomyObject.IsLiteral()))
-                result.Add(((RDFOntologyAnnotationProperty)seeAlso.TaxonomyPredicate, (RDFOntologyLiteral)seeAlso.TaxonomyObject));
-
-            //IsDefinedBy
-            foreach (RDFOntologyTaxonomyEntry isDefinedBy in this.Ontology.Model.ClassModel.Annotations.IsDefinedBy.SelectEntriesBySubject(this.OntologyClass).Where(te => te.TaxonomyObject.IsLiteral()))
-                result.Add(((RDFOntologyAnnotationProperty)isDefinedBy.TaxonomyPredicate, (RDFOntologyLiteral)isDefinedBy.TaxonomyObject));
-
-            //Custom Annotations
-            foreach (RDFOntologyTaxonomyEntry customAnnotation in this.Ontology.Model.ClassModel.Annotations.CustomAnnotations.SelectEntriesBySubject(this.OntologyClass).Where(te => te.TaxonomyObject.IsLiteral()))
-                result.Add(((RDFOntologyAnnotationProperty)customAnnotation.TaxonomyPredicate, (RDFOntologyLiteral)customAnnotation.TaxonomyObject));
+            result.AddRange(Ontology.Model.ClassModel.TBoxGraph.Where(ann => ann.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPL
+                                                                                && Ontology.Model.PropertyModel.CheckHasAnnotationProperty((RDFResource)ann.Predicate)
+                                                                                    && ann.Subject.Equals(Class)));
 
             return result;
         }
 
         /// <summary>
-        /// Asynchronously enlists the literal annotations which are assigned to the lens class
+        /// Asynchronously enlists the data annotations to which the lens class is related as subject
         /// </summary>
-        public Task<List<(RDFOntologyAnnotationProperty, RDFOntologyLiteral)>> DataAnnotationsAsync()
+        public Task<List<RDFTriple>> DataAnnotationsAsync()
             => Task.Run(() => DataAnnotations());
         #endregion
     }

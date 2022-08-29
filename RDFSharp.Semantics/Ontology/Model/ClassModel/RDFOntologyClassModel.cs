@@ -14,1133 +14,782 @@
    limitations under the License.
 */
 
-using RDFSharp.Model;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using RDFSharp.Model;
 
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// RDFOntologyClassModel represents the class-oriented model component (T-BOX) of an ontology.
+    /// RDFOntologyClassModel represents the T-BOX of application domain entities (classes)
     /// </summary>
-    public class RDFOntologyClassModel : IEnumerable<RDFOntologyClass>
+    public class RDFOntologyClassModel : IEnumerable<RDFResource>
     {
         #region Properties
         /// <summary>
-        /// Count of the classes composing the class model
+        /// Count of the classes
         /// </summary>
         public long ClassesCount
-            => this.Classes.Count;
+            => Classes.Count;
 
         /// <summary>
-        /// Count of the deprecated classes composing the class model
+        /// Count of the deprecated classes
         /// </summary>
         public long DeprecatedClassesCount
-            => this.Classes.Count(c => c.Value.IsDeprecatedClass());
+        {
+            get
+            {
+                long count = 0;
+                IEnumerator<RDFResource> deprecatedClasses = DeprecatedClassesEnumerator;
+                while (deprecatedClasses.MoveNext())
+                    count++;
+                return count;
+            }
+        }
 
         /// <summary>
-        /// Count of the restrictions classes composing the class model
+        /// Count of the restrictions
         /// </summary>
         public long RestrictionsCount
-            => this.Classes.Count(c => c.Value.IsRestrictionClass());
+        { 
+            get
+            {
+                long count = 0;
+                IEnumerator<RDFResource> restrictions = RestrictionsEnumerator;
+                while (restrictions.MoveNext())
+                    count++;
+                return count;
+            }
+        }
 
         /// <summary>
-        /// Count of the enumerate classes composing the class model
+        /// Count of the enumerate classes
         /// </summary>
         public long EnumeratesCount
-            => this.Classes.Count(c => c.Value.IsEnumerateClass());
+        {
+            get
+            {
+                long count = 0;
+                IEnumerator<RDFResource> enumerates = EnumeratesEnumerator;
+                while (enumerates.MoveNext())
+                    count++;
+                return count;
+            }
+        }
 
         /// <summary>
-        /// Count of the datarange classes composing the class model
-        /// </summary>
-        public long DataRangesCount
-            => this.Classes.Count(c => c.Value.IsDataRangeClass());
-
-        /// <summary>
-        /// Count of the composite classes composing the class model
+        /// Count of the composite classes
         /// </summary>
         public long CompositesCount
-            => this.Classes.Count(c => c.Value.IsCompositeClass());
+        {
+            get
+            {
+                long count = 0;
+                IEnumerator<RDFResource> composites = CompositesEnumerator;
+                while (composites.MoveNext())
+                    count++;
+                return count;
+            }
+        }
 
         /// <summary>
-        /// Gets the enumerator on the class model's classes for iteration
+        /// Gets the enumerator on the classes for iteration
         /// </summary>
-        public IEnumerator<RDFOntologyClass> ClassesEnumerator
-            => this.Classes.Values.GetEnumerator();
+        public IEnumerator<RDFResource> ClassesEnumerator
+            => Classes.Values.GetEnumerator();
 
         /// <summary>
-        /// Gets the enumerator on the class model's deprecated classes for iteration
+        /// Gets the enumerator on the deprecated classes for iteration
         /// </summary>
-        public IEnumerator<RDFOntologyClass> DeprecatedClassesEnumerator
-            => this.Classes.Values.Where(c => c.IsDeprecatedClass())
-                                  .GetEnumerator();
+        public IEnumerator<RDFResource> DeprecatedClassesEnumerator
+        {
+            get
+            {
+                IEnumerator<RDFResource> classes = ClassesEnumerator;
+                while (classes.MoveNext())
+                {
+                    if (TBoxGraph[classes.Current, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.DEPRECATED_CLASS, null].Any())
+                        yield return classes.Current;
+                }
+            }
+        }
 
         /// <summary>
-        /// Gets the enumerator on the class model's restriction classes for iteration
+        /// Gets the enumerator on the restrictions for iteration
         /// </summary>
-        public IEnumerator<RDFOntologyRestriction> RestrictionsEnumerator
-            => this.Classes.Values.Where(c => c.IsRestrictionClass())
-                                  .OfType<RDFOntologyRestriction>()
-                                  .GetEnumerator();
+        public IEnumerator<RDFResource> RestrictionsEnumerator
+        { 
+            get
+            {
+                IEnumerator<RDFResource> classes = ClassesEnumerator;
+                while (classes.MoveNext())
+                {
+                    if (TBoxGraph[classes.Current, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.RESTRICTION, null].Any())
+                        yield return classes.Current;
+                }
+            }
+        }
 
         /// <summary>
-        /// Gets the enumerator on the class model's enumerate classes for iteration
+        /// Gets the enumerator on the enumerate classes for iteration
         /// </summary>
-        public IEnumerator<RDFOntologyEnumerateClass> EnumeratesEnumerator
-            => this.Classes.Values.Where(c => c.IsEnumerateClass())
-                                  .OfType<RDFOntologyEnumerateClass>()
-                                  .GetEnumerator();
+        public IEnumerator<RDFResource> EnumeratesEnumerator
+        {
+            get
+            {
+                IEnumerator<RDFResource> classes = ClassesEnumerator;
+                while (classes.MoveNext())
+                {
+                    if (TBoxGraph[classes.Current, RDFVocabulary.OWL.ONE_OF, null, null].Any())
+                        yield return classes.Current;
+                }
+            }
+        }
 
         /// <summary>
-        /// Gets the enumerator on the class model's datarange classes for iteration
+        /// Gets the enumerator on the composite classes for iteration
         /// </summary>
-        public IEnumerator<RDFOntologyDataRangeClass> DataRangesEnumerator
-            => this.Classes.Values.Where(c => c.IsDataRangeClass())
-                                  .OfType<RDFOntologyDataRangeClass>()
-                                  .GetEnumerator();
+        public IEnumerator<RDFResource> CompositesEnumerator
+        {
+            get
+            {
+                IEnumerator<RDFResource> classes = ClassesEnumerator;
+                while (classes.MoveNext())
+                {
+                    if (TBoxGraph.Any(t => t.Subject.Equals(classes.Current) &&
+                                                (t.Predicate.Equals(RDFVocabulary.OWL.UNION_OF) || 
+                                                    t.Predicate.Equals(RDFVocabulary.OWL.INTERSECTION_OF) ||
+                                                        t.Predicate.Equals(RDFVocabulary.OWL.COMPLEMENT_OF))))
+                        yield return classes.Current;
+                }
+            }
+        }
 
         /// <summary>
-        /// Gets the enumerator on the class model's composite classes for iteration
+        /// Collection of classes
         /// </summary>
-        public IEnumerator<RDFOntologyClass> CompositesEnumerator
-            => this.Classes.Values.Where(c => c.IsCompositeClass())
-                                  .GetEnumerator();
+        internal Dictionary<long, RDFResource> Classes { get; set; }
 
         /// <summary>
-        /// Annotations describing classes of the ontology class model
+        /// T-BOX knowledge describing classes
         /// </summary>
-        public RDFOntologyAnnotations Annotations { get; internal set; }
+        internal RDFGraph TBoxGraph { get; set; }
 
         /// <summary>
-        /// Relations describing classes of the ontology class model
+        /// T-BOX knowledge inferred
         /// </summary>
-        public RDFOntologyClassModelMetadata Relations { get; internal set; }
+        internal RDFGraph TBoxInferenceGraph { get; set; }
 
         /// <summary>
-        /// Dictionary of classes composing the ontology class model
+        /// T-BOX virtual knowledge (comprehensive of both available and inferred)
         /// </summary>
-        internal Dictionary<long, RDFOntologyClass> Classes { get; set; }
+        internal RDFGraph TBoxVirtualGraph
+            => TBoxGraph.UnionWith(TBoxInferenceGraph);
         #endregion
 
         #region Ctors
         /// <summary>
-        /// Default-ctor to build an empty class model
+        /// Builds an empty class model
         /// </summary>
         public RDFOntologyClassModel()
         {
-            this.Classes = new Dictionary<long, RDFOntologyClass>();
-            this.Annotations = new RDFOntologyAnnotations();
-            this.Relations = new RDFOntologyClassModelMetadata();
+            Classes = new Dictionary<long, RDFResource>();
+            TBoxGraph = new RDFGraph();
+            TBoxInferenceGraph = new RDFGraph();
         }
         #endregion
 
         #region Interfaces
         /// <summary>
-        /// Exposes a typed enumerator on the class model's classes
+        /// Exposes a typed enumerator on the classes for iteration
         /// </summary>
-        IEnumerator<RDFOntologyClass> IEnumerable<RDFOntologyClass>.GetEnumerator() => this.ClassesEnumerator;
+        IEnumerator<RDFResource> IEnumerable<RDFResource>.GetEnumerator()
+            => ClassesEnumerator;
 
         /// <summary>
-        /// Exposes an untyped enumerator on the ontology class model's classes
+        /// Exposes an untyped enumerator on the classes for iteration
         /// </summary>
-        IEnumerator IEnumerable.GetEnumerator() => this.ClassesEnumerator;
+        IEnumerator IEnumerable.GetEnumerator()
+            => ClassesEnumerator;
         #endregion
 
         #region Methods
-
-        #region Add
         /// <summary>
-        /// Adds the given class to the ontology class model
+        /// Declares the existence of the given owl:Class to the model
         /// </summary>
-        public RDFOntologyClassModel AddClass(RDFOntologyClass ontologyClass)
+        public RDFOntologyClassModel DeclareClass(RDFResource owlClass, RDFOntologyClassBehavior owlClassBehavior=null)
         {
-            if (ontologyClass != null)
-            {
-                if (!this.Classes.ContainsKey(ontologyClass.PatternMemberID))
-                    this.Classes.Add(ontologyClass.PatternMemberID, ontologyClass);
-            }
+            if (owlClass == null)
+                throw new RDFSemanticsException("Cannot declare owl:Class to the model because given \"owlClass\" parameter is null");
+            if (owlClassBehavior == null)
+                owlClassBehavior = new RDFOntologyClassBehavior();
+
+            if (!Classes.ContainsKey(owlClass.PatternMemberID))
+                Classes.Add(owlClass.PatternMemberID, owlClass);
+
+            //Add knowledge to the T-BOX
+            TBoxGraph.AddTriple(new RDFTriple(owlClass, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS));
+            if (owlClassBehavior.Deprecated)
+                TBoxGraph.AddTriple(new RDFTriple(owlClass, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.DEPRECATED_CLASS));
+
             return this;
         }
 
-        /// <summary>
-        /// Adds the given restriction class to the ontology class model
-        /// </summary>
-        public RDFOntologyClassModel AddRestriction(RDFOntologyRestriction ontologyRestriction)
-            => this.AddClass(ontologyRestriction);
+        //RESTRICTIONS
 
         /// <summary>
-        /// Adds the given standard annotation to the given ontology class
+        /// Declares the existence of the given owl:allValuesFrom restriction to the model
         /// </summary>
-        public RDFOntologyClassModel AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation standardAnnotation, RDFOntologyClass ontologyClass, RDFOntologyResource annotationValue)
+        public RDFOntologyClassModel DeclareAllValuesFromRestriction(RDFResource owlRestriction, RDFResource onProperty, RDFResource allValuesFromClass)
         {
-            if (ontologyClass != null && annotationValue != null)
-            {
-                switch (standardAnnotation)
-                {
+            if (allValuesFromClass == null)
+                throw new RDFSemanticsException("Cannot declare owl:allValuesFrom restriction to the model because given \"allValuesFromClass\" parameter is null");
 
-                    //owl:versionInfo
-                    case RDFSemanticsEnums.RDFOntologyStandardAnnotation.VersionInfo:
-                        if (annotationValue.IsLiteral())
-                            this.Annotations.VersionInfo.AddEntry(new RDFOntologyTaxonomyEntry(ontologyClass, RDFVocabulary.OWL.VERSION_INFO.ToRDFOntologyAnnotationProperty(), annotationValue));
-                        else
-                            RDFSemanticsEvents.RaiseSemanticsInfo(string.Format("Cannot annotate ontology class with owl:versionInfo value '{0}' because it is not an ontology literal", annotationValue));
-                        break;
+            //Declare restriction to the model
+            DeclareRestriction(owlRestriction, onProperty);
 
-                    //owl:versionIRI
-                    case RDFSemanticsEnums.RDFOntologyStandardAnnotation.VersionIRI:
-                        RDFSemanticsEvents.RaiseSemanticsInfo("Cannot annotate ontology class with owl:versionIRI because it is reserved for ontologies");
-                        break;
-
-                    //rdfs:comment
-                    case RDFSemanticsEnums.RDFOntologyStandardAnnotation.Comment:
-                        if (annotationValue.IsLiteral())
-                            this.Annotations.Comment.AddEntry(new RDFOntologyTaxonomyEntry(ontologyClass, RDFVocabulary.RDFS.COMMENT.ToRDFOntologyAnnotationProperty(), annotationValue));
-                        else
-                            RDFSemanticsEvents.RaiseSemanticsInfo(string.Format("Cannot annotate ontology class with rdfs:comment value '{0}' because it is not an ontology literal", annotationValue));
-                        break;
-
-                    //rdfs:label
-                    case RDFSemanticsEnums.RDFOntologyStandardAnnotation.Label:
-                        if (annotationValue.IsLiteral())
-                            this.Annotations.Label.AddEntry(new RDFOntologyTaxonomyEntry(ontologyClass, RDFVocabulary.RDFS.LABEL.ToRDFOntologyAnnotationProperty(), annotationValue));
-                        else
-                            RDFSemanticsEvents.RaiseSemanticsInfo(string.Format("Cannot annotate ontology class with rdfs:label value '{0}' because it is not an ontology literal", annotationValue));
-                        break;
-
-                    //rdfs:seeAlso
-                    case RDFSemanticsEnums.RDFOntologyStandardAnnotation.SeeAlso:
-                        this.Annotations.SeeAlso.AddEntry(new RDFOntologyTaxonomyEntry(ontologyClass, RDFVocabulary.RDFS.SEE_ALSO.ToRDFOntologyAnnotationProperty(), annotationValue));
-                        break;
-
-                    //rdfs:isDefinedBy
-                    case RDFSemanticsEnums.RDFOntologyStandardAnnotation.IsDefinedBy:
-                        this.Annotations.IsDefinedBy.AddEntry(new RDFOntologyTaxonomyEntry(ontologyClass, RDFVocabulary.RDFS.IS_DEFINED_BY.ToRDFOntologyAnnotationProperty(), annotationValue));
-                        break;
-
-                    //owl:priorVersion
-                    case RDFSemanticsEnums.RDFOntologyStandardAnnotation.PriorVersion:
-                        RDFSemanticsEvents.RaiseSemanticsInfo("Cannot annotate ontology class with owl:priorVersion because it is reserved for ontologies");
-                        break;
-
-                    //owl:imports
-                    case RDFSemanticsEnums.RDFOntologyStandardAnnotation.Imports:
-                        RDFSemanticsEvents.RaiseSemanticsInfo("Cannot annotate ontology class with owl:imports because it is reserved for ontologies");
-                        break;
-
-                    //owl:backwardCompatibleWith
-                    case RDFSemanticsEnums.RDFOntologyStandardAnnotation.BackwardCompatibleWith:
-                        RDFSemanticsEvents.RaiseSemanticsInfo("Cannot annotate ontology class with owl:backwardCompatibleWith because it is reserved for ontologies");
-                        break;
-
-                    //owl:incompatibleWith
-                    case RDFSemanticsEnums.RDFOntologyStandardAnnotation.IncompatibleWith:
-                        RDFSemanticsEvents.RaiseSemanticsInfo("Cannot annotate ontology class with owl:incompatibleWith because it is reserved for ontologies");
-                        break;
-
-                }
-            }
-            return this;
-        }
-
-        /// <summary>
-        /// Adds the given custom annotation to the given ontology class
-        /// </summary>
-        public RDFOntologyClassModel AddCustomAnnotation(RDFOntologyAnnotationProperty ontologyAnnotationProperty, RDFOntologyClass ontologyClass, RDFOntologyResource annotationValue)
-        {
-            if (ontologyAnnotationProperty != null && ontologyClass != null && annotationValue != null)
-            {
-                //standard annotation
-                if (RDFSemanticsUtilities.StandardAnnotationProperties.Contains(ontologyAnnotationProperty.PatternMemberID))
-                {
-                    //owl:versionInfo
-                    if (ontologyAnnotationProperty.Equals(RDFVocabulary.OWL.VERSION_INFO))
-                        this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.VersionInfo, ontologyClass, annotationValue);
-
-                    //owl:versionIRI
-                    else if (ontologyAnnotationProperty.Equals(RDFVocabulary.OWL.VERSION_IRI))
-                        this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.VersionIRI, ontologyClass, annotationValue);
-
-                    //rdfs:comment
-                    else if (ontologyAnnotationProperty.Equals(RDFVocabulary.RDFS.COMMENT))
-                        this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.Comment, ontologyClass, annotationValue);
-
-                    //rdfs:label
-                    else if (ontologyAnnotationProperty.Equals(RDFVocabulary.RDFS.LABEL))
-                        this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.Label, ontologyClass, annotationValue);
-
-                    //rdfs:seeAlso
-                    else if (ontologyAnnotationProperty.Equals(RDFVocabulary.RDFS.SEE_ALSO))
-                        this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.SeeAlso, ontologyClass, annotationValue);
-
-                    //rdfs:isDefinedBy
-                    else if (ontologyAnnotationProperty.Equals(RDFVocabulary.RDFS.IS_DEFINED_BY))
-                        this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.IsDefinedBy, ontologyClass, annotationValue);
-
-                    //owl:imports
-                    else if (ontologyAnnotationProperty.Equals(RDFVocabulary.OWL.IMPORTS))
-                        this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.Imports, ontologyClass, annotationValue);
-
-                    //owl:backwardCompatibleWith
-                    else if (ontologyAnnotationProperty.Equals(RDFVocabulary.OWL.BACKWARD_COMPATIBLE_WITH))
-                        this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.BackwardCompatibleWith, ontologyClass, annotationValue);
-
-                    //owl:incompatibleWith
-                    else if (ontologyAnnotationProperty.Equals(RDFVocabulary.OWL.INCOMPATIBLE_WITH))
-                        this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.IncompatibleWith, ontologyClass, annotationValue);
-
-                    //owl:priorVersion
-                    else if (ontologyAnnotationProperty.Equals(RDFVocabulary.OWL.PRIOR_VERSION))
-                        this.AddStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.PriorVersion, ontologyClass, annotationValue);
-                }
-
-                //custom annotation
-                else
-                    this.Annotations.CustomAnnotations.AddEntry(new RDFOntologyTaxonomyEntry(ontologyClass, ontologyAnnotationProperty, annotationValue));
-            }
-            return this;
-        }
-
-        /// <summary>
-        /// Adds the "childClass -> rdfs:subClassOf -> motherClass" relation to the class model (and links the given axiom annotation if provided)
-        /// </summary>
-        public RDFOntologyClassModel AddSubClassOfRelation(RDFOntologyClass childClass, RDFOntologyClass motherClass, RDFOntologyAxiomAnnotation axiomAnnotation = null)
-        {
-            if (childClass != null && motherClass != null && !childClass.Equals(motherClass))
-            {
-                //Enforce preliminary checks on usage of BASE classes
-                if (!RDFOntologyChecker.CheckReservedClass(childClass) && !RDFOntologyChecker.CheckReservedClass(motherClass))
-                {
-                    //Enforce taxonomy checks before adding the subClassOf relation
-                    if (RDFOntologyChecker.CheckSubClassOfCompatibility(this, childClass, motherClass))
-                    {
-                        RDFOntologyTaxonomyEntry taxonomyEntry = new RDFOntologyTaxonomyEntry(childClass, RDFVocabulary.RDFS.SUB_CLASS_OF.ToRDFOntologyObjectProperty(), motherClass);
-                        this.Relations.SubClassOf.AddEntry(taxonomyEntry);
-
-                        //Link owl:Axiom annotation
-                        this.AddAxiomAnnotation(taxonomyEntry, axiomAnnotation, nameof(RDFOntologyClassModelMetadata.SubClassOf));
-                    }
-                    else
-                        RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("SubClassOf relation between child class '{0}' and mother class '{1}' cannot be added to the class model because it violates the taxonomy consistency.", childClass, motherClass));
-                }
-                else
-                    RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("SubClassOf relation between child class '{0}' and mother class '{1}' cannot be added to the class model because usage of BASE reserved classes compromises the taxonomy consistency.", childClass, motherClass));
-            }
-            return this;
-        }
-
-        /// <summary>
-        /// Adds the "aClass -> owl:equivalentClass -> bClass" relation to the class model (and links the given axiom annotation if provided)
-        /// </summary>
-        public RDFOntologyClassModel AddEquivalentClassRelation(RDFOntologyClass aClass, RDFOntologyClass bClass, RDFOntologyAxiomAnnotation axiomAnnotation = null)
-        {
-            if (aClass != null && bClass != null && !aClass.Equals(bClass))
-            {
-                //Enforce preliminary checks on usage of BASE classes
-                if (!RDFOntologyChecker.CheckReservedClass(aClass) && !RDFOntologyChecker.CheckReservedClass(bClass))
-                {
-                    //Enforce taxonomy checks before adding the equivalentClass relation
-                    if (RDFOntologyChecker.CheckEquivalentClassCompatibility(this, aClass, bClass))
-                    {
-                        RDFOntologyTaxonomyEntry equivclassLeft = new RDFOntologyTaxonomyEntry(aClass, RDFVocabulary.OWL.EQUIVALENT_CLASS.ToRDFOntologyObjectProperty(), bClass);
-                        this.Relations.EquivalentClass.AddEntry(equivclassLeft);
-                        RDFOntologyTaxonomyEntry equivclassRight = new RDFOntologyTaxonomyEntry(bClass, RDFVocabulary.OWL.EQUIVALENT_CLASS.ToRDFOntologyObjectProperty(), aClass).SetInference(RDFSemanticsEnums.RDFOntologyInferenceType.API);
-                        this.Relations.EquivalentClass.AddEntry(equivclassRight);
-
-                        //Link owl:Axiom annotation
-                        this.AddAxiomAnnotation(equivclassLeft, axiomAnnotation, nameof(RDFOntologyClassModelMetadata.EquivalentClass));
-                    }
-                    else
-                        RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("EquivalentClass relation between class '{0}' and class '{1}' cannot be added to the class model because it violates the taxonomy consistency.", aClass, bClass));
-                }
-                else
-                    RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("EquivalentClass relation between class '{0}' and class '{1}' cannot be added to the class model because usage of BASE reserved classes compromises the taxonomy consistency.", aClass, bClass));
-            }
-            return this;
-        }
-
-        /// <summary>
-        /// Adds the "aClass -> owl:disjointWith -> bClass" relation to the class model (and links the given axiom annotation if provided)
-        /// </summary>
-        public RDFOntologyClassModel AddDisjointWithRelation(RDFOntologyClass aClass, RDFOntologyClass bClass, RDFOntologyAxiomAnnotation axiomAnnotation = null)
-        {
-            if (aClass != null && bClass != null && !aClass.Equals(bClass))
-            {
-                //Enforce preliminary checks on usage of BASE classes
-                if (!RDFOntologyChecker.CheckReservedClass(aClass) && !RDFOntologyChecker.CheckReservedClass(bClass))
-                {
-                    //Enforce taxonomy checks before adding the disjointWith relation
-                    if (RDFOntologyChecker.CheckDisjointWithCompatibility(this, aClass, bClass))
-                    {
-                        RDFOntologyTaxonomyEntry disjwithLeft = new RDFOntologyTaxonomyEntry(aClass, RDFVocabulary.OWL.DISJOINT_WITH.ToRDFOntologyObjectProperty(), bClass);
-                        this.Relations.DisjointWith.AddEntry(disjwithLeft);
-                        RDFOntologyTaxonomyEntry disjwithRight = new RDFOntologyTaxonomyEntry(bClass, RDFVocabulary.OWL.DISJOINT_WITH.ToRDFOntologyObjectProperty(), aClass).SetInference(RDFSemanticsEnums.RDFOntologyInferenceType.API);
-                        this.Relations.DisjointWith.AddEntry(disjwithRight);
-
-                        //Link owl:Axiom annotation
-                        this.AddAxiomAnnotation(disjwithLeft, axiomAnnotation, nameof(RDFOntologyClassModelMetadata.DisjointWith));
-                    }
-                    else
-                        RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("DisjointWith relation between class '{0}' and class '{1}' cannot be added to the class model because it violates the taxonomy consistency.", aClass, bClass));
-                }
-                else
-                    RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("DisjointWith relation between class '{0}' and class '{1}' cannot be added to the class model because usage of BASE reserved classes compromises the taxonomy consistency.", aClass, bClass));
-            }
-            return this;
-        }
-
-        /// <summary>
-        /// Foreach of the given individuals, adds the "ontologyEnumerateClass -> owl:oneOf -> ontologyIndividual" relation to the class model
-        /// </summary>
-        public RDFOntologyClassModel AddOneOfRelation(RDFOntologyEnumerateClass ontologyEnumerateClass, List<RDFOntologyIndividual> ontologyIndividuals)
-        {
-            if (ontologyEnumerateClass != null && ontologyIndividuals != null)
-                ontologyIndividuals.ForEach(f => this.Relations.OneOf.AddEntry(new RDFOntologyTaxonomyEntry(ontologyEnumerateClass, RDFVocabulary.OWL.ONE_OF.ToRDFOntologyObjectProperty(), f)));
-            return this;
-        }
-
-        /// <summary>
-        /// Foreach of the given literals, adds the "ontologyDataRangeClass -> owl:oneOf -> ontologyLiteral" relation to the class model
-        /// </summary>
-        public RDFOntologyClassModel AddOneOfRelation(RDFOntologyDataRangeClass ontologyDataRangeClass, List<RDFOntologyLiteral> ontologyLiterals)
-        {
-            if (ontologyDataRangeClass != null && ontologyLiterals != null)
-                ontologyLiterals.ForEach(l => this.Relations.OneOf.AddEntry(new RDFOntologyTaxonomyEntry(ontologyDataRangeClass, RDFVocabulary.OWL.ONE_OF.ToRDFOntologyDatatypeProperty(), l)));
-            return this;
-        }
-
-        /// <summary>
-        /// Foreach of the given classes, adds the "ontologyIntersectionClass -> owl:intersectionOf -> ontologyClass" relation to the class model
-        /// </summary>
-        public RDFOntologyClassModel AddIntersectionOfRelation(RDFOntologyIntersectionClass ontologyIntersectionClass, List<RDFOntologyClass> ontologyClasses)
-        {
-            if (ontologyIntersectionClass != null && ontologyClasses != null && !ontologyClasses.Any(c => c.Equals(ontologyIntersectionClass)))
-                ontologyClasses.ForEach(c => this.Relations.IntersectionOf.AddEntry(new RDFOntologyTaxonomyEntry(ontologyIntersectionClass, RDFVocabulary.OWL.INTERSECTION_OF.ToRDFOntologyObjectProperty(), c)));
-            return this;
-        }
-
-        /// <summary>
-        /// Foreach of the given classes, adds the "ontologyUnionClass -> owl:unionOf -> ontologyClass" relation to the class model
-        /// </summary>
-        public RDFOntologyClassModel AddUnionOfRelation(RDFOntologyUnionClass ontologyUnionClass, List<RDFOntologyClass> ontologyClasses)
-        {
-            if (ontologyUnionClass != null && ontologyClasses != null && !ontologyClasses.Any(c => c.Equals(ontologyUnionClass)))
-                ontologyClasses.ForEach(c => this.Relations.UnionOf.AddEntry(new RDFOntologyTaxonomyEntry(ontologyUnionClass, RDFVocabulary.OWL.UNION_OF.ToRDFOntologyObjectProperty(), c)));
-            return this;
-        }
-
-        /// <summary>
-        /// Foreach of the given classes, adds the "ontologyUnionClass -> owl:unionOf -> ontologyClass" and the<br/>
-        /// "ontologyClassA -> owl:disjointWith -> ontologyClassB" relations to the class model [OWL2]
-        /// </summary>
-        public RDFOntologyClassModel AddDisjointUnionRelation(RDFOntologyUnionClass ontologyUnionClass, List<RDFOntologyClass> ontologyClasses)
-        {
-            //Union
-            this.AddUnionOfRelation(ontologyUnionClass, ontologyClasses);
-
-            //Disjointness
-            ontologyClasses?.ForEach(outerClass =>
-                ontologyClasses?.ForEach(innerClass => this.AddDisjointWithRelation(outerClass, innerClass)));
+            //Add knowledge to the T-BOX
+            TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.ALL_VALUES_FROM, allValuesFromClass));
 
             return this;
         }
 
         /// <summary>
-        /// Foreach of the given classes, adds the "ontologyClassA -> owl:disjointWith -> ontologyClassB" relations to the class model [OWL2]
+        /// Declares the existence of the given owl:someValuesFrom restriction to the model
         /// </summary>
-        public RDFOntologyClassModel AddAllDisjointClassesRelation(List<RDFOntologyClass> ontologyClasses)
+        public RDFOntologyClassModel DeclareSomeValuesFromRestriction(RDFResource owlRestriction, RDFResource onProperty, RDFResource someValuesFromClass)
         {
-            ontologyClasses?.ForEach(outerClass =>
-                ontologyClasses?.ForEach(innerClass => this.AddDisjointWithRelation(outerClass, innerClass)));
+            if (someValuesFromClass == null)
+                throw new RDFSemanticsException("Cannot declare owl:someValuesFrom restriction to the model because given \"someValuesFromClass\" parameter is null");
+
+            //Declare restriction to the model
+            DeclareRestriction(owlRestriction, onProperty);
+
+            //Add knowledge to the T-BOX
+            TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.SOME_VALUES_FROM, someValuesFromClass));
+
             return this;
         }
 
         /// <summary>
-        /// For each of the given properties, adds the "ontologyClass -> owl:hasKey -> keyProperty" relation to the class model [OWL2]
+        /// Declares the existence of the given owl:hasSelf restriction to the model [OWL2]
         /// </summary>
-        public RDFOntologyClassModel AddHasKeyRelation(RDFOntologyClass ontologyClass, List<RDFOntologyProperty> keyProperties)
+        public RDFOntologyClassModel DeclareHasSelfRestriction(RDFResource owlRestriction, RDFResource onProperty, bool hasSelf)
         {
-            if (ontologyClass != null)
-                keyProperties?.ForEach(kp =>
-                {
-                    if (kp != null)
-                        this.Relations.HasKey.AddEntry(new RDFOntologyTaxonomyEntry(ontologyClass, RDFVocabulary.OWL.HAS_KEY.ToRDFOntologyObjectProperty(), kp));
-                });
+            //Declare restriction to the model
+            DeclareRestriction(owlRestriction, onProperty);
+
+            //Add knowledge to the T-BOX
+            TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.HAS_SELF, hasSelf ? RDFTypedLiteral.True : RDFTypedLiteral.False));
+
             return this;
         }
 
         /// <summary>
-        /// Adds the given owl:Axiom annotation to the given taxonomy entry
+        /// Declares the existence of the given owl:hasValue restriction to the model
         /// </summary>
-        internal RDFOntologyClassModel AddAxiomAnnotation(RDFOntologyTaxonomyEntry taxonomyEntry, RDFOntologyAxiomAnnotation axiomAnnotation, string targetTaxonomyName)
+        public RDFOntologyClassModel DeclareHasValueRestriction(RDFResource owlRestriction, RDFResource onProperty, RDFResource value)
         {
-            #region DetectTargetTaxonomy
-            RDFOntologyTaxonomy DetectTargetTaxonomy()
-            {
-                RDFOntologyTaxonomy targetTaxonomy = null;
-                switch (targetTaxonomyName)
-                {
-                    case nameof(RDFOntologyClassModelMetadata.SubClassOf):
-                        targetTaxonomy = this.Relations.SubClassOf;
-                        break;
-                    case nameof(RDFOntologyClassModelMetadata.EquivalentClass):
-                        targetTaxonomy = this.Relations.EquivalentClass;
-                        break;
-                    case nameof(RDFOntologyClassModelMetadata.DisjointWith):
-                        targetTaxonomy = this.Relations.DisjointWith;
-                        break;
-                }
-                return targetTaxonomy;
-            }
+            if (value == null)
+                throw new RDFSemanticsException("Cannot declare owl:hasValue restriction to the model because given \"value\" parameter is null");
+
+            //Declare restriction to the model
+            DeclareRestriction(owlRestriction, onProperty);
+
+            //Add knowledge to the T-BOX
+            TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.HAS_VALUE, value));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the existence of the given owl:hasValue restriction to the model
+        /// </summary>
+        public RDFOntologyClassModel DeclareHasValueRestriction(RDFResource owlRestriction, RDFResource onProperty, RDFLiteral value)
+        {
+            if (value == null)
+                throw new RDFSemanticsException("Cannot declare owl:hasValue restriction to the model because given \"value\" parameter is null");
+
+            //Declare restriction to the model
+            DeclareRestriction(owlRestriction, onProperty);
+
+            //Add knowledge to the T-BOX
+            TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.HAS_VALUE, value));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the existence of the given owl:cardinality restriction to the model
+        /// </summary>
+        public RDFOntologyClassModel DeclareCardinalityRestriction(RDFResource owlRestriction, RDFResource onProperty, uint cardinality)
+        {
+            //Declare restriction to the model
+            DeclareRestriction(owlRestriction, onProperty);
+
+            //Add knowledge to the T-BOX
+            TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.CARDINALITY, new RDFTypedLiteral(cardinality.ToString(), RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER)));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the existence of the given owl:minCardinality restriction to the model
+        /// </summary>
+        public RDFOntologyClassModel DeclareMinCardinalityRestriction(RDFResource owlRestriction, RDFResource onProperty, uint minCardinality)
+        {
+            //Declare restriction to the model
+            DeclareRestriction(owlRestriction, onProperty);
+
+            //Add knowledge to the T-BOX
+            TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.MIN_CARDINALITY, new RDFTypedLiteral(minCardinality.ToString(), RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER)));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the existence of the given owl:maxCardinality restriction to the model
+        /// </summary>
+        public RDFOntologyClassModel DeclareMaxCardinalityRestriction(RDFResource owlRestriction, RDFResource onProperty, uint maxCardinality)
+        {
+            //Declare restriction to the model
+            DeclareRestriction(owlRestriction, onProperty);
+
+            //Add knowledge to the T-BOX
+            TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.MAX_CARDINALITY, new RDFTypedLiteral(maxCardinality.ToString(), RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER)));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the existence of the given owl:minCardinality and owl:maxCardinality restriction to the model
+        /// </summary>
+        public RDFOntologyClassModel DeclareMinMaxCardinalityRestriction(RDFResource owlRestriction, RDFResource onProperty, uint minCardinality, uint maxCardinality)
+        {
+            //Declare restriction to the model
+            DeclareRestriction(owlRestriction, onProperty);
+
+            //Add knowledge to the T-BOX
+            TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.MIN_CARDINALITY, new RDFTypedLiteral(minCardinality.ToString(), RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER)));
+            TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.MAX_CARDINALITY, new RDFTypedLiteral(maxCardinality.ToString(), RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER)));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the existence of the given owl:qualifiedCardinality restriction to the model [OWL2]
+        /// </summary>
+        public RDFOntologyClassModel DeclareQualifiedCardinalityRestriction(RDFResource owlRestriction, RDFResource onProperty, uint cardinality, RDFResource onClass)
+        {
+            if (onClass == null)
+                throw new RDFSemanticsException("Cannot declare owl:qualifiedCardinality restriction to the model because given \"onClass\" parameter is null");
+
+            //Declare restriction to the model
+            DeclareRestriction(owlRestriction, onProperty);
+
+            //Add knowledge to the T-BOX
+            TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.QUALIFIED_CARDINALITY, new RDFTypedLiteral(cardinality.ToString(), RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER)));
+            TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.ON_CLASS, onClass));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the existence of the given owl:minQUalifiedCardinality restriction to the model [OWL2]
+        /// </summary>
+        public RDFOntologyClassModel DeclareMinQualifiedCardinalityRestriction(RDFResource owlRestriction, RDFResource onProperty, uint minCardinality, RDFResource onClass)
+        {
+            if (onClass == null)
+                throw new RDFSemanticsException("Cannot declare owl:minQualifiedCardinality restriction to the model because given \"onClass\" parameter is null");
+
+            //Declare restriction to the model
+            DeclareRestriction(owlRestriction, onProperty);
+
+            //Add knowledge to the T-BOX
+            TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.MIN_QUALIFIED_CARDINALITY, new RDFTypedLiteral(minCardinality.ToString(), RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER)));
+            TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.ON_CLASS, onClass));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the existence of the given owl:maxQualifiedCardinality restriction to the model [OWL2]
+        /// </summary>
+        public RDFOntologyClassModel DeclareMaxQualifiedCardinalityRestriction(RDFResource owlRestriction, RDFResource onProperty, uint maxCardinality, RDFResource onClass)
+        {
+            if (onClass == null)
+                throw new RDFSemanticsException("Cannot declare owl:maxQualifiedCardinality restriction to the model because given \"onClass\" parameter is null");
+
+            //Declare restriction to the model
+            DeclareRestriction(owlRestriction, onProperty);
+
+            //Add knowledge to the T-BOX
+            TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.MAX_QUALIFIED_CARDINALITY, new RDFTypedLiteral(maxCardinality.ToString(), RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER)));
+            TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.ON_CLASS, onClass));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the existence of the given owl:minQualifiedCardinality and owl:maxQualifiedCardinality restriction to the model, working on the given property [OWL2]
+        /// </summary>
+        public RDFOntologyClassModel DeclareMinMaxQualifiedCardinalityRestriction(RDFResource owlRestriction, RDFResource onProperty, uint minCardinality, uint maxCardinality, RDFResource onClass)
+        {
+            if (onClass == null)
+                throw new RDFSemanticsException("Cannot declare owl:minQualifiedCardinality and owl:maxQualifiedCardinality restriction to the model because given \"onClass\" parameter is null");
+
+            //Declare restriction to the model
+            DeclareRestriction(owlRestriction, onProperty);
+
+            //Add knowledge to the T-BOX
+            TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.MIN_QUALIFIED_CARDINALITY, new RDFTypedLiteral(minCardinality.ToString(), RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER)));
+            TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.MAX_QUALIFIED_CARDINALITY, new RDFTypedLiteral(maxCardinality.ToString(), RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER)));
+            TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.ON_CLASS, onClass));
+
+            return this;
+        }
+        
+        //ENUMERATES
+
+        /// <summary>
+        /// Declares the existence of the given owl:oneOf enumerate class to the model
+        /// </summary>
+        public RDFOntologyClassModel DeclareEnumerateClass(RDFResource owlClass, List<RDFResource> individuals)
+        {
+            if (owlClass == null)
+                throw new RDFSemanticsException("Cannot add enumerate class to the model because given \"owlClass\" parameter is null");
+            if (individuals == null)
+                individuals = new List<RDFResource>();
+
+            //Declare class to the model
+            DeclareClass(owlClass);
+
+            //Add knowledge to the T-BOX
+            RDFCollection enumeratesCollection = new RDFCollection(RDFModelEnums.RDFItemTypes.Resource);
+            individuals.ForEach(individual => enumeratesCollection.AddItem(individual));
+            TBoxGraph.AddCollection(enumeratesCollection);
+            TBoxGraph.AddTriple(new RDFTriple(owlClass, RDFVocabulary.OWL.ONE_OF, enumeratesCollection.ReificationSubject));
+
+            return this;
+        }
+
+        //COMPOSITES
+
+        /// <summary>
+        /// Declares the existence of the given owl:unionOf class to the model
+        /// </summary>
+        public RDFOntologyClassModel DeclareUnionClass(RDFResource owlClass, List<RDFResource> unionClasses)
+        {
+            if (owlClass == null)
+                throw new RDFSemanticsException("Cannot declare owl:unionOf class to the model because given \"owlClass\" parameter is null");
+            if (unionClasses == null)
+                unionClasses = new List<RDFResource>();
+
+            //Add class to the model
+            DeclareClass(owlClass);
+
+            //Add knowledge to the T-BOX
+            RDFCollection classesCollection = new RDFCollection(RDFModelEnums.RDFItemTypes.Resource);
+            unionClasses.ForEach(cls => classesCollection.AddItem(cls));
+            TBoxGraph.AddCollection(classesCollection);
+            TBoxGraph.AddTriple(new RDFTriple(owlClass, RDFVocabulary.OWL.UNION_OF, classesCollection.ReificationSubject));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the existence of the given owl:intersectionOf class to the model
+        /// </summary>
+        public RDFOntologyClassModel DeclareIntersectionClass(RDFResource owlClass, List<RDFResource> intersectionClasses)
+        {
+            if (owlClass == null)
+                throw new RDFSemanticsException("Cannot add intersection class to the model because given \"owlClass\" parameter is null");
+            if (intersectionClasses == null)
+                intersectionClasses = new List<RDFResource>();
+
+            //Declare class to the model
+            DeclareClass(owlClass);
+
+            //Add knowledge to the T-BOX
+            RDFCollection classesCollection = new RDFCollection(RDFModelEnums.RDFItemTypes.Resource);
+            intersectionClasses.ForEach(cls => classesCollection.AddItem(cls));
+            TBoxGraph.AddCollection(classesCollection);
+            TBoxGraph.AddTriple(new RDFTriple(owlClass, RDFVocabulary.OWL.INTERSECTION_OF, classesCollection.ReificationSubject));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the exostence of the given owl:complementOf class to the model
+        /// </summary>
+        public RDFOntologyClassModel DeclareComplementClass(RDFResource owlClass, RDFResource complementClass)
+        {
+            if (owlClass == null)
+                throw new RDFSemanticsException("Cannot declare owl:complementOf class to the model because given \"owlClass\" parameter is null");
+            if (complementClass == null)
+                throw new RDFSemanticsException("Cannot declare owl:complementOf class to the model because given \"complementClass\" parameter is null");
+
+            //Declare class to the model
+            DeclareClass(owlClass);
+
+            //Add knowledge to the T-BOX
+            TBoxGraph.AddTriple(new RDFTriple(owlClass, RDFVocabulary.OWL.COMPLEMENT_OF, complementClass));
+
+            return this;
+        }
+
+        //SHORTCUTS [OWL2]
+
+        /// <summary>
+        /// Declares the existence of the given owl:disjointUnionOf class to the model [OWL2]
+        /// </summary>
+        public RDFOntologyClassModel DeclareDisjointUnionClass(RDFResource owlClass, List<RDFResource> disjointClasses)
+        {
+            if (owlClass == null)
+                throw new RDFSemanticsException("Cannot declare owl:disjointUnionOf class to the model because given \"owlClass\" parameter is null");
+            if (disjointClasses == null)
+                disjointClasses = new List<RDFResource>();
+
+            //Add class to the model
+            DeclareClass(owlClass);
+
+            //Add knowledge to the T-BOX
+            RDFCollection disjointClassesCollection = new RDFCollection(RDFModelEnums.RDFItemTypes.Resource);
+            disjointClasses.ForEach(cls => disjointClassesCollection.AddItem(cls));
+            TBoxGraph.AddCollection(disjointClassesCollection);
+            TBoxGraph.AddTriple(new RDFTriple(owlClass, RDFVocabulary.OWL.DISJOINT_UNION_OF, disjointClassesCollection.ReificationSubject));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the existence of the given owl:AllDisjointClasses class to the model [OWL2]
+        /// </summary>
+        public RDFOntologyClassModel DeclareAllDisjointClasses(RDFResource owlClass, List<RDFResource> disjointClasses)
+        {
+            if (owlClass == null)
+                throw new RDFSemanticsException("Cannot declare owl:AllDisjointClasses class to the model because given \"owlClass\" parameter is null");
+            if (disjointClasses == null)
+                disjointClasses = new List<RDFResource>();
+
+            //Declare class to the model
+            DeclareClass(owlClass);
+            
+            //Add knowledge to the T-BOX
+            RDFCollection allDisjointClassesCollection = new RDFCollection(RDFModelEnums.RDFItemTypes.Resource);
+            disjointClasses.ForEach(disjointClass => allDisjointClassesCollection.AddItem(disjointClass));
+            TBoxGraph.AddCollection(allDisjointClassesCollection);
+            TBoxGraph.AddTriple(new RDFTriple(owlClass, RDFVocabulary.OWL.MEMBERS, allDisjointClassesCollection.ReificationSubject));
+            TBoxGraph.AddTriple(new RDFTriple(owlClass, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ALL_DISJOINT_CLASSES));
+
+            return this;
+        }
+
+        //TAXONOMIES
+
+        /// <summary>
+        /// Annotates the given class with the given "annotationProperty -> annotationValue"
+        /// </summary>
+        public RDFOntologyClassModel AnnotateClass(RDFResource owlClass, RDFResource annotationProperty, RDFResource annotationValue)
+        {
+            if (owlClass == null)
+                throw new RDFSemanticsException("Cannot annotate class because given \"owlClass\" parameter is null");
+            if (annotationProperty == null)
+                throw new RDFSemanticsException("Cannot annotate class because given \"annotationProperty\" parameter is null");
+            if (annotationProperty.IsBlank)
+                throw new RDFSemanticsException("Cannot annotate class because given \"annotationProperty\" parameter is a blank predicate");
+            if (annotationValue == null)
+                throw new RDFSemanticsException("Cannot annotate class because given \"annotationValue\" parameter is null");
+
+            //Add knowledge to the T-BOX
+            TBoxGraph.AddTriple(new RDFTriple(owlClass, annotationProperty, annotationValue));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Annotates the given class with the given "annotationProperty -> annotationValue"
+        /// </summary>
+        public RDFOntologyClassModel AnnotateClass(RDFResource owlClass, RDFResource annotationProperty, RDFLiteral annotationValue)
+        {
+            if (owlClass == null)
+                throw new RDFSemanticsException("Cannot annotate class because given \"owlClass\" parameter is null");
+            if (annotationProperty == null)
+                throw new RDFSemanticsException("Cannot annotate class because given \"annotationProperty\" parameter is null");
+            if (annotationProperty.IsBlank)
+                throw new RDFSemanticsException("Cannot annotate class because given \"annotationProperty\" parameter is a blank predicate");
+            if (annotationValue == null)
+                throw new RDFSemanticsException("Cannot annotate class because given \"annotationValue\" parameter is null");
+
+            //Add knowledge to the T-BOX
+            TBoxGraph.AddTriple(new RDFTriple(owlClass, annotationProperty, annotationValue));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the existence of the given "SubClass(childClass,motherClass)" relation to the model
+        /// </summary>
+        public RDFOntologyClassModel DeclareSubClass(RDFResource childClass, RDFResource motherClass)
+        {
+            #region OWL-DL Integrity Checks
+            bool OWLDLIntegrityChecks()
+                => !childClass.CheckReservedClass()
+                      && !motherClass.CheckReservedClass()
+                        && this.CheckSubClassCompatibility(childClass, motherClass);
             #endregion
 
-            RDFOntologyTaxonomy taxonomy = DetectTargetTaxonomy();
-            if (axiomAnnotation != null && taxonomy != null && taxonomy.ContainsEntry(taxonomyEntry))
-                this.Annotations.AxiomAnnotations.AddEntry(new RDFOntologyTaxonomyEntry(this.GetTaxonomyEntryRepresentative(taxonomyEntry), axiomAnnotation.Property, axiomAnnotation.Value));
+            if (childClass == null)
+                throw new RDFSemanticsException("Cannot declare rdfs:subClassOf relation because given \"childClass\" parameter is null");
+            if (motherClass == null)
+                throw new RDFSemanticsException("Cannot declare rdfs:subClassOf relation because given \"motherClass\" parameter is null");
+            if (childClass.Equals(motherClass))
+                throw new RDFSemanticsException("Cannot declare rdfs:subClassOf relation because given \"childClass\" parameter refers to the same class as the given \"motherClass\" parameter");
+
+            //Add knowledge to the T-BOX (or raise warning if integrity policy is active and violations are detected)
+            if (!RDFSemanticsOptions.ShouldCheckOWLDLIntegrity || OWLDLIntegrityChecks())
+                TBoxGraph.AddTriple(new RDFTriple(childClass, RDFVocabulary.RDFS.SUB_CLASS_OF, motherClass));
+            else
+                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("SubClass relation between class '{0}' and class '{1}' cannot be added to the model because it would violate OWL-DL integrity", childClass, motherClass));
+
             return this;
         }
-        #endregion
 
-        #region Remove
         /// <summary>
-        /// Removes the given class from the ontology class model
+        /// Declares the existence of the given "EquivalentClass(leftClass,rightClass)" relation to the model
         /// </summary>
-        public RDFOntologyClassModel RemoveClass(RDFOntologyClass ontologyClass)
+        public RDFOntologyClassModel DeclareEquivalentClasses(RDFResource leftClass, RDFResource rightClass)
         {
-            if (ontologyClass != null)
+            #region OWL-DL Integrity Checks
+            bool OWLDLIntegrityChecks()
+                => !leftClass.CheckReservedClass()
+                      && !rightClass.CheckReservedClass()
+                        && this.CheckEquivalentClassCompatibility(leftClass, rightClass);
+            #endregion
+
+            if (leftClass == null)
+                throw new RDFSemanticsException("Cannot declare owl:equivalentClass relation because given \"leftClass\" parameter is null");
+            if (rightClass == null)
+                throw new RDFSemanticsException("Cannot declare owl:equivalentClass relation because given \"rightClass\" parameter is null");
+            if (leftClass.Equals(rightClass))
+                throw new RDFSemanticsException("Cannot declare owl:equivalentClass relation because given \"leftClass\" parameter refers to the same class as the given \"rightClass\" parameter");
+
+            //Add knowledge to the T-BOX (or raise warning if integrity policy is active and violations are detected)
+            if (!RDFSemanticsOptions.ShouldCheckOWLDLIntegrity || OWLDLIntegrityChecks())
             {
-                if (this.Classes.ContainsKey(ontologyClass.PatternMemberID))
-                    this.Classes.Remove(ontologyClass.PatternMemberID);
-            }
-            return this;
-        }
+                TBoxGraph.AddTriple(new RDFTriple(leftClass, RDFVocabulary.OWL.EQUIVALENT_CLASS, rightClass));
 
-        /// <summary>
-        /// Removes the given restriction class from the ontology class model
-        /// </summary>
-        public RDFOntologyClassModel RemoveRestriction(RDFOntologyRestriction ontologyRestriction)
-            => this.RemoveClass(ontologyRestriction);
-
-        /// <summary>
-        /// Removes the given standard annotation from the given ontology class
-        /// </summary>
-        public RDFOntologyClassModel RemoveStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation standardAnnotation, RDFOntologyClass ontologyClass, RDFOntologyResource annotationValue)
-        {
-            if (ontologyClass != null && annotationValue != null)
-            {
-                switch (standardAnnotation)
-                {
-                    //owl:versionInfo
-                    case RDFSemanticsEnums.RDFOntologyStandardAnnotation.VersionInfo:
-                        this.Annotations.VersionInfo.RemoveEntry(new RDFOntologyTaxonomyEntry(ontologyClass, RDFVocabulary.OWL.VERSION_INFO.ToRDFOntologyAnnotationProperty(), annotationValue));
-                        break;
-
-                    //owl:versionIRI
-                    case RDFSemanticsEnums.RDFOntologyStandardAnnotation.VersionIRI:
-                        this.Annotations.VersionIRI.RemoveEntry(new RDFOntologyTaxonomyEntry(ontologyClass, RDFVocabulary.OWL.VERSION_IRI.ToRDFOntologyAnnotationProperty(), annotationValue));
-                        break;
-
-                    //rdfs:comment
-                    case RDFSemanticsEnums.RDFOntologyStandardAnnotation.Comment:
-                        this.Annotations.Comment.RemoveEntry(new RDFOntologyTaxonomyEntry(ontologyClass, RDFVocabulary.RDFS.COMMENT.ToRDFOntologyAnnotationProperty(), annotationValue));
-                        break;
-
-                    //rdfs:label
-                    case RDFSemanticsEnums.RDFOntologyStandardAnnotation.Label:
-                        this.Annotations.Label.RemoveEntry(new RDFOntologyTaxonomyEntry(ontologyClass, RDFVocabulary.RDFS.LABEL.ToRDFOntologyAnnotationProperty(), annotationValue));
-                        break;
-
-                    //rdfs:seeAlso
-                    case RDFSemanticsEnums.RDFOntologyStandardAnnotation.SeeAlso:
-                        this.Annotations.SeeAlso.RemoveEntry(new RDFOntologyTaxonomyEntry(ontologyClass, RDFVocabulary.RDFS.SEE_ALSO.ToRDFOntologyAnnotationProperty(), annotationValue));
-                        break;
-
-                    //rdfs:isDefinedBy
-                    case RDFSemanticsEnums.RDFOntologyStandardAnnotation.IsDefinedBy:
-                        this.Annotations.IsDefinedBy.RemoveEntry(new RDFOntologyTaxonomyEntry(ontologyClass, RDFVocabulary.RDFS.IS_DEFINED_BY.ToRDFOntologyAnnotationProperty(), annotationValue));
-                        break;
-
-                    //owl:priorVersion
-                    case RDFSemanticsEnums.RDFOntologyStandardAnnotation.PriorVersion:
-                        this.Annotations.PriorVersion.RemoveEntry(new RDFOntologyTaxonomyEntry(ontologyClass, RDFVocabulary.OWL.PRIOR_VERSION.ToRDFOntologyAnnotationProperty(), annotationValue));
-                        break;
-
-                    //owl:imports
-                    case RDFSemanticsEnums.RDFOntologyStandardAnnotation.Imports:
-                        this.Annotations.Imports.RemoveEntry(new RDFOntologyTaxonomyEntry(ontologyClass, RDFVocabulary.OWL.IMPORTS.ToRDFOntologyAnnotationProperty(), annotationValue));
-                        break;
-
-                    //owl:backwardCompatibleWith
-                    case RDFSemanticsEnums.RDFOntologyStandardAnnotation.BackwardCompatibleWith:
-                        this.Annotations.BackwardCompatibleWith.RemoveEntry(new RDFOntologyTaxonomyEntry(ontologyClass, RDFVocabulary.OWL.BACKWARD_COMPATIBLE_WITH.ToRDFOntologyAnnotationProperty(), annotationValue));
-                        break;
-
-                    //owl:incompatibleWith
-                    case RDFSemanticsEnums.RDFOntologyStandardAnnotation.IncompatibleWith:
-                        this.Annotations.IncompatibleWith.RemoveEntry(new RDFOntologyTaxonomyEntry(ontologyClass, RDFVocabulary.OWL.INCOMPATIBLE_WITH.ToRDFOntologyAnnotationProperty(), annotationValue));
-                        break;
-                }
-            }
-            return this;
-        }
-
-        /// <summary>
-        /// Removes the given custom annotation from the given ontology class
-        /// </summary>
-        public RDFOntologyClassModel RemoveCustomAnnotation(RDFOntologyAnnotationProperty ontologyAnnotationProperty, RDFOntologyClass ontologyClass, RDFOntologyResource annotationValue)
-        {
-            if (ontologyAnnotationProperty != null && ontologyClass != null && annotationValue != null)
-            {
-                //owl:versionInfo
-                if (ontologyAnnotationProperty.Equals(RDFVocabulary.OWL.VERSION_INFO.ToRDFOntologyAnnotationProperty()))
-                    this.RemoveStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.VersionInfo, ontologyClass, annotationValue);
-                
-                //owl:versionIRI
-                else if (ontologyAnnotationProperty.Equals(RDFVocabulary.OWL.VERSION_IRI.ToRDFOntologyAnnotationProperty()))
-                    this.RemoveStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.VersionIRI, ontologyClass, annotationValue);
-                
-                //rdfs:comment
-                else if (ontologyAnnotationProperty.Equals(RDFVocabulary.RDFS.COMMENT.ToRDFOntologyAnnotationProperty()))
-                    this.RemoveStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.Comment, ontologyClass, annotationValue);
-                
-                //rdfs:label
-                else if (ontologyAnnotationProperty.Equals(RDFVocabulary.RDFS.LABEL.ToRDFOntologyAnnotationProperty()))
-                    this.RemoveStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.Label, ontologyClass, annotationValue);
-                
-                //rdfs:seeAlso
-                else if (ontologyAnnotationProperty.Equals(RDFVocabulary.RDFS.SEE_ALSO.ToRDFOntologyAnnotationProperty()))
-                    this.RemoveStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.SeeAlso, ontologyClass, annotationValue);
-                
-                //rdfs:isDefinedBy
-                else if (ontologyAnnotationProperty.Equals(RDFVocabulary.RDFS.IS_DEFINED_BY.ToRDFOntologyAnnotationProperty()))
-                    this.RemoveStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.IsDefinedBy, ontologyClass, annotationValue);
-                
-                //owl:imports
-                else if (ontologyAnnotationProperty.Equals(RDFVocabulary.OWL.IMPORTS.ToRDFOntologyAnnotationProperty()))
-                    this.RemoveStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.Imports, ontologyClass, annotationValue);
-                
-                //owl:backwardCompatibleWith
-                else if (ontologyAnnotationProperty.Equals(RDFVocabulary.OWL.BACKWARD_COMPATIBLE_WITH.ToRDFOntologyAnnotationProperty()))
-                    this.RemoveStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.BackwardCompatibleWith, ontologyClass, annotationValue);
-                
-                //owl:incompatibleWith
-                else if (ontologyAnnotationProperty.Equals(RDFVocabulary.OWL.INCOMPATIBLE_WITH.ToRDFOntologyAnnotationProperty()))
-                    this.RemoveStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.IncompatibleWith, ontologyClass, annotationValue);
-                
-                //owl:priorVersion
-                else if (ontologyAnnotationProperty.Equals(RDFVocabulary.OWL.PRIOR_VERSION.ToRDFOntologyAnnotationProperty()))
-                    this.RemoveStandardAnnotation(RDFSemanticsEnums.RDFOntologyStandardAnnotation.PriorVersion, ontologyClass, annotationValue);
-                
-                //custom annotation
-                else
-                    this.Annotations.CustomAnnotations.RemoveEntry(new RDFOntologyTaxonomyEntry(ontologyClass, ontologyAnnotationProperty, annotationValue));
-            }
-            return this;
-        }
-
-        /// <summary>
-        /// Removes the "childClass -> rdfs:subClassOf -> motherClass" relation from the class model
-        /// </summary>
-        public RDFOntologyClassModel RemoveSubClassOfRelation(RDFOntologyClass childClass, RDFOntologyClass motherClass)
-        {
-            if (childClass != null && motherClass != null)
-            {
-                RDFOntologyTaxonomyEntry taxonomyEntry = new RDFOntologyTaxonomyEntry(childClass, RDFVocabulary.RDFS.SUB_CLASS_OF.ToRDFOntologyObjectProperty(), motherClass);
-                this.Relations.SubClassOf.RemoveEntry(taxonomyEntry);
-
-                //Unlink owl:Axiom annotation
-                this.RemoveAxiomAnnotation(taxonomyEntry);
-            }
-            return this;
-        }
-
-        /// <summary>
-        /// Removes the "aClass -> owl:equivalentClass -> bClass" relation from the class model
-        /// </summary>
-        public RDFOntologyClassModel RemoveEquivalentClassRelation(RDFOntologyClass aClass, RDFOntologyClass bClass)
-        {
-            if (aClass != null && bClass != null)
-            {
-                RDFOntologyTaxonomyEntry equivclassLeft = new RDFOntologyTaxonomyEntry(aClass, RDFVocabulary.OWL.EQUIVALENT_CLASS.ToRDFOntologyObjectProperty(), bClass);
-                this.Relations.EquivalentClass.RemoveEntry(equivclassLeft);
-                RDFOntologyTaxonomyEntry equivclassRight = new RDFOntologyTaxonomyEntry(bClass, RDFVocabulary.OWL.EQUIVALENT_CLASS.ToRDFOntologyObjectProperty(), aClass);
-                this.Relations.EquivalentClass.RemoveEntry(equivclassRight);
-
-                //Unlink owl:Axiom annotations
-                this.RemoveAxiomAnnotation(equivclassLeft);
-                this.RemoveAxiomAnnotation(equivclassRight);
-            }
-            return this;
-        }
-
-        /// <summary>
-        /// Removes the "aClass -> owl:disjointWith -> bClass" relation from the class model
-        /// </summary>
-        public RDFOntologyClassModel RemoveDisjointWithRelation(RDFOntologyClass aClass, RDFOntologyClass bClass)
-        {
-            if (aClass != null && bClass != null)
-            {
-                RDFOntologyTaxonomyEntry disjwithLeft = new RDFOntologyTaxonomyEntry(aClass, RDFVocabulary.OWL.DISJOINT_WITH.ToRDFOntologyObjectProperty(), bClass);
-                this.Relations.DisjointWith.RemoveEntry(disjwithLeft);
-                RDFOntologyTaxonomyEntry disjwithRight = new RDFOntologyTaxonomyEntry(bClass, RDFVocabulary.OWL.DISJOINT_WITH.ToRDFOntologyObjectProperty(), aClass);
-                this.Relations.DisjointWith.RemoveEntry(disjwithRight);
-
-                //Unlink owl:Axiom annotations
-                this.RemoveAxiomAnnotation(disjwithLeft);
-                this.RemoveAxiomAnnotation(disjwithRight);
-            }
-            return this;
-        }
-
-        /// <summary>
-        /// Removes the "ontologyEnumerateClass -> owl:oneOf -> ontologyIndividual" relation from the class model
-        /// </summary>
-        public RDFOntologyClassModel RemoveOneOfRelation(RDFOntologyEnumerateClass ontologyEnumerateClass, RDFOntologyIndividual ontologyIndividual)
-        {
-            if (ontologyEnumerateClass != null && ontologyIndividual != null)
-                this.Relations.OneOf.RemoveEntry(new RDFOntologyTaxonomyEntry(ontologyEnumerateClass, RDFVocabulary.OWL.ONE_OF.ToRDFOntologyObjectProperty(), ontologyIndividual));
-            return this;
-        }
-
-        /// <summary>
-        /// Removes the "ontologyDataRangeClass -> owl:oneOf -> ontologyLiteral" relation from the class model
-        /// </summary>
-        public RDFOntologyClassModel RemoveOneOfRelation(RDFOntologyDataRangeClass ontologyDataRangeClass, RDFOntologyLiteral ontologyLiteral)
-        {
-            if (ontologyDataRangeClass != null && ontologyLiteral != null)
-                this.Relations.OneOf.RemoveEntry(new RDFOntologyTaxonomyEntry(ontologyDataRangeClass, RDFVocabulary.OWL.ONE_OF.ToRDFOntologyDatatypeProperty(), ontologyLiteral));
-            return this;
-        }
-
-        /// <summary>
-        /// Removes the "ontologyIntersectionClass -> owl:intersectionOf -> ontologyClass" relation from the class model
-        /// </summary>
-        public RDFOntologyClassModel RemoveIntersectionOfRelation(RDFOntologyIntersectionClass ontologyIntersectionClass, RDFOntologyClass ontologyClass)
-        {
-            if (ontologyIntersectionClass != null && ontologyClass != null)
-                this.Relations.IntersectionOf.RemoveEntry(new RDFOntologyTaxonomyEntry(ontologyIntersectionClass, RDFVocabulary.OWL.INTERSECTION_OF.ToRDFOntologyObjectProperty(), ontologyClass));
-            return this;
-        }
-
-        /// <summary>
-        /// Removes the "ontologyUnionClass -> owl:unionOf -> ontologyClass" relation from the class model
-        /// </summary>
-        public RDFOntologyClassModel RemoveUnionOfRelation(RDFOntologyUnionClass ontologyUnionClass, RDFOntologyClass ontologyClass)
-        {
-            if (ontologyUnionClass != null && ontologyClass != null)
-                this.Relations.UnionOf.RemoveEntry(new RDFOntologyTaxonomyEntry(ontologyUnionClass, RDFVocabulary.OWL.UNION_OF.ToRDFOntologyObjectProperty(), ontologyClass));
-            return this;
-        }
-
-        /// <summary>
-        /// Foreach of the given classes, removes the "ontologyUnionClass -> owl:unionOf -> ontologyClass" and the<br/>
-        /// "ontologyClassA -> owl:disjointWith -> ontologyClassB" relations from the class model [OWL2]
-        /// </summary>
-        public RDFOntologyClassModel RemoveDisjointUnionRelation(RDFOntologyUnionClass ontologyUnionClass, List<RDFOntologyClass> ontologyClasses)
-        {
-            ontologyClasses?.ForEach(outerClass =>
-            {
-                ontologyClasses?.ForEach(innerClass =>
-                {
-                    this.RemoveUnionOfRelation(ontologyUnionClass, innerClass);
-                    this.RemoveDisjointWithRelation(outerClass, innerClass);
-                });
-            });
-            return this;
-        }
-
-        /// <summary>
-        /// Foreach of the given classes, removes the "ontologyClassA -> owl:disjointWith -> ontologyClassB" relations from the class model [OWL2]
-        /// </summary>
-        public RDFOntologyClassModel RemoveAllDisjointClassesRelation(List<RDFOntologyClass> ontologyClasses)
-        {
-            ontologyClasses?.ForEach(outerClass =>
-            {
-                ontologyClasses?.ForEach(innerClass =>
-                {
-                    this.RemoveDisjointWithRelation(outerClass, innerClass);
-                });
-            });
-            return this;
-        }
-
-        /// <summary>
-        /// Removes the "ontologyClass -> owl:hasKey -> keyProperty" relation from the class model [OWL2]
-        /// </summary>
-        public RDFOntologyClassModel RemoveHasKeyRelation(RDFOntologyClass ontologyClass, RDFOntologyProperty keyProperty)
-        {
-            if (ontologyClass != null && keyProperty != null)
-                this.Relations.HasKey.RemoveEntry(new RDFOntologyTaxonomyEntry(ontologyClass, RDFVocabulary.OWL.HAS_KEY.ToRDFOntologyObjectProperty(), keyProperty));
-            return this;
-        }
-
-        /// <summary>
-        /// Removes the given owl:Axiom annotation [OWL2]
-        /// </summary>
-        internal RDFOntologyClassModel RemoveAxiomAnnotation(RDFOntologyTaxonomyEntry taxonomyEntry)
-        {
-            foreach (RDFOntologyTaxonomyEntry axnTaxonomyEntry in this.Annotations.AxiomAnnotations.SelectEntriesBySubject(this.GetTaxonomyEntryRepresentative(taxonomyEntry)))
-                this.Annotations.AxiomAnnotations.RemoveEntry(axnTaxonomyEntry);
-            return this;
-        }
-        #endregion
-
-        #region Select
-        /// <summary>
-        /// Selects the ontology class represented by the given identifier
-        /// </summary>
-        public RDFOntologyClass SelectClass(long ontClassID)
-            => this.Classes.ContainsKey(ontClassID) ? this.Classes[ontClassID] : null;
-
-        /// <summary>
-        /// Selects the ontology class represented by the given string
-        /// </summary>
-        public RDFOntologyClass SelectClass(string ontClass)
-            => ontClass != null ? SelectClass(RDFModelUtilities.CreateHash(ontClass)) : null;
-
-        /// <summary>
-        /// Gets the representative of the given taxonomy entry
-        /// </summary>
-        internal RDFOntologyIndividual GetTaxonomyEntryRepresentative(RDFOntologyTaxonomyEntry taxonomyEntry)
-            => new RDFOntologyIndividual(new RDFResource($"bnode:semref{taxonomyEntry.TaxonomyEntryID}"));
-        #endregion
-
-        #region Set
-        /// <summary>
-        /// Builds a new intersection class model from this class model and a given one
-        /// </summary>
-        public RDFOntologyClassModel IntersectWith(RDFOntologyClassModel classModel)
-        {
-            RDFOntologyClassModel result = new RDFOntologyClassModel();
-            if (classModel != null)
-            {
-                //Add intersection classes
-                foreach (RDFOntologyClass c in this)
-                    if (classModel.Classes.ContainsKey(c.PatternMemberID))
-                        result.AddClass(c);
-
-                //Add intersection relations
-                result.Relations.SubClassOf = this.Relations.SubClassOf.IntersectWith(classModel.Relations.SubClassOf);
-                result.Relations.EquivalentClass = this.Relations.EquivalentClass.IntersectWith(classModel.Relations.EquivalentClass);
-                result.Relations.DisjointWith = this.Relations.DisjointWith.IntersectWith(classModel.Relations.DisjointWith);
-                result.Relations.OneOf = this.Relations.OneOf.IntersectWith(classModel.Relations.OneOf);
-                result.Relations.IntersectionOf = this.Relations.IntersectionOf.IntersectWith(classModel.Relations.IntersectionOf);
-                result.Relations.UnionOf = this.Relations.UnionOf.IntersectWith(classModel.Relations.UnionOf);
-                result.Relations.HasKey = this.Relations.HasKey.IntersectWith(classModel.Relations.HasKey); //OWL2
-
-                //Add intersection annotations
-                result.Annotations.VersionInfo = this.Annotations.VersionInfo.IntersectWith(classModel.Annotations.VersionInfo);
-                result.Annotations.Comment = this.Annotations.Comment.IntersectWith(classModel.Annotations.Comment);
-                result.Annotations.Label = this.Annotations.Label.IntersectWith(classModel.Annotations.Label);
-                result.Annotations.SeeAlso = this.Annotations.SeeAlso.IntersectWith(classModel.Annotations.SeeAlso);
-                result.Annotations.IsDefinedBy = this.Annotations.IsDefinedBy.IntersectWith(classModel.Annotations.IsDefinedBy);
-                result.Annotations.CustomAnnotations = this.Annotations.CustomAnnotations.IntersectWith(classModel.Annotations.CustomAnnotations);
-                result.Annotations.AxiomAnnotations = this.Annotations.AxiomAnnotations.IntersectWith(classModel.Annotations.AxiomAnnotations); //OWL2
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// Builds a new union class model from this class model and a given one
-        /// </summary>
-        public RDFOntologyClassModel UnionWith(RDFOntologyClassModel classModel)
-        {
-            RDFOntologyClassModel result = new RDFOntologyClassModel();
-
-            //Add classes from this class model
-            foreach (RDFOntologyClass c in this)
-                result.AddClass(c);
-            
-            //Add relations from this class model
-            result.Relations.SubClassOf = result.Relations.SubClassOf.UnionWith(this.Relations.SubClassOf);
-            result.Relations.EquivalentClass = result.Relations.EquivalentClass.UnionWith(this.Relations.EquivalentClass);
-            result.Relations.DisjointWith = result.Relations.DisjointWith.UnionWith(this.Relations.DisjointWith);
-            result.Relations.OneOf = result.Relations.OneOf.UnionWith(this.Relations.OneOf);
-            result.Relations.IntersectionOf = result.Relations.IntersectionOf.UnionWith(this.Relations.IntersectionOf);
-            result.Relations.UnionOf = result.Relations.UnionOf.UnionWith(this.Relations.UnionOf);
-            result.Relations.HasKey = result.Relations.HasKey.UnionWith(this.Relations.HasKey); //OWL2
-
-            //Add annotations from this class model
-            result.Annotations.VersionInfo = result.Annotations.VersionInfo.UnionWith(this.Annotations.VersionInfo);
-            result.Annotations.Comment = result.Annotations.Comment.UnionWith(this.Annotations.Comment);
-            result.Annotations.Label = result.Annotations.Label.UnionWith(this.Annotations.Label);
-            result.Annotations.SeeAlso = result.Annotations.SeeAlso.UnionWith(this.Annotations.SeeAlso);
-            result.Annotations.IsDefinedBy = result.Annotations.IsDefinedBy.UnionWith(this.Annotations.IsDefinedBy);
-            result.Annotations.CustomAnnotations = result.Annotations.CustomAnnotations.UnionWith(this.Annotations.CustomAnnotations);
-            result.Annotations.AxiomAnnotations = result.Annotations.AxiomAnnotations.UnionWith(this.Annotations.AxiomAnnotations); //OWL2
-
-            //Manage the given class model
-            if (classModel != null)
-            {
-                //Add classes from the given class model
-                foreach (RDFOntologyClass c in classModel)
-                    result.AddClass(c);
-                
-                //Add relations from the given class model
-                result.Relations.SubClassOf = result.Relations.SubClassOf.UnionWith(classModel.Relations.SubClassOf);
-                result.Relations.EquivalentClass = result.Relations.EquivalentClass.UnionWith(classModel.Relations.EquivalentClass);
-                result.Relations.DisjointWith = result.Relations.DisjointWith.UnionWith(classModel.Relations.DisjointWith);
-                result.Relations.OneOf = result.Relations.OneOf.UnionWith(classModel.Relations.OneOf);
-                result.Relations.IntersectionOf = result.Relations.IntersectionOf.UnionWith(classModel.Relations.IntersectionOf);
-                result.Relations.UnionOf = result.Relations.UnionOf.UnionWith(classModel.Relations.UnionOf);
-                result.Relations.HasKey = result.Relations.HasKey.UnionWith(classModel.Relations.HasKey); //OWL2
-
-                //Add annotations from the given class model
-                result.Annotations.VersionInfo = result.Annotations.VersionInfo.UnionWith(classModel.Annotations.VersionInfo);
-                result.Annotations.Comment = result.Annotations.Comment.UnionWith(classModel.Annotations.Comment);
-                result.Annotations.Label = result.Annotations.Label.UnionWith(classModel.Annotations.Label);
-                result.Annotations.SeeAlso = result.Annotations.SeeAlso.UnionWith(classModel.Annotations.SeeAlso);
-                result.Annotations.IsDefinedBy = result.Annotations.IsDefinedBy.UnionWith(classModel.Annotations.IsDefinedBy);
-                result.Annotations.CustomAnnotations = result.Annotations.CustomAnnotations.UnionWith(classModel.Annotations.CustomAnnotations);
-                result.Annotations.AxiomAnnotations = result.Annotations.AxiomAnnotations.UnionWith(classModel.Annotations.AxiomAnnotations); //OWL2
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// Builds a new difference class model from this class model and a given one
-        /// </summary>
-        public RDFOntologyClassModel DifferenceWith(RDFOntologyClassModel classModel)
-        {
-            RDFOntologyClassModel result = new RDFOntologyClassModel();
-            if (classModel != null)
-            {
-                //Add difference classes
-                foreach (RDFOntologyClass c in this)
-                    if (!classModel.Classes.ContainsKey(c.PatternMemberID))
-                        result.AddClass(c);
-
-                //Add difference relations
-                result.Relations.SubClassOf = this.Relations.SubClassOf.DifferenceWith(classModel.Relations.SubClassOf);
-                result.Relations.EquivalentClass = this.Relations.EquivalentClass.DifferenceWith(classModel.Relations.EquivalentClass);
-                result.Relations.DisjointWith = this.Relations.DisjointWith.DifferenceWith(classModel.Relations.DisjointWith);
-                result.Relations.OneOf = this.Relations.OneOf.DifferenceWith(classModel.Relations.OneOf);
-                result.Relations.IntersectionOf = this.Relations.IntersectionOf.DifferenceWith(classModel.Relations.IntersectionOf);
-                result.Relations.UnionOf = this.Relations.UnionOf.DifferenceWith(classModel.Relations.UnionOf);
-                result.Relations.HasKey = this.Relations.HasKey.DifferenceWith(classModel.Relations.HasKey); //OWL2
-
-                //Add difference annotations
-                result.Annotations.VersionInfo = this.Annotations.VersionInfo.DifferenceWith(classModel.Annotations.VersionInfo);
-                result.Annotations.Comment = this.Annotations.Comment.DifferenceWith(classModel.Annotations.Comment);
-                result.Annotations.Label = this.Annotations.Label.DifferenceWith(classModel.Annotations.Label);
-                result.Annotations.SeeAlso = this.Annotations.SeeAlso.DifferenceWith(classModel.Annotations.SeeAlso);
-                result.Annotations.IsDefinedBy = this.Annotations.IsDefinedBy.DifferenceWith(classModel.Annotations.IsDefinedBy);
-                result.Annotations.CustomAnnotations = this.Annotations.CustomAnnotations.DifferenceWith(classModel.Annotations.CustomAnnotations);
-                result.Annotations.AxiomAnnotations = this.Annotations.AxiomAnnotations.DifferenceWith(classModel.Annotations.AxiomAnnotations); //OWL2
+                //Also add an automatic T-BOX inference exploiting symmetry of owl:equivalentClass relation
+                TBoxInferenceGraph.AddTriple(new RDFTriple(rightClass, RDFVocabulary.OWL.EQUIVALENT_CLASS, leftClass));
             }
             else
-            {
-                //Add classes from this class model
-                foreach (RDFOntologyClass c in this)
-                    result.AddClass(c);
-                
-                //Add relations from this class model
-                result.Relations.SubClassOf = result.Relations.SubClassOf.UnionWith(this.Relations.SubClassOf);
-                result.Relations.EquivalentClass = result.Relations.EquivalentClass.UnionWith(this.Relations.EquivalentClass);
-                result.Relations.DisjointWith = result.Relations.DisjointWith.UnionWith(this.Relations.DisjointWith);
-                result.Relations.OneOf = result.Relations.OneOf.UnionWith(this.Relations.OneOf);
-                result.Relations.IntersectionOf = result.Relations.IntersectionOf.UnionWith(this.Relations.IntersectionOf);
-                result.Relations.UnionOf = result.Relations.UnionOf.UnionWith(this.Relations.UnionOf);
-                result.Relations.HasKey = result.Relations.HasKey.UnionWith(this.Relations.HasKey); //OWL2
+                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("EquivalentClass relation between leftClass '{0}' and rightClass '{1}' cannot be added to the model because it would violate OWL-DL integrity", leftClass, rightClass));
 
-                //Add annotations from this class model
-                result.Annotations.VersionInfo = result.Annotations.VersionInfo.UnionWith(this.Annotations.VersionInfo);
-                result.Annotations.Comment = result.Annotations.Comment.UnionWith(this.Annotations.Comment);
-                result.Annotations.Label = result.Annotations.Label.UnionWith(this.Annotations.Label);
-                result.Annotations.SeeAlso = result.Annotations.SeeAlso.UnionWith(this.Annotations.SeeAlso);
-                result.Annotations.IsDefinedBy = result.Annotations.IsDefinedBy.UnionWith(this.Annotations.IsDefinedBy);
-                result.Annotations.CustomAnnotations = result.Annotations.CustomAnnotations.UnionWith(this.Annotations.CustomAnnotations);
-                result.Annotations.AxiomAnnotations = result.Annotations.AxiomAnnotations.UnionWith(this.Annotations.AxiomAnnotations); //OWL2
-            }
-            return result;
+            return this;
         }
-        #endregion
 
-        #region Convert
         /// <summary>
-        /// Gets a graph representation of this ontology class model, exporting inferences according to the selected behavior
+        /// Declares the existence of the given "DisjointWith(leftClass,rightClass)" relation to the model
         /// </summary>
-        public RDFGraph ToRDFGraph(RDFSemanticsEnums.RDFOntologyInferenceExportBehavior infexpBehavior)
+        public RDFOntologyClassModel DeclareDisjointClasses(RDFResource leftClass, RDFResource rightClass)
         {
-            RDFGraph result = new RDFGraph();
+            #region OWL-DL Integrity Checks
+            bool OWLDLIntegrityChecks()
+                => !leftClass.CheckReservedClass()
+                      && !rightClass.CheckReservedClass()
+                        && this.CheckDisjointWithCompatibility(leftClass, rightClass);
+            #endregion
 
-            //Definitions
-            foreach (RDFOntologyClass ontologyClass in this.Where(c => !RDFOntologyChecker.CheckReservedClass(c)))
+            if (leftClass == null)
+                throw new RDFSemanticsException("Cannot declare owl:disjointWith relation because given \"leftClass\" parameter is null");
+            if (rightClass == null)
+                throw new RDFSemanticsException("Cannot declare owl:disjointWith relation because given \"rightClass\" parameter is null");
+            if (leftClass.Equals(rightClass))
+                throw new RDFSemanticsException("Cannot declare owl:disjointWith relation because given \"leftClass\" parameter refers to the same class as the given \"rightClass\" parameter");
+
+            //Add knowledge to the T-BOX (or raise warning if integrity policy is active and violations are detected)
+            if (!RDFSemanticsOptions.ShouldCheckOWLDLIntegrity || OWLDLIntegrityChecks())
             {
-                //Restriction
-                if (ontologyClass.IsRestrictionClass())
-                {
-                    result.AddTriple(new RDFTriple((RDFResource)ontologyClass.Value, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.RESTRICTION));
-                    result.AddTriple(new RDFTriple((RDFResource)ontologyClass.Value, RDFVocabulary.OWL.ON_PROPERTY, (RDFResource)((RDFOntologyRestriction)ontologyClass).OnProperty.Value));
-                    if (ontologyClass is RDFOntologyAllValuesFromRestriction allValuesFromRestriction)
-                        result.AddTriple(new RDFTriple((RDFResource)ontologyClass.Value, RDFVocabulary.OWL.ALL_VALUES_FROM, (RDFResource)allValuesFromRestriction.FromClass.Value));
-                    else if (ontologyClass is RDFOntologySomeValuesFromRestriction someValuesFromRestriction)
-                        result.AddTriple(new RDFTriple((RDFResource)ontologyClass.Value, RDFVocabulary.OWL.SOME_VALUES_FROM, (RDFResource)someValuesFromRestriction.FromClass.Value));
-                    else if (ontologyClass is RDFOntologyHasSelfRestriction hasSelfRestriction)
-                        result.AddTriple(new RDFTriple((RDFResource)ontologyClass.Value, RDFVocabulary.OWL.HAS_SELF, RDFTypedLiteral.True));
-                    else if (ontologyClass is RDFOntologyHasValueRestriction hasValueRestriction)
-                    {
-                        if (hasValueRestriction.RequiredValue.IsLiteral())
-                            result.AddTriple(new RDFTriple((RDFResource)ontologyClass.Value, RDFVocabulary.OWL.HAS_VALUE, (RDFLiteral)hasValueRestriction.RequiredValue.Value));
-                        else
-                            result.AddTriple(new RDFTriple((RDFResource)ontologyClass.Value, RDFVocabulary.OWL.HAS_VALUE, (RDFResource)hasValueRestriction.RequiredValue.Value));
-                    }
-                    else if (ontologyClass is RDFOntologyCardinalityRestriction cardinalityRestriction)
-                    {
-                        if (cardinalityRestriction.MinCardinality == cardinalityRestriction.MaxCardinality)
-                            result.AddTriple(new RDFTriple((RDFResource)ontologyClass.Value, RDFVocabulary.OWL.CARDINALITY, new RDFTypedLiteral(cardinalityRestriction.MinCardinality.ToString(), RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER)));
-                        else
-                        {
-                            if (cardinalityRestriction.MinCardinality > 0)
-                                result.AddTriple(new RDFTriple((RDFResource)ontologyClass.Value, RDFVocabulary.OWL.MIN_CARDINALITY, new RDFTypedLiteral(cardinalityRestriction.MinCardinality.ToString(), RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER)));
-                            if (cardinalityRestriction.MaxCardinality > 0)
-                                result.AddTriple(new RDFTriple((RDFResource)ontologyClass.Value, RDFVocabulary.OWL.MAX_CARDINALITY, new RDFTypedLiteral(cardinalityRestriction.MaxCardinality.ToString(), RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER)));
-                        }
-                    }
-                    else if (ontologyClass is RDFOntologyQualifiedCardinalityRestriction qualifiedCardinalityRestriction)
-                    {
-                        if (qualifiedCardinalityRestriction.OnClass is RDFOntologyDataRangeClass)
-                            result.AddTriple(new RDFTriple((RDFResource)ontologyClass.Value, RDFVocabulary.OWL.ON_DATARANGE, (RDFResource)qualifiedCardinalityRestriction.OnClass.Value));
-                        else
-                            result.AddTriple(new RDFTriple((RDFResource)ontologyClass.Value, RDFVocabulary.OWL.ON_CLASS, (RDFResource)qualifiedCardinalityRestriction.OnClass.Value));
-                        if (qualifiedCardinalityRestriction.MinQualifiedCardinality == qualifiedCardinalityRestriction.MaxQualifiedCardinality)
-                            result.AddTriple(new RDFTriple((RDFResource)ontologyClass.Value, RDFVocabulary.OWL.QUALIFIED_CARDINALITY, new RDFTypedLiteral(qualifiedCardinalityRestriction.MinQualifiedCardinality.ToString(), RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER)));
-                        else
-                        {
-                            if (qualifiedCardinalityRestriction.MinQualifiedCardinality > 0)
-                                result.AddTriple(new RDFTriple((RDFResource)ontologyClass.Value, RDFVocabulary.OWL.MIN_QUALIFIED_CARDINALITY, new RDFTypedLiteral(qualifiedCardinalityRestriction.MinQualifiedCardinality.ToString(), RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER)));
-                            if (qualifiedCardinalityRestriction.MaxQualifiedCardinality > 0)
-                                result.AddTriple(new RDFTriple((RDFResource)ontologyClass.Value, RDFVocabulary.OWL.MAX_QUALIFIED_CARDINALITY, new RDFTypedLiteral(qualifiedCardinalityRestriction.MaxQualifiedCardinality.ToString(), RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER)));
-                        }
-                    }
-                }
+                TBoxGraph.AddTriple(new RDFTriple(leftClass, RDFVocabulary.OWL.DISJOINT_WITH, rightClass));
 
-                //Enumerate
-                else if (ontologyClass.IsEnumerateClass())
-                {
-                    result.AddTriple(new RDFTriple((RDFResource)ontologyClass.Value, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS));
-                    RDFCollection enumCollection = new RDFCollection(RDFModelEnums.RDFItemTypes.Resource);
-                    enumCollection.ReificationSubject = new RDFResource(string.Concat("bnode:", ontologyClass.PatternMemberID.ToString()));
-                    if (infexpBehavior == RDFSemanticsEnums.RDFOntologyInferenceExportBehavior.None
-                            || infexpBehavior == RDFSemanticsEnums.RDFOntologyInferenceExportBehavior.OnlyData)
-                    {
-                        foreach (RDFOntologyTaxonomyEntry enumMember in this.Relations.OneOf.SelectEntriesBySubject(ontologyClass)
-                                                                                            .Where(tax => tax.InferenceType == RDFSemanticsEnums.RDFOntologyInferenceType.None))
-                            enumCollection.AddItem((RDFResource)enumMember.TaxonomyObject.Value);
-                    }
-                    else
-                    {
-                        foreach (RDFOntologyTaxonomyEntry enumMember in this.Relations.OneOf.SelectEntriesBySubject(ontologyClass))
-                            enumCollection.AddItem((RDFResource)enumMember.TaxonomyObject.Value);
-                    }
-                    result = result.UnionWith(enumCollection.ReifyCollection());
-                    result.AddTriple(new RDFTriple((RDFResource)ontologyClass.Value, RDFVocabulary.OWL.ONE_OF, enumCollection.ReificationSubject));
-                }
-
-                //DataRange
-                else if (ontologyClass.IsDataRangeClass())
-                {
-                    result.AddTriple(new RDFTriple((RDFResource)ontologyClass.Value, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.DATA_RANGE));
-                    RDFCollection drangeCollection = new RDFCollection(RDFModelEnums.RDFItemTypes.Literal);
-                    drangeCollection.ReificationSubject = new RDFResource(string.Concat("bnode:", ontologyClass.PatternMemberID.ToString()));
-                    if (infexpBehavior == RDFSemanticsEnums.RDFOntologyInferenceExportBehavior.None
-                            || infexpBehavior == RDFSemanticsEnums.RDFOntologyInferenceExportBehavior.OnlyData)
-                    {
-                        foreach (RDFOntologyTaxonomyEntry drangeMember in this.Relations.OneOf.SelectEntriesBySubject(ontologyClass)
-                                                                                              .Where(tax => tax.InferenceType == RDFSemanticsEnums.RDFOntologyInferenceType.None))
-                            drangeCollection.AddItem((RDFLiteral)drangeMember.TaxonomyObject.Value);
-                    }
-                    else
-                    {
-                        foreach (RDFOntologyTaxonomyEntry drangeMember in this.Relations.OneOf.SelectEntriesBySubject(ontologyClass))
-                            drangeCollection.AddItem((RDFLiteral)drangeMember.TaxonomyObject.Value);
-                    }
-                    result = result.UnionWith(drangeCollection.ReifyCollection());
-                    result.AddTriple(new RDFTriple((RDFResource)ontologyClass.Value, RDFVocabulary.OWL.ONE_OF, drangeCollection.ReificationSubject));
-                }
-
-                //Composite
-                else if (ontologyClass.IsCompositeClass())
-                {
-                    result.AddTriple(new RDFTriple((RDFResource)ontologyClass.Value, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS));
-                    if (ontologyClass is RDFOntologyComplementClass)
-                        result.AddTriple(new RDFTriple((RDFResource)ontologyClass.Value, RDFVocabulary.OWL.COMPLEMENT_OF, (RDFResource)((RDFOntologyComplementClass)ontologyClass).ComplementOf.Value));
-                    else if (ontologyClass is RDFOntologyIntersectionClass)
-                    {
-                        RDFCollection intersectCollection = new RDFCollection(RDFModelEnums.RDFItemTypes.Resource);
-                        intersectCollection.ReificationSubject = new RDFResource(string.Concat("bnode:", ontologyClass.PatternMemberID.ToString()));
-                        if (infexpBehavior == RDFSemanticsEnums.RDFOntologyInferenceExportBehavior.None
-                                || infexpBehavior == RDFSemanticsEnums.RDFOntologyInferenceExportBehavior.OnlyData)
-                        {
-                            foreach (RDFOntologyTaxonomyEntry intersectMember in this.Relations.IntersectionOf.SelectEntriesBySubject(ontologyClass)
-                                                                                                              .Where(tax => tax.InferenceType == RDFSemanticsEnums.RDFOntologyInferenceType.None))
-                                intersectCollection.AddItem((RDFResource)intersectMember.TaxonomyObject.Value);
-                        }
-                        else
-                        {
-                            foreach (RDFOntologyTaxonomyEntry intersectMember in this.Relations.IntersectionOf.SelectEntriesBySubject(ontologyClass))
-                                intersectCollection.AddItem((RDFResource)intersectMember.TaxonomyObject.Value);
-                        }
-                        result = result.UnionWith(intersectCollection.ReifyCollection());
-                        result.AddTriple(new RDFTriple((RDFResource)ontologyClass.Value, RDFVocabulary.OWL.INTERSECTION_OF, intersectCollection.ReificationSubject));
-                    }
-                    else if (ontologyClass is RDFOntologyUnionClass)
-                    {
-                        RDFCollection unionCollection = new RDFCollection(RDFModelEnums.RDFItemTypes.Resource);
-                        unionCollection.ReificationSubject = new RDFResource(string.Concat("bnode:", ontologyClass.PatternMemberID.ToString()));
-                        if (infexpBehavior == RDFSemanticsEnums.RDFOntologyInferenceExportBehavior.None
-                                || infexpBehavior == RDFSemanticsEnums.RDFOntologyInferenceExportBehavior.OnlyData)
-                        {
-                            foreach (RDFOntologyTaxonomyEntry unionMember in this.Relations.UnionOf.SelectEntriesBySubject(ontologyClass)
-                                                                                                   .Where(tax => tax.InferenceType == RDFSemanticsEnums.RDFOntologyInferenceType.None))
-                                unionCollection.AddItem((RDFResource)unionMember.TaxonomyObject.Value);
-                        }
-                        else
-                        {
-                            foreach (RDFOntologyTaxonomyEntry unionMember in this.Relations.UnionOf.SelectEntriesBySubject(ontologyClass))
-                                unionCollection.AddItem((RDFResource)unionMember.TaxonomyObject.Value);
-                        }
-                        result = result.UnionWith(unionCollection.ReifyCollection());
-                        result.AddTriple(new RDFTriple((RDFResource)ontologyClass.Value, RDFVocabulary.OWL.UNION_OF, unionCollection.ReificationSubject));
-                    }
-                }
-
-                //Class
-                else
-                {
-                    result.AddTriple(new RDFTriple((RDFResource)ontologyClass.Value, RDFVocabulary.RDF.TYPE, (ontologyClass.Nature == RDFSemanticsEnums.RDFOntologyClassNature.OWL ? RDFVocabulary.OWL.CLASS : RDFVocabulary.RDFS.CLASS)));
-                    if (ontologyClass.IsDeprecatedClass())
-                        result.AddTriple(new RDFTriple((RDFResource)ontologyClass.Value, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.DEPRECATED_CLASS));
-                }
+                //Also add an automatic T-BOX inference exploiting symmetry of owl:disjointWith relation
+                TBoxInferenceGraph.AddTriple(new RDFTriple(rightClass, RDFVocabulary.OWL.DISJOINT_WITH, leftClass));
             }
+            else
+                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("DisjointWith relation between leftClass '{0}' and rightClass '{1}' cannot be added to the model because it would violate OWL-DL integrity", leftClass, rightClass));
 
-            //Relations
-            result = result.UnionWith(this.Relations.SubClassOf.ReifyToRDFGraph(infexpBehavior, nameof(this.Relations.SubClassOf)))
-                           .UnionWith(this.Relations.EquivalentClass.ReifyToRDFGraph(infexpBehavior, nameof(this.Relations.EquivalentClass)))
-                           .UnionWith(this.Relations.DisjointWith.ReifyToRDFGraph(infexpBehavior, nameof(this.Relations.DisjointWith)))
-                           .UnionWith(this.Relations.HasKey.ReifyToRDFGraph(infexpBehavior, nameof(this.Relations.HasKey))); //OWL2
-
-            //Annotations
-            result = result.UnionWith(this.Annotations.VersionInfo.ReifyToRDFGraph(infexpBehavior, nameof(this.Annotations.VersionInfo)))
-                           .UnionWith(this.Annotations.Comment.ReifyToRDFGraph(infexpBehavior, nameof(this.Annotations.Comment)))
-                           .UnionWith(this.Annotations.Label.ReifyToRDFGraph(infexpBehavior, nameof(this.Annotations.Label)))
-                           .UnionWith(this.Annotations.SeeAlso.ReifyToRDFGraph(infexpBehavior, nameof(this.Annotations.SeeAlso)))
-                           .UnionWith(this.Annotations.IsDefinedBy.ReifyToRDFGraph(infexpBehavior, nameof(this.Annotations.IsDefinedBy)))
-                           .UnionWith(this.Annotations.CustomAnnotations.ReifyToRDFGraph(infexpBehavior, nameof(this.Annotations.CustomAnnotations)))
-                           .UnionWith(this.Annotations.AxiomAnnotations.ReifyToRDFGraph(infexpBehavior, nameof(this.Annotations.AxiomAnnotations), this, null, null)); //OWL2
-
-            return result;
+            return this;
         }
 
         /// <summary>
-        /// Asynchronously gets a graph representation of this ontology class model, exporting inferences according to the selected behavior
+        /// Declares the existence of the given "HasKey(owlClass,keyProperties)" relation to the model [OWL2]
         /// </summary>
-        public Task<RDFGraph> ToRDFGraphAsync(RDFSemanticsEnums.RDFOntologyInferenceExportBehavior infexpBehavior)
-            => Task.Run(() => ToRDFGraph(infexpBehavior));
-        #endregion
+        public RDFOntologyClassModel DeclareHasKey(RDFResource owlClass, List<RDFResource> keyProperties)
+        {
+            if (owlClass == null)
+                throw new RDFSemanticsException("Cannot declare owl:hasKey relation because given \"owlClass\" parameter is null");
+            if (keyProperties == null)
+                throw new RDFSemanticsException("Cannot declare owl:hasKey relation because given \"keyProperties\" parameter is null");
 
+            //Add knowledge to the T-BOX
+            RDFCollection keyPropertiesCollection = new RDFCollection(RDFModelEnums.RDFItemTypes.Resource);
+            keyProperties.ForEach(keyProperty => keyPropertiesCollection.AddItem(keyProperty));
+            TBoxGraph.AddCollection(keyPropertiesCollection);
+            TBoxGraph.AddTriple(new RDFTriple(owlClass, RDFVocabulary.OWL.HAS_KEY, keyPropertiesCollection.ReificationSubject));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the given owl:Restriction to the model
+        /// </summary>
+        internal RDFOntologyClassModel DeclareRestriction(RDFResource owlRestriction, RDFResource onProperty)
+        {
+            if (owlRestriction == null)
+                throw new RDFSemanticsException("Cannot declare owl:Restriction to the model because given \"owlRestriction\" parameter is null");
+            if (onProperty == null)
+                throw new RDFSemanticsException("Cannot declare owl:Restriction to the model because given \"onProperty\" parameter is null");
+
+            //Add class to the model
+            DeclareClass(owlRestriction);
+
+            //Add knowledge to the T-BOX
+            TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.RESTRICTION));
+            TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.ON_PROPERTY, onProperty));
+
+            return this;
+        }
+
+        //EXPORT
+
+        /// <summary>
+        /// Gets a graph representation of the model
+        /// </summary>
+        public RDFGraph ToRDFGraph(bool includeInferences)
+            => includeInferences ? TBoxVirtualGraph : TBoxGraph;
+
+        /// <summary>
+        /// Asynchronously gets a graph representation of the model
+        /// </summary>
+        public Task<RDFGraph> ToRDFGraphAsync(bool includeInferences)
+            => Task.Run(() => ToRDFGraph(includeInferences));
         #endregion
     }
+
+    #region Behaviors
+    /// <summary>
+    /// RDFOntologyClassBehavior defines the mathematical aspects of an owl:Class instance
+    /// </summary>
+    public class RDFOntologyClassBehavior
+    {
+        #region Properties
+        /// <summary>
+        /// Defines the class as instance of owl:DeprecatedClass
+        /// </summary>
+        public bool Deprecated { get; set; }
+        #endregion
+    }
+    #endregion
 }

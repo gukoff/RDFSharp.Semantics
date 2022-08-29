@@ -15,407 +15,292 @@
 */
 
 using RDFSharp.Model;
-using System;
-using System.Collections;
+using RDFSharp.Query;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// RDFOntologyDataLens represents a magnifying glass on the knowledge available for a individual within an ontology
+    /// RDFOntologyDataLens represents a magnifying glass on the knowledge available for a given owl:Individual instance within an ontology
     /// </summary>
     public class RDFOntologyDataLens
     {
         #region Properties
         /// <summary>
-        /// Individual being observed by the data lens
+        /// Individual observed by the lens
         /// </summary>
-        public RDFOntologyIndividual OntologyIndividual { get; internal set; }
+        public RDFResource Individual { get; internal set; }
 
         /// <summary>
-        /// Ontology being observed by the data lens
+        /// Ontology observed by the lens
         /// </summary>
         public RDFOntology Ontology { get; internal set; }
         #endregion
 
         #region Ctors
         /// <summary>
-        /// Builds a data lens for the given individual on the given ontology
+        /// Builds a data lens for the given owl:Individual instance on the given ontology
         /// </summary>
-        public RDFOntologyDataLens(RDFOntologyIndividual ontologyIndividual, RDFOntology ontology)
+        public RDFOntologyDataLens(RDFResource owlIndividual, RDFOntology ontology)
         {
-            if (ontologyIndividual == null)
-                throw new RDFSemanticsException("Cannot create data lens because given \"ontologyIndividual\" parameter is null");
+            if (owlIndividual == null)
+                throw new RDFSemanticsException("Cannot create data lens because given \"owlIndividual\" parameter is null");
             if (ontology == null)
                 throw new RDFSemanticsException("Cannot create data lens because given \"ontology\" parameter is null");
 
-            this.OntologyIndividual = ontologyIndividual;
-            this.Ontology = ontology.UnionWith(RDFBASEOntology.Instance);
+            Individual = owlIndividual;
+            Ontology = ontology;
         }
         #endregion
 
         #region Methods
         /// <summary>
-        /// Enlists the individuals which are directly (or indirectly, if inference is requested) equivalent to the lens individual
+        /// Enlists the individuals which are related with the lens individual by owl:sameAs
         /// </summary>
-        public List<(bool, RDFOntologyIndividual)> SameIndividuals(bool enableInference)
+        public List<RDFResource> SameIndividuals()
+            => Ontology.Data.AnswerSameIndividuals(Individual);
+
+        /// <summary>
+        /// Asynchronously enlists the individuals which are related with the lens individual by owl:sameAs
+        /// </summary>
+        public Task<List<RDFResource>> SameIndividualsAsync()
+            => Task.Run(() => SameIndividuals());
+
+        /// <summary>
+        /// Enlists the individuals which are related with the lens individual by owl:differentFrom
+        /// </summary>
+        public List<RDFResource> DifferentIndividuals()
+            => Ontology.Data.AnswerDifferentIndividuals(Individual);
+
+        /// <summary>
+        /// Asynchronously enlists the individuals which are related with the lens individual by owl:differentFrom
+        /// </summary>
+        public Task<List<RDFResource>> DifferentIndividualsAsync()
+            => Task.Run(() => DifferentIndividuals());
+
+        /// <summary>
+        /// Enlists the classes to which the lens individual belongs by rdf:type
+        /// </summary>
+        public List<RDFResource> ClassTypes()
         {
-            List<(bool, RDFOntologyIndividual)> result = new List<(bool, RDFOntologyIndividual)>();
+            List<RDFResource> result = new List<RDFResource>();
 
-            //First-level enlisting of same individuals
-            foreach (RDFOntologyTaxonomyEntry sameAs in this.Ontology.Data.Relations.SameAs.SelectEntriesBySubject(this.OntologyIndividual).Where(te => !te.IsInference()))
-                result.Add((false, (RDFOntologyIndividual)sameAs.TaxonomyObject));
+            Dictionary<long, List<RDFResource>> individualsCache = new Dictionary<long, List<RDFResource>>();
 
-            //Inference-enabled discovery of same individuals
-            if (enableInference)
+            //Enumerates (owl:oneOf)
+            foreach (RDFResource enumerateClass in Ontology.Model.ClassModel.Where(cls => Ontology.Model.ClassModel.CheckHasEnumerateClass(cls)))
             {
-                List<RDFOntologyIndividual> sameIndividuals = RDFOntologyDataHelper.GetSameIndividuals(this.Ontology.Data, this.OntologyIndividual).ToList();
-                foreach (RDFOntologyIndividual sameIndividual in sameIndividuals)
-                {
-                    if (!result.Any(r => r.Item2.Equals(sameIndividual)))
-                        result.Add((true, sameIndividual));
-                }
+                if (!individualsCache.ContainsKey(enumerateClass.PatternMemberID))
+                    individualsCache.Add(enumerateClass.PatternMemberID, Ontology.Data.AnswerIndividualsOfClass(Ontology.Model, enumerateClass));
+
+                if (individualsCache[enumerateClass.PatternMemberID].Any(individual => individual.Equals(Individual)))
+                    result.Add(enumerateClass);
+            }
+
+            //Restrictions (owl:Restriction)
+            foreach (RDFResource restrictionClass in Ontology.Model.ClassModel.Where(cls => Ontology.Model.ClassModel.CheckHasRestrictionClass(cls)))
+            {
+                if (!individualsCache.ContainsKey(restrictionClass.PatternMemberID))
+                    individualsCache.Add(restrictionClass.PatternMemberID, Ontology.Data.AnswerIndividualsOfClass(Ontology.Model, restrictionClass));
+
+                if (individualsCache[restrictionClass.PatternMemberID].Any(individual => individual.Equals(Individual)))
+                    result.Add(restrictionClass);
+            }
+
+            //Classes (owl:Class)
+            foreach (RDFResource simpleClass in Ontology.Model.ClassModel.Where(cls => Ontology.Model.ClassModel.CheckHasSimpleClass(cls)))
+            {
+                if (!individualsCache.ContainsKey(simpleClass.PatternMemberID))
+                    individualsCache.Add(simpleClass.PatternMemberID, Ontology.Data.AnswerIndividualsOfClass(Ontology.Model, simpleClass));
+
+                if (individualsCache[simpleClass.PatternMemberID].Any(individual => individual.Equals(Individual)))
+                    result.Add(simpleClass);
+            }
+
+            //Composites (owl:unionOf, owl:intersectionOf, owl:complementOf)
+            foreach (RDFResource compositeClass in Ontology.Model.ClassModel.Where(cls => Ontology.Model.ClassModel.CheckHasCompositeClass(cls)))
+            {
+                if (!individualsCache.ContainsKey(compositeClass.PatternMemberID))
+                    individualsCache.Add(compositeClass.PatternMemberID, Ontology.Data.AnswerIndividualsOfClass(Ontology.Model, compositeClass));
+
+                if (individualsCache[compositeClass.PatternMemberID].Any(individual => individual.Equals(Individual)))
+                    result.Add(compositeClass);
             }
 
             return result;
         }
 
         /// <summary>
-        /// Asynchronously enlists the individuals which are directly (or indirectly, if inference is requested) equivalent to the lens individual
+        /// Asynchronously enlists the classes to which the lens individual belongs by rdf:type
         /// </summary>
-        public Task<List<(bool, RDFOntologyIndividual)>> SameIndividualsAsync(bool enableInference)
-            => Task.Run(() => SameIndividuals(enableInference));
+        public Task<List<RDFResource>> ClassTypesAsync()
+            => Task.Run(() => ClassTypes());
 
         /// <summary>
-        /// Enlists the individuals which are directly (or indirectly, if inference is requested) different from the lens individual
+        /// Enlists the object assertions to which the lens individual is related as subject or object
         /// </summary>
-        public List<(bool, RDFOntologyIndividual)> DifferentIndividuals(bool enableInference)
+        public List<RDFTriple> ObjectAssertions()
         {
-            List<(bool, RDFOntologyIndividual)> result = new List<(bool, RDFOntologyIndividual)>();
+            List<RDFTriple> result = new List<RDFTriple>();
 
-            //First-level enlisting of different individuals
-            foreach (RDFOntologyTaxonomyEntry differentFrom in this.Ontology.Data.Relations.DifferentFrom.SelectEntriesBySubject(this.OntologyIndividual).Where(te => !te.IsInference()))
-                result.Add((false, (RDFOntologyIndividual)differentFrom.TaxonomyObject));
+            RDFGraph aboxVirtualGraph = Ontology.Data.ABoxVirtualGraph;
+            result.AddRange(aboxVirtualGraph.Where(asn => asn.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPO
+                                                            && Ontology.Model.PropertyModel.CheckHasObjectProperty((RDFResource)asn.Predicate)
+                                                              && (asn.Subject.Equals(Individual) || asn.Object.Equals(Individual))));
 
-            //Inference-enabled discovery of different individuals
-            if (enableInference)
+            return result;
+        }
+
+        /// <summary>
+        /// Asynchronously enlists the object assertions to which the lens individual is related as subject or object
+        /// </summary>
+        public Task<List<RDFTriple>> ObjectAssertionsAsync()
+            => Task.Run(() => ObjectAssertions());
+
+        /// <summary>
+        /// Enlists the data assertions to which the lens individual is related as subject
+        /// </summary>
+        public List<RDFTriple> DataAssertions()
+        {
+            List<RDFTriple> result = new List<RDFTriple>();
+
+            RDFGraph aboxVirtualGraph = Ontology.Data.ABoxVirtualGraph;
+            result.AddRange(aboxVirtualGraph.Where(asn => asn.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPL
+                                                            && Ontology.Model.PropertyModel.CheckHasDatatypeProperty((RDFResource)asn.Predicate)
+                                                              && asn.Subject.Equals(Individual)));
+
+            return result;
+        }
+
+        /// <summary>
+        /// Asynchronously enlists the data assertions to which the lens individual is related as subject
+        /// </summary>
+        public Task<List<RDFTriple>> DataAssertionsAsync()
+            => Task.Run(() => DataAssertions());
+
+        /// <summary>
+        /// Enlists the negative object assertions to which the lens individual is related as subject or object [OWL2]
+        /// </summary>
+        public List<RDFTriple> NegativeObjectAssertions()
+        {
+            List<RDFTriple> result = new List<RDFTriple>();
+
+            RDFGraph aboxVirtualGraph = Ontology.Data.ABoxVirtualGraph;
+            RDFSelectQuery negativeObjectAssertionQuery = new RDFSelectQuery()
+                //Subject
+                .AddPatternGroup(new RDFPatternGroup()
+                    .AddPattern(new RDFPattern(new RDFVariable("?NASN_REPRESENTATIVE"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION))
+                    .AddPattern(new RDFPattern(new RDFVariable("?NASN_REPRESENTATIVE"), RDFVocabulary.OWL.SOURCE_INDIVIDUAL, Individual))
+                    .AddPattern(new RDFPattern(new RDFVariable("?NASN_REPRESENTATIVE"), RDFVocabulary.OWL.ASSERTION_PROPERTY, new RDFVariable("?NASN_PROPERTY")))
+                    .AddPattern(new RDFPattern(new RDFVariable("?NASN_REPRESENTATIVE"), RDFVocabulary.OWL.TARGET_INDIVIDUAL, new RDFVariable("?NASN_TARGET")))
+                    .AddFilter(new RDFIsUriFilter(new RDFVariable("?NASN_PROPERTY")))
+                    .AddFilter(new RDFIsUriFilter(new RDFVariable("?NASN_TARGET")))
+                    .UnionWithNext())
+                //Object
+                .AddPatternGroup(new RDFPatternGroup()
+                    .AddPattern(new RDFPattern(new RDFVariable("?NASN_REPRESENTATIVE"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION))
+                    .AddPattern(new RDFPattern(new RDFVariable("?NASN_REPRESENTATIVE"), RDFVocabulary.OWL.SOURCE_INDIVIDUAL, new RDFVariable("?NASN_SOURCE")))
+                    .AddPattern(new RDFPattern(new RDFVariable("?NASN_REPRESENTATIVE"), RDFVocabulary.OWL.ASSERTION_PROPERTY, new RDFVariable("?NASN_PROPERTY")))
+                    .AddPattern(new RDFPattern(new RDFVariable("?NASN_REPRESENTATIVE"), RDFVocabulary.OWL.TARGET_INDIVIDUAL, Individual))
+                    .AddFilter(new RDFIsUriFilter(new RDFVariable("?NASN_PROPERTY")))
+                    .AddFilter(new RDFIsUriFilter(new RDFVariable("?NASN_SOURCE"))))
+                .AddProjectionVariable(new RDFVariable("?NASN_SOURCE"))
+                .AddProjectionVariable(new RDFVariable("?NASN_PROPERTY"))
+                .AddProjectionVariable(new RDFVariable("?NASN_TARGET"));
+            RDFSelectQueryResult negativeObjectAssertionQueryResult = negativeObjectAssertionQuery.ApplyToGraph(aboxVirtualGraph);
+
+            foreach (DataRow negativeObjectAssertion in negativeObjectAssertionQueryResult.SelectResults.Rows)
             {
-                List<RDFOntologyIndividual> differentIndividuals = RDFOntologyDataHelper.GetDifferentIndividuals(this.Ontology.Data, this.OntologyIndividual).ToList();
-                foreach (RDFOntologyIndividual differentIndividual in differentIndividuals)
-                {
-                    if (!result.Any(r => r.Item2.Equals(differentIndividual)))
-                        result.Add((true, differentIndividual));
-                }
+                //Subject
+                if (negativeObjectAssertion.IsNull("?NASN_SOURCE"))
+                    result.Add(new RDFTriple(Individual, new RDFResource(negativeObjectAssertion["?NASN_PROPERTY"].ToString()), new RDFResource(negativeObjectAssertion["?NASN_TARGET"].ToString())));
+                //Object
+                else if (negativeObjectAssertion.IsNull("?NASN_TARGET"))
+                    result.Add(new RDFTriple(new RDFResource(negativeObjectAssertion["?NASN_SOURCE"].ToString()), new RDFResource(negativeObjectAssertion["?NASN_PROPERTY"].ToString()), Individual));
             }
 
             return result;
         }
 
         /// <summary>
-        /// Asynchronously enlists the individuals which are directly (or indirectly, if inference is requested) equivalent to the lens individual
+        /// Asynchronously enlists the negative object assertions to which the lens individual is related as subject or object [OWL2]
         /// </summary>
-        public Task<List<(bool, RDFOntologyIndividual)>> DifferentIndividualsAsync(bool enableInference)
-            => Task.Run(() => DifferentIndividuals(enableInference));
+        public Task<List<RDFTriple>> NegativeObjectAssertionsAsync()
+            => Task.Run(() => NegativeObjectAssertions());
 
         /// <summary>
-        /// Enlists the classes to which the lens individual directly (or indirectly, if inference is requested) belongs
+        /// Enlists the negative data assertions to which the lens individual is related as subject [OWL2]
         /// </summary>
-        public List<(bool, RDFOntologyClass)> ClassTypes(bool enableInference)
+        public List<RDFTriple> NegativeDataAssertions()
         {
-            List<(bool, RDFOntologyClass)> result = new List<(bool, RDFOntologyClass)>();
+            List<RDFTriple> result = new List<RDFTriple>();
 
-            //First-level enlisting of class types
-            foreach (RDFOntologyTaxonomyEntry classType in this.Ontology.Data.Relations.ClassType.SelectEntriesBySubject(this.OntologyIndividual).Where(te => !te.IsInference()))
-                result.Add((false, (RDFOntologyClass)classType.TaxonomyObject));
+            RDFGraph aboxVirtualGraph = Ontology.Data.ABoxVirtualGraph;
+            RDFSelectQuery negativeDatatypeAssertionQuery = new RDFSelectQuery()
+                .AddPatternGroup(new RDFPatternGroup()
+                    .AddPattern(new RDFPattern(new RDFVariable("?NASN_REPRESENTATIVE"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION))
+                    .AddPattern(new RDFPattern(new RDFVariable("?NASN_REPRESENTATIVE"), RDFVocabulary.OWL.SOURCE_INDIVIDUAL, Individual))
+                    .AddPattern(new RDFPattern(new RDFVariable("?NASN_REPRESENTATIVE"), RDFVocabulary.OWL.ASSERTION_PROPERTY, new RDFVariable("?NASN_PROPERTY")))
+                    .AddPattern(new RDFPattern(new RDFVariable("?NASN_REPRESENTATIVE"), RDFVocabulary.OWL.TARGET_VALUE, new RDFVariable("?NASN_TARGET")))
+                    .AddFilter(new RDFIsUriFilter(new RDFVariable("?NASN_PROPERTY")))
+                    .AddFilter(new RDFIsLiteralFilter(new RDFVariable("?NASN_TARGET"))))
+                .AddProjectionVariable(new RDFVariable("?NASN_PROPERTY"))
+                .AddProjectionVariable(new RDFVariable("?NASN_TARGET"));
+            RDFSelectQueryResult negativeDatatypeAssertionQueryResult = negativeDatatypeAssertionQuery.ApplyToGraph(aboxVirtualGraph);
 
-            //Inference-enabled discovery of class types
-            if (enableInference)
-            {
-                //Skip already enlisted classes and also reserved/literal-compatible classes
-                var availableClasses = this.Ontology.Model.ClassModel.Where(cls => !result.Any(res => res.Item2.Equals(cls))
-                                                                                                        && !RDFOntologyChecker.CheckReservedClass(cls)
-                                                                                                            && !RDFOntologyClassModelHelper.CheckIsLiteralCompatibleClass(this.Ontology.Model.ClassModel, cls));
-                var membersCache = new Dictionary<long, RDFOntologyData>();
-
-                //Evaluate enumerations
-                foreach (RDFOntologyClass enumerateClass in availableClasses.Where(cls => cls.IsEnumerateClass()))
-                {
-                    if (!membersCache.ContainsKey(enumerateClass.PatternMemberID))
-                        membersCache.Add(enumerateClass.PatternMemberID, this.Ontology.GetMembersOfEnumerate((RDFOntologyEnumerateClass)enumerateClass));
-
-                    if (membersCache[enumerateClass.PatternMemberID].Individuals.ContainsKey(this.OntologyIndividual.PatternMemberID))
-                        result.Add((true, enumerateClass));
-                }
-
-                //Evaluate restrictions
-                foreach (RDFOntologyClass restrictionClass in availableClasses.Where(cls => cls.IsRestrictionClass()))
-                {
-                    if (!membersCache.ContainsKey(restrictionClass.PatternMemberID))
-                        membersCache.Add(restrictionClass.PatternMemberID, this.Ontology.GetMembersOfRestriction((RDFOntologyRestriction)restrictionClass));
-
-                    if (membersCache[restrictionClass.PatternMemberID].Individuals.ContainsKey(this.OntologyIndividual.PatternMemberID))
-                        result.Add((true, restrictionClass));
-                }
-
-                //Evaluate simple classes
-                foreach (RDFOntologyClass simpleClass in availableClasses.Where(cls => cls.IsSimpleClass()))
-                {
-                    if (!membersCache.ContainsKey(simpleClass.PatternMemberID))
-                        membersCache.Add(simpleClass.PatternMemberID, this.Ontology.GetMembersOfClass(simpleClass));
-
-                    if (membersCache[simpleClass.PatternMemberID].Individuals.ContainsKey(this.OntologyIndividual.PatternMemberID))
-                        result.Add((true, simpleClass));
-                }
-
-                //Evaluate composite classes
-                foreach (RDFOntologyClass compositeClass in availableClasses.Where(cls => cls.IsCompositeClass()))
-                {
-                    if (!membersCache.ContainsKey(compositeClass.PatternMemberID))
-                        membersCache.Add(compositeClass.PatternMemberID, this.Ontology.GetMembersOfComposite(compositeClass, membersCache));
-
-                    if (membersCache[compositeClass.PatternMemberID].Individuals.ContainsKey(this.OntologyIndividual.PatternMemberID))
-                        result.Add((true, compositeClass));
-                }
-            }
+            foreach (DataRow negativeDatatypeAssertion in negativeDatatypeAssertionQueryResult.SelectResults.Rows)
+                result.Add(new RDFTriple(Individual, new RDFResource(negativeDatatypeAssertion["?NASN_PROPERTY"].ToString()), (RDFLiteral)RDFQueryUtilities.ParseRDFPatternMember(negativeDatatypeAssertion["?NASN_TARGET"].ToString())));
 
             return result;
         }
 
         /// <summary>
-        /// Asynchronously enlists the classes to which the lens individual directly (or indirectly, if inference is requested) belongs
+        /// Asynchronously enlists the negative data assertions to which the lens individual is related as subject [OWL2]
         /// </summary>
-        public Task<List<(bool, RDFOntologyClass)>> ClassTypesAsync(bool enableInference)
-            => Task.Run(() => ClassTypes(enableInference));
+        public Task<List<RDFTriple>> NegativeDataAssertionsAsync()
+            => Task.Run(() => NegativeDataAssertions());
 
         /// <summary>
-        /// Enlists the object assertions which are directly (or indirectly, if inference is requested) assigned to the lens individual
+        /// Enlists the object annotations to which the lens individual is related as subject
         /// </summary>
-        public List<(bool, RDFOntologyIndividual, RDFOntologyObjectProperty, RDFOntologyIndividual)> ObjectAssertions(bool enableInference)
+        public List<RDFTriple> ObjectAnnotations()
         {
-            List<(bool, RDFOntologyIndividual, RDFOntologyObjectProperty, RDFOntologyIndividual)> result = new List<(bool, RDFOntologyIndividual, RDFOntologyObjectProperty, RDFOntologyIndividual)>();
+            List<RDFTriple> result = new List<RDFTriple>();
 
-            //Subject
-            RDFOntologyTaxonomy assertionsWithSubjectIndividual = this.Ontology.Data.Relations.Assertions.SelectEntriesBySubject(this.OntologyIndividual);
-            if (enableInference)
-            {
-                //Inference-enabled discovery of assigned object relations
-                foreach (RDFOntologyTaxonomyEntry asn in assertionsWithSubjectIndividual.Where(te => te.TaxonomyPredicate.IsObjectProperty()))
-                    result.Add((asn.IsInference(), this.OntologyIndividual, (RDFOntologyObjectProperty)asn.TaxonomyPredicate, (RDFOntologyIndividual)asn.TaxonomyObject));
-            }
-            else
-            {
-                //First-level enlisting of assigned object relations
-                foreach (RDFOntologyTaxonomyEntry asn in assertionsWithSubjectIndividual.Where(te => te.TaxonomyPredicate.IsObjectProperty() && !te.IsInference()))
-                    result.Add((false, this.OntologyIndividual, (RDFOntologyObjectProperty)asn.TaxonomyPredicate, (RDFOntologyIndividual)asn.TaxonomyObject));
-            }
-
-            //Object
-            RDFOntologyTaxonomy assertionsWithObjectIndividual = this.Ontology.Data.Relations.Assertions.SelectEntriesByObject(this.OntologyIndividual);
-            if (enableInference)
-            {
-                //Inference-enabled discovery of assigned object relations
-                foreach (RDFOntologyTaxonomyEntry asn in assertionsWithObjectIndividual.Where(te => te.TaxonomyPredicate.IsObjectProperty()))
-                    result.Add((asn.IsInference(), (RDFOntologyIndividual)asn.TaxonomySubject, (RDFOntologyObjectProperty)asn.TaxonomyPredicate, this.OntologyIndividual));
-            }
-            else
-            {
-                //First-level enlisting of assigned object relations
-                foreach (RDFOntologyTaxonomyEntry asn in assertionsWithObjectIndividual.Where(te => te.TaxonomyPredicate.IsObjectProperty() && !te.IsInference()))
-                    result.Add((false, (RDFOntologyIndividual)asn.TaxonomySubject, (RDFOntologyObjectProperty)asn.TaxonomyPredicate, this.OntologyIndividual));
-            }
+            result.AddRange(Ontology.Data.ABoxGraph.Where(ann => ann.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPO
+                                                                    && Ontology.Model.PropertyModel.CheckHasAnnotationProperty((RDFResource)ann.Predicate)
+                                                                        && ann.Subject.Equals(Individual)));
 
             return result;
         }
 
         /// <summary>
-        /// Asynchronously enlists the object assertions which are directly (or indirectly, if inference is requested) assigned to the lens individual
+        /// Asynchronously enlists the object annotations to which the lens individual is related as subject
         /// </summary>
-        public Task<List<(bool, RDFOntologyIndividual, RDFOntologyObjectProperty, RDFOntologyIndividual)>> ObjectAssertionsAsync(bool enableInference)
-            => Task.Run(() => ObjectAssertions(enableInference));
-
-        /// <summary>
-        /// Enlists the negative object assertions which are directly (or indirectly, if inference is requested) assigned to the lens individual
-        /// </summary>
-        public List<(bool, RDFOntologyIndividual, RDFOntologyObjectProperty, RDFOntologyIndividual)> NegativeObjectAssertions(bool enableInference)
-        {
-            List<(bool, RDFOntologyIndividual, RDFOntologyObjectProperty, RDFOntologyIndividual)> result = new List<(bool, RDFOntologyIndividual, RDFOntologyObjectProperty, RDFOntologyIndividual)>();
-
-            //Subject
-            RDFOntologyTaxonomy negativeAssertionsWithSubjectIndividual = this.Ontology.Data.Relations.NegativeAssertions.SelectEntriesBySubject(this.OntologyIndividual);
-            if (enableInference)
-            {
-                //Inference-enabled discovery of assigned object negative relations
-                foreach (RDFOntologyTaxonomyEntry nasn in negativeAssertionsWithSubjectIndividual.Where(te => te.TaxonomyPredicate.IsObjectProperty()))
-                    result.Add((nasn.IsInference(), this.OntologyIndividual, (RDFOntologyObjectProperty)nasn.TaxonomyPredicate, (RDFOntologyIndividual)nasn.TaxonomyObject));
-            }
-            else
-            {
-                //First-level enlisting of assigned object negative relations
-                foreach (RDFOntologyTaxonomyEntry nasn in negativeAssertionsWithSubjectIndividual.Where(te => te.TaxonomyPredicate.IsObjectProperty() && !te.IsInference()))
-                    result.Add((false, this.OntologyIndividual, (RDFOntologyObjectProperty)nasn.TaxonomyPredicate, (RDFOntologyIndividual)nasn.TaxonomyObject));
-            }
-
-            //Object
-            RDFOntologyTaxonomy negativeAssertionsWithObjectIndividual = this.Ontology.Data.Relations.NegativeAssertions.SelectEntriesByObject(this.OntologyIndividual);
-            if (enableInference)
-            {
-                //Inference-enabled discovery of assigned object relations
-                foreach (RDFOntologyTaxonomyEntry nasn in negativeAssertionsWithObjectIndividual.Where(te => te.TaxonomyPredicate.IsObjectProperty()))
-                    result.Add((nasn.IsInference(), (RDFOntologyIndividual)nasn.TaxonomySubject, (RDFOntologyObjectProperty)nasn.TaxonomyPredicate, this.OntologyIndividual));
-            }
-            else
-            {
-                //First-level enlisting of assigned object relations
-                foreach (RDFOntologyTaxonomyEntry nasn in negativeAssertionsWithObjectIndividual.Where(te => te.TaxonomyPredicate.IsObjectProperty() && !te.IsInference()))
-                    result.Add((false, (RDFOntologyIndividual)nasn.TaxonomySubject, (RDFOntologyObjectProperty)nasn.TaxonomyPredicate, this.OntologyIndividual));
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Asynchronously enlists the negative object assertions which are directly (or indirectly, if inference is requested) assigned to the lens individual
-        /// </summary>
-        public Task<List<(bool, RDFOntologyIndividual, RDFOntologyObjectProperty, RDFOntologyIndividual)>> NegativeObjectAssertionsAsync(bool enableInference)
-            => Task.Run(() => NegativeObjectAssertions(enableInference));
-
-        /// <summary>
-        /// Enlists the data assertions which are directly (or indirectly, if inference is requested) assigned to the lens individual
-        /// </summary>
-        public List<(bool,RDFOntologyDatatypeProperty, RDFOntologyLiteral)> DataAssertions(bool enableInference)
-        {
-            List<(bool, RDFOntologyDatatypeProperty, RDFOntologyLiteral)> result = new List<(bool, RDFOntologyDatatypeProperty, RDFOntologyLiteral)>();
-
-            RDFOntologyTaxonomy assertionsWithSubjectIndividual = this.Ontology.Data.Relations.Assertions.SelectEntriesBySubject(this.OntologyIndividual);
-            if (enableInference)
-            {
-                //Inference-enabled discovery of assigned literal relations
-                foreach (RDFOntologyTaxonomyEntry asn in assertionsWithSubjectIndividual.Where(te => te.TaxonomyPredicate.IsDatatypeProperty()))
-                    result.Add((asn.IsInference(), (RDFOntologyDatatypeProperty)asn.TaxonomyPredicate, (RDFOntologyLiteral)asn.TaxonomyObject));
-            }
-            else
-            {
-                //First-level enlisting of assigned literal relations
-                foreach (RDFOntologyTaxonomyEntry asn in assertionsWithSubjectIndividual.Where(te => te.TaxonomyPredicate.IsDatatypeProperty() && !te.IsInference()))
-                    result.Add((false, (RDFOntologyDatatypeProperty)asn.TaxonomyPredicate, (RDFOntologyLiteral)asn.TaxonomyObject));
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Asynchronously enlists the data assertions which are directly (or indirectly, if inference is requested) assigned to the lens individual
-        /// </summary>
-        public Task<List<(bool, RDFOntologyDatatypeProperty, RDFOntologyLiteral)>> DataAssertionsAsync(bool enableInference)
-            => Task.Run(() => DataAssertions(enableInference));
-
-        /// <summary>
-        /// Enlists the negative data assertions which are directly (or indirectly, if inference is requested) assigned to the lens individual
-        /// </summary>
-        public List<(bool, RDFOntologyDatatypeProperty, RDFOntologyLiteral)> NegativeDataAssertions(bool enableInference)
-        {
-            List<(bool, RDFOntologyDatatypeProperty, RDFOntologyLiteral)> result = new List<(bool, RDFOntologyDatatypeProperty, RDFOntologyLiteral)>();
-
-            RDFOntologyTaxonomy negativeAssertionsWithSubjectIndividual = this.Ontology.Data.Relations.NegativeAssertions.SelectEntriesBySubject(this.OntologyIndividual);
-            if (enableInference)
-            {
-                //Inference-enabled discovery of assigned literal negative relations
-                foreach (RDFOntologyTaxonomyEntry nasn in negativeAssertionsWithSubjectIndividual.Where(te => te.TaxonomyPredicate.IsDatatypeProperty()))
-                    result.Add((nasn.IsInference(), (RDFOntologyDatatypeProperty)nasn.TaxonomyPredicate, (RDFOntologyLiteral)nasn.TaxonomyObject));
-            }
-            else
-            {
-                //First-level enlisting of assigned literal negative relations
-                foreach (RDFOntologyTaxonomyEntry nasn in negativeAssertionsWithSubjectIndividual.Where(te => te.TaxonomyPredicate.IsDatatypeProperty() && !te.IsInference()))
-                    result.Add((false, (RDFOntologyDatatypeProperty)nasn.TaxonomyPredicate, (RDFOntologyLiteral)nasn.TaxonomyObject));
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Asynchronously enlists the negative data assertions which are directly (or indirectly, if inference is requested) assigned to the lens individual
-        /// </summary>
-        public Task<List<(bool, RDFOntologyDatatypeProperty, RDFOntologyLiteral)>> NegativeDataAssertionsAsync(bool enableInference)
-            => Task.Run(() => NegativeDataAssertions(enableInference));
-
-        /// <summary>
-        /// Enlists the object annotations which are assigned to the lens individual
-        /// </summary>
-        public List<(RDFOntologyAnnotationProperty, RDFOntologyIndividual)> ObjectAnnotations()
-        {
-            List<(RDFOntologyAnnotationProperty, RDFOntologyIndividual)> result = new List<(RDFOntologyAnnotationProperty, RDFOntologyIndividual)>();
-
-            //SeeAlso
-            foreach (RDFOntologyTaxonomyEntry ann in this.Ontology.Data.Annotations.SeeAlso.SelectEntriesBySubject(this.OntologyIndividual)
-                                                                                           .Where(te => te.TaxonomyObject.IsIndividual()))
-                result.Add(((RDFOntologyAnnotationProperty)ann.TaxonomyPredicate, (RDFOntologyIndividual)ann.TaxonomyObject));
-
-            //IsDefinedBy
-            foreach (RDFOntologyTaxonomyEntry ann in this.Ontology.Data.Annotations.IsDefinedBy.SelectEntriesBySubject(this.OntologyIndividual)
-                                                                                               .Where(te => te.TaxonomyObject.IsIndividual()))
-                result.Add(((RDFOntologyAnnotationProperty)ann.TaxonomyPredicate, (RDFOntologyIndividual)ann.TaxonomyObject));
-
-            //Custom Annotations
-            foreach (RDFOntologyTaxonomyEntry ann in this.Ontology.Data.Annotations.CustomAnnotations.SelectEntriesBySubject(this.OntologyIndividual)
-                                                                                                     .Where(te => te.TaxonomyObject.IsIndividual()))
-                result.Add(((RDFOntologyAnnotationProperty)ann.TaxonomyPredicate, (RDFOntologyIndividual)ann.TaxonomyObject));
-
-            return result;
-        }
-
-        /// <summary>
-        /// Asynchronously enlists the object annotations which are assigned to the lens individual
-        /// </summary>
-        public Task<List<(RDFOntologyAnnotationProperty, RDFOntologyIndividual)>> ObjectAnnotationsAsync()
+        public Task<List<RDFTriple>> ObjectAnnotationsAsync()
             => Task.Run(() => ObjectAnnotations());
 
         /// <summary>
-        /// Enlists the literal annotations which are assigned to the lens individual
+        /// Enlists the data annotations to which the lens individual is related as subject
         /// </summary>
-        public List<(RDFOntologyAnnotationProperty, RDFOntologyLiteral)> DataAnnotations()
+        public List<RDFTriple> DataAnnotations()
         {
-            List<(RDFOntologyAnnotationProperty, RDFOntologyLiteral)> result = new List<(RDFOntologyAnnotationProperty, RDFOntologyLiteral)>();
+            List<RDFTriple> result = new List<RDFTriple>();
 
-            //VersionInfo
-            foreach (RDFOntologyTaxonomyEntry ann in this.Ontology.Data.Annotations.VersionInfo.SelectEntriesBySubject(this.OntologyIndividual)
-                                                                                               .Where(te => te.TaxonomyObject.IsLiteral()))
-                result.Add(((RDFOntologyAnnotationProperty)ann.TaxonomyPredicate, (RDFOntologyLiteral)ann.TaxonomyObject));
-
-            //Comment
-            foreach (RDFOntologyTaxonomyEntry ann in this.Ontology.Data.Annotations.Comment.SelectEntriesBySubject(this.OntologyIndividual)
-                                                                                           .Where(te => te.TaxonomyObject.IsLiteral()))
-                result.Add(((RDFOntologyAnnotationProperty)ann.TaxonomyPredicate, (RDFOntologyLiteral)ann.TaxonomyObject));
-
-            //Label
-            foreach (RDFOntologyTaxonomyEntry ann in this.Ontology.Data.Annotations.Label.SelectEntriesBySubject(this.OntologyIndividual)
-                                                                                         .Where(te => te.TaxonomyObject.IsLiteral()))
-                result.Add(((RDFOntologyAnnotationProperty)ann.TaxonomyPredicate, (RDFOntologyLiteral)ann.TaxonomyObject));
-
-            //SeeAlso
-            foreach (RDFOntologyTaxonomyEntry ann in this.Ontology.Data.Annotations.SeeAlso.SelectEntriesBySubject(this.OntologyIndividual)
-                                                                                           .Where(te => te.TaxonomyObject.IsLiteral()))
-                result.Add(((RDFOntologyAnnotationProperty)ann.TaxonomyPredicate, (RDFOntologyLiteral)ann.TaxonomyObject));
-
-            //IsDefinedBy
-            foreach (RDFOntologyTaxonomyEntry ann in this.Ontology.Data.Annotations.IsDefinedBy.SelectEntriesBySubject(this.OntologyIndividual)
-                                                                                               .Where(te => te.TaxonomyObject.IsLiteral()))
-                result.Add(((RDFOntologyAnnotationProperty)ann.TaxonomyPredicate, (RDFOntologyLiteral)ann.TaxonomyObject));
-
-            //Custom Annotations
-            foreach (RDFOntologyTaxonomyEntry ann in this.Ontology.Data.Annotations.CustomAnnotations.SelectEntriesBySubject(this.OntologyIndividual)
-                                                                                                     .Where(te => te.TaxonomyObject.IsLiteral()))
-                result.Add(((RDFOntologyAnnotationProperty)ann.TaxonomyPredicate, (RDFOntologyLiteral)ann.TaxonomyObject));
+            result.AddRange(Ontology.Data.ABoxGraph.Where(ann => ann.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPL
+                                                                    && Ontology.Model.PropertyModel.CheckHasAnnotationProperty((RDFResource)ann.Predicate)
+                                                                        && ann.Subject.Equals(Individual)));
 
             return result;
         }
 
         /// <summary>
-        /// Asynchronously enlists the literal annotations which are assigned to the lens individual
+        /// Asynchronously enlists the data annotations to which the lens individual is related as subject
         /// </summary>
-        public Task<List<(RDFOntologyAnnotationProperty, RDFOntologyLiteral)>> DataAnnotationsAsync()
+        public Task<List<RDFTriple>> DataAnnotationsAsync()
             => Task.Run(() => DataAnnotations());
         #endregion
     }

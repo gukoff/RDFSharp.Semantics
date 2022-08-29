@@ -20,7 +20,7 @@ using System.Runtime.Serialization;
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// RDFSemanticsException represents an exception thrown during creation and execution of RDF semantics.
+    /// RDFSemanticsException represents an exception thrown within "RDFSharp.Semantics" namespace
     /// </summary>
     [Serializable]
     public class RDFSemanticsException : Exception

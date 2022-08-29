@@ -1,0 +1,230 @@
+﻿/*
+   Copyright 2012-2022 Marco De Salvo
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using RDFSharp.Model;
+using RDFSharp.Query;
+
+namespace RDFSharp.Semantics
+{
+    /// <summary>
+    /// RDFOntologyPropertyModelLoader is responsible for loading ontology property models from remote sources or alternative representations
+    /// </summary>
+    internal static class RDFOntologyPropertyModelLoader
+    {
+        #region Methods
+        /// <summary>
+        /// Gets an ontology property model representation of the given graph
+        /// </summary>
+        internal static void LoadPropertyModel(this RDFOntology ontology, RDFGraph graph)
+        {
+            if (graph == null)
+                throw new RDFSemanticsException("Cannot get ontology property model from RDFGraph because given \"graph\" parameter is null");
+
+            RDFSemanticsEvents.RaiseSemanticsInfo(string.Format("Graph '{0}' is going to be parsed as PropertyModel...", graph.Context));
+
+            #region Declarations
+            HashSet<long> annotationProperties = graph.GetAnnotationPropertyHashes();
+            annotationProperties.UnionWith(RDFSemanticsUtilities.StandardResourceAnnotations);
+
+            //AnnotationProperty
+            foreach (RDFResource annotationProperty in GetAnnotationPropertyDeclarations(graph))
+                ontology.Model.PropertyModel.DeclareAnnotationProperty(annotationProperty, GetAnnotationPropertyBehavior(annotationProperty, graph));
+
+            //DatatypeProperty
+            foreach (RDFResource datatypeProperty in GetDatatypePropertyDeclarations(graph))
+                ontology.Model.PropertyModel.DeclareDatatypeProperty(datatypeProperty, GetDatatypePropertyBehavior(datatypeProperty, graph));
+
+            //ObjectProperty (plus its derivate declarations)
+            List<RDFResource> objectProperties = GetObjectPropertyDeclarations(graph)
+                                                  .Union(GetSymmetricPropertyDeclarations(graph))
+                                                   .Union(GetTransitivePropertyDeclarations(graph))
+                                                    .Union(GetInverseFunctionalPropertyDeclarations(graph))
+                                                     .Union(GetAsymmetricPropertyDeclarations(graph))
+                                                      .Union(GetReflexivePropertyDeclarations(graph))
+                                                       .Union(GetIrreflexivePropertyDeclarations(graph))
+                                                        .ToList();
+            foreach (RDFResource objectProperty in RDFQueryUtilities.RemoveDuplicates(objectProperties))
+                ontology.Model.PropertyModel.DeclareObjectProperty(objectProperty, GetObjectPropertyBehavior(objectProperty, graph));
+            #endregion
+
+            #region Taxonomies
+            foreach (RDFResource property in ontology.Model.PropertyModel)
+            {
+                //Annotations
+                foreach (RDFTriple propertyAnnotation in graph[property, null, null, null].Where(t => annotationProperties.Contains(t.Predicate.PatternMemberID)))
+                {
+                    if (propertyAnnotation.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPO)
+                        ontology.Model.PropertyModel.AnnotateProperty(property, (RDFResource)propertyAnnotation.Predicate, (RDFResource)propertyAnnotation.Object);
+                    else
+                        ontology.Model.PropertyModel.AnnotateProperty(property, (RDFResource)propertyAnnotation.Predicate, (RDFLiteral)propertyAnnotation.Object);
+                }
+
+                //Relations
+                foreach (RDFTriple subPropertyRelation in graph[property, RDFVocabulary.RDFS.SUB_PROPERTY_OF, null, null])
+                    ontology.Model.PropertyModel.DeclareSubProperty(property, (RDFResource)subPropertyRelation.Object);
+                foreach (RDFTriple equivalentPropertyRelation in graph[property, RDFVocabulary.OWL.EQUIVALENT_PROPERTY, null, null])
+                    ontology.Model.PropertyModel.DeclareEquivalentProperties(property, (RDFResource)equivalentPropertyRelation.Object);
+                foreach (RDFTriple inversePropertyRelation in graph[property, RDFVocabulary.OWL.INVERSE_OF, null, null])
+                    ontology.Model.PropertyModel.DeclareInverseProperties(property, (RDFResource)inversePropertyRelation.Object);
+                foreach (RDFTriple disjointPropertyRelation in graph[property, RDFVocabulary.OWL.PROPERTY_DISJOINT_WITH, null, null]) //OWL2
+                    ontology.Model.PropertyModel.DeclareDisjointProperties(property, (RDFResource)disjointPropertyRelation.Object);
+                foreach (RDFTriple chainPropertyRelation in graph[property, RDFVocabulary.OWL.PROPERTY_CHAIN_AXIOM, null, null]) //OWL2
+                {
+                    List<RDFResource> chainProperties = new List<RDFResource>();
+                    RDFCollection chainPropertiesCollection = RDFModelUtilities.DeserializeCollectionFromGraph(graph, (RDFResource)chainPropertyRelation.Object, RDFModelEnums.RDFTripleFlavors.SPO);
+                    foreach (RDFPatternMember chainProperty in chainPropertiesCollection)
+                        chainProperties.Add((RDFResource)chainProperty);
+                    ontology.Model.PropertyModel.DeclarePropertyChainAxiom(property, chainProperties);
+                }
+            }
+
+            //owl:AllDisjointProperties [OWL2]
+            foreach (RDFTriple allDisjointProperties in graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ALL_DISJOINT_PROPERTIES, null])
+                foreach (RDFTriple allDisjointPropertiesMembers in graph[(RDFResource)allDisjointProperties.Subject, RDFVocabulary.OWL.MEMBERS, null, null])
+                {
+                    List<RDFResource> disjointProperties = new List<RDFResource>();
+                    RDFCollection disjointPropertiesCollection = RDFModelUtilities.DeserializeCollectionFromGraph(graph, (RDFResource)allDisjointPropertiesMembers.Object, RDFModelEnums.RDFTripleFlavors.SPO);
+                    foreach (RDFPatternMember disjointProperty in disjointPropertiesCollection)
+                        disjointProperties.Add((RDFResource)disjointProperty);
+                    ontology.Model.PropertyModel.DeclareAllDisjointProperties((RDFResource)allDisjointProperties.Subject, disjointProperties);
+                }
+            #endregion
+
+            RDFSemanticsEvents.RaiseSemanticsInfo(string.Format("Graph '{0}' has been parsed as PropertyModel", graph.Context));
+        }
+        #endregion
+
+        #region Utilities
+        /// <summary>
+        /// Gets the annotation behavior of the given property
+        /// </summary>
+        private static RDFOntologyAnnotationPropertyBehavior GetAnnotationPropertyBehavior(RDFResource property, RDFGraph graph)
+            => new RDFOntologyAnnotationPropertyBehavior()
+            {
+                Deprecated = graph.ContainsTriple(new RDFTriple(property, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.DEPRECATED_PROPERTY))
+            };
+
+        /// <summary>
+        /// Gets the datatype behavior of the given property
+        /// </summary>
+        private static RDFOntologyDatatypePropertyBehavior GetDatatypePropertyBehavior(RDFResource property, RDFGraph graph)
+            => new RDFOntologyDatatypePropertyBehavior()
+            {
+                Deprecated = GetAnnotationPropertyBehavior(property, graph).Deprecated,
+                Functional = graph.ContainsTriple(new RDFTriple(property, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.FUNCTIONAL_PROPERTY)),
+                Domain = graph[property, RDFVocabulary.RDFS.DOMAIN, null, null].FirstOrDefault()?.Object as RDFResource,
+                Range = graph[property, RDFVocabulary.RDFS.RANGE, null, null].FirstOrDefault()?.Object as RDFResource
+            };
+
+        /// <summary>
+        /// Gets the object behavior of the given property
+        /// </summary>
+        private static RDFOntologyObjectPropertyBehavior GetObjectPropertyBehavior(RDFResource property, RDFGraph graph)
+        {
+            RDFOntologyDatatypePropertyBehavior datatypePropertyBehavior = GetDatatypePropertyBehavior(property, graph);
+            return new RDFOntologyObjectPropertyBehavior()
+            {
+                Deprecated = datatypePropertyBehavior.Deprecated,
+                Functional = datatypePropertyBehavior.Functional,
+                Domain = datatypePropertyBehavior.Domain,
+                Range = datatypePropertyBehavior.Range,
+                Symmetric = graph.ContainsTriple(new RDFTriple(property, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.SYMMETRIC_PROPERTY)),
+                Transitive = graph.ContainsTriple(new RDFTriple(property, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.TRANSITIVE_PROPERTY)),
+                InverseFunctional = graph.ContainsTriple(new RDFTriple(property, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.INVERSE_FUNCTIONAL_PROPERTY)),
+                //OWL2
+                Asymmetric = graph.ContainsTriple(new RDFTriple(property, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ASYMMETRIC_PROPERTY)),
+                Reflexive = graph.ContainsTriple(new RDFTriple(property, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.REFLEXIVE_PROPERTY)),
+                Irreflexive = graph.ContainsTriple(new RDFTriple(property, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.IRREFLEXIVE_PROPERTY)),
+            };
+        }
+
+        /// <summary>
+        /// Gets the owl:ObjectProperty declarations
+        /// </summary>
+        private static HashSet<RDFResource> GetObjectPropertyDeclarations(RDFGraph graph)
+            => new HashSet<RDFResource>(graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY, null]
+                                           .Select(t => t.Subject)
+                                           .OfType<RDFResource>());
+
+        /// <summary>
+        /// Gets the owl:SymmetricProperty declarations
+        /// </summary>
+        private static HashSet<RDFResource> GetSymmetricPropertyDeclarations(RDFGraph graph)
+            => new HashSet<RDFResource>(graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.SYMMETRIC_PROPERTY, null]
+                                           .Select(t => t.Subject)
+                                           .OfType<RDFResource>());
+
+        /// <summary>
+        /// Gets the owl:TransitiveProperty declarations
+        /// </summary>
+        private static HashSet<RDFResource> GetTransitivePropertyDeclarations(RDFGraph graph)
+            => new HashSet<RDFResource>(graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.TRANSITIVE_PROPERTY, null]
+                                           .Select(t => t.Subject)
+                                           .OfType<RDFResource>());
+
+        /// <summary>
+        /// Gets the owl:InverseFunctionalProperty declarations
+        /// </summary>
+        private static HashSet<RDFResource> GetInverseFunctionalPropertyDeclarations(RDFGraph graph)
+            => new HashSet<RDFResource>(graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.INVERSE_FUNCTIONAL_PROPERTY, null]
+                                           .Select(t => t.Subject)
+                                           .OfType<RDFResource>());
+
+        /// <summary>
+        /// Gets the owl:AsymmetricProperty declarations [OWL2]
+        /// </summary>
+        private static HashSet<RDFResource> GetAsymmetricPropertyDeclarations(RDFGraph graph)
+            => new HashSet<RDFResource>(graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ASYMMETRIC_PROPERTY, null]
+                                           .Select(t => t.Subject)
+                                           .OfType<RDFResource>());
+
+        /// <summary>
+        /// Gets the owl:ReflexiveProperty declarations [OWL2]
+        /// </summary>
+        private static HashSet<RDFResource> GetReflexivePropertyDeclarations(RDFGraph graph)
+            => new HashSet<RDFResource>(graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.REFLEXIVE_PROPERTY, null]
+                                           .Select(t => t.Subject)
+                                           .OfType<RDFResource>());
+
+        /// <summary>
+        /// Gets the owl:IrreflexiveProperty declarations [OWL2]
+        /// </summary>
+        private static HashSet<RDFResource> GetIrreflexivePropertyDeclarations(RDFGraph graph)
+            => new HashSet<RDFResource>(graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.IRREFLEXIVE_PROPERTY, null]
+                                           .Select(t => t.Subject)
+                                           .OfType<RDFResource>());
+
+        /// <summary>
+        /// Gets the owl:DatatypeProperty declarations
+        /// </summary>
+        private static HashSet<RDFResource> GetDatatypePropertyDeclarations(RDFGraph graph)
+            => new HashSet<RDFResource>(graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.DATATYPE_PROPERTY, null]
+                                           .Select(t => t.Subject)
+                                           .OfType<RDFResource>());
+
+        /// <summary>
+        /// Gets the owl:AnnotationProperty declarations
+        /// </summary>
+        private static HashSet<RDFResource> GetAnnotationPropertyDeclarations(RDFGraph graph)
+            => new HashSet<RDFResource>(graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ANNOTATION_PROPERTY, null]
+                                           .Select(t => t.Subject)
+                                           .OfType<RDFResource>());
+        #endregion
+    }
+}

@@ -14,127 +14,63 @@
    limitations under the License.
 */
 
-using RDFSharp.Model;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using RDFSharp.Model;
 
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// RDFOntologyModel represents the model component (T-BOX) of an ontology.
+    /// RDFOntologyModel represents the T-BOX of the application domain formalized by the ontology
     /// </summary>
     public class RDFOntologyModel
     {
         #region Properties
         /// <summary>
-        /// Submodel containing the ontology classes
+        /// Model of the entities contained within the application domain
         /// </summary>
-        public RDFOntologyClassModel ClassModel { get; set; }
+        public RDFOntologyClassModel ClassModel { get; internal set; }
 
         /// <summary>
-        /// Submodel containing the ontology properties
+        /// Model of the properties linking the entities of the application domain
         /// </summary>
-        public RDFOntologyPropertyModel PropertyModel { get; set; }
+        public RDFOntologyPropertyModel PropertyModel { get; internal set; }
         #endregion
 
         #region Ctors
         /// <summary>
-        /// Default-ctor to build an empty ontology model
+        /// Builds an empty ontology model
         /// </summary>
         public RDFOntologyModel()
         {
-            this.ClassModel = new RDFOntologyClassModel();
-            this.PropertyModel = new RDFOntologyPropertyModel();
+            ClassModel = new RDFOntologyClassModel();
+            PropertyModel = new RDFOntologyPropertyModel();
+        }
+
+        /// <summary>
+        /// Builds an ontology model having the given T-BOX knowledge
+        /// </summary>
+        public RDFOntologyModel(RDFOntologyClassModel classModel, RDFOntologyPropertyModel propertyModel) : this()
+        {
+            ClassModel = classModel ?? new RDFOntologyClassModel();
+            PropertyModel = propertyModel ?? new RDFOntologyPropertyModel();
         }
         #endregion
 
         #region Methods
-
-        #region Set
         /// <summary>
-        /// Builds a new intersection model from this model and a given one
+        /// Gets a graph representation of the model
         /// </summary>
-        public RDFOntologyModel IntersectWith(RDFOntologyModel model)
-        {
-            RDFOntologyModel result = new RDFOntologyModel();
-
-            if (model != null)
-            {
-                //Intersect the class models
-                result.ClassModel = this.ClassModel.IntersectWith(model.ClassModel);
-
-                //Intersect the property models
-                result.PropertyModel = this.PropertyModel.IntersectWith(model.PropertyModel);
-            }
-
-            return result;
-        }
+        public RDFGraph ToRDFGraph(bool includeInferences)
+            => ClassModel.ToRDFGraph(includeInferences)
+                  .UnionWith(PropertyModel.ToRDFGraph(includeInferences));
 
         /// <summary>
-        /// Builds a new union model from this model and a given one
+        /// Asynchronously gets a graph representation of the model
         /// </summary>
-        public RDFOntologyModel UnionWith(RDFOntologyModel model)
-        {
-            RDFOntologyModel result = new RDFOntologyModel();
-
-            //Use this class model
-            result.ClassModel = result.ClassModel.UnionWith(this.ClassModel);
-
-            //Use this property model
-            result.PropertyModel = result.PropertyModel.UnionWith(this.PropertyModel);
-
-            //Manage the given model
-            if (model != null)
-            {
-                //Union with the given class model
-                result.ClassModel = result.ClassModel.UnionWith(model.ClassModel);
-
-                //Union with the given property model
-                result.PropertyModel = result.PropertyModel.UnionWith(model.PropertyModel);
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// Builds a new difference model from this model and a given one
-        /// </summary>
-        public RDFOntologyModel DifferenceWith(RDFOntologyModel model)
-        {
-            RDFOntologyModel result = new RDFOntologyModel();
-
-            //Use this class model
-            result.ClassModel = result.ClassModel.UnionWith(this.ClassModel);
-
-            //Use this property model
-            result.PropertyModel = result.PropertyModel.UnionWith(this.PropertyModel);
-
-            //Manage the given model
-            if (model != null)
-            {
-                //Difference with the given class model
-                result.ClassModel = result.ClassModel.DifferenceWith(model.ClassModel);
-
-                //Difference with the given property model
-                result.PropertyModel = result.PropertyModel.DifferenceWith(model.PropertyModel);
-            }
-            return result;
-        }
-        #endregion
-
-        #region Convert
-        /// <summary>
-        /// Gets a graph representation of this ontology model, exporting inferences according to the selected behavior
-        /// </summary>
-        public RDFGraph ToRDFGraph(RDFSemanticsEnums.RDFOntologyInferenceExportBehavior infexpBehavior)
-            => this.ClassModel.ToRDFGraph(infexpBehavior)
-                              .UnionWith(this.PropertyModel.ToRDFGraph(infexpBehavior));
-
-        /// <summary>
-        /// Asynchronously gts a graph representation of this ontology model, exporting inferences according to the selected behavior
-        /// </summary>
-        public Task<RDFGraph> ToRDFGraphAsync(RDFSemanticsEnums.RDFOntologyInferenceExportBehavior infexpBehavior)
-            => Task.Run(() => ToRDFGraph(infexpBehavior));
-        #endregion
-
+        public Task<RDFGraph> ToRDFGraphAsync(bool includeInferences)
+            => Task.Run(() => ToRDFGraph(includeInferences));
         #endregion
     }
 }
