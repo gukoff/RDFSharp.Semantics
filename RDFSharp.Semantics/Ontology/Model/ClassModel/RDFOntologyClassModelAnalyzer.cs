@@ -18,6 +18,7 @@ using RDFSharp.Model;
 using RDFSharp.Query;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace RDFSharp.Semantics
 {
@@ -383,13 +384,31 @@ namespace RDFSharp.Semantics
 
             if (classModel != null && owlClass != null)
             {
-                //Restrict T-BOX knowledge to owl:disjointWith and owl:equivalentClass relations (both explicit and inferred)
-                RDFGraph filteredTBox =
-                    classModel.TBoxGraph[null, RDFVocabulary.OWL.DISJOINT_WITH, null, null].UnionWith(
-                       classModel.TBoxInferenceGraph[null, RDFVocabulary.OWL.DISJOINT_WITH, null, null].UnionWith(
-                          classModel.TBoxGraph[null, RDFVocabulary.OWL.EQUIVALENT_CLASS, null, null].UnionWith(
-                             classModel.TBoxInferenceGraph[null, RDFVocabulary.OWL.EQUIVALENT_CLASS, null, null])));
-                disjointClasses.AddRange(classModel.FindDisjointClasses(owlClass, filteredTBox));
+                List<RDFResource> directDisjointClasses = new List<RDFResource>();
+                List<RDFResource> indirectDisjointClasses = new List<RDFResource>();
+                Parallel.Invoke(
+                    () => {
+                        //Restrict T-BOX knowledge to owl:disjointWith and owl:equivalentClass relations (both explicit and inferred)
+                        RDFGraph filteredTBox =
+                            classModel.TBoxGraph[null, RDFVocabulary.OWL.DISJOINT_WITH, null, null].UnionWith(
+                               classModel.TBoxInferenceGraph[null, RDFVocabulary.OWL.DISJOINT_WITH, null, null].UnionWith(
+                                  classModel.TBoxGraph[null, RDFVocabulary.OWL.EQUIVALENT_CLASS, null, null].UnionWith(
+                                     classModel.TBoxInferenceGraph[null, RDFVocabulary.OWL.EQUIVALENT_CLASS, null, null])));
+                        directDisjointClasses.AddRange(classModel.FindDisjointClasses(owlClass, filteredTBox));
+                    },
+                    () => {
+                        //Navigate owl:AllDisjointClasses to find eventual disjoint classes "hidden" by this syntactic shortcut
+                        IEnumerator<RDFResource> allDisjointClasses = classModel.AllDisjointClassesEnumerator;
+                        while (allDisjointClasses.MoveNext())
+                            foreach (RDFTriple allDisjointClassesMembers in classModel.TBoxGraph[allDisjointClasses.Current, RDFVocabulary.OWL.MEMBERS, null, null])
+                            {
+                                RDFCollection disjointClassesCollection = RDFModelUtilities.DeserializeCollectionFromGraph(classModel.TBoxGraph, (RDFResource)allDisjointClassesMembers.Object, RDFModelEnums.RDFTripleFlavors.SPO);
+                                if (disjointClassesCollection.Items.Any(item => item.Equals(owlClass)))
+                                    indirectDisjointClasses.AddRange(disjointClassesCollection.OfType<RDFResource>());
+                            }
+                    });
+                disjointClasses.AddRange(directDisjointClasses);
+                disjointClasses.AddRange(indirectDisjointClasses);
 
                 //We don't want to also enlist the given owl:Class
                 disjointClasses.RemoveAll(cls => cls.Equals(owlClass));

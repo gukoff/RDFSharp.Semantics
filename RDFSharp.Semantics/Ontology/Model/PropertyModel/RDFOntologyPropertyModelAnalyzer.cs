@@ -18,6 +18,7 @@ using RDFSharp.Model;
 using RDFSharp.Query;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace RDFSharp.Semantics
 {
@@ -300,13 +301,31 @@ namespace RDFSharp.Semantics
 
             if (propertyModel != null && owlProperty != null)
             {
-                //Restrict T-BOX knowledge to owl:propertyDisjointWith and owl:equivalentProperty relations (both explicit and inferred)
-                RDFGraph filteredTBox =
-                    propertyModel.TBoxGraph[null, RDFVocabulary.OWL.PROPERTY_DISJOINT_WITH, null, null].UnionWith(
-                       propertyModel.TBoxInferenceGraph[null, RDFVocabulary.OWL.PROPERTY_DISJOINT_WITH, null, null].UnionWith(
-                          propertyModel.TBoxGraph[null, RDFVocabulary.OWL.EQUIVALENT_PROPERTY, null, null].UnionWith(
-                             propertyModel.TBoxInferenceGraph[null, RDFVocabulary.OWL.EQUIVALENT_PROPERTY, null, null])));
-                disjointProperties.AddRange(propertyModel.FindDisjointProperties(owlProperty, filteredTBox));
+                List<RDFResource> directDisjointProperties = new List<RDFResource>();
+                List<RDFResource> indirectDisjointProperties = new List<RDFResource>();
+                Parallel.Invoke(
+                    () => {
+                        //Restrict T-BOX knowledge to owl:propertyDisjointWith and owl:equivalentProperty relations (both explicit and inferred)
+                        RDFGraph filteredTBox =
+                            propertyModel.TBoxGraph[null, RDFVocabulary.OWL.PROPERTY_DISJOINT_WITH, null, null].UnionWith(
+                               propertyModel.TBoxInferenceGraph[null, RDFVocabulary.OWL.PROPERTY_DISJOINT_WITH, null, null].UnionWith(
+                                  propertyModel.TBoxGraph[null, RDFVocabulary.OWL.EQUIVALENT_PROPERTY, null, null].UnionWith(
+                                     propertyModel.TBoxInferenceGraph[null, RDFVocabulary.OWL.EQUIVALENT_PROPERTY, null, null])));
+                        directDisjointProperties.AddRange(propertyModel.FindDisjointProperties(owlProperty, filteredTBox));
+                    },
+                    () => {
+                        //Navigate owl:AllDisjointProperties to find eventual disjoint properties "hidden" by this syntactic shortcut
+                        IEnumerator<RDFResource> allDisjointProperties = propertyModel.AllDisjointPropertiesEnumerator;
+                        while (allDisjointProperties.MoveNext())
+                            foreach (RDFTriple allDisjointPropertiesMembers in propertyModel.TBoxGraph[allDisjointProperties.Current, RDFVocabulary.OWL.MEMBERS, null, null])
+                            {
+                                RDFCollection disjointPropertiesCollection = RDFModelUtilities.DeserializeCollectionFromGraph(propertyModel.TBoxGraph, (RDFResource)allDisjointPropertiesMembers.Object, RDFModelEnums.RDFTripleFlavors.SPO);
+                                if (disjointPropertiesCollection.Items.Any(item => item.Equals(owlProperty)))
+                                    indirectDisjointProperties.AddRange(disjointPropertiesCollection.OfType<RDFResource>());
+                            }
+                    });
+                disjointProperties.AddRange(directDisjointProperties);
+                disjointProperties.AddRange(indirectDisjointProperties);
 
                 //We don't want to also enlist the given owl:Property
                 disjointProperties.RemoveAll(prop => prop.Equals(owlProperty));
