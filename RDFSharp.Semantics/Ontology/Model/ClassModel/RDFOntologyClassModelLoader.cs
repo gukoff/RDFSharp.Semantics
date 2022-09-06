@@ -109,14 +109,15 @@ namespace RDFSharp.Semantics
             }
 
             //owl:AllDisjointClasses [OWL2]
-            foreach (RDFTriple allDisjointClasses in graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ALL_DISJOINT_CLASSES, null])
-                foreach (RDFTriple allDisjointClassesMembers in graph[(RDFResource)allDisjointClasses.Subject, RDFVocabulary.OWL.MEMBERS, null, null])
+            IEnumerator<RDFResource> allDisjointClasses = ontology.Model.ClassModel.AllDisjointClassesEnumerator;
+            while (allDisjointClasses.MoveNext())
+                foreach (RDFTriple allDisjointClassesMembers in graph[allDisjointClasses.Current, RDFVocabulary.OWL.MEMBERS, null, null])
                 {
                     List<RDFResource> disjointClasses = new List<RDFResource>();
                     RDFCollection disjointClassesCollection = RDFModelUtilities.DeserializeCollectionFromGraph(graph, (RDFResource)allDisjointClassesMembers.Object, RDFModelEnums.RDFTripleFlavors.SPO);
                     foreach (RDFPatternMember disjointClass in disjointClassesCollection)
                         disjointClasses.Add((RDFResource)disjointClass);
-                    ontology.Model.ClassModel.DeclareAllDisjointClasses((RDFResource)allDisjointClasses.Subject, disjointClasses);
+                    ontology.Model.ClassModel.DeclareAllDisjointClasses(allDisjointClasses.Current, disjointClasses);
                 }
             #endregion
 
