@@ -200,6 +200,21 @@ namespace RDFSharp.Semantics
         }
 
         /// <summary>
+        /// Count of the owl:AllDisjointProperties [OWL2]
+        /// </summary>
+        public long AllDisjointPropertiesCount
+        {
+            get
+            {
+                long count = 0;
+                IEnumerator<RDFResource> allDisjointProperties = AllDisjointPropertiesEnumerator;
+                while (allDisjointProperties.MoveNext())
+                    count++;
+                return count;
+            }
+        }
+
+        /// <summary>
         /// Gets the enumerator on the properties for iteration
         /// </summary>
         public IEnumerator<RDFResource> PropertiesEnumerator
@@ -380,6 +395,14 @@ namespace RDFSharp.Semantics
                 }
             }
         }
+
+        /// <summary>
+        /// Gets the enumerator on the owl:AllDisjointProperties for iteration [OWL2]
+        /// </summary>
+        public IEnumerator<RDFResource> AllDisjointPropertiesEnumerator
+            => TBoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ALL_DISJOINT_PROPERTIES, null]
+                .Select(t => (RDFResource)t.Subject)
+                .GetEnumerator();
 
         /// <summary>
         /// Collection of properties

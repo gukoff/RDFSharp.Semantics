@@ -16,6 +16,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using RDFSharp.Model;
 
@@ -40,9 +41,32 @@ namespace RDFSharp.Semantics
             => Individuals.Values.GetEnumerator();
 
         /// <summary>
+        /// Count of the owl:AllDifferent [OWL2]
+        /// </summary>
+        public long AllDifferentCount
+        {
+            get
+            {
+                long count = 0;
+                IEnumerator<RDFResource> allDifferent = AllDifferentEnumerator;
+                while (allDifferent.MoveNext())
+                    count++;
+                return count;
+            }
+        }
+
+        /// <summary>
         /// Collection of individuals
         /// </summary>
         internal Dictionary<long, RDFResource> Individuals { get; set; }
+
+        /// <summary>
+        /// Gets the enumerator on the owl:AllDifferent for iteration [OWL2]
+        /// </summary>
+        public IEnumerator<RDFResource> AllDifferentEnumerator
+            => ABoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ALL_DIFFERENT, null]
+                .Select(t => (RDFResource)t.Subject)
+                .GetEnumerator();
 
         /// <summary>
         /// A-BOX knowledge available to the data

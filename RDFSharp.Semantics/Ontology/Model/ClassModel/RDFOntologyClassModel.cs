@@ -95,6 +95,21 @@ namespace RDFSharp.Semantics
         }
 
         /// <summary>
+        /// Count of the owl:AllDisjointClasses [OWL2]
+        /// </summary>
+        public long AllDisjointClassesCount
+        {
+            get
+            {
+                long count = 0;
+                IEnumerator<RDFResource> allDisjointClasses = AllDisjointClassesEnumerator;
+                while (allDisjointClasses.MoveNext())
+                    count++;
+                return count;
+            }
+        }
+
+        /// <summary>
         /// Gets the enumerator on the classes for iteration
         /// </summary>
         public IEnumerator<RDFResource> ClassesEnumerator
@@ -166,6 +181,14 @@ namespace RDFSharp.Semantics
                 }
             }
         }
+
+        /// <summary>
+        /// Gets the enumerator on the owl:AllDisjointClasses for iteration [OWL2]
+        /// </summary>
+        public IEnumerator<RDFResource> AllDisjointClassesEnumerator
+            => TBoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ALL_DISJOINT_CLASSES, null]
+                .Select(t => (RDFResource)t.Subject)
+                .GetEnumerator();
 
         /// <summary>
         /// Collection of classes
