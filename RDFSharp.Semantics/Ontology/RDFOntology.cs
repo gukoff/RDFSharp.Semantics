@@ -51,6 +51,9 @@ namespace RDFSharp.Semantics
             Model = new RDFOntologyModel();
             Data = new RDFOntologyData();
             OBoxGraph = new RDFGraph().SetContext(new Uri(ontologyURI));
+
+            //Add knowledge to the O-BOX
+            OBoxGraph.AddTriple(new RDFTriple(new RDFResource(ontologyURI), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ONTOLOGY));
         }
 
         /// <summary>

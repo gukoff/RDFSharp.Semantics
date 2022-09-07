@@ -15,6 +15,7 @@
 */
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RDFSharp.Model;
@@ -35,6 +36,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsNotNull(ontology.Data);
             Assert.IsNotNull(ontology.OBoxGraph);
             Assert.IsTrue(ontology.OBoxGraph.Context.Equals(new Uri("ex:ont")));
+            Assert.IsTrue(ontology.OBoxGraph[new RDFResource("ex:ont"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ONTOLOGY, null].Any());
         }
 
         [TestMethod]
@@ -47,6 +49,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsNotNull(ontology.Data);
             Assert.IsNotNull(ontology.OBoxGraph);
             Assert.IsTrue(ontology.OBoxGraph.Context.Equals(new Uri("ex:ont")));
+            Assert.IsTrue(ontology.OBoxGraph[new RDFResource("ex:ont"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ONTOLOGY, null].Any());
         }
 
         [TestMethod]
@@ -55,7 +58,8 @@ namespace RDFSharp.Semantics.Test
             RDFOntology ontology = new RDFOntology("ex:ont");
             ontology.Annotate(RDFVocabulary.RDFS.SEE_ALSO, new RDFResource("ex:seealso"));
 
-            Assert.IsTrue(ontology.OBoxGraph.TriplesCount == 1);
+            Assert.IsTrue(ontology.OBoxGraph[new RDFResource("ex:ont"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ONTOLOGY, null].Any());
+            Assert.IsTrue(ontology.OBoxGraph[new RDFResource("ex:ont"), RDFVocabulary.RDFS.SEE_ALSO, new RDFResource("ex:seealso"), null].Any());
         }
 
         [TestMethod]
@@ -64,7 +68,8 @@ namespace RDFSharp.Semantics.Test
             RDFOntology ontology = new RDFOntology("ex:ont");
             ontology.Annotate(RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("This is a test ontology"));
 
-            Assert.IsTrue(ontology.OBoxGraph.TriplesCount == 1);
+            Assert.IsTrue(ontology.OBoxGraph[new RDFResource("ex:ont"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ONTOLOGY, null].Any());
+            Assert.IsTrue(ontology.OBoxGraph[new RDFResource("ex:ont"), RDFVocabulary.RDFS.COMMENT, null, new RDFPlainLiteral("This is a test ontology")].Any());
         }
 
         [TestMethod]
@@ -90,6 +95,30 @@ namespace RDFSharp.Semantics.Test
         [TestMethod]
         public void ShouldThrowExceptionOnLiteralAnnotatingOntologyBecauseNullValue()
             => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntology("ex:ont").Annotate(RDFVocabulary.RDFS.LABEL, null as RDFLiteral));
+
+        [TestMethod]
+        public void ShouldExportToGraph()
+        {
+            RDFOntology ontology = new RDFOntology("ex:ont");
+            ontology.Annotate(RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("This is a test ontology"));
+            RDFGraph graph = ontology.ToRDFGraph(false);
+
+            Assert.IsNotNull(graph);
+            Assert.IsTrue(graph[new RDFResource("ex:ont"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ONTOLOGY, null].Any());
+            Assert.IsTrue(graph[new RDFResource("ex:ont"), RDFVocabulary.RDFS.COMMENT, null, new RDFPlainLiteral("This is a test ontology")].Any());
+        }
+
+        [TestMethod]
+        public async Task ShouldExportToGraphAsync()
+        {
+            RDFOntology ontology = new RDFOntology("ex:ont");
+            ontology.Annotate(RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("This is a test ontology"));
+            RDFGraph graph = await ontology.ToRDFGraphAsync(false);
+
+            Assert.IsNotNull(graph);
+            Assert.IsTrue(graph[new RDFResource("ex:ont"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ONTOLOGY, null].Any());
+            Assert.IsTrue(graph[new RDFResource("ex:ont"), RDFVocabulary.RDFS.COMMENT, null, new RDFPlainLiteral("This is a test ontology")].Any());
+        }
         #endregion
     }
 }
