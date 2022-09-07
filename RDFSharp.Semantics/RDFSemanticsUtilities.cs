@@ -28,7 +28,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// These classes, under "Strict" check policy, are considered reserved
         /// </summary>
-        internal static HashSet<long> ReservedClasses = new HashSet<long>()
+        internal static readonly HashSet<long> ReservedClasses = new HashSet<long>()
         {
             //RDF
             RDFVocabulary.RDF.XML_LITERAL.PatternMemberID,
@@ -120,7 +120,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// These properties, under "Strict" check policy, are considered reserved
         /// </summary>
-        internal static HashSet<long> ReservedProperties = new HashSet<long>()
+        internal static readonly HashSet<long> ReservedProperties = new HashSet<long>()
         {
             //RDF
             RDFVocabulary.RDF.FIRST.PatternMemberID,

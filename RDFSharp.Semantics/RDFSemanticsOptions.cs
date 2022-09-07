@@ -23,7 +23,7 @@ namespace RDFSharp.Semantics
     {
         #region Properties
         /// <summary>
-        /// Indicates the policy adopted by the library for real-time OWL-DL integrity and compliance checking (default: Strict)
+        /// Indicates the policy adopted for real-time OWL-DL integrity and compliance checking (default: Strict)
         /// </summary>
         public static RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy OWLDLIntegrityPolicy { get; set; } 
             = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Strict;
