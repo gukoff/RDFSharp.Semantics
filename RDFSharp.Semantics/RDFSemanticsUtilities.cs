@@ -24,7 +24,32 @@ namespace RDFSharp.Semantics
     /// </summary>
     internal static class RDFSemanticsUtilities
     {
+        #region Properties
+        /// <summary>
+        /// These classes, under "Strict" check policy, are considered reserved
+        /// </summary>
+        internal static HashSet<long> ReservedClasses { get; set; }
+
+        /// <summary>
+        /// These properties, under "Strict" check policy, are considered reserved
+        /// </summary>
+        internal static HashSet<long> ReservedProperties { get; set; }
+
+        /// <summary>
+        /// These properties are always handled as annotation properties for ontologies
+        /// </summary>
+        internal static HashSet<long> StandardOntologyAnnotations { get; set; }
+
+        /// <summary>
+        /// These properties are always handled as annotation properties for resources
+        /// </summary>
+        internal static HashSet<long> StandardResourceAnnotations { get; set; }
+        #endregion
+
         #region Ctors
+        /// <summary>
+        /// Static-ctor to initialize properties
+        /// </summary>
         static RDFSemanticsUtilities()
         {
             ReservedClasses = new HashSet<long>()
@@ -227,28 +252,6 @@ namespace RDFSharp.Semantics
                 { RDFVocabulary.OWL.IMPORTS.PatternMemberID }
             };
         }
-        #endregion
-
-        #region Properties
-        /// <summary>
-        /// These classes, under "Strict" check policy, are considered reserved
-        /// </summary>
-        internal static HashSet<long> ReservedClasses { get; set; }
-
-        /// <summary>
-        /// These properties, under "Strict" check policy, are considered reserved
-        /// </summary>
-        internal static HashSet<long> ReservedProperties { get; set; }
-
-        /// <summary>
-        /// These properties are always handled as annotation properties for ontologies
-        /// </summary>
-        internal static HashSet<long> StandardOntologyAnnotations { get; set; }
-
-        /// <summary>
-        /// These properties are always handled as annotation properties for resources
-        /// </summary>
-        internal static HashSet<long> StandardResourceAnnotations { get; set; }
         #endregion
     }
 }
