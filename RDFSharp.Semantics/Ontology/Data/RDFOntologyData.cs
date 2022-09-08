@@ -35,12 +35,6 @@ namespace RDFSharp.Semantics
             => Individuals.Count;
 
         /// <summary>
-        /// Gets the enumerator on the individuals for iteration
-        /// </summary>
-        public IEnumerator<RDFResource> IndividualsEnumerator 
-            => Individuals.Values.GetEnumerator();
-
-        /// <summary>
         /// Count of the owl:AllDifferent [OWL2]
         /// </summary>
         public long AllDifferentCount
@@ -56,9 +50,10 @@ namespace RDFSharp.Semantics
         }
 
         /// <summary>
-        /// Collection of individuals
+        /// Gets the enumerator on the individuals for iteration
         /// </summary>
-        internal Dictionary<long, RDFResource> Individuals { get; set; }
+        public IEnumerator<RDFResource> IndividualsEnumerator
+            => Individuals.Values.GetEnumerator();
 
         /// <summary>
         /// Gets the enumerator on the owl:AllDifferent for iteration [OWL2]
@@ -67,6 +62,11 @@ namespace RDFSharp.Semantics
             => ABoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ALL_DIFFERENT, null]
                 .Select(t => (RDFResource)t.Subject)
                 .GetEnumerator();
+
+        /// <summary>
+        /// Collection of individuals
+        /// </summary>
+        internal Dictionary<long, RDFResource> Individuals { get; set; }
 
         /// <summary>
         /// A-BOX knowledge available to the data
@@ -113,7 +113,7 @@ namespace RDFSharp.Semantics
 
         #region Methods
         /// <summary>
-        /// Declares the given owl:Individual instance to the data
+        /// Declares the given owl:NamedIndividual instance to the data
         /// </summary>
         public RDFOntologyData DeclareIndividual(RDFResource owlIndividual)
         {

@@ -22,4 +22,8 @@
 	<ItemGroup>
 		<ProjectReference Include="..\RDFSharp.Semantics\RDFSharp.Semantics.csproj" />
 	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Ontology\Model\ClassModel\" />
+	  <Folder Include="Ontology\Model\PropertyModel\" />
+	</ItemGroup>
 </Project>
