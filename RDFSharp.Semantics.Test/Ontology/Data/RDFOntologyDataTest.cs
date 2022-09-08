@@ -162,6 +162,69 @@ namespace RDFSharp.Semantics.Test
             => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyData()
                         .DeclareIndividual(new RDFResource("ex:indiv1"))
                         .AnnotateIndividual(new RDFResource("ex:indiv1"), RDFVocabulary.RDFS.LABEL, null as RDFLiteral));
+
+        [TestMethod]
+        public void ShouldDeclareIndividualType()
+        {
+            RDFOntologyData data = new RDFOntologyData();
+            data.DeclareIndividual(new RDFResource("ex:indivA"));
+            data.DeclareIndividualType(new RDFResource("ex:indivA"), new RDFResource("ex:classA"));
+
+            Assert.IsTrue(data.ABoxGraph.TriplesCount == 2);
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, new RDFResource("ex:classA"))));
+        }
+
+        [TestMethod]
+        public void ShouldNotEmitWarningOnDeclaringIndividualTypeEvenWhenReservedClass()
+        {
+            string warningMsg = null;
+            RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            //Permissive policy avoids most of real-time OWL-DL safety checks (at the cost of ontology integrity)
+            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Permissive;
+
+            RDFOntologyData data = new RDFOntologyData();
+            data.DeclareIndividual(new RDFResource("ex:indivA"));
+            data.DeclareIndividualType(new RDFResource("ex:indivA"), RDFVocabulary.RDFS.RESOURCE);
+
+            Assert.IsNull(warningMsg);
+            Assert.IsTrue(data.ABoxGraph.TriplesCount == 2);
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.RDFS.RESOURCE)));
+
+        }
+
+        [TestMethod]
+        public void ShouldEmitWarningOnDeclaringIndividualTypeBecauseReservedClass()
+        {
+            string warningMsg = null;
+            RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            //Strict policy executes most of real-time OWL-DL safety checks (at the cost of performances)
+            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Strict;
+
+            RDFOntologyData data = new RDFOntologyData();
+            data.DeclareIndividual(new RDFResource("ex:indivA"));
+            data.DeclareIndividualType(new RDFResource("ex:indivA"), RDFVocabulary.RDFS.RESOURCE);
+
+            Assert.IsNotNull(warningMsg);
+            Assert.IsTrue(warningMsg.IndexOf("Type relation between individual 'ex:indivA' and class 'http://www.w3.org/2000/01/rdf-schema#Resource' cannot be added to the data because it would violate OWL-DL integrity") > -1);
+            Assert.IsTrue(data.ABoxGraph.TriplesCount == 1);
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
+        }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringIndividualTypeBecauseNullIndividual()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyData()
+                        .DeclareIndividual(new RDFResource("ex:indivA"))
+                        .DeclareIndividualType(null, new RDFResource("ex:classA")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringIndividualTypeBecauseNullClass()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyData()
+                        .DeclareIndividual(new RDFResource("ex:indivA"))
+                        .DeclareIndividualType(new RDFResource("ex:indivA"), null));
         #endregion
     }
 }

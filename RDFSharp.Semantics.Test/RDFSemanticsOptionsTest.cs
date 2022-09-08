@@ -23,7 +23,10 @@ namespace RDFSharp.Semantics.Test
         #region Test
         [TestMethod]
         public void ShouldCheckOWLDLIntegrity()
-            => Assert.IsTrue(RDFSemanticsOptions.ShouldCheckOWLDLIntegrity);
+        {
+            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Strict;
+            Assert.IsTrue(RDFSemanticsOptions.ShouldCheckOWLDLIntegrity);
+        }
 
         [TestMethod]
         public void ShouldNotCheckOWLDLIntegrity()
