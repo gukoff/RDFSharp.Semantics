@@ -266,7 +266,9 @@ namespace RDFSharp.Semantics
             if (owlClass == null)
                 throw new RDFSemanticsException("Cannot declare owl:AllDifferent class to the data because given \"owlClass\" parameter is null");
             if (differentIndividuals == null)
-                differentIndividuals = new List<RDFResource>();
+                throw new RDFSemanticsException("Cannot declare owl:AllDifferent class to the data because given \"differentIndividuals\" parameter is null");
+            if (differentIndividuals.Count == 0)
+                throw new RDFSemanticsException("Cannot declare owl:AllDifferent class to the data because given \"differentIndividuals\" parameter is an empty list");
 
             //Add knowledge to the A-BOX
             RDFCollection allDifferentIndividualsCollection = new RDFCollection(RDFModelEnums.RDFItemTypes.Resource);
@@ -293,6 +295,8 @@ namespace RDFSharp.Semantics
                 throw new RDFSemanticsException("Cannot declare object assertion relation because given \"leftIndividual\" parameter is null");
             if (objectProperty == null)
                 throw new RDFSemanticsException("Cannot declare object assertion relation because given \"objectProperty\" parameter is null");
+            if (objectProperty.IsBlank)
+                throw new RDFSemanticsException("Cannot declare object assertion relation because given \"objectProperty\" parameter is a blank predicate");
             if (rightIndividual == null)
                 throw new RDFSemanticsException("Cannot declare object assertion relation because given \"rightIndividual\" parameter is null");
 
@@ -320,6 +324,8 @@ namespace RDFSharp.Semantics
                 throw new RDFSemanticsException("Cannot declare datatype assertion relation because given \"individual\" parameter is null");
             if (datatypeProperty == null)
                 throw new RDFSemanticsException("Cannot declare datatype assertion relation because given \"datatypeProperty\" parameter is null");
+            if (datatypeProperty.IsBlank)
+                throw new RDFSemanticsException("Cannot declare datatype assertion relation because given \"datatypeProperty\" parameter is a blank predicate");
             if (value == null)
                 throw new RDFSemanticsException("Cannot declare datatype assertion relation because given \"value\" parameter is null");
 
@@ -347,6 +353,8 @@ namespace RDFSharp.Semantics
                 throw new RDFSemanticsException("Cannot declare negative object assertion relation because given \"leftIndividual\" parameter is null");
             if (objectProperty == null)
                 throw new RDFSemanticsException("Cannot declare negative object assertion relation because given \"objectProperty\" parameter is null");
+            if (objectProperty.IsBlank)
+                throw new RDFSemanticsException("Cannot declare negative object assertion relation because given \"objectProperty\" parameter is a blank predicate");
             if (rightIndividual == null)
                 throw new RDFSemanticsException("Cannot declare negative object assertion relation because given \"rightIndividual\" parameter is null");
 
@@ -380,6 +388,8 @@ namespace RDFSharp.Semantics
                 throw new RDFSemanticsException("Cannot declare negative datatype assertion relation because given \"individual\" parameter is null");
             if (datatypeProperty == null)
                 throw new RDFSemanticsException("Cannot declare negative datatype assertion relation because given \"datatypeProperty\" parameter is null");
+            if (datatypeProperty.IsBlank)
+                throw new RDFSemanticsException("Cannot declare negative datatype assertion relation because given \"datatypeProperty\" parameter is a blank predicate");
             if (value == null)
                 throw new RDFSemanticsException("Cannot declare negative datatype assertion relation because given \"value\" parameter is null");
 
