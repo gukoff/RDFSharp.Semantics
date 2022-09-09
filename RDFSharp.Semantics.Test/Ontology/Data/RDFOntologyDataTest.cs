@@ -225,6 +225,178 @@ namespace RDFSharp.Semantics.Test
             => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyData()
                         .DeclareIndividual(new RDFResource("ex:indivA"))
                         .DeclareIndividualType(new RDFResource("ex:indivA"), null));
+
+        [TestMethod]
+        public void ShouldDeclareSameIndividuals()
+        {
+            RDFOntologyData data = new RDFOntologyData();
+            data.DeclareIndividual(new RDFResource("ex:indivA"));
+            data.DeclareIndividual(new RDFResource("ex:indivB"));
+            data.DeclareSameIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB"));
+
+            Assert.IsTrue(data.ABoxGraph.TriplesCount == 3);
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.OWL.SAME_AS, new RDFResource("ex:indivB"))));
+            Assert.IsTrue(data.ABoxInferenceGraph.TriplesCount == 1);
+            Assert.IsTrue(data.ABoxInferenceGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.OWL.SAME_AS, new RDFResource("ex:indivA"))));
+        }
+
+        [TestMethod]
+        public void ShouldNotEmitWarningOnDeclaringSameIndividualsEvenWhenIncompatibleIndividuals()
+        {
+            string warningMsg = null;
+            RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            //Permissive policy avoids most of real-time OWL-DL safety checks (at the cost of ontology integrity)
+            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Permissive;
+
+            RDFOntologyData data = new RDFOntologyData();
+            data.DeclareIndividual(new RDFResource("ex:indivA"));
+            data.DeclareIndividual(new RDFResource("ex:indivB"));
+            data.DeclareDifferentIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB"));
+            data.DeclareSameIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB")); //OWL-DL contraddiction (permitted by policy)
+
+            Assert.IsNull(warningMsg);
+            Assert.IsTrue(data.ABoxGraph.TriplesCount == 4);
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.OWL.DIFFERENT_FROM, new RDFResource("ex:indivB"))));
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.OWL.SAME_AS, new RDFResource("ex:indivB"))));
+            Assert.IsTrue(data.ABoxInferenceGraph.TriplesCount == 2);
+            Assert.IsTrue(data.ABoxInferenceGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.OWL.DIFFERENT_FROM, new RDFResource("ex:indivA"))));
+            Assert.IsTrue(data.ABoxInferenceGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.OWL.SAME_AS, new RDFResource("ex:indivA"))));
+        }
+
+        [TestMethod]
+        public void ShouldEmitWarningOnDeclaringSameIndividualsBecauseIncompatibleIndividuals()
+        {
+            string warningMsg = null;
+            RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            //Strict policy executes most of real-time OWL-DL safety checks (at the cost of performances)
+            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Strict;
+
+            RDFOntologyData data = new RDFOntologyData();
+            data.DeclareIndividual(new RDFResource("ex:indivA"));
+            data.DeclareIndividual(new RDFResource("ex:indivB"));
+            data.DeclareDifferentIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB"));
+            data.DeclareSameIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB"));  //OWL-DL contraddiction (enforced by policy)
+
+            Assert.IsNotNull(warningMsg);
+            Assert.IsTrue(warningMsg.IndexOf("SameAs relation between individual 'ex:indivA' and individual 'ex:indivB' cannot be added to the data because it would violate OWL-DL integrity") > -1);
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.OWL.DIFFERENT_FROM, new RDFResource("ex:indivB"))));
+            Assert.IsTrue(data.ABoxInferenceGraph.TriplesCount == 1);
+            Assert.IsTrue(data.ABoxInferenceGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.OWL.DIFFERENT_FROM, new RDFResource("ex:indivA"))));
+        }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringSameIndividualsBecauseNullLeftIndividual()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyData()
+                        .DeclareIndividual(new RDFResource("ex:indivA"))
+                        .DeclareIndividual(new RDFResource("ex:indivB"))
+                        .DeclareSameIndividuals(null, new RDFResource("ex:indivB")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringSameIndividualsBecauseNullRightIndividual()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyData()
+                        .DeclareIndividual(new RDFResource("ex:indivA"))
+                        .DeclareIndividual(new RDFResource("ex:indivB"))
+                        .DeclareSameIndividuals(new RDFResource("ex:indivA"), null));
+						
+		[TestMethod]
+        public void ShouldThrowExceptionOnDeclaringSameIndividualsBecauseSelfIndividual()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyData()
+                        .DeclareIndividual(new RDFResource("ex:indivA"))
+                        .DeclareSameIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivA")));
+
+        [TestMethod]
+        public void ShouldDeclareDifferentIndividuals()
+        {
+            RDFOntologyData data = new RDFOntologyData();
+            data.DeclareIndividual(new RDFResource("ex:indivA"));
+            data.DeclareIndividual(new RDFResource("ex:indivB"));
+            data.DeclareDifferentIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB"));
+
+            Assert.IsTrue(data.ABoxGraph.TriplesCount == 3);
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.OWL.DIFFERENT_FROM, new RDFResource("ex:indivB"))));
+            Assert.IsTrue(data.ABoxInferenceGraph.TriplesCount == 1);
+            Assert.IsTrue(data.ABoxInferenceGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.OWL.DIFFERENT_FROM, new RDFResource("ex:indivA"))));
+        }
+
+        [TestMethod]
+        public void ShouldNotEmitWarningOnDeclaringDifferentIndividualsEvenWhenIncompatibleIndividuals()
+        {
+            string warningMsg = null;
+            RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            //Permissive policy avoids most of real-time OWL-DL safety checks (at the cost of ontology integrity)
+            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Permissive;
+
+            RDFOntologyData data = new RDFOntologyData();
+            data.DeclareIndividual(new RDFResource("ex:indivA"));
+            data.DeclareIndividual(new RDFResource("ex:indivB"));
+            data.DeclareSameIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB"));
+            data.DeclareDifferentIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB")); //OWL-DL contraddiction (permitted by policy)
+
+            Assert.IsNull(warningMsg);
+            Assert.IsTrue(data.ABoxGraph.TriplesCount == 4);
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.OWL.SAME_AS, new RDFResource("ex:indivB"))));
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.OWL.DIFFERENT_FROM, new RDFResource("ex:indivB"))));
+            Assert.IsTrue(data.ABoxInferenceGraph.TriplesCount == 2);
+            Assert.IsTrue(data.ABoxInferenceGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.OWL.SAME_AS, new RDFResource("ex:indivA"))));
+            Assert.IsTrue(data.ABoxInferenceGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.OWL.DIFFERENT_FROM, new RDFResource("ex:indivA"))));
+        }
+
+        [TestMethod]
+        public void ShouldEmitWarningOnDeclaringDifferentIndividualsBecauseIncompatibleIndividuals()
+        {
+            string warningMsg = null;
+            RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            //Strict policy executes most of real-time OWL-DL safety checks (at the cost of performances)
+            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Strict;
+
+            RDFOntologyData data = new RDFOntologyData();
+            data.DeclareIndividual(new RDFResource("ex:indivA"));
+            data.DeclareIndividual(new RDFResource("ex:indivB"));
+            data.DeclareSameIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB"));
+            data.DeclareDifferentIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB"));  //OWL-DL contraddiction (enforced by policy)
+
+            Assert.IsNotNull(warningMsg);
+            Assert.IsTrue(warningMsg.IndexOf("DifferentFrom relation between individual 'ex:indivA' and individual 'ex:indivB' cannot be added to the data because it would violate OWL-DL integrity") > -1);
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.OWL.SAME_AS, new RDFResource("ex:indivB"))));
+            Assert.IsTrue(data.ABoxInferenceGraph.TriplesCount == 1);
+            Assert.IsTrue(data.ABoxInferenceGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.OWL.SAME_AS, new RDFResource("ex:indivA"))));
+        }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringDifferentIndividualsBecauseNullLeftIndividual()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyData()
+                        .DeclareIndividual(new RDFResource("ex:indivA"))
+                        .DeclareIndividual(new RDFResource("ex:indivB"))
+                        .DeclareDifferentIndividuals(null, new RDFResource("ex:indivB")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringDifferentIndividualsBecauseNullRightIndividual()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyData()
+                        .DeclareIndividual(new RDFResource("ex:indivA"))
+                        .DeclareIndividual(new RDFResource("ex:indivB"))
+                        .DeclareDifferentIndividuals(new RDFResource("ex:indivA"), null));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringDifferentIndividualsBecauseSelfIndividual()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyData()
+                        .DeclareIndividual(new RDFResource("ex:indivA"))
+                        .DeclareDifferentIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivA")));
         #endregion
     }
 }
