@@ -610,7 +610,7 @@ namespace RDFSharp.Semantics
             return this;
         }
 
-        //TAXONOMIES
+        //ANNOTATIONS
 
         /// <summary>
         /// Annotates the given class with the given "annotationProperty -> annotationValue"
@@ -651,6 +651,8 @@ namespace RDFSharp.Semantics
 
             return this;
         }
+
+        //RELATIONS
 
         /// <summary>
         /// Declares the existence of the given "SubClass(childClass,motherClass)" relation to the model

@@ -543,7 +543,7 @@ namespace RDFSharp.Semantics
             return this;
         }
 
-        //TAXONOMIES
+        //ANNOTATIONS
 
         /// <summary>
         /// Annotates the given property with the given "annotationProperty -> annotationValue"
@@ -584,6 +584,8 @@ namespace RDFSharp.Semantics
 
             return this;
         }
+
+        //RELATIONS
 
         /// <summary>
         /// Declares the given "SubProperty(childProperty,motherProperty)" relation to the model

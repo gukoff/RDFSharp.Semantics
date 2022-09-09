@@ -130,7 +130,7 @@ namespace RDFSharp.Semantics
             return this;
         }
 
-        //TAXONOMIES
+        //ANNOTATIONS
 
         /// <summary>
         /// Annotates the given individual with the given "annotationProperty -> annotationValue"
@@ -171,6 +171,8 @@ namespace RDFSharp.Semantics
 
             return this;
         }
+
+        //RELATIONS
 
         /// <summary>
         /// Declares the existence of the given "Type(owlIndividual,owlClass)" relation to the data

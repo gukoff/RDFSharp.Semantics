@@ -877,6 +877,74 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(data.ABoxGraph.TriplesCount == 1);
             Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivA"), new RDFResource("ex:dtProp"), null, new RDFPlainLiteral("name")].Any());
         }
+        
+        [TestMethod]
+        public void ShouldExportToGraphWithInferences()
+        {
+            RDFOntologyData data = new RDFOntologyData();
+            data.DeclareIndividual(new RDFResource("ex:indivA"));
+            data.DeclareIndividual(new RDFResource("ex:indivB"));
+            data.DeclareIndividualType(new RDFResource("ex:indivA"), new RDFResource("ex:classA"));
+            data.DeclareIndividualType(new RDFResource("ex:indivB"), new RDFResource("ex:classB"));
+            data.AnnotateIndividual(new RDFResource("ex:indivA"), RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("comment"));
+            data.AnnotateIndividual(new RDFResource("ex:indivB"), RDFVocabulary.DC.DESCRIPTION, new RDFPlainLiteral("title"));
+            data.DeclareSameIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB"));
+            RDFGraph graph = data.ToRDFGraph(true);
+
+            Assert.IsNotNull(graph);
+            Assert.IsTrue(graph.TriplesCount == 8);
+        }
+
+        [TestMethod]
+        public void ShouldExportToGraphWithoutInferences()
+        {
+            RDFOntologyData data = new RDFOntologyData();
+            data.DeclareIndividual(new RDFResource("ex:indivA"));
+            data.DeclareIndividual(new RDFResource("ex:indivB"));
+            data.DeclareIndividualType(new RDFResource("ex:indivA"), new RDFResource("ex:classA"));
+            data.DeclareIndividualType(new RDFResource("ex:indivB"), new RDFResource("ex:classB"));
+            data.AnnotateIndividual(new RDFResource("ex:indivA"), RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("comment"));
+            data.AnnotateIndividual(new RDFResource("ex:indivB"), RDFVocabulary.DC.DESCRIPTION, new RDFPlainLiteral("title"));
+            data.DeclareSameIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB"));
+            RDFGraph graph = data.ToRDFGraph(false);
+
+            Assert.IsNotNull(graph);
+            Assert.IsTrue(graph.TriplesCount == 7);
+        }
+
+        [TestMethod]
+        public async Task ShouldExportToGraphWithInferencesAsync()
+        {
+            RDFOntologyData data = new RDFOntologyData();
+            data.DeclareIndividual(new RDFResource("ex:indivA"));
+            data.DeclareIndividual(new RDFResource("ex:indivB"));
+            data.DeclareIndividualType(new RDFResource("ex:indivA"), new RDFResource("ex:classA"));
+            data.DeclareIndividualType(new RDFResource("ex:indivB"), new RDFResource("ex:classB"));
+            data.AnnotateIndividual(new RDFResource("ex:indivA"), RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("comment"));
+            data.AnnotateIndividual(new RDFResource("ex:indivB"), RDFVocabulary.DC.DESCRIPTION, new RDFPlainLiteral("title"));
+            data.DeclareSameIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB"));
+            RDFGraph graph = await data.ToRDFGraphAsync(true);
+
+            Assert.IsNotNull(graph);
+            Assert.IsTrue(graph.TriplesCount == 8);
+        }
+
+        [TestMethod]
+        public async Task ShouldExportToGraphWithoutInferencesAsync()
+        {
+            RDFOntologyData data = new RDFOntologyData();
+            data.DeclareIndividual(new RDFResource("ex:indivA"));
+            data.DeclareIndividual(new RDFResource("ex:indivB"));
+            data.DeclareIndividualType(new RDFResource("ex:indivA"), new RDFResource("ex:classA"));
+            data.DeclareIndividualType(new RDFResource("ex:indivB"), new RDFResource("ex:classB"));
+            data.AnnotateIndividual(new RDFResource("ex:indivA"), RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("comment"));
+            data.AnnotateIndividual(new RDFResource("ex:indivB"), RDFVocabulary.DC.DESCRIPTION, new RDFPlainLiteral("title"));
+            data.DeclareSameIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB"));
+            RDFGraph graph = await data.ToRDFGraphAsync(false);
+
+            Assert.IsNotNull(graph);
+            Assert.IsTrue(graph.TriplesCount == 7);
+        }
         #endregion
     }
 }
