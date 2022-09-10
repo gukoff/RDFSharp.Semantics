@@ -263,6 +263,36 @@ namespace RDFSharp.Semantics.Test
             Assert.IsFalse(data.CheckAreDifferentIndividuals(null, new RDFResource("ex:indivC")));
             Assert.IsFalse(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivB"), null));
         }
+
+        [TestMethod]
+        public void ShouldCheckAreDifferentIndividualsWithAllDifferentShortcut()
+        {
+            RDFOntologyData data = new RDFOntologyData();
+            data.DeclareIndividual(new RDFResource("ex:indivA"));
+            data.DeclareIndividual(new RDFResource("ex:indivB"));
+            data.DeclareIndividual(new RDFResource("ex:indivC"));
+            data.DeclareIndividual(new RDFResource("ex:indivD"));
+            data.DeclareIndividual(new RDFResource("ex:indivE"));
+            data.DeclareAllDifferentIndividuals(new List<RDFResource>() {
+                new RDFResource("ex:indivA"), new RDFResource("ex:indivB"), new RDFResource("ex:indivD") });
+            data.DeclareSameIndividuals(new RDFResource("ex:indivC"), new RDFResource("ex:indivD"));
+            data.DeclareSameIndividuals(new RDFResource("ex:indivE"), new RDFResource("ex:indivD"));
+
+            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB")));
+            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivB"), new RDFResource("ex:indivA"))); //Inferred
+            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivD")));
+            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivD"), new RDFResource("ex:indivA"))); //Inferred
+            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivB"), new RDFResource("ex:indivD")));
+            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivD"), new RDFResource("ex:indivB"))); //Inferred
+            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivC"))); //Inferred
+            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivC"), new RDFResource("ex:indivA"))); //Inferred
+            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivE"))); //Inferred
+            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivE"), new RDFResource("ex:indivA"))); //Inferred
+            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivB"), new RDFResource("ex:indivC"))); //Inferred
+            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivC"), new RDFResource("ex:indivB"))); //Inferred
+            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivB"), new RDFResource("ex:indivE"))); //Inferred
+            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivE"), new RDFResource("ex:indivB"))); //Inferred
+        }
         #endregion
     }
 }

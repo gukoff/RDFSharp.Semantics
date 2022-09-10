@@ -168,28 +168,10 @@ namespace RDFSharp.Semantics
             {
                 RDFGraph aboxVirtualGraph = data.ABoxVirtualGraph;
 
-                List<RDFResource> directDifferentIndividuals = new List<RDFResource>();
-                List<RDFResource> indirectDifferentIndividuals = new List<RDFResource>();
-                Parallel.Invoke(
-                    () => {
-                        //Restrict A-BOX knowledge to owl:differentFrom and owl:sameAs relations (both explicit and inferred)
-                        RDFGraph filteredABox = aboxVirtualGraph[null, RDFVocabulary.OWL.DIFFERENT_FROM, null, null]
-                                                   .UnionWith(aboxVirtualGraph[null, RDFVocabulary.OWL.SAME_AS, null, null]);
-                        differentIndividuals.AddRange(data.FindDifferentIndividuals(owlIndividual, filteredABox, new Dictionary<long, RDFResource>()));
-                    },
-                    () => {
-                        //Navigate owl:AllDifferent to find eventual different individuals "hidden" by this syntactic shortcut
-                        IEnumerator<RDFResource> allDifferent = data.AllDifferentEnumerator;
-                        while (allDifferent.MoveNext())
-                            foreach (RDFTriple allDifferentMembers in aboxVirtualGraph[allDifferent.Current, RDFVocabulary.OWL.DISTINCT_MEMBERS, null, null])
-                            {
-                                RDFCollection allDifferentCollection = RDFModelUtilities.DeserializeCollectionFromGraph(aboxVirtualGraph, (RDFResource)allDifferentMembers.Object, RDFModelEnums.RDFTripleFlavors.SPO);
-                                if (allDifferentCollection.Items.Any(item => item.Equals(owlIndividual)))
-                                    indirectDifferentIndividuals.AddRange(allDifferentCollection.OfType<RDFResource>());
-                            }
-                    });
-                differentIndividuals.AddRange(directDifferentIndividuals);
-                differentIndividuals.AddRange(indirectDifferentIndividuals);
+                //Restrict A-BOX knowledge to owl:differentFrom and owl:sameAs relations (both explicit and inferred)
+                RDFGraph filteredABox = aboxVirtualGraph[null, RDFVocabulary.OWL.DIFFERENT_FROM, null, null]
+                                            .UnionWith(aboxVirtualGraph[null, RDFVocabulary.OWL.SAME_AS, null, null]);
+                differentIndividuals.AddRange(data.FindDifferentIndividuals(owlIndividual, filteredABox, new Dictionary<long, RDFResource>()));
 
                 //We don't want to also enlist the given owl:Individual
                 differentIndividuals.RemoveAll(individual => individual.Equals(owlIndividual));

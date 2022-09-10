@@ -35,7 +35,6 @@ namespace RDFSharp.Semantics.Test
             Assert.IsNotNull(data);
             Assert.IsNotNull(data.Individuals);
             Assert.IsTrue(data.IndividualsCount == 0);
-            Assert.IsTrue(data.AllDifferentCount == 0);
             Assert.IsNotNull(data.ABoxGraph);
             Assert.IsTrue(data.ABoxGraph.TriplesCount == 0);
             Assert.IsNotNull(data.ABoxInferenceGraph);
@@ -48,12 +47,6 @@ namespace RDFSharp.Semantics.Test
             while (individualsEnumerator.MoveNext()) 
                 i++;
             Assert.IsTrue(i == 0);
-
-            int j = 0;
-            IEnumerator<RDFResource> allDifferentEnumerator = data.AllDifferentEnumerator;
-            while (allDifferentEnumerator.MoveNext()) 
-                j++;
-            Assert.IsTrue(j == 0);
         }
 
         [TestMethod]
@@ -64,7 +57,6 @@ namespace RDFSharp.Semantics.Test
             data.DeclareIndividual(new RDFResource("ex:indivA")); //Will be discarded since duplicate individuals are not allowed
 
             Assert.IsTrue(data.IndividualsCount == 1);
-            Assert.IsTrue(data.AllDifferentCount == 0);
             Assert.IsTrue(data.ABoxGraph.TriplesCount == 1);
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
 
@@ -73,12 +65,6 @@ namespace RDFSharp.Semantics.Test
             while (individualsEnumerator.MoveNext())
                 i++;
             Assert.IsTrue(i == 1);
-
-            int j = 0;
-            IEnumerator<RDFResource> allDifferentEnumerator = data.AllDifferentEnumerator;
-            while (allDifferentEnumerator.MoveNext())
-                j++;
-            Assert.IsTrue(j == 0);
         }
 
         [TestMethod]
@@ -94,7 +80,6 @@ namespace RDFSharp.Semantics.Test
             data.AnnotateIndividual(new RDFResource("ex:indivA"), RDFVocabulary.RDFS.SEE_ALSO, new RDFResource("ex:seealso")); //Will be discarded, since duplicate annotations are not allowed
 
             Assert.IsTrue(data.IndividualsCount == 1);
-            Assert.IsTrue(data.AllDifferentCount == 0);
             Assert.IsTrue(data.ABoxGraph.TriplesCount == 2);
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDFS.SEE_ALSO, new RDFResource("ex:seealso"))));
@@ -109,7 +94,6 @@ namespace RDFSharp.Semantics.Test
             data.AnnotateIndividual(new RDFResource("ex:indivA"), RDFVocabulary.RDFS.LABEL, new RDFPlainLiteral("label")); //Will be discarded, since duplicate annotations are not allowed
 
             Assert.IsTrue(data.IndividualsCount == 1);
-            Assert.IsTrue(data.AllDifferentCount == 0);
             Assert.IsTrue(data.ABoxGraph.TriplesCount == 2);
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDFS.LABEL, new RDFPlainLiteral("label"))));
@@ -402,43 +386,24 @@ namespace RDFSharp.Semantics.Test
         public void ShouldDeclareAllDifferentIndividuals()
         {
             RDFOntologyData data = new RDFOntologyData();
-            data.DeclareAllDifferentIndividuals(new RDFResource("ex:allDiff"), new List<RDFResource>() {
+            data.DeclareAllDifferentIndividuals(new List<RDFResource>() {
                 new RDFResource("ex:indivA"), new RDFResource("ex:indivB"), new RDFResource("ex:indivC") });
 
-            Assert.IsTrue(data.AllDifferentCount == 1);
-            Assert.IsTrue(data.ABoxGraph.TriplesCount == 11);
-            Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:allDiff"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ALL_DIFFERENT, null].Any());
-            Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:allDiff"), RDFVocabulary.OWL.DISTINCT_MEMBERS, null, null].Any());
-            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.RDF.LIST, null].TriplesCount == 3);
-            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:indivA"), null].Any());
-            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:indivB"), null].Any());
-            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:indivC"), null].Any());
-            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.RDF.REST, null, null].TriplesCount == 3);
-
-            int j = 0;
-            IEnumerator<RDFResource> allDifferentEnumerator = data.AllDifferentEnumerator;
-            while (allDifferentEnumerator.MoveNext())
-                j++;
-            Assert.IsTrue(j == 1);
+            Assert.IsTrue(data.ABoxGraph.TriplesCount == 3);
+            Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivA"), RDFVocabulary.OWL.DIFFERENT_FROM, new RDFResource("ex:indivB"), null].Any());
+            Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivA"), RDFVocabulary.OWL.DIFFERENT_FROM, new RDFResource("ex:indivC"), null].Any());
+            Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivB"), RDFVocabulary.OWL.DIFFERENT_FROM, new RDFResource("ex:indivC"), null].Any());
+            Assert.IsTrue(data.ABoxInferenceGraph.TriplesCount == 3);
+            Assert.IsTrue(data.ABoxInferenceGraph[new RDFResource("ex:indivB"), RDFVocabulary.OWL.DIFFERENT_FROM, new RDFResource("ex:indivA"), null].Any());
+            Assert.IsTrue(data.ABoxInferenceGraph[new RDFResource("ex:indivC"), RDFVocabulary.OWL.DIFFERENT_FROM, new RDFResource("ex:indivA"), null].Any());
+            Assert.IsTrue(data.ABoxInferenceGraph[new RDFResource("ex:indivC"), RDFVocabulary.OWL.DIFFERENT_FROM, new RDFResource("ex:indivB"), null].Any());
         }
-
-        [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringAllDifferentIndividualsBecauseNullClass()
-            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyData()
-                        .DeclareIndividual(new RDFResource("ex:indivA"))
-                        .DeclareAllDifferentIndividuals(null, new List<RDFResource>() { new RDFResource("ex:indivA") }));
 
         [TestMethod]
         public void ShouldThrowExceptionOnDeclaringAllDifferentIndividualsBecauseNullIndividuals()
             => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyData()
                         .DeclareIndividual(new RDFResource("ex:indivA"))
-                        .DeclareAllDifferentIndividuals(new RDFResource("ex:diffClass"), null));
-
-        [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringAllDifferentIndividualsBecauseEmptyIndividuals()
-            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyData()
-                        .DeclareIndividual(new RDFResource("ex:indivA"))
-                        .DeclareAllDifferentIndividuals(new RDFResource("ex:diffClass"), new List<RDFResource>()));
+                        .DeclareAllDifferentIndividuals(null));
 
         [TestMethod]
         public void ShouldDeclareObjectAssertion()
