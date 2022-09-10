@@ -31,19 +31,19 @@ namespace RDFSharp.Semantics
     {
         #region Methods
         /// <summary>
-        /// Checks for the existence of the given owl:Individual declaration within the data
+        /// Checks for the existence of the given owl:NamedIndividual declaration within the data
         /// </summary>
         public static bool CheckHasIndividual(this RDFOntologyData data, RDFResource owlIndividual)
             => owlIndividual != null && data != null && data.Individuals.ContainsKey(owlIndividual.PatternMemberID);
 
         /// <summary>
-        /// Checks for the existence of the given owl:Individual annotation within the data
+        /// Checks for the existence of the given owl:NamedIndividual annotation within the data
         /// </summary>
         public static bool CheckHasAnnotation(this RDFOntologyData data, RDFResource owlIndividual, RDFResource annotationProperty, RDFResource annotationValue)
             => owlIndividual != null && annotationProperty != null && annotationValue != null && data != null && data.ABoxGraph.ContainsTriple(new RDFTriple(owlIndividual, annotationProperty, annotationValue));
 
         /// <summary>
-        /// Checks for the existence of the given owl:Individual annotation within the data
+        /// Checks for the existence of the given owl:NamedIndividual annotation within the data
         /// </summary>
         public static bool CheckHasAnnotation(this RDFOntologyData data, RDFResource owlIndividual, RDFResource annotationProperty, RDFLiteral annotationValue)
             => owlIndividual != null && annotationProperty != null && annotationValue != null && data != null && data.ABoxGraph.ContainsTriple(new RDFTriple(owlIndividual, annotationProperty, annotationValue));
@@ -140,11 +140,11 @@ namespace RDFSharp.Semantics
                 return sameIndividuals;
             #endregion
 
-            //DIRECT
+            // SAMEAS(A,B)
             foreach (RDFTriple sameAsRelation in filteredABox[owlIndividual, null, null, null])
                 sameIndividuals.Add((RDFResource)sameAsRelation.Object);
 
-            //INDIRECT (TRANSITIVE)
+            // SAMEAS(A,B) ^ SAMEAS(B,C) -> SAMEAS(A,C)
             foreach (RDFResource sameIndividual in sameIndividuals.ToList())
                 sameIndividuals.AddRange(data.FindSameIndividuals(sameIndividual, filteredABox, visitContext));
 
@@ -175,7 +175,7 @@ namespace RDFSharp.Semantics
                         //Restrict A-BOX knowledge to owl:differentFrom and owl:sameAs relations (both explicit and inferred)
                         RDFGraph filteredABox = aboxVirtualGraph[null, RDFVocabulary.OWL.DIFFERENT_FROM, null, null]
                                                    .UnionWith(aboxVirtualGraph[null, RDFVocabulary.OWL.SAME_AS, null, null]);
-                        differentIndividuals.AddRange(data.FindDifferentIndividuals(owlIndividual, filteredABox));
+                        differentIndividuals.AddRange(data.FindDifferentIndividuals(owlIndividual, filteredABox, new Dictionary<long, RDFResource>()));
                     },
                     () => {
                         //Navigate owl:AllDifferent to find eventual different individuals "hidden" by this syntactic shortcut
@@ -201,20 +201,27 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Finds "DifferentFrom(owlIndividual, X)" relations to enlist the different individuals of the given owl:Individual
         /// </summary>
-        internal static List<RDFResource> FindDifferentIndividuals(this RDFOntologyData data, RDFResource owlIndividual, RDFGraph filteredABox)
+        internal static List<RDFResource> FindDifferentIndividuals(this RDFOntologyData data, RDFResource owlIndividual, RDFGraph filteredABox, Dictionary<long, RDFResource> visitContext)
         {
             List<RDFResource> differentIndividuals = new List<RDFResource>();
 
-            //DIRECT
-            RDFGraph differentFromGraph = filteredABox[owlIndividual, RDFVocabulary.OWL.DIFFERENT_FROM, null, null];
-            foreach (RDFTriple differentFromTriple in differentFromGraph)
-                differentIndividuals.Add((RDFResource)differentFromTriple.Object);
+            #region VisitContext
+            if (!visitContext.ContainsKey(owlIndividual.PatternMemberID))
+                visitContext.Add(owlIndividual.PatternMemberID, owlIndividual);
+            else
+                return differentIndividuals;
+            #endregion
 
-            //INDIRECT (EXPLOITING SAMEAS)
-            Dictionary<long, RDFResource> visitContext = new Dictionary<long, RDFResource>();
-            RDFGraph sameAsGraph = filteredABox[null, RDFVocabulary.OWL.SAME_AS, null, null];
-            foreach (RDFResource differentIndividual in differentIndividuals.ToList())
-                differentIndividuals.AddRange(data.FindSameIndividuals(differentIndividual, sameAsGraph, visitContext));
+            // DIFFERENTFROM(A,B) ^ SAMEAS(B,C) -> DIFFERENTFROM(A,C)
+            foreach (RDFTriple differentFromTriple in filteredABox[owlIndividual, RDFVocabulary.OWL.DIFFERENT_FROM, null, null])
+            {
+                differentIndividuals.Add((RDFResource)differentFromTriple.Object);
+                differentIndividuals.AddRange(data.FindSameIndividuals((RDFResource)differentFromTriple.Object, filteredABox, visitContext));
+            }
+
+            // SAMEAS(A,B) ^ DIFFERENTFROM(B,C) -> DIFFERENTFROM(A,C)
+            foreach (RDFResource sameAsIndividual in data.AnswerSameIndividuals(owlIndividual))
+                differentIndividuals.AddRange(data.FindDifferentIndividuals(sameAsIndividual, filteredABox, visitContext));
 
             return differentIndividuals;
         }
