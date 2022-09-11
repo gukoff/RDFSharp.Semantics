@@ -188,7 +188,7 @@ namespace RDFSharp.Semantics
             #endregion
 
             #region Discovery
-            // Find different individuals *indirectly* linked to the given one with owl:AllDifferent shortcut [OWL2]
+            // Find different individuals linked to the given one with owl:AllDifferent shortcut [OWL2]
             List<RDFResource> allDifferentIndividuals = new List<RDFResource>();
             IEnumerator<RDFResource> allDifferent = data.AllDifferentEnumerator;
             while (allDifferent.MoveNext())
@@ -200,14 +200,14 @@ namespace RDFSharp.Semantics
                 }
             allDifferentIndividuals.RemoveAll(idv => idv.Equals(owlIndividual));
 
-            // Find different individuals *directly* linked to the given one with owl:differentFrom relation
-            List<RDFResource> differentFromIndividuals = new List<RDFResource>(allDifferentIndividuals);
-            differentFromIndividuals.AddRange(aboxGraph[owlIndividual, RDFVocabulary.OWL.DIFFERENT_FROM, null, null]
-                                                .Select(t => (RDFResource)t.Object)
-                                                .ToList());
+            // Find different individuals linked to the given one with owl:differentFrom relation
+            List<RDFResource> differentFromIndividuals = aboxGraph[owlIndividual, RDFVocabulary.OWL.DIFFERENT_FROM, null, null]
+                                                           .Select(t => (RDFResource)t.Object)
+                                                           .ToList();
 
             // Merge individuals from both sets into a unique deduplicate working set
-            List<RDFResource> differentIndividualsSet = RDFQueryUtilities.RemoveDuplicates(allDifferentIndividuals.Union(differentFromIndividuals).ToList());
+            List<RDFResource> differentIndividualsSet = RDFQueryUtilities.RemoveDuplicates(allDifferentIndividuals.Union(differentFromIndividuals)
+                                                                                                                  .ToList());
             #endregion
 
             // Inference: DIFFERENTFROM(A,B) ^ SAMEAS(B,C) -> DIFFERENTFROM(A,C)
