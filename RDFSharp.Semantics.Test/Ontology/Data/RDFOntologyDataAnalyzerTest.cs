@@ -240,12 +240,10 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivB"), new RDFResource("ex:indivA"))); //Inferred
             Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivC"))); //Inferred
             Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivC"), new RDFResource("ex:indivA"))); //Inferred
-            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivB"), new RDFResource("ex:indivD"))); //Inferred
-            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivD"), new RDFResource("ex:indivB"))); //Inferred
-            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivD"))); //Inferred
-            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivD"), new RDFResource("ex:indivA"))); //Inferred
             Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivE"))); //Inferred
             Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivE"), new RDFResource("ex:indivA"))); //Inferred
+            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivB"), new RDFResource("ex:indivD"))); //Inferred
+            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivD"), new RDFResource("ex:indivB"))); //Inferred
             Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivD"), new RDFResource("ex:indivE"))); //Inferred
             Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivE"), new RDFResource("ex:indivD"))); //Inferred
         }
@@ -273,7 +271,7 @@ namespace RDFSharp.Semantics.Test
             data.DeclareIndividual(new RDFResource("ex:indivC"));
             data.DeclareIndividual(new RDFResource("ex:indivD"));
             data.DeclareIndividual(new RDFResource("ex:indivE"));
-            data.DeclareAllDifferentIndividuals(new List<RDFResource>() {
+            data.DeclareAllDifferentIndividuals(new RDFResource("ex:alldiff"), new List<RDFResource>() {
                 new RDFResource("ex:indivA"), new RDFResource("ex:indivB"), new RDFResource("ex:indivD") });
             data.DeclareSameIndividuals(new RDFResource("ex:indivC"), new RDFResource("ex:indivD"));
             data.DeclareSameIndividuals(new RDFResource("ex:indivE"), new RDFResource("ex:indivD"));

@@ -81,9 +81,7 @@ namespace RDFSharp.Semantics
             }
 
             //owl:AllDifferent [OWL2]
-            IEnumerator<RDFResource> allDifferent = graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ALL_DIFFERENT, null]
-                                                      .Select(t => (RDFResource)t.Subject)
-                                                      .GetEnumerator();
+            IEnumerator<RDFResource> allDifferent = ontology.Data.AllDifferentEnumerator;
             while (allDifferent.MoveNext())
                 foreach (RDFTriple allDifferentMembers in graph[allDifferent.Current, RDFVocabulary.OWL.DISTINCT_MEMBERS, null, null])
                 {
@@ -91,7 +89,7 @@ namespace RDFSharp.Semantics
                     RDFCollection differentIndividualsCollection = RDFModelUtilities.DeserializeCollectionFromGraph(graph, (RDFResource)allDifferentMembers.Object, RDFModelEnums.RDFTripleFlavors.SPO);
                     foreach (RDFPatternMember differentIndividual in differentIndividualsCollection)
                         differentIndividuals.Add((RDFResource)differentIndividual);
-                    ontology.Data.DeclareAllDifferentIndividuals(differentIndividuals);
+                    ontology.Data.DeclareAllDifferentIndividuals(allDifferent.Current, differentIndividuals);
                 }
             #endregion
 

@@ -35,10 +35,33 @@ namespace RDFSharp.Semantics
             => Individuals.Count;
 
         /// <summary>
+        /// Count of the owl:AllDifferent [OWL2]
+        /// </summary>
+        public long AllDifferentCount
+        {
+            get
+            {
+                long count = 0;
+                IEnumerator<RDFResource> allDifferent = AllDifferentEnumerator;
+                while (allDifferent.MoveNext())
+                    count++;
+                return count;
+            }
+        }
+
+        /// <summary>
         /// Gets the enumerator on the individuals for iteration
         /// </summary>
         public IEnumerator<RDFResource> IndividualsEnumerator
             => Individuals.Values.GetEnumerator();
+
+        /// <summary>
+        /// Gets the enumerator on the owl:AllDifferent for iteration [OWL2]
+        /// </summary>
+        public IEnumerator<RDFResource> AllDifferentEnumerator
+            => ABoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ALL_DIFFERENT, null]
+                .Select(t => (RDFResource)t.Subject)
+                .GetEnumerator();
 
         /// <summary>
         /// Collection of individuals
@@ -240,18 +263,21 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Declares the existence of the given owl:AllDifferent individuals to the data [OWL2]
         /// </summary>
-        public RDFOntologyData DeclareAllDifferentIndividuals(List<RDFResource> differentIndividuals)
+        public RDFOntologyData DeclareAllDifferentIndividuals(RDFResource owlClass, List<RDFResource> differentIndividuals)
         {
+            if (owlClass == null)
+                throw new RDFSemanticsException("Cannot declare owl:AllDifferent class to the data because given \"owlClass\" parameter is null");
             if (differentIndividuals == null)
-                throw new RDFSemanticsException("Cannot declare owl:AllDifferent to the data because given \"differentIndividuals\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare owl:AllDifferent class to the data because given \"differentIndividuals\" parameter is null");
+            if (differentIndividuals.Count == 0)
+                throw new RDFSemanticsException("Cannot declare owl:AllDifferent class to the data because given \"differentIndividuals\" parameter is an empty list");
 
-            //Add knowledge to the A-BOX (transform owl:AllDifferent shortcut into owl:differentFrom relations)
-            for (int i=0; i<differentIndividuals.Count; i++)
-                for (int j=i+1; j<differentIndividuals.Count; j++)
-                {
-                    if (!differentIndividuals[i].Equals(differentIndividuals[j]))
-                        this.DeclareDifferentIndividuals(differentIndividuals[i], differentIndividuals[j]);
-                }
+            //Add knowledge to the A-BOX
+            RDFCollection allDifferentIndividualsCollection = new RDFCollection(RDFModelEnums.RDFItemTypes.Resource);
+            differentIndividuals.ForEach(differentIndividual => allDifferentIndividualsCollection.AddItem(differentIndividual));
+            ABoxGraph.AddCollection(allDifferentIndividualsCollection);
+            ABoxGraph.AddTriple(new RDFTriple(owlClass, RDFVocabulary.OWL.DISTINCT_MEMBERS, allDifferentIndividualsCollection.ReificationSubject));
+            ABoxGraph.AddTriple(new RDFTriple(owlClass, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ALL_DIFFERENT));
 
             return this;
         }
