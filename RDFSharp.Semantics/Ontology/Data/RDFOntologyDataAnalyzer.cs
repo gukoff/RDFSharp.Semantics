@@ -136,11 +136,13 @@ namespace RDFSharp.Semantics
                 return sameIndividuals;
             #endregion
 
-            // SAMEAS(A,B)
+            #region Discovery
+            //Find same individuals linked to the given one with owl:sameAs relation
             foreach (RDFTriple sameAsRelation in aboxGraph[owlIndividual, RDFVocabulary.OWL.SAME_AS, null, null])
                 sameIndividuals.Add((RDFResource)sameAsRelation.Object);
+            #endregion
 
-            // SAMEAS(A,B) ^ SAMEAS(B,C) -> SAMEAS(A,C)
+            // Inference: SAMEAS(A,B) ^ SAMEAS(B,C) -> SAMEAS(A,C)
             foreach (RDFResource sameIndividual in sameIndividuals.ToList())
                 sameIndividuals.AddRange(data.FindSameIndividuals(sameIndividual, aboxGraph, visitContext));
 
@@ -204,7 +206,7 @@ namespace RDFSharp.Semantics
                                                 .Select(t => (RDFResource)t.Object)
                                                 .ToList());
 
-            // Merge individuals from both sets a unique deduplicate working set
+            // Merge individuals from both sets into a unique deduplicate working set
             List<RDFResource> differentIndividualsSet = RDFQueryUtilities.RemoveDuplicates(allDifferentIndividuals.Union(differentFromIndividuals).ToList());
             #endregion
 
