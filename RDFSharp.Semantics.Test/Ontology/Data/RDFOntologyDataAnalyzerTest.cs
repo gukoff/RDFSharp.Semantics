@@ -293,6 +293,40 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivB"), new RDFResource("ex:indivE"))); //Inferred
             Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivE"), new RDFResource("ex:indivB"))); //Inferred
         }
+
+        [TestMethod]
+        public void ShouldCheckAreTransitiveRelatedIndividuals()
+        {
+            RDFOntologyData data = new RDFOntologyData();
+            data.DeclareIndividual(new RDFResource("ex:indivA"));
+            data.DeclareIndividual(new RDFResource("ex:indivB"));
+            data.DeclareIndividual(new RDFResource("ex:indivC"));
+            data.DeclareIndividual(new RDFResource("ex:indivD"));
+            data.DeclareObjectAssertion(new RDFResource("ex:indivA"), new RDFResource("ex:genderOf"), new RDFResource("ex:indivB"));
+            data.DeclareObjectAssertion(new RDFResource("ex:indivB"), new RDFResource("ex:genderOf"), new RDFResource("ex:indivC"));
+            data.DeclareObjectAssertion(new RDFResource("ex:indivC"), new RDFResource("ex:genderOf"), new RDFResource("ex:indivD"));
+
+            Assert.IsTrue(data.CheckAreTransitiveRelatedIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:genderOf"), new RDFResource("ex:indivC")));
+            Assert.IsTrue(data.CheckAreTransitiveRelatedIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:genderOf"), new RDFResource("ex:indivD")));
+            Assert.IsTrue(data.CheckAreTransitiveRelatedIndividuals(new RDFResource("ex:indivB"), new RDFResource("ex:genderOf"), new RDFResource("ex:indivD")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckAreNotTransitiveRelatedIndividuals()
+        {
+            RDFOntologyData data = new RDFOntologyData();
+            data.DeclareIndividual(new RDFResource("ex:indivA"));
+            data.DeclareIndividual(new RDFResource("ex:indivB"));
+            data.DeclareIndividual(new RDFResource("ex:indivC"));
+            data.DeclareIndividual(new RDFResource("ex:indivD"));
+            data.DeclareObjectAssertion(new RDFResource("ex:indivA"), new RDFResource("ex:genderOf"), new RDFResource("ex:indivB"));
+            data.DeclareObjectAssertion(new RDFResource("ex:indivC"), new RDFResource("ex:genderOf"), new RDFResource("ex:indivD"));
+
+            Assert.IsFalse(data.CheckAreTransitiveRelatedIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:genderOf"), new RDFResource("ex:indivC")));
+            Assert.IsFalse(data.CheckAreTransitiveRelatedIndividuals(null, new RDFResource("ex:genderOf"), new RDFResource("ex:indivD")));
+            Assert.IsFalse(data.CheckAreTransitiveRelatedIndividuals(new RDFResource("ex:indivB"), null, new RDFResource("ex:indivD")));
+            Assert.IsFalse(data.CheckAreTransitiveRelatedIndividuals(new RDFResource("ex:indivB"), new RDFResource("ex:genderOf"), null));
+        }
         #endregion
     }
 }
