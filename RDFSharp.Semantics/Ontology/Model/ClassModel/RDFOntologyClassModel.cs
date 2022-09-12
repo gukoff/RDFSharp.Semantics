@@ -349,6 +349,9 @@ namespace RDFSharp.Semantics
         /// </summary>
         public RDFOntologyClassModel DeclareCardinalityRestriction(RDFResource owlRestriction, RDFResource onProperty, uint cardinality)
         {
+            if (cardinality == 0)
+                throw new RDFSemanticsException("Cannot declare owl:cardinality restriction to the model because given \"cardinality\" value must be greater than zero");
+
             //Declare restriction to the model
             DeclareRestriction(owlRestriction, onProperty);
 
@@ -363,6 +366,9 @@ namespace RDFSharp.Semantics
         /// </summary>
         public RDFOntologyClassModel DeclareMinCardinalityRestriction(RDFResource owlRestriction, RDFResource onProperty, uint minCardinality)
         {
+            if (minCardinality == 0)
+                throw new RDFSemanticsException("Cannot declare owl:minCardinality restriction to the model because given \"minCardinality\" value must be greater than zero");
+
             //Declare restriction to the model
             DeclareRestriction(owlRestriction, onProperty);
 
@@ -377,6 +383,9 @@ namespace RDFSharp.Semantics
         /// </summary>
         public RDFOntologyClassModel DeclareMaxCardinalityRestriction(RDFResource owlRestriction, RDFResource onProperty, uint maxCardinality)
         {
+            if (maxCardinality == 0)
+                throw new RDFSemanticsException("Cannot declare owl:maxCardinality restriction to the model because given \"maxCardinality\" value must be greater than zero");
+
             //Declare restriction to the model
             DeclareRestriction(owlRestriction, onProperty);
 
@@ -391,6 +400,11 @@ namespace RDFSharp.Semantics
         /// </summary>
         public RDFOntologyClassModel DeclareMinMaxCardinalityRestriction(RDFResource owlRestriction, RDFResource onProperty, uint minCardinality, uint maxCardinality)
         {
+            if (minCardinality == 0)
+                throw new RDFSemanticsException("Cannot declare owl:minCardinality restriction to the model because given \"minCardinality\" value must be greater than zero");
+            if (maxCardinality == 0)
+                throw new RDFSemanticsException("Cannot declare owl:maxCardinality restriction to the model because given \"maxCardinality\" value must be greater than zero");
+
             //Declare restriction to the model
             DeclareRestriction(owlRestriction, onProperty);
 
@@ -408,6 +422,8 @@ namespace RDFSharp.Semantics
         {
             if (onClass == null)
                 throw new RDFSemanticsException("Cannot declare owl:qualifiedCardinality restriction to the model because given \"onClass\" parameter is null");
+            if (cardinality == 0)
+                throw new RDFSemanticsException("Cannot declare owl:qualifiedCardinality restriction to the model because given \"cardinality\" value must be greater than zero");
 
             //Declare restriction to the model
             DeclareRestriction(owlRestriction, onProperty);
@@ -426,6 +442,8 @@ namespace RDFSharp.Semantics
         {
             if (onClass == null)
                 throw new RDFSemanticsException("Cannot declare owl:minQualifiedCardinality restriction to the model because given \"onClass\" parameter is null");
+            if (minCardinality == 0)
+                throw new RDFSemanticsException("Cannot declare owl:minQualifiedCardinality restriction to the model because given \"minCardinality\" value must be greater than zero");
 
             //Declare restriction to the model
             DeclareRestriction(owlRestriction, onProperty);
@@ -444,6 +462,8 @@ namespace RDFSharp.Semantics
         {
             if (onClass == null)
                 throw new RDFSemanticsException("Cannot declare owl:maxQualifiedCardinality restriction to the model because given \"onClass\" parameter is null");
+            if (maxCardinality == 0)
+                throw new RDFSemanticsException("Cannot declare owl:maxQualifiedCardinality restriction to the model because given \"maxCardinality\" value must be greater than zero");
 
             //Declare restriction to the model
             DeclareRestriction(owlRestriction, onProperty);
@@ -462,6 +482,10 @@ namespace RDFSharp.Semantics
         {
             if (onClass == null)
                 throw new RDFSemanticsException("Cannot declare owl:minQualifiedCardinality and owl:maxQualifiedCardinality restriction to the model because given \"onClass\" parameter is null");
+            if (minCardinality == 0)
+                throw new RDFSemanticsException("Cannot declare owl:minQualifiedCardinality and owl:maxQualifiedCardinality restriction to the model because given \"minCardinality\" value must be greater than zero");
+            if (minCardinality == 0)
+                throw new RDFSemanticsException("Cannot declare owl:minQualifiedCardinality and owl:maxQualifiedCardinality restriction to the model because given \"maxCardinality\" value must be greater than zero");
 
             //Declare restriction to the model
             DeclareRestriction(owlRestriction, onProperty);
