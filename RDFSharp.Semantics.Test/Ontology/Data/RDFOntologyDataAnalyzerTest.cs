@@ -325,6 +325,43 @@ namespace RDFSharp.Semantics.Test
             Assert.IsFalse(data.CheckAreTransitiveRelatedIndividuals(new RDFResource("ex:indivB"), null, new RDFResource("ex:indivD")));
             Assert.IsFalse(data.CheckAreTransitiveRelatedIndividuals(new RDFResource("ex:indivB"), new RDFResource("ex:genderOf"), null));
         }
+
+        [TestMethod]
+        public void ShouldCheckIsIndividualOfClass()
+        {
+            RDFOntology ontology = new RDFOntology("ex:ont");
+            ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:classA"));
+            ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:classB"));
+            ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:classC"));
+            ontology.Model.ClassModel.DeclareSubClass(new RDFResource("ex:classB"), new RDFResource("ex:classA"));
+            ontology.Model.ClassModel.DeclareEquivalentClasses(new RDFResource("ex:classC"), new RDFResource("ex:classB"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv1"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv1"), new RDFResource("ex:classA"));
+            ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv2"), new RDFResource("ex:classB"));
+            ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv3"), new RDFResource("ex:classC"));
+
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:classA")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:classB")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:classC")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:classA"))); //Inference
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:classC"))); //Inference
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:classA"))); //Inference
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:classB"))); //Inference
+        }
+
+        [TestMethod]
+        public void ShouldCheckIsIndividualOfEnumerate()
+        {
+            RDFOntology ontology = new RDFOntology("ex:ont");
+            ontology.Model.ClassModel.DeclareEnumerateClass(new RDFResource("ex:enumClass"), new List<RDFResource>() { 
+                new RDFResource("ex:indiv1"), new RDFResource("ex:indiv2") });
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv1"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv2"));
+
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:enumClass")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:enumClass")));
+        }
         #endregion
     }
 }
