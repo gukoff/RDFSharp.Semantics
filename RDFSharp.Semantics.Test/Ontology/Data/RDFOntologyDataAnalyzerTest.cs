@@ -788,6 +788,50 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:hvRest")));
             Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:hvRest")));
         }
+
+        [TestMethod]
+        public void ShouldCheckIsIndividualOfHasSelfTrueRestriction()
+        {
+            RDFOntology ontology = new RDFOntology("ex:ont");
+            ontology.Model.ClassModel.DeclareHasSelfRestriction(new RDFResource("ex:hsRest"), new RDFResource("ex:objProp"), true);
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objProp"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv1"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv4"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv1"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv2"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv4"));
+
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:hsRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:hsRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:hsRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:hsRest")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckIsIndividualOfHasSelfFalseRestriction()
+        {
+            RDFOntology ontology = new RDFOntology("ex:ont");
+            ontology.Model.ClassModel.DeclareHasSelfRestriction(new RDFResource("ex:hsRest"), new RDFResource("ex:objProp"), false);
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objProp"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv1"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv4"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv1"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv2"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv4"));
+
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:hsRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:hsRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:hsRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:hsRest")));
+        }
         #endregion
     }
 }

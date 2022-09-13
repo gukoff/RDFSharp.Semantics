@@ -579,18 +579,17 @@ namespace RDFSharp.Semantics
         {
             List<RDFResource> individuals = new List<RDFResource>();
 
-            //owl:hasSelf(TRUE) => consider SPO assertions having the same subject/object individual
-            if (model.ClassModel.TBoxGraph.ContainsTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.HAS_SELF, RDFTypedLiteral.True)))
-            { 
-                foreach (RDFTriple assertionTriple in assertionsGraph.Where(asn => asn.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPO && asn.Subject.Equals(asn.Object)))
-                    individuals.Add((RDFResource)assertionTriple.Subject);
-            }
-
-            //owl:hasSelf(FALSE) => consider SPO assertions NOT having the same subject/object individual
-            else
+            bool hasSelfTrue = model.ClassModel.TBoxGraph.ContainsTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.HAS_SELF, RDFTypedLiteral.True));
+            bool hasSelfFalse = model.ClassModel.TBoxGraph.ContainsTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.HAS_SELF, RDFTypedLiteral.False));
+            foreach (IGrouping<RDFPatternMember, RDFTriple> assertionGroup in assertionsGraph.GroupBy(asn => asn.Subject))
             {
-                foreach (RDFTriple assertionTriple in assertionsGraph.Where(asn => asn.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPO && !asn.Subject.Equals(asn.Object)))
-                    individuals.Add((RDFResource)assertionTriple.Subject);
+                //owl:hasSelf(TRUE) => At least one occurrence of the restricted property must link the same subject/object individual
+                if (hasSelfTrue && assertionGroup.Any(asn => asn.Subject.Equals(asn.Object)))
+                    individuals.Add((RDFResource)assertionGroup.Key);
+
+                //owl:hasSelf(FALSE) => No occurrences of the restricted property must link the same subject/object individual
+                if (hasSelfFalse && !assertionGroup.Any(asn => asn.Subject.Equals(asn.Object)))
+                    individuals.Add((RDFResource)assertionGroup.Key);
             }
 
             //We don't want to enlist duplicate individuals
