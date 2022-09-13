@@ -85,7 +85,7 @@ namespace RDFSharp.Semantics
 
                 //Relations
                 foreach (RDFTriple subClassRelation in graph[owlClass, RDFVocabulary.RDFS.SUB_CLASS_OF, null, null])
-                    ontology.Model.ClassModel.DeclareSubClass(owlClass, (RDFResource)subClassRelation.Object);
+                    ontology.Model.ClassModel.DeclareSubClasses(owlClass, (RDFResource)subClassRelation.Object);
                 foreach (RDFTriple equivalentClassRelation in graph[owlClass, RDFVocabulary.OWL.EQUIVALENT_CLASS, null, null])
                     ontology.Model.ClassModel.DeclareEquivalentClasses(owlClass, (RDFResource)equivalentClassRelation.Object);
                 foreach (RDFTriple disjointClassRelation in graph[owlClass, RDFVocabulary.OWL.DISJOINT_WITH, null, null])

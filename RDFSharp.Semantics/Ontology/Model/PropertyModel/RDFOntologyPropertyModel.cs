@@ -590,7 +590,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Declares the given "SubProperty(childProperty,motherProperty)" relation to the model
         /// </summary>
-        public RDFOntologyPropertyModel DeclareSubProperty(RDFResource childProperty, RDFResource motherProperty)
+        public RDFOntologyPropertyModel DeclareSubProperties(RDFResource childProperty, RDFResource motherProperty)
         {
             #region OWL-DL Integrity Checks
             bool OWLDLIntegrityChecks()

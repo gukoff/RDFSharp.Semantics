@@ -330,7 +330,7 @@ namespace RDFSharp.Semantics.Test
             ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:classA"));
             ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:classB"));
             ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:classC"));
-            ontology.Model.ClassModel.DeclareSubClass(new RDFResource("ex:classB"), new RDFResource("ex:classA"));
+            ontology.Model.ClassModel.DeclareSubClasses(new RDFResource("ex:classB"), new RDFResource("ex:classA"));
             ontology.Model.ClassModel.DeclareEquivalentClasses(new RDFResource("ex:classC"), new RDFResource("ex:classB"));
             ontology.Data.DeclareIndividual(new RDFResource("ex:indiv1"));
             ontology.Data.DeclareIndividual(new RDFResource("ex:indiv2"));
@@ -385,7 +385,7 @@ namespace RDFSharp.Semantics.Test
             ontology.Model.ClassModel.DeclareCardinalityRestriction(new RDFResource("ex:cardRest"), new RDFResource("ex:objMotherProp"), 2);
             ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objChildProp"));
             ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objMotherProp"));
-            ontology.Model.PropertyModel.DeclareSubProperty(new RDFResource("ex:objChildProp"), new RDFResource("ex:objMotherProp"));
+            ontology.Model.PropertyModel.DeclareSubProperties(new RDFResource("ex:objChildProp"), new RDFResource("ex:objMotherProp"));
             ontology.Data.DeclareIndividual(new RDFResource("ex:indiv1"));
             ontology.Data.DeclareIndividual(new RDFResource("ex:indiv2"));
             ontology.Data.DeclareIndividual(new RDFResource("ex:indiv3"));
@@ -645,13 +645,13 @@ namespace RDFSharp.Semantics.Test
             RDFOntology ontology = new RDFOntology("ex:ont");
             ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:onClass"));
             ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:subClass"));
-            ontology.Model.ClassModel.DeclareSubClass(new RDFResource("ex:subClass"), new RDFResource("ex:onClass"));
+            ontology.Model.ClassModel.DeclareSubClasses(new RDFResource("ex:subClass"), new RDFResource("ex:onClass"));
             ontology.Model.ClassModel.DeclareSomeValuesFromRestriction(new RDFResource("ex:svFromRest"), new RDFResource("ex:objProp"), new RDFResource("ex:onClass"));
             ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objProp"));
             ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objPropEquiv"));
             ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objPropSub"));
             ontology.Model.PropertyModel.DeclareEquivalentProperties(new RDFResource("ex:objProp"), new RDFResource("ex:objPropEquiv"));
-            ontology.Model.PropertyModel.DeclareSubProperty(new RDFResource("ex:objPropSub"), new RDFResource("ex:objProp"));
+            ontology.Model.PropertyModel.DeclareSubProperties(new RDFResource("ex:objPropSub"), new RDFResource("ex:objProp"));
             ontology.Data.DeclareIndividual(new RDFResource("ex:indiv1"));
             ontology.Data.DeclareIndividual(new RDFResource("ex:indiv2"));
             ontology.Data.DeclareIndividual(new RDFResource("ex:indiv3"));
@@ -701,13 +701,13 @@ namespace RDFSharp.Semantics.Test
             RDFOntology ontology = new RDFOntology("ex:ont");
             ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:onClass"));
             ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:subClass"));
-            ontology.Model.ClassModel.DeclareSubClass(new RDFResource("ex:subClass"), new RDFResource("ex:onClass"));
+            ontology.Model.ClassModel.DeclareSubClasses(new RDFResource("ex:subClass"), new RDFResource("ex:onClass"));
             ontology.Model.ClassModel.DeclareAllValuesFromRestriction(new RDFResource("ex:avFromRest"), new RDFResource("ex:objProp"), new RDFResource("ex:onClass"));
             ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objProp"));
             ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objPropEquiv"));
             ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objPropSub"));
             ontology.Model.PropertyModel.DeclareEquivalentProperties(new RDFResource("ex:objProp"), new RDFResource("ex:objPropEquiv"));
-            ontology.Model.PropertyModel.DeclareSubProperty(new RDFResource("ex:objPropSub"), new RDFResource("ex:objProp"));
+            ontology.Model.PropertyModel.DeclareSubProperties(new RDFResource("ex:objPropSub"), new RDFResource("ex:objProp"));
             ontology.Data.DeclareIndividual(new RDFResource("ex:indiv1"));
             ontology.Data.DeclareIndividual(new RDFResource("ex:indiv2"));
             ontology.Data.DeclareIndividual(new RDFResource("ex:indiv3"));
@@ -724,6 +724,69 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:avFromRest")));
             Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:avFromRest")));
             Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:avFromRest")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckIsIndividualOfHasValueResourceRestriction()
+        {
+            RDFOntology ontology = new RDFOntology("ex:ont");
+            ontology.Model.ClassModel.DeclareHasValueRestriction(new RDFResource("ex:hvRest"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv2"));
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objProp"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv1"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv4"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv2"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv4"));
+
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:hvRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:hvRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:hvRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:hvRest")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckIsIndividualOfHasValueResourceRestrictionWithReasoning()
+        {
+            RDFOntology ontology = new RDFOntology("ex:ont");
+            ontology.Model.ClassModel.DeclareHasValueRestriction(new RDFResource("ex:hvRest"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv2"));
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objProp"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv1"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv4"));
+            ontology.Data.DeclareSameIndividuals(new RDFResource("ex:indiv2"), new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv2"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv4"));
+
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:hvRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:hvRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:hvRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:hvRest")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckIsIndividualOfHasValueLiteralRestriction()
+        {
+            RDFOntology ontology = new RDFOntology("ex:ont");
+            ontology.Model.ClassModel.DeclareHasValueRestriction(new RDFResource("ex:hvRest"), new RDFResource("ex:dtProp"), new RDFTypedLiteral("25", RDFModelEnums.RDFDatatypes.XSD_POSITIVEINTEGER));
+            ontology.Model.PropertyModel.DeclareDatatypeProperty(new RDFResource("ex:dtProp"));
+            ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:dtProp"), new RDFTypedLiteral("25.0", RDFModelEnums.RDFDatatypes.XSD_FLOAT));
+            ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:dtProp"), new RDFTypedLiteral("26", RDFModelEnums.RDFDatatypes.XSD_DECIMAL));
+            ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:indiv2"), new RDFResource("ex:dtProp"), new RDFPlainLiteral("25"));
+            ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:dtProp"), new RDFTypedLiteral("25", RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER));
+            ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:dtProp"), new RDFTypedLiteral("25", RDFModelEnums.RDFDatatypes.XSD_GDAY));
+
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:hvRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:hvRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:hvRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:hvRest")));
         }
         #endregion
     }

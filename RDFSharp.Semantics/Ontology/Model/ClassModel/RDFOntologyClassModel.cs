@@ -681,7 +681,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Declares the existence of the given "SubClass(childClass,motherClass)" relation to the model
         /// </summary>
-        public RDFOntologyClassModel DeclareSubClass(RDFResource childClass, RDFResource motherClass)
+        public RDFOntologyClassModel DeclareSubClasses(RDFResource childClass, RDFResource motherClass)
         {
             #region OWL-DL Integrity Checks
             bool OWLDLIntegrityChecks()

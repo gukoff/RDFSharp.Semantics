@@ -77,7 +77,7 @@ namespace RDFSharp.Semantics
 
                 //Relations
                 foreach (RDFTriple subPropertyRelation in graph[property, RDFVocabulary.RDFS.SUB_PROPERTY_OF, null, null])
-                    ontology.Model.PropertyModel.DeclareSubProperty(property, (RDFResource)subPropertyRelation.Object);
+                    ontology.Model.PropertyModel.DeclareSubProperties(property, (RDFResource)subPropertyRelation.Object);
                 foreach (RDFTriple equivalentPropertyRelation in graph[property, RDFVocabulary.OWL.EQUIVALENT_PROPERTY, null, null])
                     ontology.Model.PropertyModel.DeclareEquivalentProperties(property, (RDFResource)equivalentPropertyRelation.Object);
                 foreach (RDFTriple inversePropertyRelation in graph[property, RDFVocabulary.OWL.INVERSE_OF, null, null])
