@@ -119,7 +119,7 @@ namespace RDFSharp.Semantics
                 sameIndividuals.RemoveAll(individual => individual.Equals(owlIndividual));
             }
 
-            return sameIndividuals;
+            return RDFQueryUtilities.RemoveDuplicates(sameIndividuals);
         }
 
         /// <summary>
@@ -170,7 +170,7 @@ namespace RDFSharp.Semantics
                 differentIndividuals.RemoveAll(individual => individual.Equals(owlIndividual));
             }
 
-            return differentIndividuals;
+            return RDFQueryUtilities.RemoveDuplicates(differentIndividuals);
         }
 
         /// <summary>

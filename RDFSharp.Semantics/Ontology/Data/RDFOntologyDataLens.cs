@@ -88,45 +88,45 @@ namespace RDFSharp.Semantics
         {
             List<RDFResource> result = new List<RDFResource>();
 
-            Dictionary<long, List<RDFResource>> individualsCache = new Dictionary<long, List<RDFResource>>();
+            Dictionary<long, List<RDFResource>> classTypesCache = new Dictionary<long, List<RDFResource>>();
 
             //Enumerates (owl:oneOf)
             foreach (RDFResource enumerateClass in Ontology.Model.ClassModel.Where(cls => Ontology.Model.ClassModel.CheckHasEnumerateClass(cls)))
             {
-                if (!individualsCache.ContainsKey(enumerateClass.PatternMemberID))
-                    individualsCache.Add(enumerateClass.PatternMemberID, Ontology.Data.AnswerIndividualsOfClass(Ontology.Model, enumerateClass));
+                if (!classTypesCache.ContainsKey(enumerateClass.PatternMemberID))
+                    classTypesCache.Add(enumerateClass.PatternMemberID, Ontology.Data.AnswerIndividualsOfClass(Ontology.Model, enumerateClass));
 
-                if (individualsCache[enumerateClass.PatternMemberID].Any(individual => individual.Equals(Individual)))
+                if (classTypesCache[enumerateClass.PatternMemberID].Any(individual => individual.Equals(Individual)))
                     result.Add(enumerateClass);
             }
 
             //Restrictions (owl:Restriction)
             foreach (RDFResource restrictionClass in Ontology.Model.ClassModel.Where(cls => Ontology.Model.ClassModel.CheckHasRestrictionClass(cls)))
             {
-                if (!individualsCache.ContainsKey(restrictionClass.PatternMemberID))
-                    individualsCache.Add(restrictionClass.PatternMemberID, Ontology.Data.AnswerIndividualsOfClass(Ontology.Model, restrictionClass));
+                if (!classTypesCache.ContainsKey(restrictionClass.PatternMemberID))
+                    classTypesCache.Add(restrictionClass.PatternMemberID, Ontology.Data.AnswerIndividualsOfClass(Ontology.Model, restrictionClass));
 
-                if (individualsCache[restrictionClass.PatternMemberID].Any(individual => individual.Equals(Individual)))
+                if (classTypesCache[restrictionClass.PatternMemberID].Any(individual => individual.Equals(Individual)))
                     result.Add(restrictionClass);
             }
 
             //Classes (owl:Class)
             foreach (RDFResource simpleClass in Ontology.Model.ClassModel.Where(cls => Ontology.Model.ClassModel.CheckHasSimpleClass(cls)))
             {
-                if (!individualsCache.ContainsKey(simpleClass.PatternMemberID))
-                    individualsCache.Add(simpleClass.PatternMemberID, Ontology.Data.AnswerIndividualsOfClass(Ontology.Model, simpleClass));
+                if (!classTypesCache.ContainsKey(simpleClass.PatternMemberID))
+                    classTypesCache.Add(simpleClass.PatternMemberID, Ontology.Data.AnswerIndividualsOfClass(Ontology.Model, simpleClass));
 
-                if (individualsCache[simpleClass.PatternMemberID].Any(individual => individual.Equals(Individual)))
+                if (classTypesCache[simpleClass.PatternMemberID].Any(individual => individual.Equals(Individual)))
                     result.Add(simpleClass);
             }
 
             //Composites (owl:unionOf, owl:intersectionOf, owl:complementOf)
             foreach (RDFResource compositeClass in Ontology.Model.ClassModel.Where(cls => Ontology.Model.ClassModel.CheckHasCompositeClass(cls)))
             {
-                if (!individualsCache.ContainsKey(compositeClass.PatternMemberID))
-                    individualsCache.Add(compositeClass.PatternMemberID, Ontology.Data.AnswerIndividualsOfClass(Ontology.Model, compositeClass));
+                if (!classTypesCache.ContainsKey(compositeClass.PatternMemberID))
+                    classTypesCache.Add(compositeClass.PatternMemberID, Ontology.Data.AnswerIndividualsOfClass(Ontology.Model, compositeClass));
 
-                if (individualsCache[compositeClass.PatternMemberID].Any(individual => individual.Equals(Individual)))
+                if (classTypesCache[compositeClass.PatternMemberID].Any(individual => individual.Equals(Individual)))
                     result.Add(compositeClass);
             }
 
