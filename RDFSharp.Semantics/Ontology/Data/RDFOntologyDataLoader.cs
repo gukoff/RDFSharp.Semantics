@@ -43,14 +43,19 @@ namespace RDFSharp.Semantics
             HashSet<long> annotationProperties = graph.GetAnnotationPropertyHashes();
             annotationProperties.UnionWith(RDFSemanticsUtilities.StandardResourceAnnotations);
 
-            //Individuals (instance of owl:Individual)
+            //Individuals (rdf:type owl:[Named]Individual)
+            foreach (RDFResource owlNamedIndividual in GetNamedIndividualDeclarations(graph))
+                ontology.Data.DeclareIndividual(owlNamedIndividual);
             foreach (RDFResource owlIndividual in GetIndividualDeclarations(graph))
                 ontology.Data.DeclareIndividual(owlIndividual);
 
-            //Individuals (instance of owl:Class)
+            //Individuals (rdf:type owl:Class)
             foreach (RDFResource owlClass in ontology.Model.ClassModel.Where(cls => ontology.Model.ClassModel.CheckHasSimpleClass(cls)))
                 foreach (RDFTriple type in graph[null, RDFVocabulary.RDF.TYPE, owlClass, null])
+                {
+                    ontology.Data.DeclareIndividual((RDFResource)type.Subject);
                     ontology.Data.DeclareIndividualType((RDFResource)type.Subject, owlClass);
+                }   
             #endregion
 
             #region Taxonomies
@@ -60,9 +65,9 @@ namespace RDFSharp.Semantics
                 foreach (RDFTriple individualAnnotation in graph[owlIndividual, null, null, null].Where(t => annotationProperties.Contains(t.Predicate.PatternMemberID)))
                 {
                     if (individualAnnotation.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPO)
-                        ontology.Model.ClassModel.AnnotateClass(owlIndividual, (RDFResource)individualAnnotation.Predicate, (RDFResource)individualAnnotation.Object);
+                        ontology.Data.AnnotateIndividual(owlIndividual, (RDFResource)individualAnnotation.Predicate, (RDFResource)individualAnnotation.Object);
                     else
-                        ontology.Model.ClassModel.AnnotateClass(owlIndividual, (RDFResource)individualAnnotation.Predicate, (RDFLiteral)individualAnnotation.Object);
+                        ontology.Data.AnnotateIndividual(owlIndividual, (RDFResource)individualAnnotation.Predicate, (RDFLiteral)individualAnnotation.Object);
                 }
 
                 //Relations
@@ -81,15 +86,14 @@ namespace RDFSharp.Semantics
             }
 
             //owl:AllDifferent [OWL2]
-            IEnumerator<RDFResource> allDifferent = ontology.Data.AllDifferentEnumerator;
-            while (allDifferent.MoveNext())
-                foreach (RDFTriple allDifferentMembers in graph[allDifferent.Current, RDFVocabulary.OWL.DISTINCT_MEMBERS, null, null])
+            foreach (RDFResource allDifferent in GetAllDifferentDeclarations(graph))
+                foreach (RDFTriple allDifferentMembers in graph[allDifferent, RDFVocabulary.OWL.DISTINCT_MEMBERS, null, null])
                 {
                     List<RDFResource> differentIndividuals = new List<RDFResource>();
                     RDFCollection differentIndividualsCollection = RDFModelUtilities.DeserializeCollectionFromGraph(graph, (RDFResource)allDifferentMembers.Object, RDFModelEnums.RDFTripleFlavors.SPO);
                     foreach (RDFPatternMember differentIndividual in differentIndividualsCollection)
                         differentIndividuals.Add((RDFResource)differentIndividual);
-                    ontology.Data.DeclareAllDifferentIndividuals(allDifferent.Current, differentIndividuals);
+                    ontology.Data.DeclareAllDifferentIndividuals(allDifferent, differentIndividuals);
                 }
             #endregion
 
@@ -101,8 +105,24 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets the owl:NamedIndividual declarations
         /// </summary>
-        private static HashSet<RDFResource> GetIndividualDeclarations(RDFGraph graph)
+        private static HashSet<RDFResource> GetNamedIndividualDeclarations(RDFGraph graph)
             => new HashSet<RDFResource>(graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL, null]
+                                           .Select(t => t.Subject)
+                                           .OfType<RDFResource>());
+
+        /// <summary>
+        /// Gets the owl:Individual declarations
+        /// </summary>
+        private static HashSet<RDFResource> GetIndividualDeclarations(RDFGraph graph)
+            => new HashSet<RDFResource>(graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.INDIVIDUAL, null]
+                                           .Select(t => t.Subject)
+                                           .OfType<RDFResource>());
+
+        /// <summary>
+        /// Gets the owl:AllDifferent declarations [OWL2]
+        /// </summary>
+        private static HashSet<RDFResource> GetAllDifferentDeclarations(RDFGraph graph)
+            => new HashSet<RDFResource>(graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ALL_DIFFERENT, null]
                                            .Select(t => t.Subject)
                                            .OfType<RDFResource>());
 
