@@ -67,6 +67,9 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(data.AllDifferentCount == 0);
             Assert.IsTrue(data.ABoxGraph.TriplesCount == 1);
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
+            Assert.IsTrue(data.ABoxInferenceGraph.TriplesCount == 0);
+            Assert.IsTrue(data.ABoxVirtualGraph.TriplesCount == 1);
+            Assert.IsTrue(data.ABoxVirtualGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
 
             int i = 0;
             IEnumerator<RDFResource> individualsEnumerator = data.IndividualsEnumerator;
