@@ -18,7 +18,6 @@ using RDFSharp.Model;
 using RDFSharp.Query;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace RDFSharp.Semantics
 {
@@ -375,7 +374,7 @@ namespace RDFSharp.Semantics
 
             if (classModel != null && owlClass != null)
             {
-                disjointClasses.AddRange(classModel.FindDisjointClasses(owlClass, classModel.TBoxVirtualGraph, new Dictionary<long, RDFResource>()));                    
+                disjointClasses.AddRange(classModel.FindDisjointClasses(owlClass, classModel.TBoxVirtualGraph, new Dictionary<long, RDFResource>()));
 
                 //We don't want to also enlist the given owl:Class
                 disjointClasses.RemoveAll(cls => cls.Equals(owlClass));

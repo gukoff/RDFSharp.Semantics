@@ -95,15 +95,14 @@ namespace RDFSharp.Semantics
             }
 
             //owl:AllDisjointProperties [OWL2]
-            IEnumerator<RDFResource> allDisjointProperties = ontology.Model.PropertyModel.AllDisjointPropertiesEnumerator;
-            while (allDisjointProperties.MoveNext())
-                foreach (RDFTriple allDisjointPropertiesMembers in graph[allDisjointProperties.Current, RDFVocabulary.OWL.MEMBERS, null, null])
+            foreach (RDFResource allDisjointProperties in GetAllDisjointPropertiesDeclarations(graph))
+                foreach (RDFTriple allDisjointPropertiesMembers in graph[allDisjointProperties, RDFVocabulary.OWL.MEMBERS, null, null])
                 {
                     List<RDFResource> disjointProperties = new List<RDFResource>();
                     RDFCollection disjointPropertiesCollection = RDFModelUtilities.DeserializeCollectionFromGraph(graph, (RDFResource)allDisjointPropertiesMembers.Object, RDFModelEnums.RDFTripleFlavors.SPO);
                     foreach (RDFPatternMember disjointProperty in disjointPropertiesCollection)
                         disjointProperties.Add((RDFResource)disjointProperty);
-                    ontology.Model.PropertyModel.DeclareAllDisjointProperties(allDisjointProperties.Current, disjointProperties);
+                    ontology.Model.PropertyModel.DeclareAllDisjointProperties(allDisjointProperties, disjointProperties);
                 }
             #endregion
 
@@ -224,6 +223,14 @@ namespace RDFSharp.Semantics
         /// </summary>
         private static HashSet<RDFResource> GetAnnotationPropertyDeclarations(RDFGraph graph)
             => new HashSet<RDFResource>(graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ANNOTATION_PROPERTY, null]
+                                           .Select(t => t.Subject)
+                                           .OfType<RDFResource>());
+
+        /// <summary>
+        /// Gets the owl:AllDisjointProperties declarations [OWL2]
+        /// </summary>
+        private static HashSet<RDFResource> GetAllDisjointPropertiesDeclarations(RDFGraph graph)
+            => new HashSet<RDFResource>(graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ALL_DISJOINT_PROPERTIES, null]
                                            .Select(t => t.Subject)
                                            .OfType<RDFResource>());
         #endregion

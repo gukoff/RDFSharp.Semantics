@@ -689,7 +689,9 @@ namespace RDFSharp.Semantics
             if (owlClass == null)
                 throw new RDFSemanticsException("Cannot declare owl:AllDisjointProperties class to the model because given \"owlClass\" parameter is null");
             if (disjointProperties == null)
-                disjointProperties = new List<RDFResource>();
+                throw new RDFSemanticsException("Cannot declare owl:AllDisjointProperties class to the model because given \"disjointProperties\" parameter is null");
+            if (disjointProperties.Count == 0)
+                throw new RDFSemanticsException("Cannot declare owl:AllDisjointProperties class to the model because given \"disjointProperties\" parameter is an empty list");
 
             //Add knowledge to the T-BOX
             RDFCollection allDisjointPropertiesCollection = new RDFCollection(RDFModelEnums.RDFItemTypes.Resource);
