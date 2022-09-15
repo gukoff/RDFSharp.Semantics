@@ -210,6 +210,7 @@ namespace RDFSharp.Semantics
                                                                                                                   .ToList());
             #endregion
 
+            #region Analyze
             // Inference: DIFFERENTFROM(A,B) ^ SAMEAS(B,C) -> DIFFERENTFROM(A,C)
             foreach (RDFResource differentIndividual in differentIndividualsSet)
             {
@@ -220,6 +221,7 @@ namespace RDFSharp.Semantics
             // Inference: SAMEAS(A,B) ^ DIFFERENTFROM(B,C) -> DIFFERENTFROM(A,C)
             foreach (RDFResource sameAsIndividual in data.AnswerSameIndividuals(owlIndividual))
                 differentIndividuals.AddRange(data.FindDifferentIndividuals(sameAsIndividual, aboxGraph, visitContext));
+            #endregion
 
             return differentIndividuals;
         }

@@ -109,15 +109,14 @@ namespace RDFSharp.Semantics
             }
 
             //owl:AllDisjointClasses [OWL2]
-            IEnumerator<RDFResource> allDisjointClasses = ontology.Model.ClassModel.AllDisjointClassesEnumerator;
-            while (allDisjointClasses.MoveNext())
-                foreach (RDFTriple allDisjointClassesMembers in graph[allDisjointClasses.Current, RDFVocabulary.OWL.MEMBERS, null, null])
+            foreach (RDFResource allDisjointClasses in GetAllDisjointClassesDeclarations(graph))
+                foreach (RDFTriple allDisjointClassesMembers in graph[allDisjointClasses, RDFVocabulary.OWL.MEMBERS, null, null])
                 {
                     List<RDFResource> disjointClasses = new List<RDFResource>();
                     RDFCollection disjointClassesCollection = RDFModelUtilities.DeserializeCollectionFromGraph(graph, (RDFResource)allDisjointClassesMembers.Object, RDFModelEnums.RDFTripleFlavors.SPO);
                     foreach (RDFPatternMember disjointClass in disjointClassesCollection)
                         disjointClasses.Add((RDFResource)disjointClass);
-                    ontology.Model.ClassModel.DeclareAllDisjointClasses(allDisjointClasses.Current, disjointClasses);
+                    ontology.Model.ClassModel.DeclareAllDisjointClasses(allDisjointClasses, disjointClasses);
                 }
             #endregion
 
@@ -271,6 +270,14 @@ namespace RDFSharp.Semantics
         /// </summary>
         private static HashSet<RDFResource> GetDisjointUnionDeclarations(RDFGraph graph)
             => new HashSet<RDFResource>(graph[null, RDFVocabulary.OWL.DISJOINT_UNION_OF, null, null]
+                                           .Select(t => t.Subject)
+                                           .OfType<RDFResource>());
+
+        /// <summary>
+        /// Gets the owl:AllDisjointClasses declarations [OWL2]
+        /// </summary>
+        private static HashSet<RDFResource> GetAllDisjointClassesDeclarations(RDFGraph graph)
+            => new HashSet<RDFResource>(graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ALL_DISJOINT_CLASSES, null]
                                            .Select(t => t.Subject)
                                            .OfType<RDFResource>());
 

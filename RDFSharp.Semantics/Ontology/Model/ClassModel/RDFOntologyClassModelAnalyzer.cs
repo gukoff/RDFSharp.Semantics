@@ -228,10 +228,7 @@ namespace RDFSharp.Semantics
 
             if (classModel != null && owlClass != null)
             {
-                //Restrict T-BOX knowledge to rdfs:subClassOf relations (both explicit and inferred)
-                RDFGraph filteredTBox = classModel.TBoxGraph[null, RDFVocabulary.RDFS.SUB_CLASS_OF, null, null].UnionWith(
-                                           classModel.TBoxInferenceGraph[null, RDFVocabulary.RDFS.SUB_CLASS_OF, null, null]);
-                subClasses.AddRange(classModel.FindSubClasses(owlClass, filteredTBox, new Dictionary<long, RDFResource>()));
+                subClasses.AddRange(classModel.FindSubClasses(owlClass, classModel.TBoxVirtualGraph, new Dictionary<long, RDFResource>()));
 
                 //We don't want to also enlist the given owl:Class
                 subClasses.RemoveAll(cls => cls.Equals(owlClass));
@@ -243,7 +240,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Finds "SubClass(owlClass, X)" relations to enlist the sub classes of the given owl:Class
         /// </summary>
-        internal static List<RDFResource> FindSubClasses(this RDFOntologyClassModel classModel, RDFResource owlClass, RDFGraph filteredTBox, Dictionary<long, RDFResource> visitContext)
+        internal static List<RDFResource> FindSubClasses(this RDFOntologyClassModel classModel, RDFResource owlClass, RDFGraph tboxGraph, Dictionary<long, RDFResource> visitContext)
         {
             List<RDFResource> subClasses = new List<RDFResource>();
 
@@ -255,12 +252,12 @@ namespace RDFSharp.Semantics
             #endregion
 
             //DIRECT
-            foreach (RDFTriple subClassRelation in filteredTBox[null, null, owlClass, null])
+            foreach (RDFTriple subClassRelation in tboxGraph[null, RDFVocabulary.RDFS.SUB_CLASS_OF, owlClass, null])
                 subClasses.Add((RDFResource)subClassRelation.Subject);
 
             //INDIRECT (TRANSITIVE)
             foreach (RDFResource subClass in subClasses.ToList())
-                subClasses.AddRange(classModel.FindSubClasses(subClass, filteredTBox, visitContext));
+                subClasses.AddRange(classModel.FindSubClasses(subClass, tboxGraph, visitContext));
 
             return subClasses;
         }
@@ -280,10 +277,7 @@ namespace RDFSharp.Semantics
 
             if (classModel != null && owlClass != null)
             {
-                //Restrict T-BOX knowledge to rdfs:subClassOf relations (both explicit and inferred)
-                RDFGraph filteredTBox = classModel.TBoxGraph[null, RDFVocabulary.RDFS.SUB_CLASS_OF, null, null].UnionWith(
-                                           classModel.TBoxInferenceGraph[null, RDFVocabulary.RDFS.SUB_CLASS_OF, null, null]);
-                superClasses.AddRange(classModel.FindSuperClasses(owlClass, filteredTBox, new Dictionary<long, RDFResource>()));
+                superClasses.AddRange(classModel.FindSuperClasses(owlClass, classModel.TBoxVirtualGraph, new Dictionary<long, RDFResource>()));
 
                 //We don't want to also enlist the given owl:Class
                 superClasses.RemoveAll(cls => cls.Equals(owlClass));
@@ -295,7 +289,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Finds "SuperClass(owlClass, X)" relations to enlist the super classes of the given owl:Class
         /// </summary>
-        internal static List<RDFResource> FindSuperClasses(this RDFOntologyClassModel classModel, RDFResource owlClass, RDFGraph filteredTBox, Dictionary<long, RDFResource> visitContext)
+        internal static List<RDFResource> FindSuperClasses(this RDFOntologyClassModel classModel, RDFResource owlClass, RDFGraph tboxGraph, Dictionary<long, RDFResource> visitContext)
         {
             List<RDFResource> superClasses = new List<RDFResource>();
 
@@ -307,12 +301,12 @@ namespace RDFSharp.Semantics
             #endregion
 
             //DIRECT
-            foreach (RDFTriple superClassRelation in filteredTBox[owlClass, null, null, null])
+            foreach (RDFTriple superClassRelation in tboxGraph[owlClass, RDFVocabulary.RDFS.SUB_CLASS_OF, null, null])
                 superClasses.Add((RDFResource)superClassRelation.Object);
 
             //INDIRECT (TRANSITIVE)
             foreach (RDFResource superClass in superClasses.ToList())
-                superClasses.AddRange(classModel.FindSuperClasses(superClass, filteredTBox, visitContext));
+                superClasses.AddRange(classModel.FindSuperClasses(superClass, tboxGraph, visitContext));
 
             return superClasses;
         }
@@ -332,10 +326,7 @@ namespace RDFSharp.Semantics
 
             if (classModel != null && owlClass != null)
             {
-                //Restrict T-BOX knowledge to owl:equivalentClass relations (both explicit and inferred)
-                RDFGraph filteredTBox = classModel.TBoxGraph[null, RDFVocabulary.OWL.EQUIVALENT_CLASS, null, null].UnionWith(
-                                           classModel.TBoxInferenceGraph[null, RDFVocabulary.OWL.EQUIVALENT_CLASS, null, null]);
-                equivalentClasses.AddRange(classModel.FindEquivalentClasses(owlClass, filteredTBox, new Dictionary<long, RDFResource>()));
+                equivalentClasses.AddRange(classModel.FindEquivalentClasses(owlClass, classModel.TBoxVirtualGraph, new Dictionary<long, RDFResource>()));
 
                 //We don't want to also enlist the given owl:Class
                 equivalentClasses.RemoveAll(cls => cls.Equals(owlClass));
@@ -347,7 +338,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Finds "EquivalentClass(owlClass, X)" relations to enlist the equivalent classes of the given owl:Class
         /// </summary>
-        internal static List<RDFResource> FindEquivalentClasses(this RDFOntologyClassModel classModel, RDFResource owlClass, RDFGraph filteredTBox, Dictionary<long, RDFResource> visitContext)
+        internal static List<RDFResource> FindEquivalentClasses(this RDFOntologyClassModel classModel, RDFResource owlClass, RDFGraph tboxGraph, Dictionary<long, RDFResource> visitContext)
         {
             List<RDFResource> equivalentClasses = new List<RDFResource>();
 
@@ -359,12 +350,12 @@ namespace RDFSharp.Semantics
             #endregion
 
             //DIRECT
-            foreach (RDFTriple equivalentClassRelation in filteredTBox[owlClass, null, null, null])
+            foreach (RDFTriple equivalentClassRelation in tboxGraph[owlClass, RDFVocabulary.OWL.EQUIVALENT_CLASS, null, null])
                 equivalentClasses.Add((RDFResource)equivalentClassRelation.Object);
 
             //INDIRECT (TRANSITIVE)
             foreach (RDFResource equivalentClass in equivalentClasses.ToList())
-                equivalentClasses.AddRange(classModel.FindEquivalentClasses(equivalentClass, filteredTBox, visitContext));
+                equivalentClasses.AddRange(classModel.FindEquivalentClasses(equivalentClass, tboxGraph, visitContext));
 
             return equivalentClasses;
         }
@@ -384,31 +375,7 @@ namespace RDFSharp.Semantics
 
             if (classModel != null && owlClass != null)
             {
-                List<RDFResource> directDisjointClasses = new List<RDFResource>();
-                List<RDFResource> indirectDisjointClasses = new List<RDFResource>();
-                Parallel.Invoke(
-                    () => {
-                        //Restrict T-BOX knowledge to owl:disjointWith and owl:equivalentClass relations (both explicit and inferred)
-                        RDFGraph filteredTBox =
-                            classModel.TBoxGraph[null, RDFVocabulary.OWL.DISJOINT_WITH, null, null].UnionWith(
-                               classModel.TBoxInferenceGraph[null, RDFVocabulary.OWL.DISJOINT_WITH, null, null].UnionWith(
-                                  classModel.TBoxGraph[null, RDFVocabulary.OWL.EQUIVALENT_CLASS, null, null].UnionWith(
-                                     classModel.TBoxInferenceGraph[null, RDFVocabulary.OWL.EQUIVALENT_CLASS, null, null])));
-                        directDisjointClasses.AddRange(classModel.FindDisjointClasses(owlClass, filteredTBox));
-                    },
-                    () => {
-                        //Navigate owl:AllDisjointClasses to find eventual disjoint classes "hidden" by this syntactic shortcut
-                        IEnumerator<RDFResource> allDisjointClasses = classModel.AllDisjointClassesEnumerator;
-                        while (allDisjointClasses.MoveNext())
-                            foreach (RDFTriple allDisjointClassesMembers in classModel.TBoxGraph[allDisjointClasses.Current, RDFVocabulary.OWL.MEMBERS, null, null])
-                            {
-                                RDFCollection disjointClassesCollection = RDFModelUtilities.DeserializeCollectionFromGraph(classModel.TBoxGraph, (RDFResource)allDisjointClassesMembers.Object, RDFModelEnums.RDFTripleFlavors.SPO);
-                                if (disjointClassesCollection.Items.Any(item => item.Equals(owlClass)))
-                                    indirectDisjointClasses.AddRange(disjointClassesCollection.OfType<RDFResource>());
-                            }
-                    });
-                disjointClasses.AddRange(directDisjointClasses);
-                disjointClasses.AddRange(indirectDisjointClasses);
+                disjointClasses.AddRange(classModel.FindDisjointClasses(owlClass, classModel.TBoxVirtualGraph, new Dictionary<long, RDFResource>()));                    
 
                 //We don't want to also enlist the given owl:Class
                 disjointClasses.RemoveAll(cls => cls.Equals(owlClass));
@@ -420,20 +387,52 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Finds "DisjointWith(owlClass, X)" relations to enlist the disjoint classes of the given owl:Class
         /// </summary>
-        internal static List<RDFResource> FindDisjointClasses(this RDFOntologyClassModel classModel, RDFResource owlClass, RDFGraph filteredTBox)
+        internal static List<RDFResource> FindDisjointClasses(this RDFOntologyClassModel classModel, RDFResource owlClass, RDFGraph tboxGraph, Dictionary<long, RDFResource> visitContext)
         {
             List<RDFResource> disjointClasses = new List<RDFResource>();
 
-            //DIRECT
-            RDFGraph disjointWithGraph = filteredTBox[owlClass, RDFVocabulary.OWL.DISJOINT_WITH, null, null];
-            foreach (RDFTriple disjointWithTriple in disjointWithGraph)
-                disjointClasses.Add((RDFResource)disjointWithTriple.Object);
+            #region VisitContext
+            if (!visitContext.ContainsKey(owlClass.PatternMemberID))
+                visitContext.Add(owlClass.PatternMemberID, owlClass);
+            else
+                return disjointClasses;
+            #endregion
 
-            //INDIRECT (EXPLOITING EQUIVALENTCLASS)
-            Dictionary<long, RDFResource> visitContext = new Dictionary<long, RDFResource>();
-            RDFGraph equivalentClassGraph = filteredTBox[null, RDFVocabulary.OWL.EQUIVALENT_CLASS, null, null];
-            foreach (RDFResource disjointClass in disjointClasses.ToList())
-                disjointClasses.AddRange(classModel.FindEquivalentClasses(disjointClass, equivalentClassGraph, visitContext));
+            #region Discovery
+            // Find disjoint classes linked to the given one with owl:AllDisjointClasses shortcut [OWL2]
+            List<RDFResource> allDisjointClasses = new List<RDFResource>();
+            IEnumerator<RDFResource> allDisjoint = classModel.AllDisjointClassesEnumerator;
+            while (allDisjoint.MoveNext())
+                foreach (RDFTriple allDisjointMembers in tboxGraph[allDisjoint.Current, RDFVocabulary.OWL.MEMBERS, null, null])
+                {
+                    RDFCollection allDisjointCollection = RDFModelUtilities.DeserializeCollectionFromGraph(tboxGraph, (RDFResource)allDisjointMembers.Object, RDFModelEnums.RDFTripleFlavors.SPO);
+                    if (allDisjointCollection.Items.Any(item => item.Equals(owlClass)))
+                        allDisjointClasses.AddRange(allDisjointCollection.OfType<RDFResource>());
+                }
+            allDisjointClasses.RemoveAll(idv => idv.Equals(owlClass));
+
+            // Find disjoint classes linked to the given one with owl:disjointWith relation
+            List<RDFResource> disjointFromClasses = tboxGraph[owlClass, RDFVocabulary.OWL.DISJOINT_WITH, null, null]
+                                                      .Select(t => (RDFResource)t.Object)
+                                                      .ToList();
+
+            // Merge classes from both sets into a unique deduplicate working set
+            List<RDFResource> disjointClassesSet = RDFQueryUtilities.RemoveDuplicates(allDisjointClasses.Union(disjointFromClasses)
+                                                                                                        .ToList());
+            #endregion
+
+            #region Analyze
+            // Inference: DISJOINTWITH(A,B) ^ EQUIVALENTCLASS(B,C) -> DISJOINTWITH(A,C)
+            foreach (RDFResource disjointClass in disjointClassesSet)
+            {
+                disjointClasses.Add(disjointClass);
+                disjointClasses.AddRange(classModel.FindEquivalentClasses(disjointClass, tboxGraph, visitContext));
+            }
+
+            // Inference: EQUIVALENTCLASS(A,B) ^ DISJOINTWITH(B,C) -> DISJOINTWITH(A,C)
+            foreach (RDFResource equivalentClass in classModel.AnswerEquivalentClasses(owlClass))
+                disjointClasses.AddRange(classModel.FindDisjointClasses(equivalentClass, tboxGraph, visitContext));
+            #endregion
 
             return disjointClasses;
         }
@@ -452,15 +451,7 @@ namespace RDFSharp.Semantics
             List<RDFResource> domainClasses = new List<RDFResource>();
 
             if (classModel != null && owlProperty != null)
-            {
-                //Restrict T-BOX knowledge to rdfs:domain and owl:equivalentClass relations (both explicit and inferred)
-                RDFGraph filteredTBox =
-                    classModel.TBoxGraph[null, RDFVocabulary.RDFS.DOMAIN, null, null].UnionWith(
-                       classModel.TBoxInferenceGraph[null, RDFVocabulary.RDFS.DOMAIN, null, null].UnionWith(
-                          classModel.TBoxGraph[null, RDFVocabulary.OWL.EQUIVALENT_CLASS, null, null].UnionWith(
-                             classModel.TBoxInferenceGraph[null, RDFVocabulary.OWL.EQUIVALENT_CLASS, null, null])));
-                domainClasses.AddRange(classModel.FindDomainOfProperty(owlProperty, filteredTBox));
-            }
+                domainClasses.AddRange(classModel.FindDomainOfProperty(owlProperty, classModel.TBoxVirtualGraph));
 
             return domainClasses;
         }
@@ -468,18 +459,18 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Finds "Domain(owlProperty, X)" relations to enlist the domain classes of the given owl:Property
         /// </summary>
-        internal static List<RDFResource> FindDomainOfProperty(this RDFOntologyClassModel classModel, RDFResource owlProperty, RDFGraph filteredTBox)
+        internal static List<RDFResource> FindDomainOfProperty(this RDFOntologyClassModel classModel, RDFResource owlProperty, RDFGraph tboxGraph)
         {
             List<RDFResource> domainClasses = new List<RDFResource>();
 
             //DIRECT
-            RDFGraph domainGraph = filteredTBox[owlProperty, RDFVocabulary.RDFS.DOMAIN, null, null];
+            RDFGraph domainGraph = tboxGraph[owlProperty, RDFVocabulary.RDFS.DOMAIN, null, null];
             foreach (RDFTriple domainTriple in domainGraph)
                 domainClasses.Add((RDFResource)domainTriple.Object);
 
             //INDIRECT (EXPLOITING EQUIVALENTCLASS)
             Dictionary<long, RDFResource> visitContext = new Dictionary<long, RDFResource>();
-            RDFGraph equivalentClassGraph = filteredTBox[null, RDFVocabulary.OWL.EQUIVALENT_CLASS, null, null];
+            RDFGraph equivalentClassGraph = tboxGraph[null, RDFVocabulary.OWL.EQUIVALENT_CLASS, null, null];
             foreach (RDFResource domainClass in domainClasses.ToList())
                 domainClasses.AddRange(classModel.FindEquivalentClasses(domainClass, equivalentClassGraph, visitContext));
 
@@ -500,15 +491,7 @@ namespace RDFSharp.Semantics
             List<RDFResource> rangeClasses = new List<RDFResource>();
 
             if (classModel != null && owlProperty != null)
-            {
-                //Restrict T-BOX knowledge to rdfs:range and owl:equivalentClass relations (both explicit and inferred)
-                RDFGraph filteredTBox =
-                    classModel.TBoxGraph[null, RDFVocabulary.RDFS.RANGE, null, null].UnionWith(
-                       classModel.TBoxInferenceGraph[null, RDFVocabulary.RDFS.RANGE, null, null].UnionWith(
-                          classModel.TBoxGraph[null, RDFVocabulary.OWL.EQUIVALENT_CLASS, null, null].UnionWith(
-                             classModel.TBoxInferenceGraph[null, RDFVocabulary.OWL.EQUIVALENT_CLASS, null, null])));
-                rangeClasses.AddRange(classModel.FindRangeOfProperty(owlProperty, filteredTBox));
-            }
+                rangeClasses.AddRange(classModel.FindRangeOfProperty(owlProperty, classModel.TBoxVirtualGraph));
 
             return rangeClasses;
         }
@@ -516,18 +499,18 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Finds "Range(owlProperty, X)" relations to enlist the range classes of the given owl:Property
         /// </summary>
-        internal static List<RDFResource> FindRangeOfProperty(this RDFOntologyClassModel classModel, RDFResource owlProperty, RDFGraph filteredTBox)
+        internal static List<RDFResource> FindRangeOfProperty(this RDFOntologyClassModel classModel, RDFResource owlProperty, RDFGraph tboxGraph)
         {
             List<RDFResource> rangeClasses = new List<RDFResource>();
 
             //DIRECT
-            RDFGraph rangeGraph = filteredTBox[owlProperty, RDFVocabulary.RDFS.RANGE, null, null];
+            RDFGraph rangeGraph = tboxGraph[owlProperty, RDFVocabulary.RDFS.RANGE, null, null];
             foreach (RDFTriple rangeTriple in rangeGraph)
                 rangeClasses.Add((RDFResource)rangeTriple.Object);
 
             //INDIRECT (EXPLOITING EQUIVALENTCLASS)
             Dictionary<long, RDFResource> visitContext = new Dictionary<long, RDFResource>();
-            RDFGraph equivalentClassGraph = filteredTBox[null, RDFVocabulary.OWL.EQUIVALENT_CLASS, null, null];
+            RDFGraph equivalentClassGraph = tboxGraph[null, RDFVocabulary.OWL.EQUIVALENT_CLASS, null, null];
             foreach (RDFResource rangeClass in rangeClasses.ToList())
                 rangeClasses.AddRange(classModel.FindEquivalentClasses(rangeClass, equivalentClassGraph, visitContext));
 

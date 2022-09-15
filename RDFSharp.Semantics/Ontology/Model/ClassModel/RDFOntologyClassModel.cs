@@ -619,7 +619,10 @@ namespace RDFSharp.Semantics
             if (owlClass == null)
                 throw new RDFSemanticsException("Cannot declare owl:AllDisjointClasses class to the model because given \"owlClass\" parameter is null");
             if (disjointClasses == null)
-                disjointClasses = new List<RDFResource>();
+                throw new RDFSemanticsException("Cannot declare owl:AllDisjointClasses class to the model because given \"disjointClasses\" parameter is null");
+            if (disjointClasses.Count == 0)
+                throw new RDFSemanticsException("Cannot declare owl:AllDisjointClasses class to the model because given \"disjointClasses\" parameter is an empty list");
+
 
             //Declare class to the model
             DeclareClass(owlClass);
