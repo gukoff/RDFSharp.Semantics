@@ -705,17 +705,17 @@ namespace RDFSharp.Semantics
             #endregion
 
             if (childClass == null)
-                throw new RDFSemanticsException("Cannot declare rdfs:subClassOf relation because given \"childClass\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare rdfs:subClassOf relation to the model because given \"childClass\" parameter is null");
             if (motherClass == null)
-                throw new RDFSemanticsException("Cannot declare rdfs:subClassOf relation because given \"motherClass\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare rdfs:subClassOf relation to the model because given \"motherClass\" parameter is null");
             if (childClass.Equals(motherClass))
-                throw new RDFSemanticsException("Cannot declare rdfs:subClassOf relation because given \"childClass\" parameter refers to the same class as the given \"motherClass\" parameter");
+                throw new RDFSemanticsException("Cannot declare rdfs:subClassOf relation to the model because given \"childClass\" parameter refers to the same class as the given \"motherClass\" parameter");
 
             //Add knowledge to the T-BOX (or raise warning if integrity policy is active and violations are detected)
             if (!RDFSemanticsOptions.ShouldCheckOWLDLIntegrity || OWLDLIntegrityChecks())
                 TBoxGraph.AddTriple(new RDFTriple(childClass, RDFVocabulary.RDFS.SUB_CLASS_OF, motherClass));
             else
-                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("SubClass relation between class '{0}' and class '{1}' cannot be added to the model because it would violate OWL-DL integrity", childClass, motherClass));
+                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("SubClass relation between class '{0}' and class '{1}' cannot be declared to the model because it would violate OWL-DL integrity", childClass, motherClass));
 
             return this;
         }
@@ -733,11 +733,11 @@ namespace RDFSharp.Semantics
             #endregion
 
             if (leftClass == null)
-                throw new RDFSemanticsException("Cannot declare owl:equivalentClass relation because given \"leftClass\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare owl:equivalentClass relation to the model because given \"leftClass\" parameter is null");
             if (rightClass == null)
-                throw new RDFSemanticsException("Cannot declare owl:equivalentClass relation because given \"rightClass\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare owl:equivalentClass relation to the model because given \"rightClass\" parameter is null");
             if (leftClass.Equals(rightClass))
-                throw new RDFSemanticsException("Cannot declare owl:equivalentClass relation because given \"leftClass\" parameter refers to the same class as the given \"rightClass\" parameter");
+                throw new RDFSemanticsException("Cannot declare owl:equivalentClass relation to the model because given \"leftClass\" parameter refers to the same class as the given \"rightClass\" parameter");
 
             //Add knowledge to the T-BOX (or raise warning if integrity policy is active and violations are detected)
             if (!RDFSemanticsOptions.ShouldCheckOWLDLIntegrity || OWLDLIntegrityChecks())
@@ -748,7 +748,7 @@ namespace RDFSharp.Semantics
                 TBoxInferenceGraph.AddTriple(new RDFTriple(rightClass, RDFVocabulary.OWL.EQUIVALENT_CLASS, leftClass));
             }
             else
-                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("EquivalentClass relation between leftClass '{0}' and rightClass '{1}' cannot be added to the model because it would violate OWL-DL integrity", leftClass, rightClass));
+                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("EquivalentClass relation between leftClass '{0}' and rightClass '{1}' cannot be declared to the model because it would violate OWL-DL integrity", leftClass, rightClass));
 
             return this;
         }
@@ -766,11 +766,11 @@ namespace RDFSharp.Semantics
             #endregion
 
             if (leftClass == null)
-                throw new RDFSemanticsException("Cannot declare owl:disjointWith relation because given \"leftClass\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare owl:disjointWith relation to the model because given \"leftClass\" parameter is null");
             if (rightClass == null)
-                throw new RDFSemanticsException("Cannot declare owl:disjointWith relation because given \"rightClass\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare owl:disjointWith relation to the model because given \"rightClass\" parameter is null");
             if (leftClass.Equals(rightClass))
-                throw new RDFSemanticsException("Cannot declare owl:disjointWith relation because given \"leftClass\" parameter refers to the same class as the given \"rightClass\" parameter");
+                throw new RDFSemanticsException("Cannot declare owl:disjointWith relation to the model because given \"leftClass\" parameter refers to the same class as the given \"rightClass\" parameter");
 
             //Add knowledge to the T-BOX (or raise warning if integrity policy is active and violations are detected)
             if (!RDFSemanticsOptions.ShouldCheckOWLDLIntegrity || OWLDLIntegrityChecks())
@@ -781,7 +781,7 @@ namespace RDFSharp.Semantics
                 TBoxInferenceGraph.AddTriple(new RDFTriple(rightClass, RDFVocabulary.OWL.DISJOINT_WITH, leftClass));
             }
             else
-                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("DisjointWith relation between leftClass '{0}' and rightClass '{1}' cannot be added to the model because it would violate OWL-DL integrity", leftClass, rightClass));
+                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("DisjointWith relation between leftClass '{0}' and rightClass '{1}' cannot be declared to the model because it would violate OWL-DL integrity", leftClass, rightClass));
 
             return this;
         }
@@ -792,9 +792,9 @@ namespace RDFSharp.Semantics
         public RDFOntologyClassModel DeclareHasKey(RDFResource owlClass, List<RDFResource> keyProperties)
         {
             if (owlClass == null)
-                throw new RDFSemanticsException("Cannot declare owl:hasKey relation because given \"owlClass\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare owl:hasKey relation to the model because given \"owlClass\" parameter is null");
             if (keyProperties == null)
-                throw new RDFSemanticsException("Cannot declare owl:hasKey relation because given \"keyProperties\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare owl:hasKey relation to the model because given \"keyProperties\" parameter is null");
 
             //Add knowledge to the T-BOX
             RDFCollection keyPropertiesCollection = new RDFCollection(RDFModelEnums.RDFItemTypes.Resource);

@@ -185,15 +185,15 @@ namespace RDFSharp.Semantics
             #endregion
 
             if (owlIndividual == null)
-                throw new RDFSemanticsException("Cannot declare rdf:type relation because given \"owlIndividual\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare rdf:type relation to the data because given \"owlIndividual\" parameter is null");
             if (owlClass == null)
-                throw new RDFSemanticsException("Cannot declare rdf:type relation because given \"owlClass\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare rdf:type relation to the data because given \"owlClass\" parameter is null");
 
             //Add knowledge to the A-BOX (or raise warning if integrity policy is active and violations are detected)
             if (!RDFSemanticsOptions.ShouldCheckOWLDLIntegrity || OWLDLIntegrityChecks())
                 ABoxGraph.AddTriple(new RDFTriple(owlIndividual, RDFVocabulary.RDF.TYPE, owlClass));
             else
-                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("Type relation between individual '{0}' and class '{1}' cannot be added to the data because it would violate OWL-DL integrity", owlIndividual, owlClass));
+                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("Type relation between individual '{0}' and class '{1}' cannot be declared to the data because it would violate OWL-DL integrity", owlIndividual, owlClass));
 
             return this;
         }
@@ -209,11 +209,11 @@ namespace RDFSharp.Semantics
             #endregion
 
             if (leftIndividual == null)
-                throw new RDFSemanticsException("Cannot declare owl:sameAs relation because given \"leftIndividual\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare owl:sameAs relation to the data because given \"leftIndividual\" parameter is null");
             if (rightIndividual == null)
-                throw new RDFSemanticsException("Cannot declare owl:sameAs relation because given \"rightIndividual\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare owl:sameAs relation to the data because given \"rightIndividual\" parameter is null");
             if (leftIndividual.Equals(rightIndividual))
-                throw new RDFSemanticsException("Cannot declare owl:sameAs relation because given \"leftIndividual\" parameter refers to the same individual as the given \"rightIndividual\" parameter");
+                throw new RDFSemanticsException("Cannot declare owl:sameAs relation to the data because given \"leftIndividual\" parameter refers to the same individual as the given \"rightIndividual\" parameter");
 
             //Add knowledge to the A-BOX (or raise warning if integrity policy is active and violations are detected)
             if (!RDFSemanticsOptions.ShouldCheckOWLDLIntegrity || OWLDLIntegrityChecks())
@@ -224,7 +224,7 @@ namespace RDFSharp.Semantics
                 ABoxInferenceGraph.AddTriple(new RDFTriple(rightIndividual, RDFVocabulary.OWL.SAME_AS, leftIndividual));
             }
             else
-                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("SameAs relation between individual '{0}' and individual '{1}' cannot be added to the data because it would violate OWL-DL integrity", leftIndividual, rightIndividual));
+                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("SameAs relation between individual '{0}' and individual '{1}' cannot be declared to the data because it would violate OWL-DL integrity", leftIndividual, rightIndividual));
 
             return this;
         }
@@ -240,11 +240,11 @@ namespace RDFSharp.Semantics
             #endregion
 
             if (leftIndividual == null)
-                throw new RDFSemanticsException("Cannot declare owl:differentFrom relation because given \"leftIndividual\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare owl:differentFrom relation to the data because given \"leftIndividual\" parameter is null");
             if (rightIndividual == null)
-                throw new RDFSemanticsException("Cannot declare owl:differentFrom relation because given \"rightIndividual\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare owl:differentFrom relation to the data because given \"rightIndividual\" parameter is null");
             if (leftIndividual.Equals(rightIndividual))
-                throw new RDFSemanticsException("Cannot declare owl:differentFrom relation because given \"leftIndividual\" parameter refers to the same individual as the given \"rightIndividual\" parameter");
+                throw new RDFSemanticsException("Cannot declare owl:differentFrom relation to the data because given \"leftIndividual\" parameter refers to the same individual as the given \"rightIndividual\" parameter");
 
             //Add knowledge to the A-BOX (or raise warning if integrity policy is active and violations are detected)
             if (!RDFSemanticsOptions.ShouldCheckOWLDLIntegrity || OWLDLIntegrityChecks())
@@ -255,7 +255,7 @@ namespace RDFSharp.Semantics
                 ABoxInferenceGraph.AddTriple(new RDFTriple(rightIndividual, RDFVocabulary.OWL.DIFFERENT_FROM, leftIndividual));
             }
             else
-                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("DifferentFrom relation between individual '{0}' and individual '{1}' cannot be added to the data because it would violate OWL-DL integrity", leftIndividual, rightIndividual));
+                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("DifferentFrom relation between individual '{0}' and individual '{1}' cannot be declared to the data because it would violate OWL-DL integrity", leftIndividual, rightIndividual));
 
             return this;
         }
@@ -294,19 +294,19 @@ namespace RDFSharp.Semantics
             #endregion
 
             if (leftIndividual == null)
-                throw new RDFSemanticsException("Cannot declare object assertion relation because given \"leftIndividual\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare object assertion relation to the data because given \"leftIndividual\" parameter is null");
             if (objectProperty == null)
-                throw new RDFSemanticsException("Cannot declare object assertion relation because given \"objectProperty\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare object assertion relation to the data because given \"objectProperty\" parameter is null");
             if (objectProperty.IsBlank)
-                throw new RDFSemanticsException("Cannot declare object assertion relation because given \"objectProperty\" parameter is a blank predicate");
+                throw new RDFSemanticsException("Cannot declare object assertion relation to the data because given \"objectProperty\" parameter is a blank predicate");
             if (rightIndividual == null)
-                throw new RDFSemanticsException("Cannot declare object assertion relation because given \"rightIndividual\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare object assertion relation to the data because given \"rightIndividual\" parameter is null");
 
             //Add knowledge to the A-BOX (or raise warning if integrity policy is active and violations are detected)
             if (!RDFSemanticsOptions.ShouldCheckOWLDLIntegrity || OWLDLIntegrityChecks())
                 ABoxGraph.AddTriple(new RDFTriple(leftIndividual, objectProperty, rightIndividual));
             else
-                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("ObjectAssertion relation between individual '{0}' and individual '{1}' through property '{2}' cannot be added to the data because it would violate OWL-DL integrity", leftIndividual, rightIndividual, objectProperty));
+                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("ObjectAssertion relation between individual '{0}' and individual '{1}' through property '{2}' cannot be declared to the data because it would violate OWL-DL integrity", leftIndividual, rightIndividual, objectProperty));
 
             return this;
         }
@@ -323,19 +323,19 @@ namespace RDFSharp.Semantics
             #endregion
 
             if (individual == null)
-                throw new RDFSemanticsException("Cannot declare datatype assertion relation because given \"individual\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare datatype assertion relation to the data because given \"individual\" parameter is null");
             if (datatypeProperty == null)
-                throw new RDFSemanticsException("Cannot declare datatype assertion relation because given \"datatypeProperty\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare datatype assertion relation to the data because given \"datatypeProperty\" parameter is null");
             if (datatypeProperty.IsBlank)
-                throw new RDFSemanticsException("Cannot declare datatype assertion relation because given \"datatypeProperty\" parameter is a blank predicate");
+                throw new RDFSemanticsException("Cannot declare datatype assertion relation to the data because given \"datatypeProperty\" parameter is a blank predicate");
             if (value == null)
-                throw new RDFSemanticsException("Cannot declare datatype assertion relation because given \"value\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare datatype assertion relation to the data because given \"value\" parameter is null");
 
             //Add knowledge to the A-BOX (or raise warning if integrity policy is active and violations are detected)
             if (!RDFSemanticsOptions.ShouldCheckOWLDLIntegrity || OWLDLIntegrityChecks())
                 ABoxGraph.AddTriple(new RDFTriple(individual, datatypeProperty, value));
             else
-                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("DatatypeAssertion relation between individual '{0}' and value '{1}' through property '{2}' cannot be added to the data because it would violate OWL-DL integrity", individual, value, datatypeProperty));
+                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("DatatypeAssertion relation between individual '{0}' and value '{1}' through property '{2}' cannot be declared to the data because it would violate OWL-DL integrity", individual, value, datatypeProperty));
 
             return this;
         }
@@ -352,13 +352,13 @@ namespace RDFSharp.Semantics
             #endregion
 
             if (leftIndividual == null)
-                throw new RDFSemanticsException("Cannot declare negative object assertion relation because given \"leftIndividual\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare negative object assertion relation to the data because given \"leftIndividual\" parameter is null");
             if (objectProperty == null)
-                throw new RDFSemanticsException("Cannot declare negative object assertion relation because given \"objectProperty\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare negative object assertion relation to the data because given \"objectProperty\" parameter is null");
             if (objectProperty.IsBlank)
-                throw new RDFSemanticsException("Cannot declare negative object assertion relation because given \"objectProperty\" parameter is a blank predicate");
+                throw new RDFSemanticsException("Cannot declare negative object assertion relation to the data because given \"objectProperty\" parameter is a blank predicate");
             if (rightIndividual == null)
-                throw new RDFSemanticsException("Cannot declare negative object assertion relation because given \"rightIndividual\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare negative object assertion relation to the data because given \"rightIndividual\" parameter is null");
 
             //Add knowledge to the A-BOX (or raise warning if integrity policy is active and violations are detected)
             if (!RDFSemanticsOptions.ShouldCheckOWLDLIntegrity || OWLDLIntegrityChecks())
@@ -370,7 +370,7 @@ namespace RDFSharp.Semantics
                 ABoxGraph.AddTriple(new RDFTriple(negativeObjectAssertion.ReificationSubject, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION));
             }
             else
-                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("NegativeObjectAssertion relation between individual '{0}' and individual '{1}' through property '{2}' cannot be added to the data because it would violate OWL-DL integrity", leftIndividual, rightIndividual, objectProperty));
+                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("NegativeObjectAssertion relation between individual '{0}' and individual '{1}' through property '{2}' cannot be declared to the data because it would violate OWL-DL integrity", leftIndividual, rightIndividual, objectProperty));
 
             return this;
         }
@@ -387,13 +387,13 @@ namespace RDFSharp.Semantics
             #endregion
 
             if (individual == null)
-                throw new RDFSemanticsException("Cannot declare negative datatype assertion relation because given \"individual\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare negative datatype assertion relation to the data because given \"individual\" parameter is null");
             if (datatypeProperty == null)
-                throw new RDFSemanticsException("Cannot declare negative datatype assertion relation because given \"datatypeProperty\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare negative datatype assertion relation to the data because given \"datatypeProperty\" parameter is null");
             if (datatypeProperty.IsBlank)
-                throw new RDFSemanticsException("Cannot declare negative datatype assertion relation because given \"datatypeProperty\" parameter is a blank predicate");
+                throw new RDFSemanticsException("Cannot declare negative datatype assertion relation to the data because given \"datatypeProperty\" parameter is a blank predicate");
             if (value == null)
-                throw new RDFSemanticsException("Cannot declare negative datatype assertion relation because given \"value\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare negative datatype assertion relation to the data because given \"value\" parameter is null");
 
             //Add knowledge to the A-BOX (or raise warning if integrity policy is active and violations are detected)
             if (!RDFSemanticsOptions.ShouldCheckOWLDLIntegrity || OWLDLIntegrityChecks())
@@ -405,7 +405,7 @@ namespace RDFSharp.Semantics
                 ABoxGraph.AddTriple(new RDFTriple(negativeDatatypeAssertion.ReificationSubject, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION));
             }
             else
-                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("NegativeDatatypeAssertion relation between individual '{0}' and value '{1}' through property '{2}' cannot be added to the data because it would violate OWL-DL integrity", individual, value, datatypeProperty));
+                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("NegativeDatatypeAssertion relation between individual '{0}' and value '{1}' through property '{2}' cannot be declared to the data because it would violate OWL-DL integrity", individual, value, datatypeProperty));
 
             return this;
         }

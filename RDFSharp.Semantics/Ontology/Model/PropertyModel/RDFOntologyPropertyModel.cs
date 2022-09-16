@@ -600,17 +600,17 @@ namespace RDFSharp.Semantics
             #endregion
 
             if (childProperty == null)
-                throw new RDFSemanticsException("Cannot declare rdfs:subPropertyOf relation because given \"childProperty\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare rdfs:subPropertyOf relation to the model because given \"childProperty\" parameter is null");
             if (motherProperty == null)
-                throw new RDFSemanticsException("Cannot declare rdfs:subPropertyOf relation because given \"motherProperty\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare rdfs:subPropertyOf relation to the model because given \"motherProperty\" parameter is null");
             if (childProperty.Equals(motherProperty))
-                throw new RDFSemanticsException("Cannot declare rdfs:subPropertyOf relation because given \"childProperty\" parameter refers to the same property as the given \"motherProperty\" parameter");
+                throw new RDFSemanticsException("Cannot declare rdfs:subPropertyOf relation to the model because given \"childProperty\" parameter refers to the same property as the given \"motherProperty\" parameter");
 
             //Add knowledge to the T-BOX (or raise warning if integrity policy is active and violations are detected)
             if (!RDFSemanticsOptions.ShouldCheckOWLDLIntegrity || OWLDLIntegrityChecks())
                 TBoxGraph.AddTriple(new RDFTriple(childProperty, RDFVocabulary.RDFS.SUB_PROPERTY_OF, motherProperty));
             else
-                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("SubProperty relation between property '{0}' and property '{1}' cannot be added to the model because it would violate OWL-DL integrity", childProperty, motherProperty));
+                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("SubProperty relation between property '{0}' and property '{1}' cannot be declared to the model because it would violate OWL-DL integrity", childProperty, motherProperty));
 
             return this;
         }
@@ -628,11 +628,11 @@ namespace RDFSharp.Semantics
             #endregion
 
             if (leftProperty == null)
-                throw new RDFSemanticsException("Cannot declare owl:equivalentProperty relation because given \"leftProperty\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare owl:equivalentProperty relation to the model because given \"leftProperty\" parameter is null");
             if (rightProperty == null)
-                throw new RDFSemanticsException("Cannot declare owl:equivalentProperty relation because given \"rightProperty\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare owl:equivalentProperty relation to the model because given \"rightProperty\" parameter is null");
             if (leftProperty.Equals(rightProperty))
-                throw new RDFSemanticsException("Cannot declare owl:equivalentProperty relation because given \"leftProperty\" parameter refers to the same property as the given \"rightProperty\" parameter");
+                throw new RDFSemanticsException("Cannot declare owl:equivalentProperty relation to the model because given \"leftProperty\" parameter refers to the same property as the given \"rightProperty\" parameter");
 
             //Add knowledge to the T-BOX (or raise warning if integrity policy is active and violations are detected)
             if (!RDFSemanticsOptions.ShouldCheckOWLDLIntegrity || OWLDLIntegrityChecks())
@@ -643,7 +643,7 @@ namespace RDFSharp.Semantics
                 TBoxInferenceGraph.AddTriple(new RDFTriple(rightProperty, RDFVocabulary.OWL.EQUIVALENT_PROPERTY, leftProperty));
             }
             else
-                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("EquivalentProperty relation between leftProperty '{0}' and rightProperty '{1}' cannot be added to the model because it would violate OWL-DL integrity", leftProperty, rightProperty));
+                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("EquivalentProperty relation between leftProperty '{0}' and rightProperty '{1}' cannot be declared to the model because it would violate OWL-DL integrity", leftProperty, rightProperty));
 
             return this;
         }
@@ -661,11 +661,11 @@ namespace RDFSharp.Semantics
             #endregion
 
             if (leftProperty == null)
-                throw new RDFSemanticsException("Cannot declare owl:propertyDisjointWith relation because given \"leftProperty\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare owl:propertyDisjointWith relation to the model because given \"leftProperty\" parameter is null");
             if (rightProperty == null)
-                throw new RDFSemanticsException("Cannot declare owl:propertyDisjointWith relation because given \"rightProperty\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare owl:propertyDisjointWith relation to the model because given \"rightProperty\" parameter is null");
             if (leftProperty.Equals(rightProperty))
-                throw new RDFSemanticsException("Cannot declare owl:propertyDisjointWith relation because given \"leftProperty\" parameter refers to the same property as the given \"rightProperty\" parameter");
+                throw new RDFSemanticsException("Cannot declare owl:propertyDisjointWith relation to the model because given \"leftProperty\" parameter refers to the same property as the given \"rightProperty\" parameter");
 
             //Add knowledge to the T-BOX (or raise warning if integrity policy is active and violations are detected)
             if (!RDFSemanticsOptions.ShouldCheckOWLDLIntegrity || OWLDLIntegrityChecks())
@@ -676,7 +676,7 @@ namespace RDFSharp.Semantics
                 TBoxInferenceGraph.AddTriple(new RDFTriple(rightProperty, RDFVocabulary.OWL.PROPERTY_DISJOINT_WITH, leftProperty));
             }
             else
-                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("PropertyDisjointWith relation between leftProperty '{0}' and rightProperty '{1}' cannot be added to the model because it would violate OWL-DL integrity", leftProperty, rightProperty));
+                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("PropertyDisjointWith relation between leftProperty '{0}' and rightProperty '{1}' cannot be declared to the model because it would violate OWL-DL integrity", leftProperty, rightProperty));
 
             return this;
         }
@@ -716,11 +716,11 @@ namespace RDFSharp.Semantics
             #endregion
 
             if (leftProperty == null)
-                throw new RDFSemanticsException("Cannot declare owl:inverseOf relation because given \"leftProperty\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare owl:inverseOf relation to the model because given \"leftProperty\" parameter is null");
             if (rightProperty == null)
-                throw new RDFSemanticsException("Cannot declare owl:inverseOf relation because given \"rightProperty\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare owl:inverseOf relation to the model because given \"rightProperty\" parameter is null");
             if (leftProperty.Equals(rightProperty))
-                throw new RDFSemanticsException("Cannot declare owl:inverseOf relation because given \"leftProperty\" parameter refers to the same property as the given \"rightProperty\" parameter");
+                throw new RDFSemanticsException("Cannot declare owl:inverseOf relation to the model because given \"leftProperty\" parameter refers to the same property as the given \"rightProperty\" parameter");
 
             //Add knowledge to the T-BOX (or raise warning if integrity policy is active and violations are detected)
             if (!RDFSemanticsOptions.ShouldCheckOWLDLIntegrity || OWLDLIntegrityChecks())
@@ -731,7 +731,7 @@ namespace RDFSharp.Semantics
                 TBoxInferenceGraph.AddTriple(new RDFTriple(rightProperty, RDFVocabulary.OWL.INVERSE_OF, leftProperty));
             }
             else
-                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("Inverse relation between leftProperty '{0}' and rightProperty '{1}' cannot be added to the model because it would violate OWL-DL integrity", leftProperty, rightProperty));
+                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("Inverse relation between leftProperty '{0}' and rightProperty '{1}' cannot be declared to the model because it would violate OWL-DL integrity", leftProperty, rightProperty));
 
             return this;
         }
@@ -747,11 +747,11 @@ namespace RDFSharp.Semantics
             #endregion
 
             if (owlProperty == null)
-                throw new RDFSemanticsException("Cannot declare owl:propertyChainAxiom relation because given \"owlProperty\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare owl:propertyChainAxiom relation to the model because given \"owlProperty\" parameter is null");
             if (chainProperties == null)
-                throw new RDFSemanticsException("Cannot declare owl:propertyChainAxiom relation because given \"chainProperties\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare owl:propertyChainAxiom relation to the model because given \"chainProperties\" parameter is null");
             if (chainProperties.Any(chainAxiomPropertyStep => chainAxiomPropertyStep.Equals(owlProperty)))
-                throw new RDFSemanticsException("Cannot declare owl:propertyChainAxiom relation because given \"owlProperty\" parameter is contained in the given \"chainProperties\" parameter");
+                throw new RDFSemanticsException("Cannot declare owl:propertyChainAxiom relation to the model because given \"owlProperty\" parameter is contained in the given \"chainProperties\" parameter");
 
             //Add knowledge to the T-BOX (or raise warning if integrity policy is active and violations are detected)
             if (!RDFSemanticsOptions.ShouldCheckOWLDLIntegrity || OWLDLIntegrityChecks())
@@ -762,7 +762,7 @@ namespace RDFSharp.Semantics
                 TBoxGraph.AddTriple(new RDFTriple(owlProperty, RDFVocabulary.OWL.PROPERTY_CHAIN_AXIOM, chainPropertiesCollection.ReificationSubject));
             }
             else
-                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("PropertyChainAxiom '{0}' cannot be added to the model because it would violate OWL-DL integrity", owlProperty));
+                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("PropertyChainAxiom '{0}' cannot be declared to the model because it would violate OWL-DL integrity", owlProperty));
 
             return this;
         }
