@@ -401,9 +401,11 @@ namespace RDFSharp.Semantics
         public RDFOntologyClassModel DeclareMinMaxCardinalityRestriction(RDFResource owlRestriction, RDFResource onProperty, uint minCardinality, uint maxCardinality)
         {
             if (minCardinality == 0)
-                throw new RDFSemanticsException("Cannot declare owl:minCardinality restriction to the model because given \"minCardinality\" value must be greater than zero");
+                throw new RDFSemanticsException("Cannot declare owl:minCardinality and owl:maxCardinality restriction to the model because given \"minCardinality\" value must be greater than zero");
             if (maxCardinality == 0)
-                throw new RDFSemanticsException("Cannot declare owl:maxCardinality restriction to the model because given \"maxCardinality\" value must be greater than zero");
+                throw new RDFSemanticsException("Cannot declare owl:minCardinality and owl:maxCardinality restriction to the model because given \"maxCardinality\" value must be greater than zero");
+            if (maxCardinality < minCardinality)
+                throw new RDFSemanticsException("Cannot declare owl:minCardinality and owl:maxCardinality restriction to the model because given \"maxCardinality\" value must be greater or equal than given \"minCardinality\" value");
 
             //Declare restriction to the model
             DeclareRestriction(owlRestriction, onProperty);
@@ -486,6 +488,8 @@ namespace RDFSharp.Semantics
                 throw new RDFSemanticsException("Cannot declare owl:minQualifiedCardinality and owl:maxQualifiedCardinality restriction to the model because given \"minCardinality\" value must be greater than zero");
             if (minCardinality == 0)
                 throw new RDFSemanticsException("Cannot declare owl:minQualifiedCardinality and owl:maxQualifiedCardinality restriction to the model because given \"maxCardinality\" value must be greater than zero");
+            if (maxCardinality < minCardinality)
+                throw new RDFSemanticsException("Cannot declare owl:minQualifiedCardinality and owl:maxQualifiedCardinality restriction to the model because given \"maxCardinality\" value must be greater or equal than given \"minCardinality\" value");
 
             //Declare restriction to the model
             DeclareRestriction(owlRestriction, onProperty);
@@ -506,9 +510,11 @@ namespace RDFSharp.Semantics
         public RDFOntologyClassModel DeclareEnumerateClass(RDFResource owlClass, List<RDFResource> individuals)
         {
             if (owlClass == null)
-                throw new RDFSemanticsException("Cannot add enumerate class to the model because given \"owlClass\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare owl:oneOf class to the model because given \"owlClass\" parameter is null");
             if (individuals == null)
-                individuals = new List<RDFResource>();
+                throw new RDFSemanticsException("Cannot declare owl:oneOf class to the model because given \"individuals\" parameter is null");
+            if (individuals.Count == 0)
+                throw new RDFSemanticsException("Cannot declare owl:oneOf class to the model because given \"individuals\" parameter is an empty list");
 
             //Declare class to the model
             DeclareClass(owlClass);
@@ -532,7 +538,9 @@ namespace RDFSharp.Semantics
             if (owlClass == null)
                 throw new RDFSemanticsException("Cannot declare owl:unionOf class to the model because given \"owlClass\" parameter is null");
             if (unionClasses == null)
-                unionClasses = new List<RDFResource>();
+                throw new RDFSemanticsException("Cannot declare owl:unionOf class to the model because given \"unionClasses\" parameter is null");
+            if (unionClasses.Count == 0)
+                throw new RDFSemanticsException("Cannot declare owl:unionOf class to the model because given \"unionClasses\" parameter is an empty list");
 
             //Add class to the model
             DeclareClass(owlClass);
@@ -552,9 +560,11 @@ namespace RDFSharp.Semantics
         public RDFOntologyClassModel DeclareIntersectionClass(RDFResource owlClass, List<RDFResource> intersectionClasses)
         {
             if (owlClass == null)
-                throw new RDFSemanticsException("Cannot add intersection class to the model because given \"owlClass\" parameter is null");
+                throw new RDFSemanticsException("Cannot declare owl:intersectionOf class to the model because given \"owlClass\" parameter is null");
             if (intersectionClasses == null)
-                intersectionClasses = new List<RDFResource>();
+                throw new RDFSemanticsException("Cannot declare owl:intersectionOf class to the model because given \"intersectionClasses\" parameter is null");
+            if (intersectionClasses.Count == 0)
+                throw new RDFSemanticsException("Cannot declare owl:intersectionOf class to the model because given \"intersectionClasses\" parameter is an empty list");
 
             //Declare class to the model
             DeclareClass(owlClass);
