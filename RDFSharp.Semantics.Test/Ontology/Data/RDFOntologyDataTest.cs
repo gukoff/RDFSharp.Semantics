@@ -212,7 +212,7 @@ namespace RDFSharp.Semantics.Test
             data.DeclareIndividualType(new RDFResource("ex:indivA"), RDFVocabulary.RDFS.RESOURCE);
 
             Assert.IsNotNull(warningMsg);
-            Assert.IsTrue(warningMsg.IndexOf("Type relation between individual 'ex:indivA' and class 'http://www.w3.org/2000/01/rdf-schema#Resource' cannot be added to the data because it would violate OWL-DL integrity") > -1);
+            Assert.IsTrue(warningMsg.IndexOf("Type relation between individual 'ex:indivA' and class 'http://www.w3.org/2000/01/rdf-schema#Resource' cannot be declared to the data because it would violate OWL-DL integrity") > -1);
             Assert.IsTrue(data.ABoxGraph.TriplesCount == 1);
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
         }
@@ -287,7 +287,7 @@ namespace RDFSharp.Semantics.Test
             data.DeclareSameIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB"));  //OWL-DL contraddiction (enforced by policy)
 
             Assert.IsNotNull(warningMsg);
-            Assert.IsTrue(warningMsg.IndexOf("SameAs relation between individual 'ex:indivA' and individual 'ex:indivB' cannot be added to the data because it would violate OWL-DL integrity") > -1);
+            Assert.IsTrue(warningMsg.IndexOf("SameAs relation between individual 'ex:indivA' and individual 'ex:indivB' cannot be declared to the data because it would violate OWL-DL integrity") > -1);
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.OWL.DIFFERENT_FROM, new RDFResource("ex:indivB"))));
@@ -373,7 +373,7 @@ namespace RDFSharp.Semantics.Test
             data.DeclareDifferentIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB"));  //OWL-DL contraddiction (enforced by policy)
 
             Assert.IsNotNull(warningMsg);
-            Assert.IsTrue(warningMsg.IndexOf("DifferentFrom relation between individual 'ex:indivA' and individual 'ex:indivB' cannot be added to the data because it would violate OWL-DL integrity") > -1);
+            Assert.IsTrue(warningMsg.IndexOf("DifferentFrom relation between individual 'ex:indivA' and individual 'ex:indivB' cannot be declared to the data because it would violate OWL-DL integrity") > -1);
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.OWL.SAME_AS, new RDFResource("ex:indivB"))));
@@ -503,7 +503,7 @@ namespace RDFSharp.Semantics.Test
             data.DeclareObjectAssertion(new RDFResource("ex:indivA"), RDFVocabulary.RDFS.SEE_ALSO, new RDFResource("ex:indivB")); //Reserved annotation property (not allowed by policy)
 
             Assert.IsNotNull(warningMsg);
-            Assert.IsTrue(warningMsg.IndexOf("ObjectAssertion relation between individual 'ex:indivA' and individual 'ex:indivB' through property 'http://www.w3.org/2000/01/rdf-schema#seeAlso' cannot be added to the data because it would violate OWL-DL integrity") > -1);
+            Assert.IsTrue(warningMsg.IndexOf("ObjectAssertion relation between individual 'ex:indivA' and individual 'ex:indivB' through property 'http://www.w3.org/2000/01/rdf-schema#seeAlso' cannot be declared to the data because it would violate OWL-DL integrity") > -1);
             Assert.IsTrue(data.ABoxGraph.TriplesCount == 0);
         }
 
@@ -543,7 +543,7 @@ namespace RDFSharp.Semantics.Test
             data.DeclareObjectAssertion(new RDFResource("ex:indivA"), new RDFResource("ex:objProp"), new RDFResource("ex:indivB")); //OWL-DL contraddiction (not allowed by policy)
 
             Assert.IsNotNull(warningMsg);
-            Assert.IsTrue(warningMsg.IndexOf("ObjectAssertion relation between individual 'ex:indivA' and individual 'ex:indivB' through property 'ex:objProp' cannot be added to the data because it would violate OWL-DL integrity") > -1);
+            Assert.IsTrue(warningMsg.IndexOf("ObjectAssertion relation between individual 'ex:indivA' and individual 'ex:indivB' through property 'ex:objProp' cannot be declared to the data because it would violate OWL-DL integrity") > -1);
             Assert.IsTrue(data.ABoxGraph.TriplesCount == 4);
             Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION, null].Any());
             Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.SOURCE_INDIVIDUAL, new RDFResource("ex:indivA"), null].Any());
@@ -611,7 +611,7 @@ namespace RDFSharp.Semantics.Test
             data.DeclareDatatypeAssertion(new RDFResource("ex:indivA"), RDFVocabulary.RDFS.SEE_ALSO, new RDFPlainLiteral("name")); //Reserved annotation property (not allowed by policy)
 
             Assert.IsNotNull(warningMsg);
-            Assert.IsTrue(warningMsg.IndexOf("DatatypeAssertion relation between individual 'ex:indivA' and value 'name' through property 'http://www.w3.org/2000/01/rdf-schema#seeAlso' cannot be added to the data because it would violate OWL-DL integrity") > -1);
+            Assert.IsTrue(warningMsg.IndexOf("DatatypeAssertion relation between individual 'ex:indivA' and value 'name' through property 'http://www.w3.org/2000/01/rdf-schema#seeAlso' cannot be declared to the data because it would violate OWL-DL integrity") > -1);
             Assert.IsTrue(data.ABoxGraph.TriplesCount == 0);
         }
 
@@ -651,7 +651,7 @@ namespace RDFSharp.Semantics.Test
             data.DeclareDatatypeAssertion(new RDFResource("ex:indivA"), new RDFResource("ex:dtProp"), new RDFPlainLiteral("name")); //OWL-DL contraddiction (not allowed by policy)
 
             Assert.IsNotNull(warningMsg);
-            Assert.IsTrue(warningMsg.IndexOf("DatatypeAssertion relation between individual 'ex:indivA' and value 'name' through property 'ex:dtProp' cannot be added to the data because it would violate OWL-DL integrity") > -1);
+            Assert.IsTrue(warningMsg.IndexOf("DatatypeAssertion relation between individual 'ex:indivA' and value 'name' through property 'ex:dtProp' cannot be declared to the data because it would violate OWL-DL integrity") > -1);
             Assert.IsTrue(data.ABoxGraph.TriplesCount == 4);
             Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION, null].Any());
             Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.SOURCE_INDIVIDUAL, new RDFResource("ex:indivA"), null].Any());
@@ -725,7 +725,7 @@ namespace RDFSharp.Semantics.Test
             data.DeclareNegativeObjectAssertion(new RDFResource("ex:indivA"), RDFVocabulary.RDFS.SEE_ALSO, new RDFResource("ex:indivB")); //Reserved annotation property (not allowed by policy)
 
             Assert.IsNotNull(warningMsg);
-            Assert.IsTrue(warningMsg.IndexOf("NegativeObjectAssertion relation between individual 'ex:indivA' and individual 'ex:indivB' through property 'http://www.w3.org/2000/01/rdf-schema#seeAlso' cannot be added to the data because it would violate OWL-DL integrity") > -1);
+            Assert.IsTrue(warningMsg.IndexOf("NegativeObjectAssertion relation between individual 'ex:indivA' and individual 'ex:indivB' through property 'http://www.w3.org/2000/01/rdf-schema#seeAlso' cannot be declared to the data because it would violate OWL-DL integrity") > -1);
             Assert.IsTrue(data.ABoxGraph.TriplesCount == 0);
         }
 
@@ -765,7 +765,7 @@ namespace RDFSharp.Semantics.Test
             data.DeclareNegativeObjectAssertion(new RDFResource("ex:indivA"), new RDFResource("ex:objProp"), new RDFResource("ex:indivB")); //OWL-DL contraddiction (not allowed by policy)
 
             Assert.IsNotNull(warningMsg);
-            Assert.IsTrue(warningMsg.IndexOf("NegativeObjectAssertion relation between individual 'ex:indivA' and individual 'ex:indivB' through property 'ex:objProp' cannot be added to the data because it would violate OWL-DL integrity") > -1);
+            Assert.IsTrue(warningMsg.IndexOf("NegativeObjectAssertion relation between individual 'ex:indivA' and individual 'ex:indivB' through property 'ex:objProp' cannot be declared to the data because it would violate OWL-DL integrity") > -1);
             Assert.IsTrue(data.ABoxGraph.TriplesCount == 1);
             Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivA"), new RDFResource("ex:objProp"), new RDFResource("ex:indivB"), null].Any());
         }
@@ -836,7 +836,7 @@ namespace RDFSharp.Semantics.Test
             data.DeclareNegativeDatatypeAssertion(new RDFResource("ex:indivA"), RDFVocabulary.RDFS.SEE_ALSO, new RDFPlainLiteral("name")); //Reserved annotation property (not allowed by policy)
 
             Assert.IsNotNull(warningMsg);
-            Assert.IsTrue(warningMsg.IndexOf("NegativeDatatypeAssertion relation between individual 'ex:indivA' and value 'name' through property 'http://www.w3.org/2000/01/rdf-schema#seeAlso' cannot be added to the data because it would violate OWL-DL integrity") > -1);
+            Assert.IsTrue(warningMsg.IndexOf("NegativeDatatypeAssertion relation between individual 'ex:indivA' and value 'name' through property 'http://www.w3.org/2000/01/rdf-schema#seeAlso' cannot be declared to the data because it would violate OWL-DL integrity") > -1);
             Assert.IsTrue(data.ABoxGraph.TriplesCount == 0);
         }
 
@@ -876,7 +876,7 @@ namespace RDFSharp.Semantics.Test
             data.DeclareNegativeDatatypeAssertion(new RDFResource("ex:indivA"), new RDFResource("ex:dtProp"), new RDFPlainLiteral("name")); //OWL-DL contraddiction (not allowed by policy)
 
             Assert.IsNotNull(warningMsg);
-            Assert.IsTrue(warningMsg.IndexOf("NegativeDatatypeAssertion relation between individual 'ex:indivA' and value 'name' through property 'ex:dtProp' cannot be added to the data because it would violate OWL-DL integrity") > -1);
+            Assert.IsTrue(warningMsg.IndexOf("NegativeDatatypeAssertion relation between individual 'ex:indivA' and value 'name' through property 'ex:dtProp' cannot be declared to the data because it would violate OWL-DL integrity") > -1);
             Assert.IsTrue(data.ABoxGraph.TriplesCount == 1);
             Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivA"), new RDFResource("ex:dtProp"), null, new RDFPlainLiteral("name")].Any());
         }
