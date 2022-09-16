@@ -898,6 +898,175 @@ namespace RDFSharp.Semantics.Test
         [TestMethod]
         public void ShouldThrowExceptionOnDeclaringComplementClassBecauseNullComplementClass()
             => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel().DeclareComplementClass(new RDFResource("ex:complementClass"), null));
+
+        [TestMethod]
+        public void ShouldDeclareDisjointUnionClass()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareDisjointUnionClass(new RDFResource("ex:disjointUnionClass"), new List<RDFResource>() { new RDFResource("ex:class1"), new RDFResource("ex:class2") });
+
+            Assert.IsTrue(classModel.ClassesCount == 1);
+            Assert.IsTrue(classModel.AllDisjointClassesCount == 0);
+            Assert.IsTrue(classModel.CompositesCount == 0);
+            Assert.IsTrue(classModel.DeprecatedClassesCount == 0);
+            Assert.IsTrue(classModel.EnumeratesCount == 0);
+            Assert.IsTrue(classModel.RestrictionsCount == 0);
+            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 8);
+            Assert.IsTrue(classModel.TBoxGraph[new RDFResource("ex:disjointUnionClass"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[new RDFResource("ex:disjointUnionClass"), RDFVocabulary.OWL.DISJOINT_UNION_OF, null, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.RDF.LIST, null].TriplesCount == 2);
+            Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:class1"), null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:class2"), null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.REST, null, null].TriplesCount == 2);
+            Assert.IsTrue(classModel.TBoxInferenceGraph.TriplesCount == 0);
+            Assert.IsTrue(classModel.TBoxVirtualGraph.TriplesCount == 8);
+            Assert.IsTrue(classModel.TBoxVirtualGraph[new RDFResource("ex:disjointUnionClass"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxVirtualGraph[new RDFResource("ex:disjointUnionClass"), RDFVocabulary.OWL.DISJOINT_UNION_OF, null, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxVirtualGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.RDF.LIST, null].TriplesCount == 2);
+            Assert.IsTrue(classModel.TBoxVirtualGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:class1"), null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxVirtualGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:class2"), null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxVirtualGraph[null, RDFVocabulary.RDF.REST, null, null].TriplesCount == 2);
+        }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringDisjointUnionClassBecauseNullClass()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel().DeclareDisjointUnionClass(null, new List<RDFResource>() { new RDFResource("ex:class1") }));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringDisjointUnionClassBecauseNullClasses()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel().DeclareDisjointUnionClass(new RDFResource("ex:disjointUnionClass"), null));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringDisjointUnionClassBecauseEmptyClasses()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel().DeclareDisjointUnionClass(new RDFResource("ex:disjointUnionClass"), new List<RDFResource>()));
+
+        [TestMethod]
+        public void ShouldDeclareAllDisjointClasses()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareAllDisjointClasses(new RDFResource("ex:allDisjointClasses"), new List<RDFResource>() { new RDFResource("ex:class1"), new RDFResource("ex:class2") });
+
+            Assert.IsTrue(classModel.ClassesCount == 1);
+            Assert.IsTrue(classModel.AllDisjointClassesCount == 1);
+            Assert.IsTrue(classModel.CompositesCount == 0);
+            Assert.IsTrue(classModel.DeprecatedClassesCount == 0);
+            Assert.IsTrue(classModel.EnumeratesCount == 0);
+            Assert.IsTrue(classModel.RestrictionsCount == 0);
+            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 9);
+            Assert.IsTrue(classModel.TBoxGraph[new RDFResource("ex:allDisjointClasses"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[new RDFResource("ex:allDisjointClasses"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ALL_DISJOINT_CLASSES, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[new RDFResource("ex:allDisjointClasses"), RDFVocabulary.OWL.MEMBERS, null, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.RDF.LIST, null].TriplesCount == 2);
+            Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:class1"), null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:class2"), null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.REST, null, null].TriplesCount == 2);
+            Assert.IsTrue(classModel.TBoxInferenceGraph.TriplesCount == 0);
+            Assert.IsTrue(classModel.TBoxVirtualGraph.TriplesCount == 9);
+            Assert.IsTrue(classModel.TBoxVirtualGraph[new RDFResource("ex:allDisjointClasses"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxVirtualGraph[new RDFResource("ex:allDisjointClasses"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ALL_DISJOINT_CLASSES, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxVirtualGraph[new RDFResource("ex:allDisjointClasses"), RDFVocabulary.OWL.MEMBERS, null, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxVirtualGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.RDF.LIST, null].TriplesCount == 2);
+            Assert.IsTrue(classModel.TBoxVirtualGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:class1"), null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxVirtualGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:class2"), null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxVirtualGraph[null, RDFVocabulary.RDF.REST, null, null].TriplesCount == 2);
+
+            int i = 0;
+            IEnumerator<RDFResource> allDisjointClassesEnumerator = classModel.AllDisjointClassesEnumerator;
+            while (allDisjointClassesEnumerator.MoveNext())
+            {
+                Assert.IsTrue(allDisjointClassesEnumerator.Current.Equals(new RDFResource("ex:allDisjointClasses")));
+                i++;
+            }
+            Assert.IsTrue(i == 1);
+        }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringAllDisjointClassesBecauseNullClass()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel().DeclareAllDisjointClasses(null, new List<RDFResource>() { new RDFResource("ex:class1") }));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringAllDisjointClassesBecauseNullClasses()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel().DeclareAllDisjointClasses(new RDFResource("ex:allDisjointClasses"), null));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringAllDisjointClassesBecauseEmptyClasses()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel().DeclareAllDisjointClasses(new RDFResource("ex:allDisjointClasses"), new List<RDFResource>()));
+
+        [TestMethod]
+        public void ShouldAnnotateResourceClass()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.AnnotateClass(new RDFResource("ex:classA"), RDFVocabulary.RDFS.SEE_ALSO, new RDFResource("ex:seealso"));
+            classModel.AnnotateClass(new RDFResource("ex:classA"), RDFVocabulary.RDFS.SEE_ALSO, new RDFResource("ex:seealso")); //Will be discarded, since duplicate annotations are not allowed
+
+            Assert.IsTrue(classModel.ClassesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 2);
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDFS.SEE_ALSO, new RDFResource("ex:seealso"))));
+        }
+
+        [TestMethod]
+        public void ShouldAnnotateLiteralClass()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.AnnotateClass(new RDFResource("ex:classA"), RDFVocabulary.RDFS.LABEL, new RDFPlainLiteral("label"));
+            classModel.AnnotateClass(new RDFResource("ex:classA"), RDFVocabulary.RDFS.LABEL, new RDFPlainLiteral("label")); //Will be discarded, since duplicate annotations are not allowed
+
+            Assert.IsTrue(classModel.ClassesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 2);
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDFS.LABEL, new RDFPlainLiteral("label"))));
+        }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnAnnotatingResourceClassBecauseNullSubject()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel()
+                        .DeclareClass(new RDFResource("ex:class1"))
+                        .AnnotateClass(null, RDFVocabulary.RDFS.SEE_ALSO, new RDFResource("ex:seealso")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnAnnotatingResourceClassBecauseNullPredicate()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel()
+                        .DeclareClass(new RDFResource("ex:class1"))
+                        .AnnotateClass(new RDFResource("ex:class1"), null, new RDFResource("ex:seealso")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnAnnotatingResourceClassBecauseBlankPredicate()
+           => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel()
+                       .DeclareClass(new RDFResource("ex:class1"))
+                       .AnnotateClass(new RDFResource("ex:class1"), new RDFResource(), new RDFResource("ex:seealso")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnAnnotatingResourceClassBecauseNullObject()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel()
+                        .DeclareClass(new RDFResource("ex:class1"))
+                        .AnnotateClass(new RDFResource("ex:class1"), RDFVocabulary.RDFS.SEE_ALSO, null as RDFResource));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnAnnotatingLiteralClassBecauseNullSubject()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel()
+                        .DeclareClass(new RDFResource("ex:class1"))
+                        .AnnotateClass(null, RDFVocabulary.RDFS.LABEL, new RDFPlainLiteral("label")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnAnnotatingLiteralClassBecauseNullPredicate()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel()
+                        .DeclareClass(new RDFResource("ex:class1"))
+                        .AnnotateClass(new RDFResource("ex:class1"), null, new RDFPlainLiteral("label")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnAnnotatingLiteralClassBecauseBlankPredicate()
+           => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel()
+                       .DeclareClass(new RDFResource("ex:class1"))
+                       .AnnotateClass(new RDFResource("ex:class1"), new RDFResource(), new RDFPlainLiteral("label")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnAnnotatingLiteralClassBecauseNullObject()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel()
+                        .DeclareClass(new RDFResource("ex:class1"))
+                        .AnnotateClass(new RDFResource("ex:class1"), RDFVocabulary.RDFS.LABEL, null as RDFLiteral));
         #endregion
     }
 }
