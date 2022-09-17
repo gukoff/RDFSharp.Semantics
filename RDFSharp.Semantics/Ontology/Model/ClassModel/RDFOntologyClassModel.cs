@@ -748,7 +748,7 @@ namespace RDFSharp.Semantics
                 TBoxInferenceGraph.AddTriple(new RDFTriple(rightClass, RDFVocabulary.OWL.EQUIVALENT_CLASS, leftClass));
             }
             else
-                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("EquivalentClass relation between leftClass '{0}' and rightClass '{1}' cannot be declared to the model because it would violate OWL-DL integrity", leftClass, rightClass));
+                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("EquivalentClass relation between class '{0}' and class '{1}' cannot be declared to the model because it would violate OWL-DL integrity", leftClass, rightClass));
 
             return this;
         }
@@ -781,7 +781,7 @@ namespace RDFSharp.Semantics
                 TBoxInferenceGraph.AddTriple(new RDFTriple(rightClass, RDFVocabulary.OWL.DISJOINT_WITH, leftClass));
             }
             else
-                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("DisjointWith relation between leftClass '{0}' and rightClass '{1}' cannot be declared to the model because it would violate OWL-DL integrity", leftClass, rightClass));
+                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("DisjointWith relation between class '{0}' and class '{1}' cannot be declared to the model because it would violate OWL-DL integrity", leftClass, rightClass));
 
             return this;
         }
@@ -795,6 +795,8 @@ namespace RDFSharp.Semantics
                 throw new RDFSemanticsException("Cannot declare owl:hasKey relation to the model because given \"owlClass\" parameter is null");
             if (keyProperties == null)
                 throw new RDFSemanticsException("Cannot declare owl:hasKey relation to the model because given \"keyProperties\" parameter is null");
+            if (keyProperties.Count == 0)
+                throw new RDFSemanticsException("Cannot declare owl:hasKey relation to the model because given \"keyProperties\" parameter is an empty list");
 
             //Add knowledge to the T-BOX
             RDFCollection keyPropertiesCollection = new RDFCollection(RDFModelEnums.RDFItemTypes.Resource);

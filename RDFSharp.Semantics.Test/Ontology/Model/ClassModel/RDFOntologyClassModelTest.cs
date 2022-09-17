@@ -1067,6 +1067,410 @@ namespace RDFSharp.Semantics.Test
             => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel()
                         .DeclareClass(new RDFResource("ex:class1"))
                         .AnnotateClass(new RDFResource("ex:class1"), RDFVocabulary.RDFS.LABEL, null as RDFLiteral));
+
+        [TestMethod]
+        public void ShouldDeclareSubClasses()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareSubClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
+
+            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 3);
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDFS.SUB_CLASS_OF, new RDFResource("ex:classB"))));
+            Assert.IsTrue(classModel.TBoxInferenceGraph.TriplesCount == 0);
+        }
+
+        [TestMethod]
+        public void ShouldNotEmitWarningOnDeclaringSubClassesEvenWhenIncompatibleClasses()
+        {
+            string warningMsg = null;
+            RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            //Permissive policy avoids most of real-time OWL-DL safety checks (at the cost of ontology integrity)
+            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Permissive;
+
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareSubClasses(new RDFResource("ex:classB"), new RDFResource("ex:classA"));
+            classModel.DeclareSubClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB")); //OWL-DL contraddiction (permitted by policy)
+
+            Assert.IsNull(warningMsg);
+            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 4);
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.RDFS.SUB_CLASS_OF, new RDFResource("ex:classA"))));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDFS.SUB_CLASS_OF, new RDFResource("ex:classB"))));
+            Assert.IsTrue(classModel.TBoxInferenceGraph.TriplesCount == 0);
+        }
+
+        [TestMethod]
+        public void ShouldEmitWarningOnDeclaringSubClassesBecauseIncompatibleClasses()
+        {
+            string warningMsg = null;
+            RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            //Strict policy executes most of real-time OWL-DL safety checks (at the cost of performances)
+            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Strict;
+
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareSubClasses(new RDFResource("ex:classB"), new RDFResource("ex:classA"));
+            classModel.DeclareSubClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));  //OWL-DL contraddiction (enforced by policy)
+
+            Assert.IsNotNull(warningMsg);
+            Assert.IsTrue(warningMsg.IndexOf("SubClass relation between class 'ex:classA' and class 'ex:classB' cannot be declared to the model because it would violate OWL-DL integrity") > -1);
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.RDFS.SUB_CLASS_OF, new RDFResource("ex:classA"))));
+            Assert.IsTrue(classModel.TBoxInferenceGraph.TriplesCount == 0);
+        }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringSubClassesBecauseNullChildClass()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel()
+                        .DeclareClass(new RDFResource("ex:classA"))
+                        .DeclareClass(new RDFResource("ex:classB"))
+                        .DeclareSubClasses(null, new RDFResource("ex:classB")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringSubClassesBecauseNullMotherClass()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel()
+                        .DeclareClass(new RDFResource("ex:classA"))
+                        .DeclareClass(new RDFResource("ex:classB"))
+                        .DeclareSubClasses(new RDFResource("ex:classA"), null));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringSubClassesBecauseSelfClass()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel()
+                        .DeclareClass(new RDFResource("ex:classA"))
+                        .DeclareSubClasses(new RDFResource("ex:classA"), new RDFResource("ex:classA")));
+
+        [TestMethod]
+        public void ShouldDeclareEquivalentClasses()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareEquivalentClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
+
+            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 3);
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.OWL.EQUIVALENT_CLASS, new RDFResource("ex:classB"))));
+            Assert.IsTrue(classModel.TBoxInferenceGraph.TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxInferenceGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.OWL.EQUIVALENT_CLASS, new RDFResource("ex:classA"))));
+        }
+
+        [TestMethod]
+        public void ShouldNotEmitWarningOnDeclaringEquivalentClassesEvenWhenIncompatibleClasses()
+        {
+            string warningMsg = null;
+            RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            //Permissive policy avoids most of real-time OWL-DL safety checks (at the cost of ontology integrity)
+            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Permissive;
+
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareSubClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
+            classModel.DeclareEquivalentClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB")); //OWL-DL contraddiction (permitted by policy)
+
+            Assert.IsNull(warningMsg);
+            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 4);
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDFS.SUB_CLASS_OF, new RDFResource("ex:classB"))));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.OWL.EQUIVALENT_CLASS, new RDFResource("ex:classB"))));
+            Assert.IsTrue(classModel.TBoxInferenceGraph.TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxInferenceGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.OWL.EQUIVALENT_CLASS, new RDFResource("ex:classA"))));
+        }
+
+        [TestMethod]
+        public void ShouldEmitWarningOnDeclaringEquivalentClassesBecauseIncompatibleClasses()
+        {
+            string warningMsg = null;
+            RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            //Strict policy executes most of real-time OWL-DL safety checks (at the cost of performances)
+            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Strict;
+
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareSubClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
+            classModel.DeclareEquivalentClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));  //OWL-DL contraddiction (enforced by policy)
+
+            Assert.IsNotNull(warningMsg);
+            Assert.IsTrue(warningMsg.IndexOf("EquivalentClass relation between class 'ex:classA' and class 'ex:classB' cannot be declared to the model because it would violate OWL-DL integrity") > -1);
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDFS.SUB_CLASS_OF, new RDFResource("ex:classB"))));
+            Assert.IsTrue(classModel.TBoxInferenceGraph.TriplesCount == 0);
+        }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringEquivalentClassesBecauseNullLeftClass()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel()
+                        .DeclareClass(new RDFResource("ex:classA"))
+                        .DeclareClass(new RDFResource("ex:classB"))
+                        .DeclareEquivalentClasses(null, new RDFResource("ex:classB")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringEquivalentClassesBecauseNullRightClass()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel()
+                        .DeclareClass(new RDFResource("ex:classA"))
+                        .DeclareClass(new RDFResource("ex:classB"))
+                        .DeclareEquivalentClasses(new RDFResource("ex:classA"), null));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringEquivalentClassesBecauseSelfClass()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel()
+                        .DeclareClass(new RDFResource("ex:classA"))
+                        .DeclareEquivalentClasses(new RDFResource("ex:classA"), new RDFResource("ex:classA")));
+
+        [TestMethod]
+        public void ShouldDeclareDisjointClasses()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareDisjointClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
+
+            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 3);
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.OWL.DISJOINT_WITH, new RDFResource("ex:classB"))));
+            Assert.IsTrue(classModel.TBoxInferenceGraph.TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxInferenceGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.OWL.DISJOINT_WITH, new RDFResource("ex:classA"))));
+        }
+
+        [TestMethod]
+        public void ShouldNotEmitWarningOnDeclaringDisjointClassesEvenWhenIncompatibleClasses()
+        {
+            string warningMsg = null;
+            RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            //Permissive policy avoids most of real-time OWL-DL safety checks (at the cost of ontology integrity)
+            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Permissive;
+
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareSubClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
+            classModel.DeclareDisjointClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB")); //OWL-DL contraddiction (permitted by policy)
+
+            Assert.IsNull(warningMsg);
+            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 4);
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDFS.SUB_CLASS_OF, new RDFResource("ex:classB"))));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.OWL.DISJOINT_WITH, new RDFResource("ex:classB"))));
+            Assert.IsTrue(classModel.TBoxInferenceGraph.TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxInferenceGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.OWL.DISJOINT_WITH, new RDFResource("ex:classA"))));
+        }
+
+        [TestMethod]
+        public void ShouldEmitWarningOnDeclaringDisjointClassesBecauseIncompatibleClasses()
+        {
+            string warningMsg = null;
+            RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            //Strict policy executes most of real-time OWL-DL safety checks (at the cost of performances)
+            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Strict;
+
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareSubClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
+            classModel.DeclareDisjointClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));  //OWL-DL contraddiction (enforced by policy)
+
+            Assert.IsNotNull(warningMsg);
+            Assert.IsTrue(warningMsg.IndexOf("DisjointWith relation between class 'ex:classA' and class 'ex:classB' cannot be declared to the model because it would violate OWL-DL integrity") > -1);
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDFS.SUB_CLASS_OF, new RDFResource("ex:classB"))));
+            Assert.IsTrue(classModel.TBoxInferenceGraph.TriplesCount == 0);
+        }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringDisjointClassesBecauseNullLeftClass()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel()
+                        .DeclareClass(new RDFResource("ex:classA"))
+                        .DeclareClass(new RDFResource("ex:classB"))
+                        .DeclareDisjointClasses(null, new RDFResource("ex:classB")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringDisjointClassesBecauseNullRightClass()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel()
+                        .DeclareClass(new RDFResource("ex:classA"))
+                        .DeclareClass(new RDFResource("ex:classB"))
+                        .DeclareDisjointClasses(new RDFResource("ex:classA"), null));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringDisjointClassesBecauseSelfClass()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel()
+                        .DeclareClass(new RDFResource("ex:classA"))
+                        .DeclareDisjointClasses(new RDFResource("ex:classA"), new RDFResource("ex:classA")));
+
+        [TestMethod]
+        public void ShouldDeclareKeys()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareHasKey(new RDFResource("ex:classA"), new List<RDFResource>() { new RDFResource("ex:dtProp") });
+
+            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 5);
+            Assert.IsTrue(classModel.TBoxGraph[new RDFResource("ex:classA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[new RDFResource("ex:classA"), RDFVocabulary.OWL.HAS_KEY, null, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.RDF.LIST, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:dtProp"), null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.REST, null, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxInferenceGraph.TriplesCount == 0);
+            Assert.IsTrue(classModel.TBoxVirtualGraph.TriplesCount == 5);
+            Assert.IsTrue(classModel.TBoxVirtualGraph[new RDFResource("ex:classA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxVirtualGraph[new RDFResource("ex:classA"), RDFVocabulary.OWL.HAS_KEY, null, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxVirtualGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.RDF.LIST, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxVirtualGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:dtProp"), null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxVirtualGraph[null, RDFVocabulary.RDF.REST, null, null].TriplesCount == 1);
+        }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringHasKeyBecauseNullClass()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel().DeclareHasKey(null, new List<RDFResource>() { new RDFResource("ex:dtProp") }));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringHasKeyBecauseNullClasses()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel().DeclareHasKey(new RDFResource("ex:classA"), null));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringHasKeyBecauseEmptyClasses()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel().DeclareHasKey(new RDFResource("ex:classA"), new List<RDFResource>()));
+
+        [TestMethod]
+        public void ShouldDeclareRestriction()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareRestriction(new RDFResource("ex:restr"), new RDFResource("ex:onProp"));
+
+            Assert.IsTrue(classModel.ClassesCount == 1);
+            Assert.IsTrue(classModel.AllDisjointClassesCount == 0);
+            Assert.IsTrue(classModel.CompositesCount == 0);
+            Assert.IsTrue(classModel.DeprecatedClassesCount == 0);
+            Assert.IsTrue(classModel.EnumeratesCount == 0);
+            Assert.IsTrue(classModel.RestrictionsCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 3);
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:restr"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:restr"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.RESTRICTION)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:restr"), RDFVocabulary.OWL.ON_PROPERTY, new RDFResource("ex:onProp"))));
+            Assert.IsTrue(classModel.TBoxInferenceGraph.TriplesCount == 0);
+            Assert.IsTrue(classModel.TBoxVirtualGraph.TriplesCount == 3);
+            Assert.IsTrue(classModel.TBoxVirtualGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:restr"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxVirtualGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:restr"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.RESTRICTION)));
+            Assert.IsTrue(classModel.TBoxVirtualGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:restr"), RDFVocabulary.OWL.ON_PROPERTY, new RDFResource("ex:onProp"))));
+
+            int i = 0;
+            IEnumerator<RDFResource> restrictionsEnumerator = classModel.RestrictionsEnumerator;
+            while (restrictionsEnumerator.MoveNext())
+            {
+                Assert.IsTrue(restrictionsEnumerator.Current.Equals(new RDFResource("ex:restr")));
+                i++;
+            }
+            Assert.IsTrue(i == 1);
+        }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringRestrictionBecauseNullRestriction()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel().DeclareRestriction(null, new RDFResource("ex:onProp")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringRestrictionBecauseNullProperty()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel().DeclareRestriction(new RDFResource("ex:restr"), null));
+
+        [TestMethod]
+        public void ShouldExportToGraphWithInferences()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareClass(new RDFResource("ex:classC"));
+            classModel.DeclareClass(new RDFResource("ex:classD"));
+            classModel.DeclareSubClasses(new RDFResource("ex:indivB"), new RDFResource("ex:classA"));
+            classModel.DeclareEquivalentClasses(new RDFResource("ex:indivA"), new RDFResource("ex:classC"));
+            classModel.DeclareDisjointClasses(new RDFResource("ex:indivC"), new RDFResource("ex:classD"));
+            classModel.DeclareHasKey(new RDFResource("ex:classA"), new List<RDFResource>() { RDFVocabulary.FOAF.ACCOUNT });
+            classModel.AnnotateClass(new RDFResource("ex:classA"), RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("comment"));
+            classModel.AnnotateClass(new RDFResource("ex:classB"), RDFVocabulary.DC.DESCRIPTION, new RDFPlainLiteral("title"));
+            RDFGraph graph = classModel.ToRDFGraph(true);
+
+            Assert.IsNotNull(graph);
+            Assert.IsTrue(graph.TriplesCount == 15);
+        }
+
+        [TestMethod]
+        public void ShouldExportToGraphWithoutInferences()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareClass(new RDFResource("ex:classC"));
+            classModel.DeclareClass(new RDFResource("ex:classD"));
+            classModel.DeclareSubClasses(new RDFResource("ex:indivB"), new RDFResource("ex:classA"));
+            classModel.DeclareEquivalentClasses(new RDFResource("ex:indivA"), new RDFResource("ex:classC"));
+            classModel.DeclareDisjointClasses(new RDFResource("ex:indivC"), new RDFResource("ex:classD"));
+            classModel.DeclareHasKey(new RDFResource("ex:classA"), new List<RDFResource>() { RDFVocabulary.FOAF.ACCOUNT });
+            classModel.AnnotateClass(new RDFResource("ex:classA"), RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("comment"));
+            classModel.AnnotateClass(new RDFResource("ex:classB"), RDFVocabulary.DC.DESCRIPTION, new RDFPlainLiteral("title"));
+            RDFGraph graph = classModel.ToRDFGraph(false);
+
+            Assert.IsNotNull(graph);
+            Assert.IsTrue(graph.TriplesCount == 13);
+        }
+
+        [TestMethod]
+        public async Task ShouldExportToGraphWithInferencesAsync()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareClass(new RDFResource("ex:classC"));
+            classModel.DeclareClass(new RDFResource("ex:classD"));
+            classModel.DeclareSubClasses(new RDFResource("ex:indivB"), new RDFResource("ex:classA"));
+            classModel.DeclareEquivalentClasses(new RDFResource("ex:indivA"), new RDFResource("ex:classC"));
+            classModel.DeclareDisjointClasses(new RDFResource("ex:indivC"), new RDFResource("ex:classD"));
+            classModel.DeclareHasKey(new RDFResource("ex:classA"), new List<RDFResource>() { RDFVocabulary.FOAF.ACCOUNT });
+            classModel.AnnotateClass(new RDFResource("ex:classA"), RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("comment"));
+            classModel.AnnotateClass(new RDFResource("ex:classB"), RDFVocabulary.DC.DESCRIPTION, new RDFPlainLiteral("title"));
+            RDFGraph graph = await classModel.ToRDFGraphAsync(true);
+
+            Assert.IsNotNull(graph);
+            Assert.IsTrue(graph.TriplesCount == 15);
+        }
+
+        [TestMethod]
+        public async Task ShouldExportToGraphWithoutInferencesAsync()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareClass(new RDFResource("ex:classC"));
+            classModel.DeclareClass(new RDFResource("ex:classD"));
+            classModel.DeclareSubClasses(new RDFResource("ex:indivB"), new RDFResource("ex:classA"));
+            classModel.DeclareEquivalentClasses(new RDFResource("ex:indivA"), new RDFResource("ex:classC"));
+            classModel.DeclareDisjointClasses(new RDFResource("ex:indivC"), new RDFResource("ex:classD"));
+            classModel.DeclareHasKey(new RDFResource("ex:classA"), new List<RDFResource>() { RDFVocabulary.FOAF.ACCOUNT });
+            classModel.AnnotateClass(new RDFResource("ex:classA"), RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("comment"));
+            classModel.AnnotateClass(new RDFResource("ex:classB"), RDFVocabulary.DC.DESCRIPTION, new RDFPlainLiteral("title"));
+            RDFGraph graph = await classModel.ToRDFGraphAsync(false);
+
+            Assert.IsNotNull(graph);
+            Assert.IsTrue(graph.TriplesCount == 13);
+        }
         #endregion
     }
 }
