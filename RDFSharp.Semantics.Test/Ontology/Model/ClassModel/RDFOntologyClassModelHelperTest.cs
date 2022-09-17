@@ -636,6 +636,25 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
+        public void ShouldAnswerSubClasses()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareClass(new RDFResource("ex:classC"));
+            classModel.DeclareClass(new RDFResource("ex:classD"));
+            classModel.DeclareSubClasses(new RDFResource("ex:classB"), new RDFResource("ex:classA"));
+            classModel.DeclareSubClasses(new RDFResource("ex:classC"), new RDFResource("ex:classB"));
+            classModel.DeclareEquivalentClasses(new RDFResource("ex:classC"), new RDFResource("ex:classD"));
+
+            Assert.IsTrue(classModel.AnswerSubClasses(new RDFResource("ex:classA")).Any(sc => sc.Equals(new RDFResource("ex:classB"))));
+            Assert.IsTrue(classModel.AnswerSubClasses(new RDFResource("ex:classA")).Any(sc => sc.Equals(new RDFResource("ex:classC")))); //Inferred
+            Assert.IsTrue(classModel.AnswerSubClasses(new RDFResource("ex:classA")).Any(sc => sc.Equals(new RDFResource("ex:classD")))); //Inferred
+            Assert.IsTrue(classModel.AnswerSubClasses(new RDFResource("ex:classB")).Any(sc => sc.Equals(new RDFResource("ex:classC"))));
+            Assert.IsTrue(classModel.AnswerSubClasses(new RDFResource("ex:classB")).Any(sc => sc.Equals(new RDFResource("ex:classD")))); //Inferred
+        }
+
+        [TestMethod]
         public void ShouldCheckAreSuperClasses()
         {
             RDFOntologyClassModel classModel = new RDFOntologyClassModel();
@@ -652,6 +671,25 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.CheckAreSuperClasses(new RDFResource("ex:classA"), new RDFResource("ex:classC"))); //Inferred
             Assert.IsTrue(classModel.CheckAreSuperClasses(new RDFResource("ex:classB"), new RDFResource("ex:classD"))); //Inferred
             Assert.IsTrue(classModel.CheckAreSuperClasses(new RDFResource("ex:classA"), new RDFResource("ex:classD"))); //Inferred
+        }
+
+        [TestMethod]
+        public void ShouldAnswerSuperClasses()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareClass(new RDFResource("ex:classC"));
+            classModel.DeclareClass(new RDFResource("ex:classD"));
+            classModel.DeclareSubClasses(new RDFResource("ex:classB"), new RDFResource("ex:classA"));
+            classModel.DeclareSubClasses(new RDFResource("ex:classC"), new RDFResource("ex:classB"));
+            classModel.DeclareEquivalentClasses(new RDFResource("ex:classC"), new RDFResource("ex:classD"));
+
+            Assert.IsTrue(classModel.AnswerSuperClasses(new RDFResource("ex:classB")).Any(sc => sc.Equals(new RDFResource("ex:classA"))));
+            Assert.IsTrue(classModel.AnswerSuperClasses(new RDFResource("ex:classC")).Any(sc => sc.Equals(new RDFResource("ex:classB"))));
+            Assert.IsTrue(classModel.AnswerSuperClasses(new RDFResource("ex:classC")).Any(sc => sc.Equals(new RDFResource("ex:classA")))); //Inferred
+            Assert.IsTrue(classModel.AnswerSuperClasses(new RDFResource("ex:classD")).Any(sc => sc.Equals(new RDFResource("ex:classB")))); //Inferred
+            Assert.IsTrue(classModel.AnswerSuperClasses(new RDFResource("ex:classD")).Any(sc => sc.Equals(new RDFResource("ex:classA")))); //Inferred
         }
         #endregion
 
