@@ -190,8 +190,8 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringAllValuesFromRestrictionBecauseNull()
-            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel().DeclareAllValuesFromRestriction(null, new RDFResource("ex:onProp"), new RDFResource("ex:avClass")));
+        public void ShouldThrowExceptionOnDeclaringAllValuesFromRestrictionBecauseNullClass()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel().DeclareAllValuesFromRestriction(new RDFResource("ex:avRestr"), new RDFResource("ex:onProp"), null));
 
         [TestMethod]
         public void ShouldDeclareSomeValuesFromRestriction()
@@ -228,8 +228,8 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringSomeValuesFromRestrictionBecauseNull()
-            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel().DeclareSomeValuesFromRestriction(null, new RDFResource("ex:onProp"), new RDFResource("ex:svClass")));
+        public void ShouldThrowExceptionOnDeclaringSomeValuesFromRestrictionBecauseNullClass()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel().DeclareSomeValuesFromRestriction(new RDFResource("ex:svClass"), new RDFResource("ex:onProp"), null));
 
         [TestMethod]
         public void ShouldDeclareHasSelfTrueRestriction()
@@ -578,6 +578,10 @@ namespace RDFSharp.Semantics.Test
             => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel().DeclareQualifiedCardinalityRestriction(new RDFResource("ex:cRestr"), new RDFResource("ex:onProp"), 0, new RDFResource("ex:onClass")));
 
         [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringQualifiedCardinalityRestrictionBecauseNullClass()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel().DeclareQualifiedCardinalityRestriction(new RDFResource("ex:cRestr"), new RDFResource("ex:onProp"), 1, null));
+
+        [TestMethod]
         public void ShouldDeclareMinQualifiedCardinalityRestriction()
         {
             RDFOntologyClassModel classModel = new RDFOntologyClassModel();
@@ -618,6 +622,10 @@ namespace RDFSharp.Semantics.Test
             => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel().DeclareMinQualifiedCardinalityRestriction(new RDFResource("ex:cRestr"), new RDFResource("ex:onProp"), 0, new RDFResource("ex:onClass")));
 
         [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringMinQualifiedCardinalityRestrictionBecauseNullClass()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel().DeclareMinQualifiedCardinalityRestriction(new RDFResource("ex:cRestr"), new RDFResource("ex:onProp"), 1, null));
+
+        [TestMethod]
         public void ShouldDeclareMaxQualifiedCardinalityRestriction()
         {
             RDFOntologyClassModel classModel = new RDFOntologyClassModel();
@@ -656,6 +664,10 @@ namespace RDFSharp.Semantics.Test
         [TestMethod]
         public void ShouldThrowExceptionOnDeclaringMaxQualifiedCardinalityRestrictionBecauseZero()
             => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel().DeclareMaxQualifiedCardinalityRestriction(new RDFResource("ex:cRestr"), new RDFResource("ex:onProp"), 0, new RDFResource("ex:onClass")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringMaxQualifiedCardinalityRestrictionBecauseNullClass()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel().DeclareMaxQualifiedCardinalityRestriction(new RDFResource("ex:cRestr"), new RDFResource("ex:onProp"), 1, null));
 
         [TestMethod]
         public void ShouldDeclareMinMaxQualifiedCardinalityRestriction()

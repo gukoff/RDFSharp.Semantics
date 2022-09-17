@@ -486,7 +486,7 @@ namespace RDFSharp.Semantics
                 throw new RDFSemanticsException("Cannot declare owl:minQualifiedCardinality and owl:maxQualifiedCardinality restriction to the model because given \"onClass\" parameter is null");
             if (minCardinality == 0)
                 throw new RDFSemanticsException("Cannot declare owl:minQualifiedCardinality and owl:maxQualifiedCardinality restriction to the model because given \"minCardinality\" value must be greater than zero");
-            if (minCardinality == 0)
+            if (maxCardinality == 0)
                 throw new RDFSemanticsException("Cannot declare owl:minQualifiedCardinality and owl:maxQualifiedCardinality restriction to the model because given \"maxCardinality\" value must be greater than zero");
             if (maxCardinality < minCardinality)
                 throw new RDFSemanticsException("Cannot declare owl:minQualifiedCardinality and owl:maxQualifiedCardinality restriction to the model because given \"maxCardinality\" value must be greater or equal than given \"minCardinality\" value");
