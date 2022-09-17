@@ -21,23 +21,6 @@ namespace RDFSharp.Semantics
     /// </summary>
     public static class RDFSemanticsEnums
     {
-        /// <summary>
-        /// Indicates the supported policies for real-time OWL-DL integrity and compliance checking
-        /// </summary>
-        public enum RDFOntologyOWLDLIntegrityPolicy
-        {
-            /// <summary>
-            /// Indicates that the library will do the full set of real-time checks to ensure OWL-DL integrity and compliance of working ontologies;<br/>
-            /// This guarantees almost total absence of inconsistencies in the model and data, at the cost of (probably) higher processing requirements.<br/>
-            /// This may also lead to the emission of detailed warning logs informing about failure of rejected ontology modeling operations.<br/>
-            /// </summary>
-            Strict = 0,
-            /// <summary>
-            /// Indicates that the library will do only a subset of real-time checks to ensure OWL-DL integrity and compliance of working ontologies;<br/>
-            /// This does not guarantee absence of errors or inconsistencies in the model and data, but gives better overall processing performances.<br/>
-            /// Choose this policy if you have deep knowledge of your ontologies and wish to maintain the full control on almost every T-BOX/A-BOX aspect.
-            /// </summary>
-            Permissive = 1
-        }
+        
     }
 }

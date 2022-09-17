@@ -179,33 +179,10 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
-        public void ShouldNotEmitWarningOnDeclaringIndividualTypeEvenWhenReservedClass()
-        {
-            string warningMsg = null;
-            RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            //Permissive policy avoids most of real-time OWL-DL safety checks (at the cost of ontology integrity)
-            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Permissive;
-
-            RDFOntologyData data = new RDFOntologyData();
-            data.DeclareIndividual(new RDFResource("ex:indivA"));
-            data.DeclareIndividualType(new RDFResource("ex:indivA"), RDFVocabulary.RDFS.RESOURCE);
-
-            Assert.IsNull(warningMsg);
-            Assert.IsTrue(data.ABoxGraph.TriplesCount == 2);
-            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
-            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.RDFS.RESOURCE)));
-
-        }
-
-        [TestMethod]
         public void ShouldEmitWarningOnDeclaringIndividualTypeBecauseReservedClass()
         {
             string warningMsg = null;
             RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            //Strict policy executes most of real-time OWL-DL safety checks (at the cost of performances)
-            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Strict;
 
             RDFOntologyData data = new RDFOntologyData();
             data.DeclareIndividual(new RDFResource("ex:indivA"));
@@ -246,39 +223,10 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
-        public void ShouldNotEmitWarningOnDeclaringSameIndividualsEvenWhenIncompatibleIndividuals()
-        {
-            string warningMsg = null;
-            RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            //Permissive policy avoids most of real-time OWL-DL safety checks (at the cost of ontology integrity)
-            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Permissive;
-
-            RDFOntologyData data = new RDFOntologyData();
-            data.DeclareIndividual(new RDFResource("ex:indivA"));
-            data.DeclareIndividual(new RDFResource("ex:indivB"));
-            data.DeclareDifferentIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB"));
-            data.DeclareSameIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB")); //OWL-DL contraddiction (permitted by policy)
-
-            Assert.IsNull(warningMsg);
-            Assert.IsTrue(data.ABoxGraph.TriplesCount == 4);
-            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
-            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
-            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.OWL.DIFFERENT_FROM, new RDFResource("ex:indivB"))));
-            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.OWL.SAME_AS, new RDFResource("ex:indivB"))));
-            Assert.IsTrue(data.ABoxInferenceGraph.TriplesCount == 2);
-            Assert.IsTrue(data.ABoxInferenceGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.OWL.DIFFERENT_FROM, new RDFResource("ex:indivA"))));
-            Assert.IsTrue(data.ABoxInferenceGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.OWL.SAME_AS, new RDFResource("ex:indivA"))));
-        }
-
-        [TestMethod]
         public void ShouldEmitWarningOnDeclaringSameIndividualsBecauseIncompatibleIndividuals()
         {
             string warningMsg = null;
             RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            //Strict policy executes most of real-time OWL-DL safety checks (at the cost of performances)
-            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Strict;
 
             RDFOntologyData data = new RDFOntologyData();
             data.DeclareIndividual(new RDFResource("ex:indivA"));
@@ -332,39 +280,10 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
-        public void ShouldNotEmitWarningOnDeclaringDifferentIndividualsEvenWhenIncompatibleIndividuals()
-        {
-            string warningMsg = null;
-            RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            //Permissive policy avoids most of real-time OWL-DL safety checks (at the cost of ontology integrity)
-            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Permissive;
-
-            RDFOntologyData data = new RDFOntologyData();
-            data.DeclareIndividual(new RDFResource("ex:indivA"));
-            data.DeclareIndividual(new RDFResource("ex:indivB"));
-            data.DeclareSameIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB"));
-            data.DeclareDifferentIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB")); //OWL-DL contraddiction (permitted by policy)
-
-            Assert.IsNull(warningMsg);
-            Assert.IsTrue(data.ABoxGraph.TriplesCount == 4);
-            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
-            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
-            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.OWL.SAME_AS, new RDFResource("ex:indivB"))));
-            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.OWL.DIFFERENT_FROM, new RDFResource("ex:indivB"))));
-            Assert.IsTrue(data.ABoxInferenceGraph.TriplesCount == 2);
-            Assert.IsTrue(data.ABoxInferenceGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.OWL.SAME_AS, new RDFResource("ex:indivA"))));
-            Assert.IsTrue(data.ABoxInferenceGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.OWL.DIFFERENT_FROM, new RDFResource("ex:indivA"))));
-        }
-
-        [TestMethod]
         public void ShouldEmitWarningOnDeclaringDifferentIndividualsBecauseIncompatibleIndividuals()
         {
             string warningMsg = null;
             RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            //Strict policy executes most of real-time OWL-DL safety checks (at the cost of performances)
-            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Strict;
 
             RDFOntologyData data = new RDFOntologyData();
             data.DeclareIndividual(new RDFResource("ex:indivA"));
@@ -474,30 +393,10 @@ namespace RDFSharp.Semantics.Test
                         .DeclareObjectAssertion(new RDFResource("ex:indivA"), RDFVocabulary.FOAF.KNOWS, null));
 
         [TestMethod]
-        public void ShouldNotEmitWarningOnDeclaringObjectAssertionEvenWhenReservedProperty()
-        {
-            string warningMsg = null;
-            RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            //Permissive policy avoids most of real-time OWL-DL safety checks (at the cost of ontology integrity)
-            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Permissive;
-
-            RDFOntologyData data = new RDFOntologyData();
-            data.DeclareObjectAssertion(new RDFResource("ex:indivA"), RDFVocabulary.RDFS.SEE_ALSO, new RDFResource("ex:indivB")); //Reserved annotation property (permitted by policy)
-
-            Assert.IsNull(warningMsg);
-            Assert.IsTrue(data.ABoxGraph.TriplesCount == 1);
-            Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivA"), RDFVocabulary.RDFS.SEE_ALSO, new RDFResource("ex:indivB"), null].Any());
-        }
-
-        [TestMethod]
         public void ShouldEmitWarningOnDeclaringObjectAssertionBecauseReservedProperty()
         {
             string warningMsg = null;
             RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            //Strict policy executes most of real-time OWL-DL safety checks (at the cost of performances)
-            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Strict;
 
             RDFOntologyData data = new RDFOntologyData();
             data.DeclareObjectAssertion(new RDFResource("ex:indivA"), RDFVocabulary.RDFS.SEE_ALSO, new RDFResource("ex:indivB")); //Reserved annotation property (not allowed by policy)
@@ -508,35 +407,10 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
-        public void ShouldNotEmitWarningOnDeclaringObjectAssertionEvenWhenIncompatibleObjectAssertion()
-        {
-            string warningMsg = null;
-            RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            //Permissive policy avoids most of real-time OWL-DL safety checks (at the cost of ontology integrity)
-            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Permissive;
-
-            RDFOntologyData data = new RDFOntologyData();
-            data.DeclareNegativeObjectAssertion(new RDFResource("ex:indivA"), new RDFResource("ex:objProp"), new RDFResource("ex:indivB"));
-            data.DeclareObjectAssertion(new RDFResource("ex:indivA"), new RDFResource("ex:objProp"), new RDFResource("ex:indivB")); //OWL-DL contraddiction (permitted by policy)
-
-            Assert.IsNull(warningMsg);
-            Assert.IsTrue(data.ABoxGraph.TriplesCount == 5);
-            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION, null].Any());
-            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.SOURCE_INDIVIDUAL, new RDFResource("ex:indivA"), null].Any());
-            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.ASSERTION_PROPERTY, new RDFResource("ex:objProp"), null].Any());
-            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.TARGET_INDIVIDUAL, new RDFResource("ex:indivB"), null].Any());
-            Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivA"), new RDFResource("ex:objProp"), new RDFResource("ex:indivB"), null].Any());
-        }
-
-        [TestMethod]
         public void ShouldEmitWarningOnDeclaringObjectAssertionBecauseIncompatibleObjectAssertion()
         {
             string warningMsg = null;
             RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            //Strict policy executes most of real-time OWL-DL safety checks (at the cost of performances)
-            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Strict;
 
             RDFOntologyData data = new RDFOntologyData();
             data.DeclareNegativeObjectAssertion(new RDFResource("ex:indivA"), new RDFResource("ex:objProp"), new RDFResource("ex:indivB"));
@@ -582,30 +456,10 @@ namespace RDFSharp.Semantics.Test
                         .DeclareDatatypeAssertion(new RDFResource("ex:indivA"), RDFVocabulary.FOAF.NAME, null));
 
         [TestMethod]
-        public void ShouldNotEmitWarningOnDeclaringDatatypeAssertionEvenWhenReservedProperty()
-        {
-            string warningMsg = null;
-            RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            //Permissive policy avoids most of real-time OWL-DL safety checks (at the cost of ontology integrity)
-            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Permissive;
-
-            RDFOntologyData data = new RDFOntologyData();
-            data.DeclareDatatypeAssertion(new RDFResource("ex:indivA"), RDFVocabulary.RDFS.SEE_ALSO, new RDFPlainLiteral("name")); //Reserved annotation property (permitted by policy)
-
-            Assert.IsNull(warningMsg);
-            Assert.IsTrue(data.ABoxGraph.TriplesCount == 1);
-            Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivA"), RDFVocabulary.RDFS.SEE_ALSO, null, new RDFPlainLiteral("name")].Any());
-        }
-
-        [TestMethod]
         public void ShouldEmitWarningOnDeclaringDatatypeAssertionBecauseReservedProperty()
         {
             string warningMsg = null;
             RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            //Strict policy executes most of real-time OWL-DL safety checks (at the cost of performances)
-            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Strict;
 
             RDFOntologyData data = new RDFOntologyData();
             data.DeclareDatatypeAssertion(new RDFResource("ex:indivA"), RDFVocabulary.RDFS.SEE_ALSO, new RDFPlainLiteral("name")); //Reserved annotation property (not allowed by policy)
@@ -616,35 +470,10 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
-        public void ShouldNotEmitWarningOnDeclaringDatatypeAssertionEvenWhenIncompatibleDatatypeAssertion()
-        {
-            string warningMsg = null;
-            RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            //Permissive policy avoids most of real-time OWL-DL safety checks (at the cost of ontology integrity)
-            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Permissive;
-
-            RDFOntologyData data = new RDFOntologyData();
-            data.DeclareNegativeDatatypeAssertion(new RDFResource("ex:indivA"), new RDFResource("ex:dtProp"), new RDFPlainLiteral("name"));
-            data.DeclareDatatypeAssertion(new RDFResource("ex:indivA"), new RDFResource("ex:dtProp"), new RDFPlainLiteral("name")); //OWL-DL contraddiction (permitted by policy)
-
-            Assert.IsNull(warningMsg);
-            Assert.IsTrue(data.ABoxGraph.TriplesCount == 5);
-            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION, null].Any());
-            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.SOURCE_INDIVIDUAL, new RDFResource("ex:indivA"), null].Any());
-            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.ASSERTION_PROPERTY, new RDFResource("ex:dtProp"), null].Any());
-            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.TARGET_VALUE, null, new RDFPlainLiteral("name")].Any());
-            Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivA"), new RDFResource("ex:dtProp"), null, new RDFPlainLiteral("name")].Any());
-        }
-
-        [TestMethod]
         public void ShouldEmitWarningOnDeclaringDatatypeAssertionBecauseIncompatibleDatatypeAssertion()
         {
             string warningMsg = null;
             RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            //Strict policy executes most of real-time OWL-DL safety checks (at the cost of performances)
-            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Strict;
 
             RDFOntologyData data = new RDFOntologyData();
             data.DeclareNegativeDatatypeAssertion(new RDFResource("ex:indivA"), new RDFResource("ex:dtProp"), new RDFPlainLiteral("name"));
@@ -693,33 +522,10 @@ namespace RDFSharp.Semantics.Test
                         .DeclareNegativeObjectAssertion(new RDFResource("ex:indivA"), RDFVocabulary.FOAF.KNOWS, null));
 
         [TestMethod]
-        public void ShouldNotEmitWarningOnDeclaringNegativeObjectAssertionEvenWhenReservedProperty()
-        {
-            string warningMsg = null;
-            RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            //Permissive policy avoids most of real-time OWL-DL safety checks (at the cost of ontology integrity)
-            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Permissive;
-
-            RDFOntologyData data = new RDFOntologyData();
-            data.DeclareNegativeObjectAssertion(new RDFResource("ex:indivA"), RDFVocabulary.RDFS.SEE_ALSO, new RDFResource("ex:indivB")); //Reserved annotation property (permitted by policy)
-
-            Assert.IsNull(warningMsg);
-            Assert.IsTrue(data.ABoxGraph.TriplesCount == 4);
-            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION, null].Any());
-            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.SOURCE_INDIVIDUAL, new RDFResource("ex:indivA"), null].Any());
-            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.ASSERTION_PROPERTY, RDFVocabulary.RDFS.SEE_ALSO, null].Any());
-            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.TARGET_INDIVIDUAL, new RDFResource("ex:indivB"), null].Any());
-        }
-
-        [TestMethod]
         public void ShouldEmitWarningOnDeclaringNegativeObjectAssertionBecauseReservedProperty()
         {
             string warningMsg = null;
             RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            //Strict policy executes most of real-time OWL-DL safety checks (at the cost of performances)
-            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Strict;
 
             RDFOntologyData data = new RDFOntologyData();
             data.DeclareNegativeObjectAssertion(new RDFResource("ex:indivA"), RDFVocabulary.RDFS.SEE_ALSO, new RDFResource("ex:indivB")); //Reserved annotation property (not allowed by policy)
@@ -730,35 +536,10 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
-        public void ShouldNotEmitWarningOnDeclaringNegativeObjectAssertionEvenWhenIncompatibleNegativeObjectAssertion()
-        {
-            string warningMsg = null;
-            RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            //Permissive policy avoids most of real-time OWL-DL safety checks (at the cost of ontology integrity)
-            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Permissive;
-
-            RDFOntologyData data = new RDFOntologyData();
-            data.DeclareObjectAssertion(new RDFResource("ex:indivA"), new RDFResource("ex:objProp"), new RDFResource("ex:indivB"));
-            data.DeclareNegativeObjectAssertion(new RDFResource("ex:indivA"), new RDFResource("ex:objProp"), new RDFResource("ex:indivB")); //OWL-DL contraddiction (permitted by policy)
-
-            Assert.IsNull(warningMsg);
-            Assert.IsTrue(data.ABoxGraph.TriplesCount == 5);
-            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION, null].Any());
-            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.SOURCE_INDIVIDUAL, new RDFResource("ex:indivA"), null].Any());
-            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.ASSERTION_PROPERTY, new RDFResource("ex:objProp"), null].Any());
-            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.TARGET_INDIVIDUAL, new RDFResource("ex:indivB"), null].Any());
-            Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivA"), new RDFResource("ex:objProp"), new RDFResource("ex:indivB"), null].Any());
-        }
-
-        [TestMethod]
         public void ShouldEmitWarningOnDeclaringNegativeObjectAssertionBecauseIncompatibleNegativeObjectAssertion()
         {
             string warningMsg = null;
             RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            //Strict policy executes most of real-time OWL-DL safety checks (at the cost of performances)
-            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Strict;
 
             RDFOntologyData data = new RDFOntologyData();
             data.DeclareObjectAssertion(new RDFResource("ex:indivA"), new RDFResource("ex:objProp"), new RDFResource("ex:indivB"));
@@ -804,33 +585,10 @@ namespace RDFSharp.Semantics.Test
                         .DeclareNegativeDatatypeAssertion(new RDFResource("ex:indivA"), RDFVocabulary.FOAF.NAME, null));
 
         [TestMethod]
-        public void ShouldNotEmitWarningOnDeclaringNegativeDatatypeAssertionEvenWhenReservedProperty()
-        {
-            string warningMsg = null;
-            RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            //Permissive policy avoids most of real-time OWL-DL safety checks (at the cost of ontology integrity)
-            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Permissive;
-
-            RDFOntologyData data = new RDFOntologyData();
-            data.DeclareNegativeDatatypeAssertion(new RDFResource("ex:indivA"), RDFVocabulary.RDFS.SEE_ALSO, new RDFPlainLiteral("name")); //Reserved annotation property (permitted by policy)
-
-            Assert.IsNull(warningMsg);
-            Assert.IsTrue(data.ABoxGraph.TriplesCount == 4);
-            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION, null].Any());
-            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.SOURCE_INDIVIDUAL, new RDFResource("ex:indivA"), null].Any());
-            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.ASSERTION_PROPERTY, RDFVocabulary.RDFS.SEE_ALSO, null].Any());
-            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.TARGET_VALUE, null, new RDFPlainLiteral("name")].Any());
-        }
-
-        [TestMethod]
         public void ShouldEmitWarningOnDeclaringNegativeDatatypeAssertionBecauseReservedProperty()
         {
             string warningMsg = null;
             RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            //Strict policy executes most of real-time OWL-DL safety checks (at the cost of performances)
-            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Strict;
 
             RDFOntologyData data = new RDFOntologyData();
             data.DeclareNegativeDatatypeAssertion(new RDFResource("ex:indivA"), RDFVocabulary.RDFS.SEE_ALSO, new RDFPlainLiteral("name")); //Reserved annotation property (not allowed by policy)
@@ -841,35 +599,10 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
-        public void ShouldNotEmitWarningOnDeclaringNegativeDatatypeAssertionEvenWhenIncompatibleNegativeDatatypeAssertion()
-        {
-            string warningMsg = null;
-            RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            //Permissive policy avoids most of real-time OWL-DL safety checks (at the cost of ontology integrity)
-            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Permissive;
-
-            RDFOntologyData data = new RDFOntologyData();
-            data.DeclareDatatypeAssertion(new RDFResource("ex:indivA"), new RDFResource("ex:dtProp"), new RDFPlainLiteral("name"));
-            data.DeclareNegativeDatatypeAssertion(new RDFResource("ex:indivA"), new RDFResource("ex:dtProp"), new RDFPlainLiteral("name")); //OWL-DL contraddiction (permitted by policy)
-
-            Assert.IsNull(warningMsg);
-            Assert.IsTrue(data.ABoxGraph.TriplesCount == 5);
-            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION, null].Any());
-            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.SOURCE_INDIVIDUAL, new RDFResource("ex:indivA"), null].Any());
-            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.ASSERTION_PROPERTY, new RDFResource("ex:dtProp"), null].Any());
-            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.TARGET_VALUE, null, new RDFPlainLiteral("name")].Any());
-            Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivA"), new RDFResource("ex:dtProp"), null, new RDFPlainLiteral("name")].Any());
-        }
-
-        [TestMethod]
         public void ShouldEmitWarningOnDeclaringNegativeDatatypeAssertionBecauseIncompatibleNegativeDatatypeAssertion()
         {
             string warningMsg = null;
             RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            //Strict policy executes most of real-time OWL-DL safety checks (at the cost of performances)
-            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Strict;
 
             RDFOntologyData data = new RDFOntologyData();
             data.DeclareDatatypeAssertion(new RDFResource("ex:indivA"), new RDFResource("ex:dtProp"), new RDFPlainLiteral("name"));

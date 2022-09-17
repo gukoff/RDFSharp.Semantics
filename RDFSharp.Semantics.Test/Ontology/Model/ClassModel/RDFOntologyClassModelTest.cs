@@ -1108,37 +1108,10 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
-        public void ShouldNotEmitWarningOnDeclaringSubClassesEvenWhenIncompatibleClasses()
-        {
-            string warningMsg = null;
-            RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            //Permissive policy avoids most of real-time OWL-DL safety checks (at the cost of ontology integrity)
-            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Permissive;
-
-            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
-            classModel.DeclareClass(new RDFResource("ex:classA"));
-            classModel.DeclareClass(new RDFResource("ex:classB"));
-            classModel.DeclareSubClasses(new RDFResource("ex:classB"), new RDFResource("ex:classA"));
-            classModel.DeclareSubClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB")); //OWL-DL contraddiction (permitted by policy)
-
-            Assert.IsNull(warningMsg);
-            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 4);
-            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
-            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
-            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.RDFS.SUB_CLASS_OF, new RDFResource("ex:classA"))));
-            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDFS.SUB_CLASS_OF, new RDFResource("ex:classB"))));
-            Assert.IsTrue(classModel.TBoxInferenceGraph.TriplesCount == 0);
-        }
-
-        [TestMethod]
         public void ShouldEmitWarningOnDeclaringSubClassesBecauseIncompatibleClasses()
         {
             string warningMsg = null;
             RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            //Strict policy executes most of real-time OWL-DL safety checks (at the cost of performances)
-            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Strict;
 
             RDFOntologyClassModel classModel = new RDFOntologyClassModel();
             classModel.DeclareClass(new RDFResource("ex:classA"));
@@ -1191,38 +1164,10 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
-        public void ShouldNotEmitWarningOnDeclaringEquivalentClassesEvenWhenIncompatibleClasses()
-        {
-            string warningMsg = null;
-            RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            //Permissive policy avoids most of real-time OWL-DL safety checks (at the cost of ontology integrity)
-            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Permissive;
-
-            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
-            classModel.DeclareClass(new RDFResource("ex:classA"));
-            classModel.DeclareClass(new RDFResource("ex:classB"));
-            classModel.DeclareSubClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
-            classModel.DeclareEquivalentClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB")); //OWL-DL contraddiction (permitted by policy)
-
-            Assert.IsNull(warningMsg);
-            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 4);
-            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
-            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
-            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDFS.SUB_CLASS_OF, new RDFResource("ex:classB"))));
-            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.OWL.EQUIVALENT_CLASS, new RDFResource("ex:classB"))));
-            Assert.IsTrue(classModel.TBoxInferenceGraph.TriplesCount == 1);
-            Assert.IsTrue(classModel.TBoxInferenceGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.OWL.EQUIVALENT_CLASS, new RDFResource("ex:classA"))));
-        }
-
-        [TestMethod]
         public void ShouldEmitWarningOnDeclaringEquivalentClassesBecauseIncompatibleClasses()
         {
             string warningMsg = null;
             RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            //Strict policy executes most of real-time OWL-DL safety checks (at the cost of performances)
-            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Strict;
 
             RDFOntologyClassModel classModel = new RDFOntologyClassModel();
             classModel.DeclareClass(new RDFResource("ex:classA"));
@@ -1275,38 +1220,10 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
-        public void ShouldNotEmitWarningOnDeclaringDisjointClassesEvenWhenIncompatibleClasses()
-        {
-            string warningMsg = null;
-            RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            //Permissive policy avoids most of real-time OWL-DL safety checks (at the cost of ontology integrity)
-            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Permissive;
-
-            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
-            classModel.DeclareClass(new RDFResource("ex:classA"));
-            classModel.DeclareClass(new RDFResource("ex:classB"));
-            classModel.DeclareSubClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
-            classModel.DeclareDisjointClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB")); //OWL-DL contraddiction (permitted by policy)
-
-            Assert.IsNull(warningMsg);
-            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 4);
-            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
-            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
-            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDFS.SUB_CLASS_OF, new RDFResource("ex:classB"))));
-            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.OWL.DISJOINT_WITH, new RDFResource("ex:classB"))));
-            Assert.IsTrue(classModel.TBoxInferenceGraph.TriplesCount == 1);
-            Assert.IsTrue(classModel.TBoxInferenceGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.OWL.DISJOINT_WITH, new RDFResource("ex:classA"))));
-        }
-
-        [TestMethod]
         public void ShouldEmitWarningOnDeclaringDisjointClassesBecauseIncompatibleClasses()
         {
             string warningMsg = null;
             RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            //Strict policy executes most of real-time OWL-DL safety checks (at the cost of performances)
-            RDFSemanticsOptions.OWLDLIntegrityPolicy = RDFSemanticsEnums.RDFOntologyOWLDLIntegrityPolicy.Strict;
 
             RDFOntologyClassModel classModel = new RDFOntologyClassModel();
             classModel.DeclareClass(new RDFResource("ex:classA"));

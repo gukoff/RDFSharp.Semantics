@@ -606,8 +606,8 @@ namespace RDFSharp.Semantics
             if (childProperty.Equals(motherProperty))
                 throw new RDFSemanticsException("Cannot declare rdfs:subPropertyOf relation to the model because given \"childProperty\" parameter refers to the same property as the given \"motherProperty\" parameter");
 
-            //Add knowledge to the T-BOX (or raise warning if integrity policy is active and violations are detected)
-            if (!RDFSemanticsOptions.ShouldCheckOWLDLIntegrity || OWLDLIntegrityChecks())
+            //Add knowledge to the T-BOX (or raise warning if violations are detected)
+            if (OWLDLIntegrityChecks())
                 TBoxGraph.AddTriple(new RDFTriple(childProperty, RDFVocabulary.RDFS.SUB_PROPERTY_OF, motherProperty));
             else
                 RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("SubProperty relation between property '{0}' and property '{1}' cannot be declared to the model because it would violate OWL-DL integrity", childProperty, motherProperty));
@@ -634,8 +634,8 @@ namespace RDFSharp.Semantics
             if (leftProperty.Equals(rightProperty))
                 throw new RDFSemanticsException("Cannot declare owl:equivalentProperty relation to the model because given \"leftProperty\" parameter refers to the same property as the given \"rightProperty\" parameter");
 
-            //Add knowledge to the T-BOX (or raise warning if integrity policy is active and violations are detected)
-            if (!RDFSemanticsOptions.ShouldCheckOWLDLIntegrity || OWLDLIntegrityChecks())
+            //Add knowledge to the T-BOX (or raise warning if violations are detected)
+            if (OWLDLIntegrityChecks())
             {
                 TBoxGraph.AddTriple(new RDFTriple(leftProperty, RDFVocabulary.OWL.EQUIVALENT_PROPERTY, rightProperty));
 
@@ -667,8 +667,8 @@ namespace RDFSharp.Semantics
             if (leftProperty.Equals(rightProperty))
                 throw new RDFSemanticsException("Cannot declare owl:propertyDisjointWith relation to the model because given \"leftProperty\" parameter refers to the same property as the given \"rightProperty\" parameter");
 
-            //Add knowledge to the T-BOX (or raise warning if integrity policy is active and violations are detected)
-            if (!RDFSemanticsOptions.ShouldCheckOWLDLIntegrity || OWLDLIntegrityChecks())
+            //Add knowledge to the T-BOX (or raise warning if violations are detected)
+            if (OWLDLIntegrityChecks())
             {
                 TBoxGraph.AddTriple(new RDFTriple(leftProperty, RDFVocabulary.OWL.PROPERTY_DISJOINT_WITH, rightProperty));
 
@@ -722,8 +722,8 @@ namespace RDFSharp.Semantics
             if (leftProperty.Equals(rightProperty))
                 throw new RDFSemanticsException("Cannot declare owl:inverseOf relation to the model because given \"leftProperty\" parameter refers to the same property as the given \"rightProperty\" parameter");
 
-            //Add knowledge to the T-BOX (or raise warning if integrity policy is active and violations are detected)
-            if (!RDFSemanticsOptions.ShouldCheckOWLDLIntegrity || OWLDLIntegrityChecks())
+            //Add knowledge to the T-BOX (or raise warning if violations are detected)
+            if (OWLDLIntegrityChecks())
             {
                 TBoxGraph.AddTriple(new RDFTriple(leftProperty, RDFVocabulary.OWL.INVERSE_OF, rightProperty));
 
@@ -753,8 +753,8 @@ namespace RDFSharp.Semantics
             if (chainProperties.Any(chainAxiomPropertyStep => chainAxiomPropertyStep.Equals(owlProperty)))
                 throw new RDFSemanticsException("Cannot declare owl:propertyChainAxiom relation to the model because given \"owlProperty\" parameter is contained in the given \"chainProperties\" parameter");
 
-            //Add knowledge to the T-BOX (or raise warning if integrity policy is active and violations are detected)
-            if (!RDFSemanticsOptions.ShouldCheckOWLDLIntegrity || OWLDLIntegrityChecks())
+            //Add knowledge to the T-BOX (or raise warning if violations are detected)
+            if (OWLDLIntegrityChecks())
             {
                 RDFCollection chainPropertiesCollection = new RDFCollection(RDFModelEnums.RDFItemTypes.Resource);
                 chainProperties.ForEach(chainProperty => chainPropertiesCollection.AddItem(chainProperty));

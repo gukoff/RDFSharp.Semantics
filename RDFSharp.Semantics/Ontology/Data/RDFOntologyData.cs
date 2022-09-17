@@ -189,8 +189,8 @@ namespace RDFSharp.Semantics
             if (owlClass == null)
                 throw new RDFSemanticsException("Cannot declare rdf:type relation to the data because given \"owlClass\" parameter is null");
 
-            //Add knowledge to the A-BOX (or raise warning if integrity policy is active and violations are detected)
-            if (!RDFSemanticsOptions.ShouldCheckOWLDLIntegrity || OWLDLIntegrityChecks())
+            //Add knowledge to the A-BOX (or raise warning if violations are detected)
+            if (OWLDLIntegrityChecks())
                 ABoxGraph.AddTriple(new RDFTriple(owlIndividual, RDFVocabulary.RDF.TYPE, owlClass));
             else
                 RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("Type relation between individual '{0}' and class '{1}' cannot be declared to the data because it would violate OWL-DL integrity", owlIndividual, owlClass));
@@ -215,8 +215,8 @@ namespace RDFSharp.Semantics
             if (leftIndividual.Equals(rightIndividual))
                 throw new RDFSemanticsException("Cannot declare owl:sameAs relation to the data because given \"leftIndividual\" parameter refers to the same individual as the given \"rightIndividual\" parameter");
 
-            //Add knowledge to the A-BOX (or raise warning if integrity policy is active and violations are detected)
-            if (!RDFSemanticsOptions.ShouldCheckOWLDLIntegrity || OWLDLIntegrityChecks())
+            //Add knowledge to the A-BOX (or raise warning if violations are detected)
+            if (OWLDLIntegrityChecks())
             {
                 ABoxGraph.AddTriple(new RDFTriple(leftIndividual, RDFVocabulary.OWL.SAME_AS, rightIndividual));
 
@@ -246,8 +246,8 @@ namespace RDFSharp.Semantics
             if (leftIndividual.Equals(rightIndividual))
                 throw new RDFSemanticsException("Cannot declare owl:differentFrom relation to the data because given \"leftIndividual\" parameter refers to the same individual as the given \"rightIndividual\" parameter");
 
-            //Add knowledge to the A-BOX (or raise warning if integrity policy is active and violations are detected)
-            if (!RDFSemanticsOptions.ShouldCheckOWLDLIntegrity || OWLDLIntegrityChecks())
+            //Add knowledge to the A-BOX (or raise warning if violations are detected)
+            if (OWLDLIntegrityChecks())
             {
                 ABoxGraph.AddTriple(new RDFTriple(leftIndividual, RDFVocabulary.OWL.DIFFERENT_FROM, rightIndividual));
 
@@ -302,8 +302,8 @@ namespace RDFSharp.Semantics
             if (rightIndividual == null)
                 throw new RDFSemanticsException("Cannot declare object assertion relation to the data because given \"rightIndividual\" parameter is null");
 
-            //Add knowledge to the A-BOX (or raise warning if integrity policy is active and violations are detected)
-            if (!RDFSemanticsOptions.ShouldCheckOWLDLIntegrity || OWLDLIntegrityChecks())
+            //Add knowledge to the A-BOX (or raise warning if violations are detected)
+            if (OWLDLIntegrityChecks())
                 ABoxGraph.AddTriple(new RDFTriple(leftIndividual, objectProperty, rightIndividual));
             else
                 RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("ObjectAssertion relation between individual '{0}' and individual '{1}' through property '{2}' cannot be declared to the data because it would violate OWL-DL integrity", leftIndividual, rightIndividual, objectProperty));
@@ -331,8 +331,8 @@ namespace RDFSharp.Semantics
             if (value == null)
                 throw new RDFSemanticsException("Cannot declare datatype assertion relation to the data because given \"value\" parameter is null");
 
-            //Add knowledge to the A-BOX (or raise warning if integrity policy is active and violations are detected)
-            if (!RDFSemanticsOptions.ShouldCheckOWLDLIntegrity || OWLDLIntegrityChecks())
+            //Add knowledge to the A-BOX (or raise warning if violations are detected)
+            if (OWLDLIntegrityChecks())
                 ABoxGraph.AddTriple(new RDFTriple(individual, datatypeProperty, value));
             else
                 RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("DatatypeAssertion relation between individual '{0}' and value '{1}' through property '{2}' cannot be declared to the data because it would violate OWL-DL integrity", individual, value, datatypeProperty));
@@ -360,8 +360,8 @@ namespace RDFSharp.Semantics
             if (rightIndividual == null)
                 throw new RDFSemanticsException("Cannot declare negative object assertion relation to the data because given \"rightIndividual\" parameter is null");
 
-            //Add knowledge to the A-BOX (or raise warning if integrity policy is active and violations are detected)
-            if (!RDFSemanticsOptions.ShouldCheckOWLDLIntegrity || OWLDLIntegrityChecks())
+            //Add knowledge to the A-BOX (or raise warning if violations are detected)
+            if (OWLDLIntegrityChecks())
             {
                 RDFTriple negativeObjectAssertion = new RDFTriple(leftIndividual, objectProperty, rightIndividual);
                 ABoxGraph.AddTriple(new RDFTriple(negativeObjectAssertion.ReificationSubject, RDFVocabulary.OWL.SOURCE_INDIVIDUAL, leftIndividual));
@@ -395,8 +395,8 @@ namespace RDFSharp.Semantics
             if (value == null)
                 throw new RDFSemanticsException("Cannot declare negative datatype assertion relation to the data because given \"value\" parameter is null");
 
-            //Add knowledge to the A-BOX (or raise warning if integrity policy is active and violations are detected)
-            if (!RDFSemanticsOptions.ShouldCheckOWLDLIntegrity || OWLDLIntegrityChecks())
+            //Add knowledge to the A-BOX (or raise warning if violations are detected)
+            if (OWLDLIntegrityChecks())
             {
                 RDFTriple negativeDatatypeAssertion = new RDFTriple(individual, datatypeProperty, value);
                 ABoxGraph.AddTriple(new RDFTriple(negativeDatatypeAssertion.ReificationSubject, RDFVocabulary.OWL.SOURCE_INDIVIDUAL, individual));

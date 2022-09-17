@@ -616,7 +616,43 @@ namespace RDFSharp.Semantics.Test
         #endregion
 
         #region Analyzer
+        [TestMethod]
+        public void ShouldCheckAreSubClasses()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareClass(new RDFResource("ex:classC"));
+            classModel.DeclareClass(new RDFResource("ex:classD"));
+            classModel.DeclareSubClasses(new RDFResource("ex:classB"), new RDFResource("ex:classA"));
+            classModel.DeclareSubClasses(new RDFResource("ex:classC"), new RDFResource("ex:classB"));
+            classModel.DeclareEquivalentClasses(new RDFResource("ex:classC"), new RDFResource("ex:classD"));
 
+            Assert.IsTrue(classModel.CheckAreSubClasses(new RDFResource("ex:classB"), new RDFResource("ex:classA")));
+            Assert.IsTrue(classModel.CheckAreSubClasses(new RDFResource("ex:classC"), new RDFResource("ex:classB")));
+            Assert.IsTrue(classModel.CheckAreSubClasses(new RDFResource("ex:classC"), new RDFResource("ex:classA"))); //Inferred
+            Assert.IsTrue(classModel.CheckAreSubClasses(new RDFResource("ex:classD"), new RDFResource("ex:classB"))); //Inferred
+            Assert.IsTrue(classModel.CheckAreSubClasses(new RDFResource("ex:classD"), new RDFResource("ex:classA"))); //Inferred
+        }
+
+        [TestMethod]
+        public void ShouldCheckAreSuperClasses()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareClass(new RDFResource("ex:classC"));
+            classModel.DeclareClass(new RDFResource("ex:classD"));
+            classModel.DeclareSubClasses(new RDFResource("ex:classB"), new RDFResource("ex:classA"));
+            classModel.DeclareSubClasses(new RDFResource("ex:classC"), new RDFResource("ex:classB"));
+            classModel.DeclareEquivalentClasses(new RDFResource("ex:classC"), new RDFResource("ex:classD"));
+
+            Assert.IsTrue(classModel.CheckAreSuperClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB")));
+            Assert.IsTrue(classModel.CheckAreSuperClasses(new RDFResource("ex:classB"), new RDFResource("ex:classC")));
+            Assert.IsTrue(classModel.CheckAreSuperClasses(new RDFResource("ex:classA"), new RDFResource("ex:classC"))); //Inferred
+            Assert.IsTrue(classModel.CheckAreSuperClasses(new RDFResource("ex:classB"), new RDFResource("ex:classD"))); //Inferred
+            Assert.IsTrue(classModel.CheckAreSuperClasses(new RDFResource("ex:classA"), new RDFResource("ex:classD"))); //Inferred
+        }
         #endregion
 
         #region Checker

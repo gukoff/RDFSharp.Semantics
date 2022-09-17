@@ -717,8 +717,8 @@ namespace RDFSharp.Semantics
             if (childClass.Equals(motherClass))
                 throw new RDFSemanticsException("Cannot declare rdfs:subClassOf relation to the model because given \"childClass\" parameter refers to the same class as the given \"motherClass\" parameter");
 
-            //Add knowledge to the T-BOX (or raise warning if integrity policy is active and violations are detected)
-            if (!RDFSemanticsOptions.ShouldCheckOWLDLIntegrity || OWLDLIntegrityChecks())
+            //Add knowledge to the T-BOX (or raise warning if violations are detected)
+            if (OWLDLIntegrityChecks())
                 TBoxGraph.AddTriple(new RDFTriple(childClass, RDFVocabulary.RDFS.SUB_CLASS_OF, motherClass));
             else
                 RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("SubClass relation between class '{0}' and class '{1}' cannot be declared to the model because it would violate OWL-DL integrity", childClass, motherClass));
@@ -745,8 +745,8 @@ namespace RDFSharp.Semantics
             if (leftClass.Equals(rightClass))
                 throw new RDFSemanticsException("Cannot declare owl:equivalentClass relation to the model because given \"leftClass\" parameter refers to the same class as the given \"rightClass\" parameter");
 
-            //Add knowledge to the T-BOX (or raise warning if integrity policy is active and violations are detected)
-            if (!RDFSemanticsOptions.ShouldCheckOWLDLIntegrity || OWLDLIntegrityChecks())
+            //Add knowledge to the T-BOX (or raise warning if violations are detected)
+            if (OWLDLIntegrityChecks())
             {
                 TBoxGraph.AddTriple(new RDFTriple(leftClass, RDFVocabulary.OWL.EQUIVALENT_CLASS, rightClass));
 
@@ -778,8 +778,8 @@ namespace RDFSharp.Semantics
             if (leftClass.Equals(rightClass))
                 throw new RDFSemanticsException("Cannot declare owl:disjointWith relation to the model because given \"leftClass\" parameter refers to the same class as the given \"rightClass\" parameter");
 
-            //Add knowledge to the T-BOX (or raise warning if integrity policy is active and violations are detected)
-            if (!RDFSemanticsOptions.ShouldCheckOWLDLIntegrity || OWLDLIntegrityChecks())
+            //Add knowledge to the T-BOX (or raise warning if violations are detected)
+            if (OWLDLIntegrityChecks())
             {
                 TBoxGraph.AddTriple(new RDFTriple(leftClass, RDFVocabulary.OWL.DISJOINT_WITH, rightClass));
 
