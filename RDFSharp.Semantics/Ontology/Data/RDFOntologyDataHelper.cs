@@ -29,7 +29,7 @@ namespace RDFSharp.Semantics
     /// </summary>
     public static class RDFOntologyDataHelper
     {
-        #region Analyzer
+        #region Declarer
         /// <summary>
         /// Checks for the existence of the given owl:NamedIndividual declaration within the data
         /// </summary>
@@ -97,7 +97,9 @@ namespace RDFSharp.Semantics
             }
             return false;
         }
+        #endregion
 
+        #region Analyzer
         /// <summary>
         /// Checks for the existence of "SameAs(leftIndividual,rightIndividual)" relations within the data
         /// </summary>

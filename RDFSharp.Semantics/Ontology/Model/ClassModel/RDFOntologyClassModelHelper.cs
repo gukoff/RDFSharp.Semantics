@@ -26,7 +26,7 @@ namespace RDFSharp.Semantics
     /// </summary>
     public static class RDFOntologyClassModelHelper
     {
-        #region Analyzer
+        #region Declarer
         /// <summary>
         /// Checks for the existence of the given owl:Class declaration within the model
         /// </summary>
@@ -211,7 +211,9 @@ namespace RDFSharp.Semantics
         /// </summary>
         public static bool CheckHasAnnotation(this RDFOntologyClassModel classModel, RDFResource owlClass, RDFResource annotationProperty, RDFLiteral annotationValue)
             => owlClass != null && annotationProperty != null && annotationValue != null && classModel != null && classModel.TBoxGraph.ContainsTriple(new RDFTriple(owlClass, annotationProperty, annotationValue));
+        #endregion
 
+        #region Analyzer
         /// <summary>
         /// Checks for the existence of "SubClass(childClass,motherClass)" relations within the model
         /// </summary>

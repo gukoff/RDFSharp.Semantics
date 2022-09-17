@@ -25,7 +25,54 @@ namespace RDFSharp.Semantics.Test
     [TestClass]
     public class RDFOntologyClassModelHelperTest
     {
-        #region Test
+        #region Declarer
+        [TestMethod]
+        public void ShouldCheckHasClass()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+
+            Assert.IsTrue(classModel.CheckHasClass(new RDFResource("ex:classA")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckHasNotClass()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+
+            Assert.IsFalse(classModel.CheckHasClass(new RDFResource("ex:classB")));
+            Assert.IsFalse(classModel.CheckHasClass(null));
+            Assert.IsFalse(new RDFOntologyClassModel().CheckHasClass(new RDFResource("ex:classA")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckHasDeprecatedClass()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"), new RDFOntologyClassBehavior() { Deprecated = true });
+
+            Assert.IsTrue(classModel.CheckHasDeprecatedClass(new RDFResource("ex:classA")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckHasNotDeprecatedClass()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"), new RDFOntologyClassBehavior() { Deprecated = false });
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+
+            Assert.IsFalse(classModel.CheckHasDeprecatedClass(new RDFResource("ex:classA")));
+            Assert.IsFalse(classModel.CheckHasDeprecatedClass(new RDFResource("ex:classB")));
+            Assert.IsFalse(classModel.CheckHasDeprecatedClass(null));
+        }
+        #endregion
+
+        #region Analyzer
+
+        #endregion
+
+        #region Checker
 
         #endregion
     }

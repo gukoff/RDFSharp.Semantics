@@ -25,7 +25,15 @@ namespace RDFSharp.Semantics.Test
     [TestClass]
     public class RDFOntologyPropertyModelHelperTest
     {
-        #region Test
+        #region Declarer
+
+        #endregion
+
+        #region Analyzer
+
+        #endregion
+
+        #region Checker
 
         #endregion
     }

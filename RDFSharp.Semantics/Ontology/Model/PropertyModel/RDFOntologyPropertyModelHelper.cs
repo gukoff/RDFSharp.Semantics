@@ -27,7 +27,7 @@ namespace RDFSharp.Semantics
     /// </summary>
     public static class RDFOntologyPropertyModelHelper
     {
-        #region Analyzer
+        #region Declarer
         /// <summary>
         /// Checks for the existence of the given owl:Property declaration within the model
         /// </summary>
@@ -129,7 +129,9 @@ namespace RDFSharp.Semantics
         public static bool CheckHasPropertyChainAxiom(this RDFOntologyPropertyModel propertyModel, RDFResource owlProperty)
             => CheckHasObjectProperty(propertyModel, owlProperty)
                 && propertyModel.TBoxGraph.Any(t => t.Subject.Equals(owlProperty) && t.Predicate.Equals(RDFVocabulary.OWL.PROPERTY_CHAIN_AXIOM));
+        #endregion
 
+        #region Analyzer
         /// <summary>
         /// Checks for the existence of "SubProperty(childProperty,motherProperty)" relations within the model
         /// </summary>

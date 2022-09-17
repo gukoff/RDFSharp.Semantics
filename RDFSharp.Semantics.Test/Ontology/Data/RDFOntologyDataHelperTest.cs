@@ -23,7 +23,7 @@ namespace RDFSharp.Semantics.Test
     [TestClass]
     public class RDFOntologyDataHelperTest
     {
-        #region Analyzer
+        #region Declarer
         [TestMethod]
         public void ShouldCheckHasIndividual()
         {
@@ -185,7 +185,9 @@ namespace RDFSharp.Semantics.Test
             Assert.IsFalse(data.CheckHasNegativeDatatypeAssertion(new RDFResource("ex:indivA"), null, new RDFTypedLiteral("25", RDFModelEnums.RDFDatatypes.XSD_INTEGER)));
             Assert.IsFalse(data.CheckHasNegativeDatatypeAssertion(new RDFResource("ex:indivA"), RDFVocabulary.FOAF.AGE, null));
         }
+        #endregion
 
+        #region Analyzer
         [TestMethod]
         public void ShouldCheckAreSameIndividuals()
         {
