@@ -541,6 +541,8 @@ namespace RDFSharp.Semantics
                 throw new RDFSemanticsException("Cannot declare owl:unionOf class to the model because given \"unionClasses\" parameter is null");
             if (unionClasses.Count == 0)
                 throw new RDFSemanticsException("Cannot declare owl:unionOf class to the model because given \"unionClasses\" parameter is an empty list");
+            if (unionClasses.Any(cls => cls.Equals(owlClass)))
+                throw new RDFSemanticsException("Cannot declare owl:unionOf class to the model because given \"unionClasses\" parameter contains given \"owlClass\" element, which is not allowed");
 
             //Add class to the model
             DeclareClass(owlClass);
@@ -565,6 +567,8 @@ namespace RDFSharp.Semantics
                 throw new RDFSemanticsException("Cannot declare owl:intersectionOf class to the model because given \"intersectionClasses\" parameter is null");
             if (intersectionClasses.Count == 0)
                 throw new RDFSemanticsException("Cannot declare owl:intersectionOf class to the model because given \"intersectionClasses\" parameter is an empty list");
+            if (intersectionClasses.Any(cls => cls.Equals(owlClass)))
+                throw new RDFSemanticsException("Cannot declare owl:intersectionOf class to the model because given \"intersectionClasses\" parameter contains given \"owlClass\" element, which is not allowed");
 
             //Declare class to the model
             DeclareClass(owlClass);
@@ -587,6 +591,8 @@ namespace RDFSharp.Semantics
                 throw new RDFSemanticsException("Cannot declare owl:complementOf class to the model because given \"owlClass\" parameter is null");
             if (complementClass == null)
                 throw new RDFSemanticsException("Cannot declare owl:complementOf class to the model because given \"complementClass\" parameter is null");
+            if (owlClass.Equals(complementClass))
+                throw new RDFSemanticsException("Cannot declare owl:complementOf class to the model because given \"owlClass\" parameter corresponds to given \"complementClass\" parameter, which is not allowed");
 
             //Declare class to the model
             DeclareClass(owlClass);

@@ -824,6 +824,10 @@ namespace RDFSharp.Semantics.Test
             => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel().DeclareUnionClass(new RDFResource("ex:unionClass"), new List<RDFResource>()));
 
         [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringUnionClassBecauseSelfClass()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel().DeclareUnionClass(new RDFResource("ex:class1"), new List<RDFResource>() { new RDFResource("ex:class1"), new RDFResource("ex:class2") }));
+
+        [TestMethod]
         public void ShouldDeclareIntersectionClass()
         {
             RDFOntologyClassModel classModel = new RDFOntologyClassModel();
@@ -874,6 +878,10 @@ namespace RDFSharp.Semantics.Test
             => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel().DeclareIntersectionClass(new RDFResource("ex:intersectionClass"), new List<RDFResource>()));
 
         [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringIntersectionClassBecauseSelfClass()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel().DeclareIntersectionClass(new RDFResource("ex:class1"), new List<RDFResource>() { new RDFResource("ex:class1"), new RDFResource("ex:class2") }));
+
+        [TestMethod]
         public void ShouldDeclareComplementClass()
         {
             RDFOntologyClassModel classModel = new RDFOntologyClassModel();
@@ -910,6 +918,10 @@ namespace RDFSharp.Semantics.Test
         [TestMethod]
         public void ShouldThrowExceptionOnDeclaringComplementClassBecauseNullComplementClass()
             => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel().DeclareComplementClass(new RDFResource("ex:complementClass"), null));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringComplementClassBecauseSelfClass()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyClassModel().DeclareComplementClass(new RDFResource("ex:complementClass"), new RDFResource("ex:complementClass")));
 
         [TestMethod]
         public void ShouldDeclareDisjointUnionClass()
