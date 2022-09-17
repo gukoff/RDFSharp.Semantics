@@ -23,7 +23,7 @@ using RDFSharp.Model;
 namespace RDFSharp.Semantics.Test
 {
     [TestClass]
-    public class RDFOntologyClassModelAnalyzerTest
+    public class RDFOntologyPropertyModelHelperTest
     {
         #region Test
 

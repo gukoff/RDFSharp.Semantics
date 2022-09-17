@@ -23,11 +23,11 @@ using System.Threading.Tasks;
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// RDFOntologyPropertyModelAnalyzer contains methods for analyzing relations describing application domain properties
+    /// RDFOntologyPropertyModelHelper contains methods for analyzing relations describing application domain properties
     /// </summary>
-    public static class RDFOntologyPropertyModelAnalyzer
+    public static class RDFOntologyPropertyModelHelper
     {
-        #region Properties
+        #region Analyzer
         /// <summary>
         /// Checks for the existence of the given owl:Property declaration within the model
         /// </summary>
@@ -423,6 +423,54 @@ namespace RDFSharp.Semantics
 
             return chainAxiomProperties;
         }
+        #endregion
+
+        #region Checker
+        /// <summary>
+        /// Checks if the given owl:Property is a reserved ontology property
+        /// </summary>
+        internal static bool CheckReservedProperty(this RDFResource owlProperty) =>
+            RDFSemanticsUtilities.ReservedProperties.Contains(owlProperty.PatternMemberID);
+
+        /// <summary>
+        /// Checks if the given childProperty can be subProperty of the given motherProperty without tampering OWL-DL integrity<br/>
+        /// Does not accept property chain definitions (OWL2-DL decidability)
+        /// </summary>
+        internal static bool CheckSubPropertyCompatibility(this RDFOntologyPropertyModel propertyModel, RDFResource childProperty, RDFResource motherProperty)
+            => !propertyModel.CheckAreSubProperties(motherProperty, childProperty)
+                  && !propertyModel.CheckAreEquivalentProperties(motherProperty, childProperty)
+                    && !propertyModel.CheckAreDisjointProperties(motherProperty, childProperty)
+                      //OWL2-DL decidability
+                      && !propertyModel.CheckHasPropertyChainAxiom(childProperty)
+                        && !propertyModel.CheckHasPropertyChainAxiom(motherProperty);
+
+        /// <summary>
+        /// Checks if the given leftProperty can be equivalentProperty of the given rightProperty without tampering OWL-DL integrity<br/>
+        /// Does not accept property chain definitions (OWL2-DL decidability)
+        /// </summary>
+        internal static bool CheckEquivalentPropertyCompatibility(this RDFOntologyPropertyModel propertyModel, RDFResource leftProperty, RDFResource rightProperty)
+            => !propertyModel.CheckAreSubProperties(leftProperty, rightProperty)
+                  && !propertyModel.CheckAreSuperPropertes(leftProperty, rightProperty)
+                    && !propertyModel.CheckAreDisjointProperties(leftProperty, rightProperty)
+                      //OWL2-DL decidability
+                      && !propertyModel.CheckHasPropertyChainAxiom(leftProperty)
+                        && !propertyModel.CheckHasPropertyChainAxiom(rightProperty);
+
+        /// <summary>
+        /// Checks if the given leftProperty can be propertyDisjointWith of the given rightProperty without tampering OWL-DL integrity [OWL2]
+        /// </summary>
+        internal static bool CheckDisjointPropertyCompatibility(this RDFOntologyPropertyModel propertyModel, RDFResource leftProperty, RDFResource rightProperty)
+            => !propertyModel.CheckAreSubProperties(leftProperty, rightProperty)
+                  && !propertyModel.CheckAreSuperPropertes(leftProperty, rightProperty)
+                    && !propertyModel.CheckAreEquivalentProperties(leftProperty, rightProperty);
+
+        /// <summary>
+        /// Checks if the given leftProperty can be inverse of the given rightProperty without tampering OWL-DL integrity [OWL2]
+        /// </summary>
+        internal static bool CheckInversePropertyCompatibility(this RDFOntologyPropertyModel propertyModel, RDFResource leftProperty, RDFResource rightProperty)
+            => !propertyModel.CheckAreSubProperties(leftProperty, rightProperty)
+                  && !propertyModel.CheckAreSuperPropertes(leftProperty, rightProperty)
+                    && !propertyModel.CheckAreEquivalentProperties(leftProperty, rightProperty);
         #endregion
     }
 }

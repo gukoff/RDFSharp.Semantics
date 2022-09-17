@@ -22,11 +22,11 @@ using System.Linq;
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// RDFOntologyClassModelAnalyzer contains methods for analyzing relations describing application domain entities
+    /// RDFOntologyClassModelHelper contains methods for analyzing relations describing application domain entities
     /// </summary>
-    public static class RDFOntologyClassModelAnalyzer
+    public static class RDFOntologyClassModelHelper
     {
-        #region Properties
+        #region Analyzer
         /// <summary>
         /// Checks for the existence of the given owl:Class declaration within the model
         /// </summary>
@@ -543,6 +543,38 @@ namespace RDFSharp.Semantics
 
             return keyProperties;
         }
+        #endregion
+
+        #region Checker
+        /// <summary>
+        /// Checks if the given owl:Class is a reserved ontology class
+        /// </summary>
+        internal static bool CheckReservedClass(this RDFResource owlClass) =>
+            RDFSemanticsUtilities.ReservedClasses.Contains(owlClass.PatternMemberID);
+
+        /// <summary>
+        /// Checks if the given childClass can be subClass of the given motherClass without tampering OWL-DL integrity
+        /// </summary>
+        internal static bool CheckSubClassCompatibility(this RDFOntologyClassModel classModel, RDFResource childClass, RDFResource motherClass)
+            => !classModel.CheckAreSubClasses(motherClass, childClass)
+                 && !classModel.CheckAreEquivalentClasses(motherClass, childClass)
+                   && !classModel.CheckAreDisjointClasses(motherClass, childClass);
+
+        /// <summary>
+        /// Checks if the given leftClass can be equivalentClass of the given rightClass without tampering OWL-DL integrity
+        /// </summary>
+        internal static bool CheckEquivalentClassCompatibility(this RDFOntologyClassModel classModel, RDFResource leftClass, RDFResource rightClass)
+            => !classModel.CheckAreSubClasses(leftClass, rightClass)
+                    && !classModel.CheckAreSuperClasses(leftClass, rightClass)
+                        && !classModel.CheckAreDisjointClasses(leftClass, rightClass);
+
+        /// <summary>
+        /// Checks if the given leftClass can be disjoint class of the given right class without tampering OWL-DL integrity
+        /// </summary>
+        internal static bool CheckDisjointWithCompatibility(this RDFOntologyClassModel classModel, RDFResource leftClass, RDFResource rightClass)
+            => !classModel.CheckAreSubClasses(leftClass, rightClass)
+                    && !classModel.CheckAreSuperClasses(leftClass, rightClass)
+                        && !classModel.CheckAreEquivalentClasses(leftClass, rightClass);
         #endregion
     }
 }
