@@ -14,10 +14,8 @@
    limitations under the License.
 */
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RDFSharp.Model;
 
@@ -691,10 +689,347 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.AnswerSuperClasses(new RDFResource("ex:classD")).Any(sc => sc.Equals(new RDFResource("ex:classB")))); //Inferred
             Assert.IsTrue(classModel.AnswerSuperClasses(new RDFResource("ex:classD")).Any(sc => sc.Equals(new RDFResource("ex:classA")))); //Inferred
         }
+
+        [TestMethod]
+        public void ShouldCheckAreEquivalentClasses()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareClass(new RDFResource("ex:classC"));
+            classModel.DeclareEquivalentClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
+            classModel.DeclareEquivalentClasses(new RDFResource("ex:classB"), new RDFResource("ex:classC"));
+
+            Assert.IsTrue(classModel.CheckAreEquivalentClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB")));
+            Assert.IsTrue(classModel.CheckAreEquivalentClasses(new RDFResource("ex:classA"), new RDFResource("ex:classC"))); //Inferred
+            Assert.IsTrue(classModel.CheckAreEquivalentClasses(new RDFResource("ex:classB"), new RDFResource("ex:classA"))); //Inferred            
+            Assert.IsTrue(classModel.CheckAreEquivalentClasses(new RDFResource("ex:classB"), new RDFResource("ex:classC")));
+            Assert.IsTrue(classModel.CheckAreEquivalentClasses(new RDFResource("ex:classC"), new RDFResource("ex:classB"))); //Inferred
+            Assert.IsTrue(classModel.CheckAreEquivalentClasses(new RDFResource("ex:classC"), new RDFResource("ex:classA"))); //Inferred
+        }
+
+        [TestMethod]
+        public void ShouldAnswerEquivalentClasses()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareClass(new RDFResource("ex:classC"));
+            classModel.DeclareEquivalentClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
+            classModel.DeclareEquivalentClasses(new RDFResource("ex:classB"), new RDFResource("ex:classC"));
+
+            Assert.IsTrue(classModel.AnswerEquivalentClasses(new RDFResource("ex:classA")).Any(sc => sc.Equals(new RDFResource("ex:classB"))));
+            Assert.IsTrue(classModel.AnswerEquivalentClasses(new RDFResource("ex:classA")).Any(sc => sc.Equals(new RDFResource("ex:classC")))); //Inferred
+            Assert.IsTrue(classModel.AnswerEquivalentClasses(new RDFResource("ex:classB")).Any(sc => sc.Equals(new RDFResource("ex:classA")))); //Inferred
+            Assert.IsTrue(classModel.AnswerEquivalentClasses(new RDFResource("ex:classB")).Any(sc => sc.Equals(new RDFResource("ex:classC"))));
+            Assert.IsTrue(classModel.AnswerEquivalentClasses(new RDFResource("ex:classC")).Any(sc => sc.Equals(new RDFResource("ex:classA")))); //Inferred
+            Assert.IsTrue(classModel.AnswerEquivalentClasses(new RDFResource("ex:classC")).Any(sc => sc.Equals(new RDFResource("ex:classB")))); //Inferred
+        }
+
+        [TestMethod]
+        public void ShouldCheckAreDisjointClasses()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareClass(new RDFResource("ex:classC"));
+            classModel.DeclareClass(new RDFResource("ex:classD"));
+            classModel.DeclareEquivalentClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
+            classModel.DeclareDisjointClasses(new RDFResource("ex:classB"), new RDFResource("ex:classC"));
+            classModel.DeclareSubClasses(new RDFResource("ex:classD"), new RDFResource("ex:classC"));
+
+            Assert.IsTrue(classModel.CheckAreDisjointClasses(new RDFResource("ex:classA"), new RDFResource("ex:classC"))); //Inferred
+            Assert.IsTrue(classModel.CheckAreDisjointClasses(new RDFResource("ex:classB"), new RDFResource("ex:classC")));
+            Assert.IsTrue(classModel.CheckAreDisjointClasses(new RDFResource("ex:classB"), new RDFResource("ex:classD"))); //Inferred
+            Assert.IsTrue(classModel.CheckAreDisjointClasses(new RDFResource("ex:classA"), new RDFResource("ex:classD"))); //Inferred
+        }
+
+        [TestMethod]
+        public void ShouldAnswerDisjointClasses()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareClass(new RDFResource("ex:classC"));
+            classModel.DeclareClass(new RDFResource("ex:classD"));
+            classModel.DeclareEquivalentClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
+            classModel.DeclareDisjointClasses(new RDFResource("ex:classB"), new RDFResource("ex:classC"));
+            classModel.DeclareSubClasses(new RDFResource("ex:classD"), new RDFResource("ex:classC"));
+
+            Assert.IsTrue(classModel.AnswerDisjointClasses(new RDFResource("ex:classA")).Any(sc => sc.Equals(new RDFResource("ex:classC")))); //Inferred
+            Assert.IsTrue(classModel.AnswerDisjointClasses(new RDFResource("ex:classA")).Any(sc => sc.Equals(new RDFResource("ex:classD")))); //Inferred
+            Assert.IsTrue(classModel.AnswerDisjointClasses(new RDFResource("ex:classB")).Any(sc => sc.Equals(new RDFResource("ex:classC"))));
+            Assert.IsTrue(classModel.AnswerDisjointClasses(new RDFResource("ex:classB")).Any(sc => sc.Equals(new RDFResource("ex:classD")))); //Inferred
+            Assert.IsTrue(classModel.AnswerDisjointClasses(new RDFResource("ex:classC")).Any(sc => sc.Equals(new RDFResource("ex:classA")))); //Inferred
+            Assert.IsTrue(classModel.AnswerDisjointClasses(new RDFResource("ex:classC")).Any(sc => sc.Equals(new RDFResource("ex:classB")))); //Inferred
+            Assert.IsTrue(classModel.AnswerDisjointClasses(new RDFResource("ex:classD")).Any(sc => sc.Equals(new RDFResource("ex:classA")))); //Inferred
+            Assert.IsTrue(classModel.AnswerDisjointClasses(new RDFResource("ex:classD")).Any(sc => sc.Equals(new RDFResource("ex:classB")))); //Inferred
+        }
+
+        [TestMethod]
+        public void ShouldCheckIsDomainOfProperty()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareClass(new RDFResource("ex:classC"));
+            classModel.DeclareEquivalentClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
+            classModel.DeclareSubClasses(new RDFResource("ex:classC"), new RDFResource("ex:classB"));
+
+            //Mock propertymodel stuff (since this is a classmodel test)
+            classModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY));
+            classModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDFS.DOMAIN, new RDFResource("ex:classA")));
+
+            Assert.IsTrue(classModel.CheckIsDomainOfProperty(new RDFResource("ex:classA"), new RDFResource("ex:objprop")));
+            Assert.IsTrue(classModel.CheckIsDomainOfProperty(new RDFResource("ex:classB"), new RDFResource("ex:objprop"))); //Inferred
+            Assert.IsTrue(classModel.CheckIsDomainOfProperty(new RDFResource("ex:classC"), new RDFResource("ex:objprop"))); //Inferred
+        }
+
+        [TestMethod]
+        public void ShouldAnswerDomainOfProperty()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareClass(new RDFResource("ex:classC"));
+            classModel.DeclareEquivalentClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
+            classModel.DeclareSubClasses(new RDFResource("ex:classC"), new RDFResource("ex:classB"));
+
+            //Mock propertymodel stuff (since this is a classmodel test)
+            classModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY));
+            classModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDFS.DOMAIN, new RDFResource("ex:classA")));
+            classModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:objprop2"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY));
+
+            Assert.IsTrue(classModel.AnswerDomainOfProperty(new RDFResource("ex:objprop")).Any(cls => cls.Equals(new RDFResource("ex:classA"))));
+            Assert.IsTrue(classModel.AnswerDomainOfProperty(new RDFResource("ex:objprop")).Any(cls => cls.Equals(new RDFResource("ex:classB")))); //Inferred
+            Assert.IsTrue(classModel.AnswerDomainOfProperty(new RDFResource("ex:objprop")).Any(cls => cls.Equals(new RDFResource("ex:classC")))); //Inferred
+            Assert.IsTrue(classModel.AnswerDomainOfProperty(new RDFResource("ex:objprop2")).Count == 0);
+        }
+
+        [TestMethod]
+        public void ShouldCheckIsRangeOfProperty()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareClass(new RDFResource("ex:classC"));
+            classModel.DeclareEquivalentClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
+            classModel.DeclareSubClasses(new RDFResource("ex:classC"), new RDFResource("ex:classB"));
+
+            //Mock propertymodel stuff (since this is a classmodel test)
+            classModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY));
+            classModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDFS.RANGE, new RDFResource("ex:classA")));
+
+            Assert.IsTrue(classModel.CheckIsRangeOfProperty(new RDFResource("ex:classA"), new RDFResource("ex:objprop")));
+            Assert.IsTrue(classModel.CheckIsRangeOfProperty(new RDFResource("ex:classB"), new RDFResource("ex:objprop"))); //Inferred
+            Assert.IsTrue(classModel.CheckIsRangeOfProperty(new RDFResource("ex:classC"), new RDFResource("ex:objprop"))); //Inferred
+        }
+
+        [TestMethod]
+        public void ShouldAnswerRangeOfProperty()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareClass(new RDFResource("ex:classC"));
+            classModel.DeclareEquivalentClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
+            classModel.DeclareSubClasses(new RDFResource("ex:classC"), new RDFResource("ex:classB"));
+
+            //Mock propertymodel stuff (since this is a classmodel test)
+            classModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY));
+            classModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDFS.RANGE, new RDFResource("ex:classA")));
+            classModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:objpro2"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY));
+
+            Assert.IsTrue(classModel.AnswerRangeOfProperty(new RDFResource("ex:objprop")).Any(cls => cls.Equals(new RDFResource("ex:classA"))));
+            Assert.IsTrue(classModel.AnswerRangeOfProperty(new RDFResource("ex:objprop")).Any(cls => cls.Equals(new RDFResource("ex:classB")))); //Inferred
+            Assert.IsTrue(classModel.AnswerRangeOfProperty(new RDFResource("ex:objprop")).Any(cls => cls.Equals(new RDFResource("ex:classC")))); //Inferred
+            Assert.IsTrue(classModel.AnswerRangeOfProperty(new RDFResource("ex:objprop2")).Count == 0);
+        }
+
+        [TestMethod]
+        public void ShouldAnswerKeyProperties()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareHasKey(new RDFResource("ex:classA"), new List<RDFResource>() { new RDFResource("ex:objprop1"), new RDFResource("ex:objprop2") });
+
+            Assert.IsTrue(classModel.AnswerKeyProperties(new RDFResource("ex:classA")).Any(p => p.Equals(new RDFResource("ex:objprop1"))));
+            Assert.IsTrue(classModel.AnswerKeyProperties(new RDFResource("ex:classA")).Any(p => p.Equals(new RDFResource("ex:objprop2"))));
+            Assert.IsTrue(classModel.AnswerKeyProperties(new RDFResource("ex:classB")).Count == 0);
+        }
         #endregion
 
         #region Checker
+        [TestMethod]
+        public void ShouldCheckIsReservedClass()
+            => Assert.IsTrue(RDFOntologyClassModelHelper.CheckReservedClass(RDFVocabulary.RDFS.CLASS));
 
+        [TestMethod]
+        public void ShouldCheckSubClassCompatibility()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareClass(new RDFResource("ex:classC"));
+
+            Assert.IsTrue(classModel.CheckSubClassCompatibility(new RDFResource("ex:classA"), new RDFResource("ex:classB")));
+            Assert.IsTrue(classModel.CheckSubClassCompatibility(new RDFResource("ex:classB"), new RDFResource("ex:classA")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckSubClassIncompatibilityBecauseSubClassViolation()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareClass(new RDFResource("ex:classC"));
+            classModel.DeclareSubClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
+
+            Assert.IsFalse(classModel.CheckSubClassCompatibility(new RDFResource("ex:classB"), new RDFResource("ex:classA")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckSubClassIncompatibilityBecauseEquivalentClassViolation()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareClass(new RDFResource("ex:classC"));
+            classModel.DeclareEquivalentClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
+
+            Assert.IsFalse(classModel.CheckSubClassCompatibility(new RDFResource("ex:classA"), new RDFResource("ex:classB")));
+            Assert.IsFalse(classModel.CheckSubClassCompatibility(new RDFResource("ex:classB"), new RDFResource("ex:classA")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckSubClassIncompatibilityBecauseDisjointClassViolation()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareClass(new RDFResource("ex:classC"));
+            classModel.DeclareDisjointClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
+
+            Assert.IsFalse(classModel.CheckSubClassCompatibility(new RDFResource("ex:classA"), new RDFResource("ex:classB")));
+            Assert.IsFalse(classModel.CheckSubClassCompatibility(new RDFResource("ex:classB"), new RDFResource("ex:classA")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckEquivalentClassCompatibility()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareClass(new RDFResource("ex:classC"));
+
+            Assert.IsTrue(classModel.CheckEquivalentClassCompatibility(new RDFResource("ex:classA"), new RDFResource("ex:classB")));
+            Assert.IsTrue(classModel.CheckEquivalentClassCompatibility(new RDFResource("ex:classB"), new RDFResource("ex:classA")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckEquivalentClassIncompatibilityBecauseSubClassViolation()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareClass(new RDFResource("ex:classC"));
+            classModel.DeclareSubClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
+
+            Assert.IsFalse(classModel.CheckEquivalentClassCompatibility(new RDFResource("ex:classA"), new RDFResource("ex:classB")));
+            Assert.IsFalse(classModel.CheckEquivalentClassCompatibility(new RDFResource("ex:classB"), new RDFResource("ex:classA")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckEquivalentClassIncompatibilityBecauseEquivalentClassViolation()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareClass(new RDFResource("ex:classC"));
+            classModel.DeclareSubClasses(new RDFResource("ex:classB"), new RDFResource("ex:classA"));
+
+            Assert.IsFalse(classModel.CheckEquivalentClassCompatibility(new RDFResource("ex:classA"), new RDFResource("ex:classB")));
+            Assert.IsFalse(classModel.CheckEquivalentClassCompatibility(new RDFResource("ex:classB"), new RDFResource("ex:classA")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckEquivalentClassIncompatibilityBecauseDisjointClassViolation()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareClass(new RDFResource("ex:classC"));
+            classModel.DeclareDisjointClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
+
+            Assert.IsFalse(classModel.CheckEquivalentClassCompatibility(new RDFResource("ex:classA"), new RDFResource("ex:classB")));
+            Assert.IsFalse(classModel.CheckEquivalentClassCompatibility(new RDFResource("ex:classB"), new RDFResource("ex:classA")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckEquivalentClassIncompatibilityBecauseAllDisjointClassesViolation()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareClass(new RDFResource("ex:classC"));
+            classModel.DeclareAllDisjointClasses(new RDFResource("ex:allDisjointClasses"),
+                new List<RDFResource>() { new RDFResource("ex:classA"), new RDFResource("ex:classB") });
+
+            Assert.IsFalse(classModel.CheckEquivalentClassCompatibility(new RDFResource("ex:classA"), new RDFResource("ex:classB")));
+            Assert.IsFalse(classModel.CheckEquivalentClassCompatibility(new RDFResource("ex:classB"), new RDFResource("ex:classA")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckDisjointWithCompatibility()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareClass(new RDFResource("ex:classC"));
+
+            Assert.IsTrue(classModel.CheckDisjointWithCompatibility(new RDFResource("ex:classA"), new RDFResource("ex:classB")));
+            Assert.IsTrue(classModel.CheckDisjointWithCompatibility(new RDFResource("ex:classB"), new RDFResource("ex:classA")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckDisjointWithIncompatibilityBecauseSubClassViolation()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareClass(new RDFResource("ex:classC"));
+            classModel.DeclareSubClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
+
+            Assert.IsFalse(classModel.CheckDisjointWithCompatibility(new RDFResource("ex:classA"), new RDFResource("ex:classB")));
+            Assert.IsFalse(classModel.CheckDisjointWithCompatibility(new RDFResource("ex:classB"), new RDFResource("ex:classA")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckDisjointWithIncompatibilityBecauseSuperClassViolation()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareClass(new RDFResource("ex:classC"));
+            classModel.DeclareSubClasses(new RDFResource("ex:classB"), new RDFResource("ex:classA"));
+
+            Assert.IsFalse(classModel.CheckDisjointWithCompatibility(new RDFResource("ex:classA"), new RDFResource("ex:classB")));
+            Assert.IsFalse(classModel.CheckDisjointWithCompatibility(new RDFResource("ex:classB"), new RDFResource("ex:classA")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckDisjointWithIncompatibilityBecauseEquivalentClassViolation()
+        {
+            RDFOntologyClassModel classModel = new RDFOntologyClassModel();
+            classModel.DeclareClass(new RDFResource("ex:classA"));
+            classModel.DeclareClass(new RDFResource("ex:classB"));
+            classModel.DeclareClass(new RDFResource("ex:classC"));
+            classModel.DeclareEquivalentClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
+
+            Assert.IsFalse(classModel.CheckDisjointWithCompatibility(new RDFResource("ex:classA"), new RDFResource("ex:classB")));
+            Assert.IsFalse(classModel.CheckDisjointWithCompatibility(new RDFResource("ex:classB"), new RDFResource("ex:classA")));
+        }
         #endregion
     }
 }

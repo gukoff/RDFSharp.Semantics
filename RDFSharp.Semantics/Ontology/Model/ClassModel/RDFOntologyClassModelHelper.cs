@@ -412,7 +412,7 @@ namespace RDFSharp.Semantics
         }
 
         /// <summary>
-        /// Finds "DisjointWith(owlClass, X)" relations to enlist the disjoint classes of the given owl:Class
+        /// Finds "DisjointWith(owlClass,X)" relations to enlist the disjoint classes of the given owl:Class
         /// </summary>
         internal static List<RDFResource> FindDisjointClasses(this RDFOntologyClassModel classModel, RDFResource owlClass, RDFGraph tboxGraph, Dictionary<long, RDFResource> visitContext)
         {
@@ -456,9 +456,14 @@ namespace RDFSharp.Semantics
                 disjointClasses.AddRange(classModel.FindEquivalentClasses(disjointClass, tboxGraph, visitContext));
             }
 
+            // Inference: DISJOINTWITH(A,B) ^ SUBCLASS(C,B) -> DISJOINTWITH(A,C)
+            foreach (RDFResource disjointClass in disjointClasses.ToList())
+                disjointClasses.AddRange(classModel.FindSubClasses(disjointClass));
+
             // Inference: EQUIVALENTCLASS(A,B) ^ DISJOINTWITH(B,C) -> DISJOINTWITH(A,C)
-            foreach (RDFResource equivalentClass in classModel.AnswerEquivalentClasses(owlClass))
-                disjointClasses.AddRange(classModel.FindDisjointClasses(equivalentClass, tboxGraph, visitContext));
+            foreach (RDFResource compatibleClass in classModel.AnswerSuperClasses(owlClass)
+                                                              .Union(classModel.AnswerEquivalentClasses(owlClass)))
+                disjointClasses.AddRange(classModel.FindDisjointClasses(compatibleClass, tboxGraph, visitContext));
             #endregion
 
             return disjointClasses;
@@ -480,11 +485,12 @@ namespace RDFSharp.Semantics
             if (classModel != null && owlProperty != null)
                 domainClasses.AddRange(classModel.FindDomainOfProperty(owlProperty, classModel.TBoxVirtualGraph));
 
-            return domainClasses;
+            //We don't want to enlist duplicate classes
+            return RDFQueryUtilities.RemoveDuplicates(domainClasses);
         }
 
         /// <summary>
-        /// Finds "Domain(owlProperty, X)" relations to enlist the domain classes of the given owl:Property
+        /// Finds "Domain(owlProperty,X)" relations to enlist the domain classes of the given owl:Property
         /// </summary>
         internal static List<RDFResource> FindDomainOfProperty(this RDFOntologyClassModel classModel, RDFResource owlProperty, RDFGraph tboxGraph)
         {
@@ -495,11 +501,13 @@ namespace RDFSharp.Semantics
             foreach (RDFTriple domainTriple in domainGraph)
                 domainClasses.Add((RDFResource)domainTriple.Object);
 
-            //INDIRECT (EXPLOITING EQUIVALENTCLASS)
-            Dictionary<long, RDFResource> visitContext = new Dictionary<long, RDFResource>();
-            RDFGraph equivalentClassGraph = tboxGraph[null, RDFVocabulary.OWL.EQUIVALENT_CLASS, null, null];
+            //Inference: DOMAIN(P,A) ^ SUBCLASS(B,A) -> DOMAIN(P,B) 
             foreach (RDFResource domainClass in domainClasses.ToList())
-                domainClasses.AddRange(classModel.FindEquivalentClasses(domainClass, equivalentClassGraph, visitContext));
+                domainClasses.AddRange(classModel.AnswerSubClasses(domainClass));
+
+            //Inference: DOMAIN(P,A) ^ EQUIVALENTCLASS(B,A) -> DOMAIN(P,B) 
+            foreach (RDFResource domainClass in domainClasses.ToList())
+                domainClasses.AddRange(classModel.AnswerEquivalentClasses(domainClass));
 
             return domainClasses;
         }
@@ -520,11 +528,12 @@ namespace RDFSharp.Semantics
             if (classModel != null && owlProperty != null)
                 rangeClasses.AddRange(classModel.FindRangeOfProperty(owlProperty, classModel.TBoxVirtualGraph));
 
-            return rangeClasses;
+            //We don't want to enlist duplicate classes
+            return RDFQueryUtilities.RemoveDuplicates(rangeClasses);
         }
 
         /// <summary>
-        /// Finds "Range(owlProperty, X)" relations to enlist the range classes of the given owl:Property
+        /// Finds "Range(owlProperty,X)" relations to enlist the range classes of the given owl:Property
         /// </summary>
         internal static List<RDFResource> FindRangeOfProperty(this RDFOntologyClassModel classModel, RDFResource owlProperty, RDFGraph tboxGraph)
         {
@@ -535,11 +544,13 @@ namespace RDFSharp.Semantics
             foreach (RDFTriple rangeTriple in rangeGraph)
                 rangeClasses.Add((RDFResource)rangeTriple.Object);
 
-            //INDIRECT (EXPLOITING EQUIVALENTCLASS)
-            Dictionary<long, RDFResource> visitContext = new Dictionary<long, RDFResource>();
-            RDFGraph equivalentClassGraph = tboxGraph[null, RDFVocabulary.OWL.EQUIVALENT_CLASS, null, null];
+            //Inference: RANGE(P,A) ^ SUBCLASS(B,A) -> RANGE(P,B) 
             foreach (RDFResource rangeClass in rangeClasses.ToList())
-                rangeClasses.AddRange(classModel.FindEquivalentClasses(rangeClass, equivalentClassGraph, visitContext));
+                rangeClasses.AddRange(classModel.AnswerSubClasses(rangeClass));
+
+            //Inference: RANGE(P,A) ^ EQUIVALENTCLASS(B,A) -> RANGE(P,B) 
+            foreach (RDFResource rangeClass in rangeClasses.ToList())
+                rangeClasses.AddRange(classModel.AnswerEquivalentClasses(rangeClass));
 
             return rangeClasses;
         }
@@ -593,16 +604,16 @@ namespace RDFSharp.Semantics
         /// </summary>
         internal static bool CheckEquivalentClassCompatibility(this RDFOntologyClassModel classModel, RDFResource leftClass, RDFResource rightClass)
             => !classModel.CheckAreSubClasses(leftClass, rightClass)
-                    && !classModel.CheckAreSuperClasses(leftClass, rightClass)
-                        && !classModel.CheckAreDisjointClasses(leftClass, rightClass);
+                 && !classModel.CheckAreSuperClasses(leftClass, rightClass)
+                   && !classModel.CheckAreDisjointClasses(leftClass, rightClass);
 
         /// <summary>
         /// Checks if the given leftClass can be disjoint class of the given right class without tampering OWL-DL integrity
         /// </summary>
         internal static bool CheckDisjointWithCompatibility(this RDFOntologyClassModel classModel, RDFResource leftClass, RDFResource rightClass)
             => !classModel.CheckAreSubClasses(leftClass, rightClass)
-                    && !classModel.CheckAreSuperClasses(leftClass, rightClass)
-                        && !classModel.CheckAreEquivalentClasses(leftClass, rightClass);
+                 && !classModel.CheckAreSuperClasses(leftClass, rightClass)
+                   && !classModel.CheckAreEquivalentClasses(leftClass, rightClass);
         #endregion
     }
 }
