@@ -359,7 +359,7 @@ namespace RDFSharp.Semantics
                 equivalentClasses.RemoveAll(cls => cls.Equals(owlClass));
             }
 
-            return equivalentClasses;
+            return RDFQueryUtilities.RemoveDuplicates(equivalentClasses);
         }
 
         /// <summary>
@@ -408,7 +408,7 @@ namespace RDFSharp.Semantics
                 disjointClasses.RemoveAll(cls => cls.Equals(owlClass));
             }
 
-            return disjointClasses;
+            return RDFQueryUtilities.RemoveDuplicates(disjointClasses);
         }
 
         /// <summary>
