@@ -45,8 +45,9 @@ namespace RDFSharp.Semantics
 
             //Class
             List<RDFResource> classes = GetClassDeclarations(graph)
-                                         .Union(GetRDFSClassDeclarations(graph))
-                                          .ToList();
+                                         .Union(GetDeprecatedClassDeclarations(graph))
+                                          .Union(GetRDFSClassDeclarations(graph))
+                                           .ToList();
             foreach (RDFResource owlClass in classes)
                 ontology.Model.ClassModel.DeclareClass(owlClass, GetClassBehavior(owlClass, graph));
 
@@ -130,6 +131,14 @@ namespace RDFSharp.Semantics
         /// </summary>
         private static HashSet<RDFResource> GetClassDeclarations(RDFGraph graph)
             => new HashSet<RDFResource>(graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS, null]
+                                           .Select(t => t.Subject)
+                                           .OfType<RDFResource>());
+
+        /// <summary>
+        /// Gets the owl:DeprecatedClass declarations
+        /// </summary>
+        private static HashSet<RDFResource> GetDeprecatedClassDeclarations(RDFGraph graph)
+            => new HashSet<RDFResource>(graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.DEPRECATED_CLASS, null]
                                            .Select(t => t.Subject)
                                            .OfType<RDFResource>());
 

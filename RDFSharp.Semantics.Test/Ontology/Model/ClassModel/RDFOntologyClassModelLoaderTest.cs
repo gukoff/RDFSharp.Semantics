@@ -38,6 +38,7 @@ namespace RDFSharp.Semantics.Test
             graph.AddTriple(new RDFTriple(new RDFResource("ex:class2"), RDFVocabulary.RDF.TYPE, RDFVocabulary.RDFS.CLASS));
             graph.AddTriple(new RDFTriple(new RDFResource("ex:class3"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS));
             graph.AddTriple(new RDFTriple(new RDFResource("ex:class4"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS));
+            graph.AddTriple(new RDFTriple(new RDFResource("ex:class5"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.DEPRECATED_CLASS));
             graph.AddTriple(new RDFTriple(new RDFResource("ex:avfromRestr"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.RESTRICTION));
             graph.AddTriple(new RDFTriple(new RDFResource("ex:avfromRestr"), RDFVocabulary.OWL.ON_PROPERTY, new RDFResource("ex:objprop")));
             graph.AddTriple(new RDFTriple(new RDFResource("ex:avfromRestr"), RDFVocabulary.OWL.ALL_VALUES_FROM, new RDFResource("ex:class1")));
@@ -112,7 +113,7 @@ namespace RDFSharp.Semantics.Test
             graph.AddTriple(new RDFTriple(new RDFResource("ex:alldisjointclasses"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ALL_DISJOINT_CLASSES));
             graph.AddTriple(new RDFTriple(new RDFResource("ex:alldisjointclasses"), RDFVocabulary.OWL.MEMBERS, new RDFResource("bnode:alldisjointMembers")));
             graph.AddTriple(new RDFTriple(new RDFResource("bnode:alldisjointMembers"), RDFVocabulary.RDF.TYPE, RDFVocabulary.RDF.LIST));
-            graph.AddTriple(new RDFTriple(new RDFResource("bnode:alldisjointMembers"), RDFVocabulary.RDF.FIRST, new RDFResource("ex:class3")));
+            graph.AddTriple(new RDFTriple(new RDFResource("bnode:alldisjointMembers"), RDFVocabulary.RDF.FIRST, new RDFResource("ex:class1")));
             graph.AddTriple(new RDFTriple(new RDFResource("bnode:alldisjointMembers"), RDFVocabulary.RDF.REST, new RDFResource("bnode:alldisjointMembers2")));
             graph.AddTriple(new RDFTriple(new RDFResource("bnode:alldisjointMembers2"), RDFVocabulary.RDF.TYPE, RDFVocabulary.RDF.LIST));
             graph.AddTriple(new RDFTriple(new RDFResource("bnode:alldisjointMembers2"), RDFVocabulary.RDF.FIRST, new RDFResource("ex:class4")));
@@ -120,10 +121,10 @@ namespace RDFSharp.Semantics.Test
             graph.AddTriple(new RDFTriple(new RDFResource("ex:disjointunionclass"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS));
             graph.AddTriple(new RDFTriple(new RDFResource("ex:disjointunionclass"), RDFVocabulary.OWL.DISJOINT_UNION_OF, new RDFResource("bnode:disjointunionMembers")));
             graph.AddTriple(new RDFTriple(new RDFResource("bnode:disjointunionMembers"), RDFVocabulary.RDF.TYPE, RDFVocabulary.RDF.LIST));
-            graph.AddTriple(new RDFTriple(new RDFResource("bnode:disjointunionMembers"), RDFVocabulary.RDF.FIRST, new RDFResource("ex:class3")));
+            graph.AddTriple(new RDFTriple(new RDFResource("bnode:disjointunionMembers"), RDFVocabulary.RDF.FIRST, new RDFResource("ex:class4")));
             graph.AddTriple(new RDFTriple(new RDFResource("bnode:disjointunionMembers"), RDFVocabulary.RDF.REST, new RDFResource("bnode:disjointunionMembers2")));
             graph.AddTriple(new RDFTriple(new RDFResource("bnode:disjointunionMembers2"), RDFVocabulary.RDF.TYPE, RDFVocabulary.RDF.LIST));
-            graph.AddTriple(new RDFTriple(new RDFResource("bnode:disjointunionMembers2"), RDFVocabulary.RDF.FIRST, new RDFResource("ex:class4")));
+            graph.AddTriple(new RDFTriple(new RDFResource("bnode:disjointunionMembers2"), RDFVocabulary.RDF.FIRST, new RDFResource("ex:class5")));
             graph.AddTriple(new RDFTriple(new RDFResource("bnode:disjointunionMembers2"), RDFVocabulary.RDF.REST, RDFVocabulary.RDF.NIL));
             graph.AddTriple(new RDFTriple(new RDFResource("ex:class1"), RDFVocabulary.OWL.HAS_KEY, new RDFResource("bnode:keys")));
             graph.AddTriple(new RDFTriple(new RDFResource("bnode:keys"), RDFVocabulary.RDF.TYPE, RDFVocabulary.RDF.LIST));
@@ -143,7 +144,7 @@ namespace RDFSharp.Semantics.Test
             //Relations
             graph.AddTriple(new RDFTriple(new RDFResource("ex:class2"), RDFVocabulary.RDFS.SUB_CLASS_OF, new RDFResource("ex:class1")));
             graph.AddTriple(new RDFTriple(new RDFResource("ex:class2"), RDFVocabulary.OWL.EQUIVALENT_CLASS, new RDFResource("ex:class3")));
-            graph.AddTriple(new RDFTriple(new RDFResource("ex:class3"), RDFVocabulary.OWL.DISJOINT_WITH, new RDFResource("ex:class4")));
+            graph.AddTriple(new RDFTriple(new RDFResource("ex:class1"), RDFVocabulary.OWL.DISJOINT_WITH, new RDFResource("ex:class5")));
 
             //Load
             Ontology = RDFOntology.FromRDFGraph(graph);
@@ -164,6 +165,96 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(Ontology.Model.ClassModel.CheckHasSimpleClass(new RDFResource("ex:class2")));
             Assert.IsTrue(Ontology.Model.ClassModel.CheckHasSimpleClass(new RDFResource("ex:class3")));
             Assert.IsTrue(Ontology.Model.ClassModel.CheckHasSimpleClass(new RDFResource("ex:class4")));
+            Assert.IsTrue(Ontology.Model.ClassModel.CheckHasSimpleClass(new RDFResource("ex:class5")));
+        }
+
+        [TestMethod]
+        public void ShouldLoadDeprecatedClassDeclarations()
+        {
+            Assert.IsTrue(Ontology.Model.ClassModel.CheckHasDeprecatedClass(new RDFResource("ex:class5")));
+        }
+
+        [TestMethod]
+        public void ShouldLoadClassAnnotations()
+        {
+            Assert.IsTrue(Ontology.Model.ClassModel.CheckHasAnnotation(new RDFResource("ex:class1"), RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("comment")));
+            Assert.IsTrue(Ontology.Model.ClassModel.CheckHasAnnotation(new RDFResource("ex:class1"), new RDFResource("ex:annprop"), new RDFResource("ex:res")));
+        }
+
+        [TestMethod]
+        public void ShouldLoadRestrictionDeclarations()
+        {
+            Assert.IsTrue(Ontology.Model.ClassModel.CheckHasAllValuesFromRestrictionClass(new RDFResource("ex:avfromRestr")));
+            Assert.IsTrue(Ontology.Model.ClassModel.CheckHasSomeValuesFromRestrictionClass(new RDFResource("ex:svfromRestr")));
+            Assert.IsTrue(Ontology.Model.ClassModel.CheckHasValueRestrictionClass(new RDFResource("ex:hvRestr")));
+            Assert.IsTrue(Ontology.Model.ClassModel.CheckHasSelfRestrictionClass(new RDFResource("ex:selfRestrY")));
+            Assert.IsTrue(Ontology.Model.ClassModel.CheckHasSelfRestrictionClass(new RDFResource("ex:selfRestrN")));
+            Assert.IsTrue(Ontology.Model.ClassModel.CheckHasCardinalityRestrictionClass(new RDFResource("ex:cRestr")));
+            Assert.IsTrue(Ontology.Model.ClassModel.CheckHasMinCardinalityRestrictionClass(new RDFResource("ex:mincRestr")));
+            Assert.IsTrue(Ontology.Model.ClassModel.CheckHasMaxCardinalityRestrictionClass(new RDFResource("ex:maxcRestr")));
+            Assert.IsTrue(Ontology.Model.ClassModel.CheckHasMinMaxCardinalityRestrictionClass(new RDFResource("ex:minmaxcRestr")));
+            Assert.IsTrue(Ontology.Model.ClassModel.CheckHasQualifiedCardinalityRestrictionClass(new RDFResource("ex:qcRestr")));
+            Assert.IsTrue(Ontology.Model.ClassModel.CheckHasMinQualifiedCardinalityRestrictionClass(new RDFResource("ex:minqcRestr")));
+            Assert.IsTrue(Ontology.Model.ClassModel.CheckHasMaxQualifiedCardinalityRestrictionClass(new RDFResource("ex:maxqcRestr")));
+            Assert.IsTrue(Ontology.Model.ClassModel.CheckHasMinMaxQualifiedCardinalityRestrictionClass(new RDFResource("ex:minmaxqcRestr")));
+        }
+
+        [TestMethod]
+        public void ShouldLoadEnumerateDeclarations()
+        {
+            Assert.IsTrue(Ontology.Model.ClassModel.CheckHasEnumerateClass(new RDFResource("ex:enumclass")));
+        }
+
+        [TestMethod]
+        public void ShouldLoadCompositeDeclarations()
+        {
+            Assert.IsTrue(Ontology.Model.ClassModel.CheckHasCompositeUnionClass(new RDFResource("ex:unionclass")));
+            Assert.IsTrue(Ontology.Model.ClassModel.CheckHasCompositeIntersectionClass(new RDFResource("ex:intersectionclass")));
+            Assert.IsTrue(Ontology.Model.ClassModel.CheckHasCompositeComplementClass(new RDFResource("ex:complementclass")));
+        }
+
+        [TestMethod]
+        public void ShouldLoadAllDisjointDeclarations()
+        {
+            Assert.IsTrue(Ontology.Model.ClassModel.CheckHasAllDisjointClasses(new RDFResource("ex:alldisjointclasses")));
+        }
+
+        [TestMethod]
+        public void ShouldLoadDisjointUnionDeclarations()
+        {
+            Assert.IsTrue(Ontology.Model.ClassModel.CheckHasDisjointUnionClass(new RDFResource("ex:disjointunionclass")));
+        }
+
+        [TestMethod]
+        public void ShouldLoadHasKeyDeclarations()
+        {
+            Assert.IsTrue(Ontology.Model.ClassModel.AnswerKeyProperties(new RDFResource("ex:class1")).Single().Equals(new RDFResource("ex:objprop")));
+        }
+
+        [TestMethod]
+        public void ShouldLoadSubClassDeclarations()
+        {
+            Assert.IsTrue(Ontology.Model.ClassModel.AnswerSubClasses(new RDFResource("ex:class1")).Count == 2);
+        }
+
+        [TestMethod]
+        public void ShouldLoadSuperClassDeclarations()
+        {
+            Assert.IsTrue(Ontology.Model.ClassModel.AnswerSuperClasses(new RDFResource("ex:class2")).Count == 1);
+            Assert.IsTrue(Ontology.Model.ClassModel.AnswerSuperClasses(new RDFResource("ex:class3")).Count == 1);
+        }
+
+        [TestMethod]
+        public void ShouldLoadEquivalentClassDeclarations()
+        {
+            Assert.IsTrue(Ontology.Model.ClassModel.AnswerEquivalentClasses(new RDFResource("ex:class2")).Count == 1);
+            Assert.IsTrue(Ontology.Model.ClassModel.AnswerEquivalentClasses(new RDFResource("ex:class3")).Count == 1);
+        }
+
+        [TestMethod]
+        public void ShouldLoadDisjointClassDeclarations()
+        {
+            Assert.IsTrue(Ontology.Model.ClassModel.AnswerDisjointClasses(new RDFResource("ex:class1")).Count == 2);
         }
         #endregion
     }
