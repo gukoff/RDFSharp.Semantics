@@ -154,84 +154,84 @@ namespace RDFSharp.Semantics
         /// </summary>
         private static RDFResource GetRestrictionProperty(RDFGraph graph, RDFResource owlRestriction)
             => graph[owlRestriction, RDFVocabulary.OWL.ON_PROPERTY, null, null]
-                  .FirstOrDefault().Object as RDFResource;
+                  .FirstOrDefault()?.Object as RDFResource;
 
         /// <summary>
         /// Gets the owl:allValuesFrom declaration of the given owl:Restriction
         /// </summary>
         private static RDFResource GetRestrictionAllValuesFromClass(RDFGraph graph, RDFResource owlRestriction)
             => graph[owlRestriction, RDFVocabulary.OWL.ALL_VALUES_FROM, null, null]
-                  .FirstOrDefault().Object as RDFResource;
+                  .FirstOrDefault()?.Object as RDFResource;
 
         /// <summary>
         /// Gets the owl:someValuesFrom declaration of the given owl:Restriction
         /// </summary>
         private static RDFResource GetRestrictionSomeValuesFromClass(RDFGraph graph, RDFResource owlRestriction)
             => graph[owlRestriction, RDFVocabulary.OWL.SOME_VALUES_FROM, null, null]
-                  .FirstOrDefault().Object as RDFResource;
+                  .FirstOrDefault()?.Object as RDFResource;
 
         /// <summary>
         /// Gets the owl:hasValue declaration of the given owl:Restriction
         /// </summary>
         private static RDFPatternMember GetRestrictionHasValue(RDFGraph graph, RDFResource owlRestriction)
             => graph[owlRestriction, RDFVocabulary.OWL.HAS_VALUE, null, null]
-                  .FirstOrDefault().Object;
+                  .FirstOrDefault()?.Object;
 
         /// <summary>
         /// Gets the owl:hasSelf declaration of the given owl:Restriction [OWL2]
         /// </summary>
         private static RDFTypedLiteral GetRestrictionHasSelf(RDFGraph graph, RDFResource owlRestriction)
             => graph[owlRestriction, RDFVocabulary.OWL.HAS_SELF, null, null]
-                  .FirstOrDefault().Object as RDFTypedLiteral;
+                  .FirstOrDefault()?.Object as RDFTypedLiteral;
 
         /// <summary>
         /// Gets the owl:cardinality declaration of the given owl:Restriction
         /// </summary>
         private static RDFTypedLiteral GetRestrictionCardinality(RDFGraph graph, RDFResource owlRestriction)
             => graph[owlRestriction, RDFVocabulary.OWL.CARDINALITY, null, null]
-                  .FirstOrDefault().Object as RDFTypedLiteral;
+                  .FirstOrDefault()?.Object as RDFTypedLiteral;
 
         /// <summary>
         /// Gets the owl:minCardinality declaration of the given owl:Restriction
         /// </summary>
         private static RDFTypedLiteral GetRestrictionMinCardinality(RDFGraph graph, RDFResource owlRestriction)
             => graph[owlRestriction, RDFVocabulary.OWL.MIN_CARDINALITY, null, null]
-                  .FirstOrDefault().Object as RDFTypedLiteral;
+                  .FirstOrDefault()?.Object as RDFTypedLiteral;
 
         /// <summary>
         /// Gets the owl:maxCardinality declaration of the given owl:Restriction
         /// </summary>
         private static RDFTypedLiteral GetRestrictionMaxCardinality(RDFGraph graph, RDFResource owlRestriction)
             => graph[owlRestriction, RDFVocabulary.OWL.MAX_CARDINALITY, null, null]
-                  .FirstOrDefault().Object as RDFTypedLiteral;
+                  .FirstOrDefault()?.Object as RDFTypedLiteral;
 
         /// <summary>
         /// Gets the owl:onClass declaration of the given owl:Restriction [OWL2]
         /// </summary>
         private static RDFResource GetRestrictionClass(RDFGraph graph, RDFResource owlRestriction)
             => graph[owlRestriction, RDFVocabulary.OWL.ON_CLASS, null, null]
-                  .FirstOrDefault().Object as RDFResource;
+                  .FirstOrDefault()?.Object as RDFResource;
 
         /// <summary>
         /// Gets the owl:qualifiedCardinality declaration of the given owl:Restriction [OWL2]
         /// </summary>
         private static RDFTypedLiteral GetRestrictionQualifiedCardinality(RDFGraph graph, RDFResource owlRestriction)
             => graph[owlRestriction, RDFVocabulary.OWL.QUALIFIED_CARDINALITY, null, null]
-                  .FirstOrDefault().Object as RDFTypedLiteral;
+                  .FirstOrDefault()?.Object as RDFTypedLiteral;
 
         /// <summary>
         /// Gets the owl:minQualifiedCardinality declaration of the given owl:Restriction [OWL2]
         /// </summary>
         private static RDFTypedLiteral GetRestrictionMinQualifiedCardinality(RDFGraph graph, RDFResource owlRestriction)
             => graph[owlRestriction, RDFVocabulary.OWL.MIN_QUALIFIED_CARDINALITY, null, null]
-                  .FirstOrDefault().Object as RDFTypedLiteral;
+                  .FirstOrDefault()?.Object as RDFTypedLiteral;
 
         /// <summary>
         /// Gets the owl:maxQualifiedCardinality declaration of the given owl:Restriction [OWL2]
         /// </summary>
         private static RDFTypedLiteral GetRestrictionMaxQualifiedCardinality(RDFGraph graph, RDFResource owlRestriction)
             => graph[owlRestriction, RDFVocabulary.OWL.MAX_QUALIFIED_CARDINALITY, null, null]
-                  .FirstOrDefault().Object as RDFTypedLiteral;
+                  .FirstOrDefault()?.Object as RDFTypedLiteral;
 
         /// <summary>
         /// Gets the owl:oneOf declarations
@@ -402,11 +402,13 @@ namespace RDFSharp.Semantics
         private static bool TryLoadCardinalityRestriction(this RDFOntology ontology, RDFResource owlRestriction, RDFResource onProperty, RDFGraph graph)
         {
             RDFTypedLiteral cardinality = GetRestrictionCardinality(graph, owlRestriction);
-            if (cardinality != null && cardinality.Datatype == RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER)
+            if (cardinality != null && cardinality.HasDecimalDatatype())
             {
-                uint cardinalityValue = uint.Parse(cardinality.Value, NumberStyles.Integer, CultureInfo.InvariantCulture);
-                ontology.Model.ClassModel.DeclareCardinalityRestriction(owlRestriction, onProperty, cardinalityValue);
-                return true;
+                if (uint.TryParse(cardinality.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out uint cardinalityValue))
+                {
+                    ontology.Model.ClassModel.DeclareCardinalityRestriction(owlRestriction, onProperty, cardinalityValue);
+                    return true;
+                }
             }
             return false;
         }
@@ -420,22 +422,16 @@ namespace RDFSharp.Semantics
             uint minCardinalityValue = 0;
             bool hasMinCardinality = false;            
             RDFTypedLiteral minCardinality = GetRestrictionMinCardinality(graph, owlRestriction);
-            if (minCardinality != null && minCardinality.Datatype == RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER)
-            {
-                minCardinalityValue = uint.Parse(minCardinality.Value, NumberStyles.Integer, CultureInfo.InvariantCulture);
-                hasMinCardinality = true;
-            }
+            if (minCardinality != null && minCardinality.HasDecimalDatatype())
+                hasMinCardinality = uint.TryParse(minCardinality.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out minCardinalityValue);
 
             //Try detect owl:maxCardinality
             uint maxCardinalityValue = 0;
             bool hasMaxCardinality = false;
             RDFTypedLiteral maxCardinality = GetRestrictionMaxCardinality(graph, owlRestriction);
-            if (maxCardinality != null && maxCardinality.Datatype == RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER)
-            {
-                maxCardinalityValue = uint.Parse(maxCardinality.Value, NumberStyles.Integer, CultureInfo.InvariantCulture);
-                hasMaxCardinality = true;
-            }
-            
+            if (maxCardinality != null && maxCardinality.HasDecimalDatatype())
+                hasMaxCardinality = uint.TryParse(maxCardinality.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out maxCardinalityValue);
+
             if (hasMinCardinality && !hasMaxCardinality)
             {
                 ontology.Model.ClassModel.DeclareMinCardinalityRestriction(owlRestriction, onProperty, minCardinalityValue);
@@ -465,11 +461,13 @@ namespace RDFSharp.Semantics
                 throw new RDFSemanticsException($"Cannot load qualified Restriction '{owlRestriction}' from graph because it does not have required owl:onClass information");
 
             RDFTypedLiteral qualifiedCardinality = GetRestrictionQualifiedCardinality(graph, owlRestriction);
-            if (qualifiedCardinality != null && qualifiedCardinality.Datatype == RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER)
+            if (qualifiedCardinality != null && qualifiedCardinality.HasDecimalDatatype())
             {
-                uint qualifiedCardinalityValue = uint.Parse(qualifiedCardinality.Value, NumberStyles.Integer, CultureInfo.InvariantCulture);
-                ontology.Model.ClassModel.DeclareQualifiedCardinalityRestriction(owlRestriction, onProperty, qualifiedCardinalityValue, onClass);
-                return true;
+                if (uint.TryParse(qualifiedCardinality.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out uint qualifiedCardinalityValue))
+                {
+                    ontology.Model.ClassModel.DeclareQualifiedCardinalityRestriction(owlRestriction, onProperty, qualifiedCardinalityValue, onClass);
+                    return true;
+                }
             }
             return false;
         }
@@ -488,21 +486,15 @@ namespace RDFSharp.Semantics
             uint minQualifiedCardinalityValue = 0;
             bool hasMinQualifiedCardinality = false;
             RDFTypedLiteral minQualifiedCardinality = GetRestrictionMinQualifiedCardinality(graph, owlRestriction);
-            if (minQualifiedCardinality != null && minQualifiedCardinality.Datatype == RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER)
-            {
-                minQualifiedCardinalityValue = uint.Parse(minQualifiedCardinality.Value, NumberStyles.Integer, CultureInfo.InvariantCulture);
-                hasMinQualifiedCardinality = true;
-            }
+            if (minQualifiedCardinality != null && minQualifiedCardinality.HasDecimalDatatype())
+                hasMinQualifiedCardinality = uint.TryParse(minQualifiedCardinality.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out minQualifiedCardinalityValue);
 
             //Try detect owl:maxQualifiedCardinality
             uint maxQualifiedCardinalityValue = 0;
             bool hasMaxQualifiedCardinality = false;
             RDFTypedLiteral maxQualifiedCardinality = GetRestrictionMaxQualifiedCardinality(graph, owlRestriction);
-            if (maxQualifiedCardinality != null && maxQualifiedCardinality.Datatype == RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER)
-            {
-                maxQualifiedCardinalityValue = uint.Parse(maxQualifiedCardinality.Value, NumberStyles.Integer, CultureInfo.InvariantCulture);
-                hasMaxQualifiedCardinality = true;
-            }
+            if (maxQualifiedCardinality != null && maxQualifiedCardinality.HasDecimalDatatype())
+                hasMaxQualifiedCardinality = uint.TryParse(maxQualifiedCardinality.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out maxQualifiedCardinalityValue);
 
             if (hasMinQualifiedCardinality && !hasMaxQualifiedCardinality)
             {
