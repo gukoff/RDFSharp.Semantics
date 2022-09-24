@@ -277,7 +277,7 @@ namespace RDFSharp.Semantics
                 equivalentProperties.RemoveAll(prop => prop.Equals(owlProperty));
             }
 
-            return equivalentProperties;
+            return RDFQueryUtilities.RemoveDuplicates(equivalentProperties);
         }
 
         /// <summary>
@@ -326,7 +326,7 @@ namespace RDFSharp.Semantics
                 disjointProperties.RemoveAll(prop => prop.Equals(owlProperty));
             }
 
-            return disjointProperties;
+            return RDFQueryUtilities.RemoveDuplicates(disjointProperties);
         }
 
         /// <summary>
@@ -408,7 +408,7 @@ namespace RDFSharp.Semantics
                 inverseProperties.RemoveAll(prop => prop.Equals(owlProperty));
             }
 
-            return inverseProperties;
+            return RDFQueryUtilities.RemoveDuplicates(inverseProperties);
         }
 
         /// <summary>
