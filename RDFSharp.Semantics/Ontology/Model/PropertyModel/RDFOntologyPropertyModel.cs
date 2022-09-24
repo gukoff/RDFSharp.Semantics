@@ -485,6 +485,9 @@ namespace RDFSharp.Semantics
             if (owlObjectPropertyBehavior == null)
                 owlObjectPropertyBehavior = new RDFOntologyObjectPropertyBehavior();
 
+            //Validate property behavior
+            owlObjectPropertyBehavior.Validate(owlObjectProperty);
+
             //Declare property to the model
             if (!Properties.ContainsKey(owlObjectProperty.PatternMemberID))
                 Properties.Add(owlObjectProperty.PatternMemberID, owlObjectProperty);
@@ -855,6 +858,20 @@ namespace RDFSharp.Semantics
         /// Defines the property as instance of owl:IrreflexiveProperty [OWL2]
         /// </summary>
         public bool Irreflexive { get; set; }
+        #endregion
+
+        #region Methods
+        /// <summary>
+        /// Validates the behavior of the object property
+        /// </summary>
+        internal bool Validate(RDFResource objectProperty)
+        {
+            if (Symmetric && Asymmetric)
+                throw new RDFSemanticsException(string.Format($"Cannot have object property '{0}' at the same time symmetric and asymmetric!", objectProperty));
+            if (Reflexive && Irreflexive)
+                throw new RDFSemanticsException(string.Format($"Cannot have object property '{0}' at the same time reflexive and irreflexive!", objectProperty));
+            return true;
+        }
         #endregion
     }
     #endregion
