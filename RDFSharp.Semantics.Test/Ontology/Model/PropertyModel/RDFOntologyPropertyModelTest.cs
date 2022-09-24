@@ -15,6 +15,7 @@
 */
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -26,7 +27,320 @@ namespace RDFSharp.Semantics.Test
     public class RDFOntologyPropertyModelTest
     {
         #region Test
+        [TestMethod]
+        public void ShouldCreatePropertyModel()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
 
+            Assert.IsNotNull(propertyModel);
+            Assert.IsNotNull(propertyModel.Properties);
+            Assert.IsTrue(propertyModel.PropertiesCount == 0);
+            Assert.IsTrue(propertyModel.AllDisjointPropertiesCount == 0);
+            Assert.IsTrue(propertyModel.AnnotationPropertiesCount == 0);
+            Assert.IsTrue(propertyModel.AsymmetricPropertiesCount == 0);
+            Assert.IsTrue(propertyModel.DatatypePropertiesCount == 0);
+            Assert.IsTrue(propertyModel.DeprecatedPropertiesCount == 0);
+            Assert.IsTrue(propertyModel.FunctionalPropertiesCount == 0);
+            Assert.IsTrue(propertyModel.InverseFunctionalPropertiesCount == 0);
+            Assert.IsTrue(propertyModel.IrreflexivePropertiesCount == 0);
+            Assert.IsTrue(propertyModel.ObjectPropertiesCount == 0);
+            Assert.IsTrue(propertyModel.ReflexivePropertiesCount == 0);
+            Assert.IsTrue(propertyModel.SymmetricPropertiesCount == 0);
+            Assert.IsTrue(propertyModel.TransitivePropertiesCount == 0);
+            Assert.IsNotNull(propertyModel.TBoxGraph);
+            Assert.IsTrue(propertyModel.TBoxGraph.TriplesCount == 0);
+            Assert.IsNotNull(propertyModel.TBoxInferenceGraph);
+            Assert.IsTrue(propertyModel.TBoxInferenceGraph.TriplesCount == 0);
+            Assert.IsNotNull(propertyModel.TBoxVirtualGraph);
+            Assert.IsTrue(propertyModel.TBoxVirtualGraph.TriplesCount == 0);
+
+            int p = 0;
+            IEnumerator<RDFResource> propertiesEnumerator = propertyModel.PropertiesEnumerator;
+            while (propertiesEnumerator.MoveNext())
+                p++;
+            Assert.IsTrue(p == 0);
+
+            int adjp = 0;
+            IEnumerator<RDFResource> allDisjointPropertiesEnumerator = propertyModel.AllDisjointPropertiesEnumerator;
+            while (allDisjointPropertiesEnumerator.MoveNext())
+                adjp++;
+            Assert.IsTrue(adjp == 0);
+
+            int anp = 0;
+            IEnumerator<RDFResource> annotationPropertiesEnumerator = propertyModel.AnnotationPropertiesEnumerator;
+            while (annotationPropertiesEnumerator.MoveNext())
+                anp++;
+            Assert.IsTrue(anp == 0);
+
+            int asp = 0;
+            IEnumerator<RDFResource> asymmetricPropertiesEnumerator = propertyModel.AsymmetricPropertiesEnumerator;
+            while (asymmetricPropertiesEnumerator.MoveNext())
+                asp++;
+            Assert.IsTrue(asp == 0);
+
+            int dtp = 0;
+            IEnumerator<RDFResource> datatypePropertiesEnumerator = propertyModel.DatatypePropertiesEnumerator;
+            while (datatypePropertiesEnumerator.MoveNext())
+                dtp++;
+            Assert.IsTrue(dtp == 0);
+
+            int dp = 0;
+            IEnumerator<RDFResource> deprecatedPropertiesEnumerator = propertyModel.DeprecatedPropertiesEnumerator;
+            while (deprecatedPropertiesEnumerator.MoveNext())
+                dp++;
+            Assert.IsTrue(dp == 0);
+
+            int fp = 0;
+            IEnumerator<RDFResource> functionalPropertiesEnumerator = propertyModel.FunctionalPropertiesEnumerator;
+            while (functionalPropertiesEnumerator.MoveNext())
+                fp++;
+            Assert.IsTrue(fp == 0);
+
+            int ifp = 0;
+            IEnumerator<RDFResource> inverseFunctionaPropertiesEnumerator = propertyModel.InverseFunctionalPropertiesEnumerator;
+            while (inverseFunctionaPropertiesEnumerator.MoveNext())
+                ifp++;
+            Assert.IsTrue(ifp == 0);
+
+            int ip = 0;
+            IEnumerator<RDFResource> irreflexivePropertiesEnumerator = propertyModel.IrreflexivePropertiesEnumerator;
+            while (irreflexivePropertiesEnumerator.MoveNext())
+                ip++;
+            Assert.IsTrue(ip == 0);
+
+            int obp = 0;
+            IEnumerator<RDFResource> objectPropertiesEnumerator = propertyModel.ObjectPropertiesEnumerator;
+            while (objectPropertiesEnumerator.MoveNext())
+                obp++;
+            Assert.IsTrue(obp == 0);
+
+            int rp = 0;
+            IEnumerator<RDFResource> reflexivePropertiesEnumerator = propertyModel.ReflexivePropertiesEnumerator;
+            while (reflexivePropertiesEnumerator.MoveNext())
+                rp++;
+            Assert.IsTrue(rp == 0);
+
+            int sp = 0;
+            IEnumerator<RDFResource> symmetricPropertiesEnumerator = propertyModel.SymmetricPropertiesEnumerator;
+            while (symmetricPropertiesEnumerator.MoveNext())
+                sp++;
+            Assert.IsTrue(sp == 0);
+
+            int tp = 0;
+            IEnumerator<RDFResource> transitivePropertiesEnumerator = propertyModel.TransitivePropertiesEnumerator;
+            while (transitivePropertiesEnumerator.MoveNext())
+                tp++;
+            Assert.IsTrue(tp == 0);
+        }
+
+        [TestMethod]
+        public void ShouldDeclareAnnotationProperty()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareAnnotationProperty(new RDFResource("ex:annprop"));
+
+            Assert.IsTrue(propertyModel.PropertiesCount == 1);
+            Assert.IsTrue(propertyModel.AllDisjointPropertiesCount == 0);
+            Assert.IsTrue(propertyModel.AnnotationPropertiesCount == 1);
+            Assert.IsTrue(propertyModel.AsymmetricPropertiesCount == 0);
+            Assert.IsTrue(propertyModel.DatatypePropertiesCount == 0);
+            Assert.IsTrue(propertyModel.DeprecatedPropertiesCount == 0);
+            Assert.IsTrue(propertyModel.FunctionalPropertiesCount == 0);
+            Assert.IsTrue(propertyModel.InverseFunctionalPropertiesCount == 0);
+            Assert.IsTrue(propertyModel.IrreflexivePropertiesCount == 0);
+            Assert.IsTrue(propertyModel.ObjectPropertiesCount == 0);
+            Assert.IsTrue(propertyModel.ReflexivePropertiesCount == 0);
+            Assert.IsTrue(propertyModel.SymmetricPropertiesCount == 0);
+            Assert.IsTrue(propertyModel.TransitivePropertiesCount == 0);
+            Assert.IsTrue(propertyModel.TBoxGraph.TriplesCount == 1);
+            Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:annprop"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ANNOTATION_PROPERTY)));
+            Assert.IsTrue(propertyModel.TBoxInferenceGraph.TriplesCount == 0);
+            Assert.IsTrue(propertyModel.TBoxVirtualGraph.TriplesCount == 1);
+            Assert.IsTrue(propertyModel.TBoxVirtualGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:annprop"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ANNOTATION_PROPERTY)));
+
+            int p = 0;
+            IEnumerator<RDFResource> propertiesEnumerator = propertyModel.PropertiesEnumerator;
+            while (propertiesEnumerator.MoveNext())
+            {
+                Assert.IsTrue(propertiesEnumerator.Current.Equals(new RDFResource("ex:annprop")));
+                p++;
+            }
+            Assert.IsTrue(p == 1);
+
+            int anp = 0;
+            IEnumerator<RDFResource> annotationPropertiesEnumerator = propertyModel.AnnotationPropertiesEnumerator;
+            while (annotationPropertiesEnumerator.MoveNext())
+            {
+                Assert.IsTrue(annotationPropertiesEnumerator.Current.Equals(new RDFResource("ex:annprop")));
+                anp++;
+            }
+            Assert.IsTrue(anp == 1);
+        }
+
+        [TestMethod]
+        public void ShouldDeclareObjectProperty()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:objprop"));
+
+            Assert.IsTrue(propertyModel.PropertiesCount == 1);
+            Assert.IsTrue(propertyModel.AllDisjointPropertiesCount == 0);
+            Assert.IsTrue(propertyModel.AnnotationPropertiesCount == 0);
+            Assert.IsTrue(propertyModel.AsymmetricPropertiesCount == 0);
+            Assert.IsTrue(propertyModel.DatatypePropertiesCount == 0);
+            Assert.IsTrue(propertyModel.DeprecatedPropertiesCount == 0);
+            Assert.IsTrue(propertyModel.FunctionalPropertiesCount == 0);
+            Assert.IsTrue(propertyModel.InverseFunctionalPropertiesCount == 0);
+            Assert.IsTrue(propertyModel.IrreflexivePropertiesCount == 0);
+            Assert.IsTrue(propertyModel.ObjectPropertiesCount == 1);
+            Assert.IsTrue(propertyModel.ReflexivePropertiesCount == 0);
+            Assert.IsTrue(propertyModel.SymmetricPropertiesCount == 0);
+            Assert.IsTrue(propertyModel.TransitivePropertiesCount == 0);
+            Assert.IsTrue(propertyModel.TBoxGraph.TriplesCount == 1);
+            Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
+            Assert.IsTrue(propertyModel.TBoxInferenceGraph.TriplesCount == 0);
+            Assert.IsTrue(propertyModel.TBoxVirtualGraph.TriplesCount == 1);
+            Assert.IsTrue(propertyModel.TBoxVirtualGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
+
+            int p = 0;
+            IEnumerator<RDFResource> propertiesEnumerator = propertyModel.PropertiesEnumerator;
+            while (propertiesEnumerator.MoveNext())
+            {
+                Assert.IsTrue(propertiesEnumerator.Current.Equals(new RDFResource("ex:objprop")));
+                p++;
+            }
+            Assert.IsTrue(p == 1);
+
+            int obp = 0;
+            IEnumerator<RDFResource> objectPropertiesEnumerator = propertyModel.ObjectPropertiesEnumerator;
+            while (objectPropertiesEnumerator.MoveNext())
+            {
+                Assert.IsTrue(objectPropertiesEnumerator.Current.Equals(new RDFResource("ex:objprop")));
+                obp++;
+            }
+            Assert.IsTrue(obp == 1);
+        }
+
+        [TestMethod]
+        public void ShouldDeclareDatatypeProperty()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareDatatypeProperty(new RDFResource("ex:dtprop"));
+
+            Assert.IsTrue(propertyModel.PropertiesCount == 1);
+            Assert.IsTrue(propertyModel.AllDisjointPropertiesCount == 0);
+            Assert.IsTrue(propertyModel.AnnotationPropertiesCount == 0);
+            Assert.IsTrue(propertyModel.AsymmetricPropertiesCount == 0);
+            Assert.IsTrue(propertyModel.DatatypePropertiesCount == 1);
+            Assert.IsTrue(propertyModel.DeprecatedPropertiesCount == 0);
+            Assert.IsTrue(propertyModel.FunctionalPropertiesCount == 0);
+            Assert.IsTrue(propertyModel.InverseFunctionalPropertiesCount == 0);
+            Assert.IsTrue(propertyModel.IrreflexivePropertiesCount == 0);
+            Assert.IsTrue(propertyModel.ObjectPropertiesCount == 0);
+            Assert.IsTrue(propertyModel.ReflexivePropertiesCount == 0);
+            Assert.IsTrue(propertyModel.SymmetricPropertiesCount == 0);
+            Assert.IsTrue(propertyModel.TransitivePropertiesCount == 0);
+            Assert.IsTrue(propertyModel.TBoxGraph.TriplesCount == 1);
+            Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:dtprop"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.DATATYPE_PROPERTY)));
+            Assert.IsTrue(propertyModel.TBoxInferenceGraph.TriplesCount == 0);
+            Assert.IsTrue(propertyModel.TBoxVirtualGraph.TriplesCount == 1);
+            Assert.IsTrue(propertyModel.TBoxVirtualGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:dtprop"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.DATATYPE_PROPERTY)));
+
+            int p = 0;
+            IEnumerator<RDFResource> propertiesEnumerator = propertyModel.PropertiesEnumerator;
+            while (propertiesEnumerator.MoveNext())
+            {
+                Assert.IsTrue(propertiesEnumerator.Current.Equals(new RDFResource("ex:dtprop")));
+                p++;
+            }
+            Assert.IsTrue(p == 1);
+
+            int obp = 0;
+            IEnumerator<RDFResource> datatypePropertiesEnumerator = propertyModel.DatatypePropertiesEnumerator;
+            while (datatypePropertiesEnumerator.MoveNext())
+            {
+                Assert.IsTrue(datatypePropertiesEnumerator.Current.Equals(new RDFResource("ex:dtprop")));
+                obp++;
+            }
+            Assert.IsTrue(obp == 1);
+        }
+
+        [TestMethod]
+        public void ShouldDeclareDeprecatedProperty()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:objprop"), new RDFOntologyObjectPropertyBehavior() { Deprecated = true });
+
+            Assert.IsTrue(propertyModel.PropertiesCount == 1);
+            Assert.IsTrue(propertyModel.AllDisjointPropertiesCount == 0);
+            Assert.IsTrue(propertyModel.AnnotationPropertiesCount == 0);
+            Assert.IsTrue(propertyModel.AsymmetricPropertiesCount == 0);
+            Assert.IsTrue(propertyModel.DatatypePropertiesCount == 0);
+            Assert.IsTrue(propertyModel.DeprecatedPropertiesCount == 1);
+            Assert.IsTrue(propertyModel.FunctionalPropertiesCount == 0);
+            Assert.IsTrue(propertyModel.InverseFunctionalPropertiesCount == 0);
+            Assert.IsTrue(propertyModel.IrreflexivePropertiesCount == 0);
+            Assert.IsTrue(propertyModel.ObjectPropertiesCount == 1);
+            Assert.IsTrue(propertyModel.ReflexivePropertiesCount == 0);
+            Assert.IsTrue(propertyModel.SymmetricPropertiesCount == 0);
+            Assert.IsTrue(propertyModel.TransitivePropertiesCount == 0);
+            Assert.IsTrue(propertyModel.TBoxGraph.TriplesCount == 2);
+            Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
+            Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.DEPRECATED_PROPERTY)));
+            Assert.IsTrue(propertyModel.TBoxInferenceGraph.TriplesCount == 0);
+            Assert.IsTrue(propertyModel.TBoxVirtualGraph.TriplesCount == 2);
+            Assert.IsTrue(propertyModel.TBoxVirtualGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
+            Assert.IsTrue(propertyModel.TBoxVirtualGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.DEPRECATED_PROPERTY)));
+
+            int p = 0;
+            IEnumerator<RDFResource> propertiesEnumerator = propertyModel.PropertiesEnumerator;
+            while (propertiesEnumerator.MoveNext())
+            {
+                Assert.IsTrue(propertiesEnumerator.Current.Equals(new RDFResource("ex:objprop")));
+                p++;
+            }
+            Assert.IsTrue(p == 1);
+
+            int dp = 0;
+            IEnumerator<RDFResource> deprecatedPropertiesEnumerator = propertyModel.DeprecatedPropertiesEnumerator;
+            while (deprecatedPropertiesEnumerator.MoveNext())
+            {
+                Assert.IsTrue(deprecatedPropertiesEnumerator.Current.Equals(new RDFResource("ex:objprop")));
+                dp++;
+            }
+            Assert.IsTrue(dp == 1);
+
+            int obp = 0;
+            IEnumerator<RDFResource> objectPropertiesEnumerator = propertyModel.ObjectPropertiesEnumerator;
+            while (objectPropertiesEnumerator.MoveNext())
+            {
+                Assert.IsTrue(objectPropertiesEnumerator.Current.Equals(new RDFResource("ex:objprop")));
+                obp++;
+            }
+            Assert.IsTrue(obp == 1);
+        }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringAnnotationPropertyBecauseNull()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyPropertyModel().DeclareAnnotationProperty(null));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringDatatypePropertyBecauseNull()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyPropertyModel().DeclareDatatypeProperty(null));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringObjectPropertyBecauseNull()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyPropertyModel().DeclareObjectProperty(null));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringObjectPropertyBecauseInvalidBehavior1()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyPropertyModel().DeclareObjectProperty(new RDFResource("ex:objprop"), 
+                new RDFOntologyObjectPropertyBehavior() { Symmetric = true, Asymmetric = true }));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringObjectPropertyBecauseInvalidBehavior2()
+           => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyPropertyModel().DeclareObjectProperty(new RDFResource("ex:objprop"),
+               new RDFOntologyObjectPropertyBehavior() { Reflexive = true, Irreflexive = true }));
         #endregion
     }
 }
