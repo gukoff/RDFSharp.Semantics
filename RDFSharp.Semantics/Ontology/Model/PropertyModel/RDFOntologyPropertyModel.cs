@@ -761,6 +761,9 @@ namespace RDFSharp.Semantics
             //Add knowledge to the T-BOX (or raise warning if violations are detected)
             if (OWLDLIntegrityChecks())
             {
+                //PropertyChainAxiom can be safely declared as owl:ObjectProperty
+                DeclareObjectProperty(owlProperty);
+
                 RDFCollection chainPropertiesCollection = new RDFCollection(RDFModelEnums.RDFItemTypes.Resource);
                 chainProperties.ForEach(chainProperty => chainPropertiesCollection.AddItem(chainProperty));
                 TBoxGraph.AddCollection(chainPropertiesCollection);

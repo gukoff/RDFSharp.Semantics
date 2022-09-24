@@ -1090,16 +1090,16 @@ namespace RDFSharp.Semantics.Test
             propertyModel.DeclareObjectProperty(new RDFResource("ex:objprop2"));
             propertyModel.DeclarePropertyChainAxiom(new RDFResource("ex:propertyChainAxiom"), new List<RDFResource>() { new RDFResource("ex:objprop1"), new RDFResource("ex:objprop2") });
 
-            Assert.IsTrue(propertyModel.TBoxGraph.TriplesCount == 9);
-            Assert.IsTrue(propertyModel.TBoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY, null].TriplesCount == 2);
+            Assert.IsTrue(propertyModel.TBoxGraph.TriplesCount == 10);
+            Assert.IsTrue(propertyModel.TBoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY, null].TriplesCount == 3);
             Assert.IsTrue(propertyModel.TBoxGraph[new RDFResource("ex:propertyChainAxiom"), RDFVocabulary.OWL.PROPERTY_CHAIN_AXIOM, null, null].TriplesCount == 1);
             Assert.IsTrue(propertyModel.TBoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.RDF.LIST, null].TriplesCount == 2);
             Assert.IsTrue(propertyModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:objprop1"), null].TriplesCount == 1);
             Assert.IsTrue(propertyModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:objprop2"), null].TriplesCount == 1);
             Assert.IsTrue(propertyModel.TBoxGraph[null, RDFVocabulary.RDF.REST, null, null].TriplesCount == 2);
             Assert.IsTrue(propertyModel.TBoxInferenceGraph.TriplesCount == 0);
-            Assert.IsTrue(propertyModel.TBoxVirtualGraph.TriplesCount == 9);
-            Assert.IsTrue(propertyModel.TBoxVirtualGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY, null].TriplesCount == 2);
+            Assert.IsTrue(propertyModel.TBoxVirtualGraph.TriplesCount == 10);
+            Assert.IsTrue(propertyModel.TBoxVirtualGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY, null].TriplesCount == 3);
             Assert.IsTrue(propertyModel.TBoxVirtualGraph[new RDFResource("ex:propertyChainAxiom"), RDFVocabulary.OWL.PROPERTY_CHAIN_AXIOM, null, null].TriplesCount == 1);
             Assert.IsTrue(propertyModel.TBoxVirtualGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.RDF.LIST, null].TriplesCount == 2);
             Assert.IsTrue(propertyModel.TBoxVirtualGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:objprop1"), null].TriplesCount == 1);
@@ -1147,7 +1147,7 @@ namespace RDFSharp.Semantics.Test
             RDFGraph graph = propertyModel.ToRDFGraph(true);
 
             Assert.IsNotNull(graph);
-            Assert.IsTrue(graph.TriplesCount == 39);
+            Assert.IsTrue(graph.TriplesCount == 40);
         }
 
         [TestMethod]
@@ -1174,7 +1174,7 @@ namespace RDFSharp.Semantics.Test
             RDFGraph graph = propertyModel.ToRDFGraph(false);
 
             Assert.IsNotNull(graph);
-            Assert.IsTrue(graph.TriplesCount == 37);
+            Assert.IsTrue(graph.TriplesCount == 38);
         }
 
         [TestMethod]
@@ -1201,7 +1201,7 @@ namespace RDFSharp.Semantics.Test
             RDFGraph graph = await propertyModel.ToRDFGraphAsync(true);
 
             Assert.IsNotNull(graph);
-            Assert.IsTrue(graph.TriplesCount == 39);
+            Assert.IsTrue(graph.TriplesCount == 40);
         }
 
         [TestMethod]
@@ -1228,7 +1228,7 @@ namespace RDFSharp.Semantics.Test
             RDFGraph graph = await propertyModel.ToRDFGraphAsync(false);
 
             Assert.IsNotNull(graph);
-            Assert.IsTrue(graph.TriplesCount == 37);
+            Assert.IsTrue(graph.TriplesCount == 38);
         }
         #endregion
     }
