@@ -323,7 +323,193 @@ namespace RDFSharp.Semantics.Test
         #endregion
 
         #region Analyzer
+        [TestMethod]
+        public void ShouldCheckAreSubProperties()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyC"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyD"));
+            propertyModel.DeclareSubProperties(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyA"));
+            propertyModel.DeclareSubProperties(new RDFResource("ex:propertyC"), new RDFResource("ex:propertyB"));
+            propertyModel.DeclareEquivalentProperties(new RDFResource("ex:propertyC"), new RDFResource("ex:propertyD"));
 
+            Assert.IsTrue(propertyModel.CheckAreSubProperties(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyA")));
+            Assert.IsTrue(propertyModel.CheckAreSubProperties(new RDFResource("ex:propertyC"), new RDFResource("ex:propertyB")));
+            Assert.IsTrue(propertyModel.CheckAreSubProperties(new RDFResource("ex:propertyC"), new RDFResource("ex:propertyA"))); //Inferred
+            Assert.IsTrue(propertyModel.CheckAreSubProperties(new RDFResource("ex:propertyD"), new RDFResource("ex:propertyB"))); //Inferred
+            Assert.IsTrue(propertyModel.CheckAreSubProperties(new RDFResource("ex:propertyD"), new RDFResource("ex:propertyA"))); //Inferred
+        }
+
+        [TestMethod]
+        public void ShouldAnswerSubProperties()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyC"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyD"));
+            propertyModel.DeclareSubProperties(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyA"));
+            propertyModel.DeclareSubProperties(new RDFResource("ex:propertyC"), new RDFResource("ex:propertyB"));
+            propertyModel.DeclareEquivalentProperties(new RDFResource("ex:propertyC"), new RDFResource("ex:propertyD"));
+
+            Assert.IsTrue(propertyModel.AnswerSubProperties(new RDFResource("ex:propertyA")).Any(sp => sp.Equals(new RDFResource("ex:propertyB"))));
+            Assert.IsTrue(propertyModel.AnswerSubProperties(new RDFResource("ex:propertyA")).Any(sp => sp.Equals(new RDFResource("ex:propertyC")))); //Inferred
+            Assert.IsTrue(propertyModel.AnswerSubProperties(new RDFResource("ex:propertyA")).Any(sp => sp.Equals(new RDFResource("ex:propertyD")))); //Inferred
+            Assert.IsTrue(propertyModel.AnswerSubProperties(new RDFResource("ex:propertyB")).Any(sp => sp.Equals(new RDFResource("ex:propertyC"))));
+            Assert.IsTrue(propertyModel.AnswerSubProperties(new RDFResource("ex:propertyB")).Any(sp => sp.Equals(new RDFResource("ex:propertyD")))); //Inferred
+        }
+
+        [TestMethod]
+        public void ShouldCheckAreSuperProperties()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyC"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyD"));
+            propertyModel.DeclareSubProperties(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyA"));
+            propertyModel.DeclareSubProperties(new RDFResource("ex:propertyC"), new RDFResource("ex:propertyB"));
+            propertyModel.DeclareEquivalentProperties(new RDFResource("ex:propertyC"), new RDFResource("ex:propertyD"));
+
+            Assert.IsTrue(propertyModel.CheckAreSuperProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB")));
+            Assert.IsTrue(propertyModel.CheckAreSuperProperties(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyC")));
+            Assert.IsTrue(propertyModel.CheckAreSuperProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyC"))); //Inferred
+            Assert.IsTrue(propertyModel.CheckAreSuperProperties(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyD"))); //Inferred
+            Assert.IsTrue(propertyModel.CheckAreSuperProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyD"))); //Inferred
+        }
+
+        [TestMethod]
+        public void ShouldAnswerSuperProperties()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyC"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyD"));
+            propertyModel.DeclareSubProperties(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyA"));
+            propertyModel.DeclareSubProperties(new RDFResource("ex:propertyC"), new RDFResource("ex:propertyB"));
+            propertyModel.DeclareEquivalentProperties(new RDFResource("ex:propertyC"), new RDFResource("ex:propertyD"));
+
+            Assert.IsTrue(propertyModel.AnswerSuperProperties(new RDFResource("ex:propertyB")).Any(sp => sp.Equals(new RDFResource("ex:propertyA"))));
+            Assert.IsTrue(propertyModel.AnswerSuperProperties(new RDFResource("ex:propertyC")).Any(sp => sp.Equals(new RDFResource("ex:propertyB"))));
+            Assert.IsTrue(propertyModel.AnswerSuperProperties(new RDFResource("ex:propertyC")).Any(sp => sp.Equals(new RDFResource("ex:propertyA")))); //Inferred
+            Assert.IsTrue(propertyModel.AnswerSuperProperties(new RDFResource("ex:propertyD")).Any(sp => sp.Equals(new RDFResource("ex:propertyB")))); //Inferred
+            Assert.IsTrue(propertyModel.AnswerSuperProperties(new RDFResource("ex:propertyD")).Any(sp => sp.Equals(new RDFResource("ex:propertyA")))); //Inferred
+        }
+
+        [TestMethod]
+        public void ShouldCheckAreEquivalentProperties()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyC"));
+            propertyModel.DeclareEquivalentProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));
+            propertyModel.DeclareEquivalentProperties(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyC"));
+
+            Assert.IsTrue(propertyModel.CheckAreEquivalentProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB")));
+            Assert.IsTrue(propertyModel.CheckAreEquivalentProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyC"))); //Inferred
+            Assert.IsTrue(propertyModel.CheckAreEquivalentProperties(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyA"))); //Inferred            
+            Assert.IsTrue(propertyModel.CheckAreEquivalentProperties(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyC")));
+            Assert.IsTrue(propertyModel.CheckAreEquivalentProperties(new RDFResource("ex:propertyC"), new RDFResource("ex:propertyB"))); //Inferred
+            Assert.IsTrue(propertyModel.CheckAreEquivalentProperties(new RDFResource("ex:propertyC"), new RDFResource("ex:propertyA"))); //Inferred
+        }
+
+        [TestMethod]
+        public void ShouldAnswerEquivalentProperties()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyC"));
+            propertyModel.DeclareEquivalentProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));
+            propertyModel.DeclareEquivalentProperties(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyC"));
+
+            Assert.IsTrue(propertyModel.AnswerEquivalentProperties(new RDFResource("ex:propertyA")).Any(sp => sp.Equals(new RDFResource("ex:propertyB"))));
+            Assert.IsTrue(propertyModel.AnswerEquivalentProperties(new RDFResource("ex:propertyA")).Any(sp => sp.Equals(new RDFResource("ex:propertyC")))); //Inferred
+            Assert.IsTrue(propertyModel.AnswerEquivalentProperties(new RDFResource("ex:propertyB")).Any(sp => sp.Equals(new RDFResource("ex:propertyA")))); //Inferred
+            Assert.IsTrue(propertyModel.AnswerEquivalentProperties(new RDFResource("ex:propertyB")).Any(sp => sp.Equals(new RDFResource("ex:propertyC"))));
+            Assert.IsTrue(propertyModel.AnswerEquivalentProperties(new RDFResource("ex:propertyC")).Any(sp => sp.Equals(new RDFResource("ex:propertyA")))); //Inferred
+            Assert.IsTrue(propertyModel.AnswerEquivalentProperties(new RDFResource("ex:propertyC")).Any(sp => sp.Equals(new RDFResource("ex:propertyB")))); //Inferred
+        }
+
+        [TestMethod]
+        public void ShouldCheckAreDisjointProperties()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyC"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyD"));
+            propertyModel.DeclareEquivalentProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));
+            propertyModel.DeclareDisjointProperties(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyC"));
+            propertyModel.DeclareSubProperties(new RDFResource("ex:propertyD"), new RDFResource("ex:propertyC"));
+
+            Assert.IsTrue(propertyModel.CheckAreDisjointProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyC"))); //Inferred
+            Assert.IsTrue(propertyModel.CheckAreDisjointProperties(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyC")));
+            Assert.IsTrue(propertyModel.CheckAreDisjointProperties(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyD"))); //Inferred
+            Assert.IsTrue(propertyModel.CheckAreDisjointProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyD"))); //Inferred
+        }
+
+        [TestMethod]
+        public void ShouldAnswerDisjointProperties()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyC"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyD"));
+            propertyModel.DeclareEquivalentProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));
+            propertyModel.DeclareDisjointProperties(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyC"));
+            propertyModel.DeclareSubProperties(new RDFResource("ex:propertyD"), new RDFResource("ex:propertyC"));
+
+            Assert.IsTrue(propertyModel.AnswerDisjointProperties(new RDFResource("ex:propertyA")).Any(sp => sp.Equals(new RDFResource("ex:propertyC")))); //Inferred
+            Assert.IsTrue(propertyModel.AnswerDisjointProperties(new RDFResource("ex:propertyA")).Any(sp => sp.Equals(new RDFResource("ex:propertyD")))); //Inferred
+            Assert.IsTrue(propertyModel.AnswerDisjointProperties(new RDFResource("ex:propertyB")).Any(sp => sp.Equals(new RDFResource("ex:propertyC"))));
+            Assert.IsTrue(propertyModel.AnswerDisjointProperties(new RDFResource("ex:propertyB")).Any(sp => sp.Equals(new RDFResource("ex:propertyD")))); //Inferred
+            Assert.IsTrue(propertyModel.AnswerDisjointProperties(new RDFResource("ex:propertyC")).Any(sp => sp.Equals(new RDFResource("ex:propertyA")))); //Inferred
+            Assert.IsTrue(propertyModel.AnswerDisjointProperties(new RDFResource("ex:propertyC")).Any(sp => sp.Equals(new RDFResource("ex:propertyB")))); //Inferred
+            Assert.IsTrue(propertyModel.AnswerDisjointProperties(new RDFResource("ex:propertyD")).Any(sp => sp.Equals(new RDFResource("ex:propertyA")))); //Inferred
+            Assert.IsTrue(propertyModel.AnswerDisjointProperties(new RDFResource("ex:propertyD")).Any(sp => sp.Equals(new RDFResource("ex:propertyB")))); //Inferred
+        }
+
+        [TestMethod]
+        public void ShouldCheckAreInverseProperties()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
+            propertyModel.DeclareInverseProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));
+
+            Assert.IsTrue(propertyModel.CheckAreInverseProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB")));
+            Assert.IsTrue(propertyModel.CheckAreInverseProperties(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyA"))); //Inferred
+        }
+
+        [TestMethod]
+        public void ShouldAnswerInverseProperties()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
+            propertyModel.DeclareInverseProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));
+
+            Assert.IsTrue(propertyModel.AnswerInverseProperties(new RDFResource("ex:propertyA")).Any(sp => sp.Equals(new RDFResource("ex:propertyB"))));
+            Assert.IsTrue(propertyModel.AnswerInverseProperties(new RDFResource("ex:propertyB")).Any(sp => sp.Equals(new RDFResource("ex:propertyA")))); //Inferred
+        }
+
+        [TestMethod]
+        public void ShouldAnswerChainAxiomProperties()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
+            propertyModel.DeclarePropertyChainAxiom(new RDFResource("ex:propertyChainAxiom"), new List<RDFResource>() { new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB") });
+
+            Assert.IsTrue(propertyModel.AnswerChainAxiomProperties(new RDFResource("ex:propertyChainAxiom")).Any(sp => sp.Equals(new RDFResource("ex:propertyA"))));
+            Assert.IsTrue(propertyModel.AnswerChainAxiomProperties(new RDFResource("ex:propertyChainAxiom")).Any(sp => sp.Equals(new RDFResource("ex:propertyB"))));
+        }
         #endregion
 
         #region Checker

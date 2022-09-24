@@ -197,7 +197,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Checks for the existence of "SuperProperty(motherProperty,childProperty)" relations within the model
         /// </summary>
-        public static bool CheckAreSuperPropertes(this RDFOntologyPropertyModel propertyModel, RDFResource motherProperty, RDFResource childProperty)
+        public static bool CheckAreSuperProperties(this RDFOntologyPropertyModel propertyModel, RDFResource motherProperty, RDFResource childProperty)
             => childProperty != null && motherProperty != null && propertyModel != null && propertyModel.AnswerSuperProperties(childProperty).Any(prop => prop.Equals(motherProperty));
 
         /// <summary>
@@ -402,7 +402,7 @@ namespace RDFSharp.Semantics
 
             if (propertyModel != null && owlProperty != null)
             {
-                inverseProperties.AddRange(propertyModel.FindInverseProperties(owlProperty, propertyModel.TBoxVirtualGraph));
+                inverseProperties.AddRange(propertyModel.FindInverseProperties(owlProperty));
 
                 //We don't want to also enlist the given owl:Property
                 inverseProperties.RemoveAll(prop => prop.Equals(owlProperty));
@@ -414,9 +414,10 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Finds "InverseOf(owlProperty, X)" relations to enlist the inverse properties of the given owl:Property
         /// </summary>
-        internal static List<RDFResource> FindInverseProperties(this RDFOntologyPropertyModel propertyModel, RDFResource owlProperty, RDFGraph tboxGraph)
+        internal static List<RDFResource> FindInverseProperties(this RDFOntologyPropertyModel propertyModel, RDFResource owlProperty)
         {
             List<RDFResource> inverseProperties = new List<RDFResource>();
+            RDFGraph tboxGraph = propertyModel.TBoxVirtualGraph;
 
             //DIRECT
             foreach (RDFTriple inversePropertyRelation in tboxGraph[owlProperty, RDFVocabulary.OWL.INVERSE_OF, null, null])
@@ -483,7 +484,7 @@ namespace RDFSharp.Semantics
         /// </summary>
         internal static bool CheckEquivalentPropertyCompatibility(this RDFOntologyPropertyModel propertyModel, RDFResource leftProperty, RDFResource rightProperty)
             => !propertyModel.CheckAreSubProperties(leftProperty, rightProperty)
-                  && !propertyModel.CheckAreSuperPropertes(leftProperty, rightProperty)
+                  && !propertyModel.CheckAreSuperProperties(leftProperty, rightProperty)
                     && !propertyModel.CheckAreDisjointProperties(leftProperty, rightProperty)
                       //OWL2-DL decidability
                       && !propertyModel.CheckHasPropertyChainAxiom(leftProperty)
@@ -494,7 +495,7 @@ namespace RDFSharp.Semantics
         /// </summary>
         internal static bool CheckDisjointPropertyCompatibility(this RDFOntologyPropertyModel propertyModel, RDFResource leftProperty, RDFResource rightProperty)
             => !propertyModel.CheckAreSubProperties(leftProperty, rightProperty)
-                  && !propertyModel.CheckAreSuperPropertes(leftProperty, rightProperty)
+                  && !propertyModel.CheckAreSuperProperties(leftProperty, rightProperty)
                     && !propertyModel.CheckAreEquivalentProperties(leftProperty, rightProperty);
 
         /// <summary>
@@ -502,7 +503,7 @@ namespace RDFSharp.Semantics
         /// </summary>
         internal static bool CheckInversePropertyCompatibility(this RDFOntologyPropertyModel propertyModel, RDFResource leftProperty, RDFResource rightProperty)
             => !propertyModel.CheckAreSubProperties(leftProperty, rightProperty)
-                  && !propertyModel.CheckAreSuperPropertes(leftProperty, rightProperty)
+                  && !propertyModel.CheckAreSuperProperties(leftProperty, rightProperty)
                     && !propertyModel.CheckAreEquivalentProperties(leftProperty, rightProperty);
         #endregion
     }
