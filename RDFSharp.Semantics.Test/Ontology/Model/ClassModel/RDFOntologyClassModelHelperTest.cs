@@ -871,7 +871,6 @@ namespace RDFSharp.Semantics.Test
             RDFOntologyClassModel classModel = new RDFOntologyClassModel();
             classModel.DeclareClass(new RDFResource("ex:classA"));
             classModel.DeclareClass(new RDFResource("ex:classB"));
-            classModel.DeclareClass(new RDFResource("ex:classC"));
 
             Assert.IsTrue(classModel.CheckSubClassCompatibility(new RDFResource("ex:classA"), new RDFResource("ex:classB")));
             Assert.IsTrue(classModel.CheckSubClassCompatibility(new RDFResource("ex:classB"), new RDFResource("ex:classA")));
@@ -883,7 +882,6 @@ namespace RDFSharp.Semantics.Test
             RDFOntologyClassModel classModel = new RDFOntologyClassModel();
             classModel.DeclareClass(new RDFResource("ex:classA"));
             classModel.DeclareClass(new RDFResource("ex:classB"));
-            classModel.DeclareClass(new RDFResource("ex:classC"));
             classModel.DeclareSubClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
 
             Assert.IsFalse(classModel.CheckSubClassCompatibility(new RDFResource("ex:classB"), new RDFResource("ex:classA")));
@@ -895,7 +893,6 @@ namespace RDFSharp.Semantics.Test
             RDFOntologyClassModel classModel = new RDFOntologyClassModel();
             classModel.DeclareClass(new RDFResource("ex:classA"));
             classModel.DeclareClass(new RDFResource("ex:classB"));
-            classModel.DeclareClass(new RDFResource("ex:classC"));
             classModel.DeclareEquivalentClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
 
             Assert.IsFalse(classModel.CheckSubClassCompatibility(new RDFResource("ex:classA"), new RDFResource("ex:classB")));
@@ -908,7 +905,6 @@ namespace RDFSharp.Semantics.Test
             RDFOntologyClassModel classModel = new RDFOntologyClassModel();
             classModel.DeclareClass(new RDFResource("ex:classA"));
             classModel.DeclareClass(new RDFResource("ex:classB"));
-            classModel.DeclareClass(new RDFResource("ex:classC"));
             classModel.DeclareDisjointClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
 
             Assert.IsFalse(classModel.CheckSubClassCompatibility(new RDFResource("ex:classA"), new RDFResource("ex:classB")));
@@ -921,7 +917,6 @@ namespace RDFSharp.Semantics.Test
             RDFOntologyClassModel classModel = new RDFOntologyClassModel();
             classModel.DeclareClass(new RDFResource("ex:classA"));
             classModel.DeclareClass(new RDFResource("ex:classB"));
-            classModel.DeclareClass(new RDFResource("ex:classC"));
 
             Assert.IsTrue(classModel.CheckEquivalentClassCompatibility(new RDFResource("ex:classA"), new RDFResource("ex:classB")));
             Assert.IsTrue(classModel.CheckEquivalentClassCompatibility(new RDFResource("ex:classB"), new RDFResource("ex:classA")));
@@ -933,7 +928,6 @@ namespace RDFSharp.Semantics.Test
             RDFOntologyClassModel classModel = new RDFOntologyClassModel();
             classModel.DeclareClass(new RDFResource("ex:classA"));
             classModel.DeclareClass(new RDFResource("ex:classB"));
-            classModel.DeclareClass(new RDFResource("ex:classC"));
             classModel.DeclareSubClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
 
             Assert.IsFalse(classModel.CheckEquivalentClassCompatibility(new RDFResource("ex:classA"), new RDFResource("ex:classB")));
@@ -946,7 +940,6 @@ namespace RDFSharp.Semantics.Test
             RDFOntologyClassModel classModel = new RDFOntologyClassModel();
             classModel.DeclareClass(new RDFResource("ex:classA"));
             classModel.DeclareClass(new RDFResource("ex:classB"));
-            classModel.DeclareClass(new RDFResource("ex:classC"));
             classModel.DeclareSubClasses(new RDFResource("ex:classB"), new RDFResource("ex:classA"));
 
             Assert.IsFalse(classModel.CheckEquivalentClassCompatibility(new RDFResource("ex:classA"), new RDFResource("ex:classB")));
@@ -959,7 +952,6 @@ namespace RDFSharp.Semantics.Test
             RDFOntologyClassModel classModel = new RDFOntologyClassModel();
             classModel.DeclareClass(new RDFResource("ex:classA"));
             classModel.DeclareClass(new RDFResource("ex:classB"));
-            classModel.DeclareClass(new RDFResource("ex:classC"));
             classModel.DeclareDisjointClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
 
             Assert.IsFalse(classModel.CheckEquivalentClassCompatibility(new RDFResource("ex:classA"), new RDFResource("ex:classB")));
@@ -972,7 +964,6 @@ namespace RDFSharp.Semantics.Test
             RDFOntologyClassModel classModel = new RDFOntologyClassModel();
             classModel.DeclareClass(new RDFResource("ex:classA"));
             classModel.DeclareClass(new RDFResource("ex:classB"));
-            classModel.DeclareClass(new RDFResource("ex:classC"));
             classModel.DeclareAllDisjointClasses(new RDFResource("ex:allDisjointClasses"),
                 new List<RDFResource>() { new RDFResource("ex:classA"), new RDFResource("ex:classB") });
 
@@ -986,7 +977,6 @@ namespace RDFSharp.Semantics.Test
             RDFOntologyClassModel classModel = new RDFOntologyClassModel();
             classModel.DeclareClass(new RDFResource("ex:classA"));
             classModel.DeclareClass(new RDFResource("ex:classB"));
-            classModel.DeclareClass(new RDFResource("ex:classC"));
 
             Assert.IsTrue(classModel.CheckDisjointWithCompatibility(new RDFResource("ex:classA"), new RDFResource("ex:classB")));
             Assert.IsTrue(classModel.CheckDisjointWithCompatibility(new RDFResource("ex:classB"), new RDFResource("ex:classA")));
@@ -998,7 +988,6 @@ namespace RDFSharp.Semantics.Test
             RDFOntologyClassModel classModel = new RDFOntologyClassModel();
             classModel.DeclareClass(new RDFResource("ex:classA"));
             classModel.DeclareClass(new RDFResource("ex:classB"));
-            classModel.DeclareClass(new RDFResource("ex:classC"));
             classModel.DeclareSubClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
 
             Assert.IsFalse(classModel.CheckDisjointWithCompatibility(new RDFResource("ex:classA"), new RDFResource("ex:classB")));
@@ -1011,7 +1000,6 @@ namespace RDFSharp.Semantics.Test
             RDFOntologyClassModel classModel = new RDFOntologyClassModel();
             classModel.DeclareClass(new RDFResource("ex:classA"));
             classModel.DeclareClass(new RDFResource("ex:classB"));
-            classModel.DeclareClass(new RDFResource("ex:classC"));
             classModel.DeclareSubClasses(new RDFResource("ex:classB"), new RDFResource("ex:classA"));
 
             Assert.IsFalse(classModel.CheckDisjointWithCompatibility(new RDFResource("ex:classA"), new RDFResource("ex:classB")));
@@ -1024,7 +1012,6 @@ namespace RDFSharp.Semantics.Test
             RDFOntologyClassModel classModel = new RDFOntologyClassModel();
             classModel.DeclareClass(new RDFResource("ex:classA"));
             classModel.DeclareClass(new RDFResource("ex:classB"));
-            classModel.DeclareClass(new RDFResource("ex:classC"));
             classModel.DeclareEquivalentClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
 
             Assert.IsFalse(classModel.CheckDisjointWithCompatibility(new RDFResource("ex:classA"), new RDFResource("ex:classB")));

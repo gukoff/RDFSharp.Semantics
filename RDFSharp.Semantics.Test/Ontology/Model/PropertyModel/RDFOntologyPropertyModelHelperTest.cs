@@ -14,10 +14,8 @@
    limitations under the License.
 */
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RDFSharp.Model;
 
@@ -513,7 +511,209 @@ namespace RDFSharp.Semantics.Test
         #endregion
 
         #region Checker
+        [TestMethod]
+        public void ShouldCheckIsReservedProperty()
+            => Assert.IsTrue(RDFOntologyPropertyModelHelper.CheckReservedProperty(RDFVocabulary.RDFS.DOMAIN));
 
+        [TestMethod]
+        public void ShouldCheckSubPropertyCompatibility()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
+
+            Assert.IsTrue(propertyModel.CheckSubPropertyCompatibility(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB")));
+            Assert.IsTrue(propertyModel.CheckSubPropertyCompatibility(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyA")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckSubPropertyIncompatibilityBecauseSubPropertyViolation()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
+            propertyModel.DeclareSubProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));
+
+            Assert.IsFalse(propertyModel.CheckSubPropertyCompatibility(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyA")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckSubPropertyIncompatibilityBecauseEquivalentPropertyViolation()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
+            propertyModel.DeclareEquivalentProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));
+
+            Assert.IsFalse(propertyModel.CheckSubPropertyCompatibility(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB")));
+            Assert.IsFalse(propertyModel.CheckSubPropertyCompatibility(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyA")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckSubPropertyIncompatibilityBecauseDisjointPropertyViolation()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
+            propertyModel.DeclareDisjointProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));
+
+            Assert.IsFalse(propertyModel.CheckSubPropertyCompatibility(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB")));
+            Assert.IsFalse(propertyModel.CheckSubPropertyCompatibility(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyA")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckEquivalentPropertyCompatibility()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
+
+            Assert.IsTrue(propertyModel.CheckEquivalentPropertyCompatibility(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB")));
+            Assert.IsTrue(propertyModel.CheckEquivalentPropertyCompatibility(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyA")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckEquivalentPropertyIncompatibilityBecauseSubPropertyViolation()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
+            propertyModel.DeclareSubProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));
+
+            Assert.IsFalse(propertyModel.CheckEquivalentPropertyCompatibility(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB")));
+            Assert.IsFalse(propertyModel.CheckEquivalentPropertyCompatibility(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyA")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckEquivalentPropertyIncompatibilityBecauseEquivalentPropertyViolation()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
+            propertyModel.DeclareSubProperties(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyA"));
+
+            Assert.IsFalse(propertyModel.CheckEquivalentPropertyCompatibility(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB")));
+            Assert.IsFalse(propertyModel.CheckEquivalentPropertyCompatibility(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyA")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckEquivalentPropertyIncompatibilityBecauseDisjointPropertyViolation()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
+            propertyModel.DeclareDisjointProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));
+
+            Assert.IsFalse(propertyModel.CheckEquivalentPropertyCompatibility(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB")));
+            Assert.IsFalse(propertyModel.CheckEquivalentPropertyCompatibility(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyA")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckEquivalentPropertyIncompatibilityBecauseAllDisjointPropertyesViolation()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
+            propertyModel.DeclareAllDisjointProperties(new RDFResource("ex:allDisjointProperties"),
+                new List<RDFResource>() { new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB") });
+
+            Assert.IsFalse(propertyModel.CheckEquivalentPropertyCompatibility(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB")));
+            Assert.IsFalse(propertyModel.CheckEquivalentPropertyCompatibility(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyA")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckDisjointPropertyCompatibility()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
+
+            Assert.IsTrue(propertyModel.CheckDisjointPropertyCompatibility(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB")));
+            Assert.IsTrue(propertyModel.CheckDisjointPropertyCompatibility(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyA")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckDisjointPropertyIncompatibilityBecauseSubPropertyViolation()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
+            propertyModel.DeclareSubProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));
+
+            Assert.IsFalse(propertyModel.CheckDisjointPropertyCompatibility(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB")));
+            Assert.IsFalse(propertyModel.CheckDisjointPropertyCompatibility(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyA")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckDisjointPropertyIncompatibilityBecauseSuperPropertyViolation()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
+            propertyModel.DeclareSubProperties(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyA"));
+
+            Assert.IsFalse(propertyModel.CheckDisjointPropertyCompatibility(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB")));
+            Assert.IsFalse(propertyModel.CheckDisjointPropertyCompatibility(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyA")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckDisjointPropertyIncompatibilityBecauseEquivalentPropertyViolation()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
+            propertyModel.DeclareEquivalentProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));
+
+            Assert.IsFalse(propertyModel.CheckDisjointPropertyCompatibility(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB")));
+            Assert.IsFalse(propertyModel.CheckDisjointPropertyCompatibility(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyA")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckInversePropertyCompatibility()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
+
+            Assert.IsTrue(propertyModel.CheckInversePropertyCompatibility(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB")));
+            Assert.IsTrue(propertyModel.CheckInversePropertyCompatibility(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyA")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckInversePropertyIncompatibilityBecauseSubPropertyViolation()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
+            propertyModel.DeclareSubProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));
+
+            Assert.IsFalse(propertyModel.CheckInversePropertyCompatibility(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB")));
+            Assert.IsFalse(propertyModel.CheckInversePropertyCompatibility(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyA")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckInversePropertyIncompatibilityBecauseSuperPropertyViolation()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
+            propertyModel.DeclareSubProperties(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyA"));
+
+            Assert.IsFalse(propertyModel.CheckInversePropertyCompatibility(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB")));
+            Assert.IsFalse(propertyModel.CheckInversePropertyCompatibility(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyA")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckInversePropertyIncompatibilityBecauseEquivalentPropertyViolation()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
+            propertyModel.DeclareEquivalentProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));
+
+            Assert.IsFalse(propertyModel.CheckInversePropertyCompatibility(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB")));
+            Assert.IsFalse(propertyModel.CheckInversePropertyCompatibility(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyA")));
+        }
         #endregion
     }
 }
