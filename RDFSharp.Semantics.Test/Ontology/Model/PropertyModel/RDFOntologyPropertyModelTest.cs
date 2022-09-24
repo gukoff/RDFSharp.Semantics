@@ -783,6 +783,453 @@ namespace RDFSharp.Semantics.Test
         public void ShouldThrowExceptionOnDeclaringObjectPropertyBecauseInvalidBehavior2()
            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyPropertyModel().DeclareObjectProperty(new RDFResource("ex:objprop"),
                new RDFOntologyObjectPropertyBehavior() { Reflexive = true, Irreflexive = true }));
+
+        [TestMethod]
+        public void ShouldAnnotateResourceProperty()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.AnnotateProperty(new RDFResource("ex:propertyA"), RDFVocabulary.RDFS.SEE_ALSO, new RDFResource("ex:seealso"));
+            propertyModel.AnnotateProperty(new RDFResource("ex:propertyA"), RDFVocabulary.RDFS.SEE_ALSO, new RDFResource("ex:seealso")); //Will be discarded, since duplicate annotations are not allowed
+
+            Assert.IsTrue(propertyModel.PropertiesCount == 1);
+            Assert.IsTrue(propertyModel.TBoxGraph.TriplesCount == 2);
+            Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
+            Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.RDFS.SEE_ALSO, new RDFResource("ex:seealso"))));
+        }
+
+        [TestMethod]
+        public void ShouldAnnotateLiteralProperty()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.AnnotateProperty(new RDFResource("ex:propertyA"), RDFVocabulary.RDFS.LABEL, new RDFPlainLiteral("label"));
+            propertyModel.AnnotateProperty(new RDFResource("ex:propertyA"), RDFVocabulary.RDFS.LABEL, new RDFPlainLiteral("label")); //Will be discarded, since duplicate annotations are not allowed
+
+            Assert.IsTrue(propertyModel.PropertiesCount == 1);
+            Assert.IsTrue(propertyModel.TBoxGraph.TriplesCount == 2);
+            Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
+            Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.RDFS.LABEL, new RDFPlainLiteral("label"))));
+        }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnAnnotatingResourcePropertyBecauseNullSubject()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyPropertyModel()
+                        .DeclareObjectProperty(new RDFResource("ex:property1"))
+                        .AnnotateProperty(null, RDFVocabulary.RDFS.SEE_ALSO, new RDFResource("ex:seealso")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnAnnotatingResourcePropertyBecauseNullPredicate()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyPropertyModel()
+                        .DeclareObjectProperty(new RDFResource("ex:property1"))
+                        .AnnotateProperty(new RDFResource("ex:property1"), null, new RDFResource("ex:seealso")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnAnnotatingResourcePropertyBecauseBlankPredicate()
+           => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyPropertyModel()
+                       .DeclareObjectProperty(new RDFResource("ex:property1"))
+                       .AnnotateProperty(new RDFResource("ex:property1"), new RDFResource(), new RDFResource("ex:seealso")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnAnnotatingResourcePropertyBecauseNullObject()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyPropertyModel()
+                        .DeclareObjectProperty(new RDFResource("ex:property1"))
+                        .AnnotateProperty(new RDFResource("ex:property1"), RDFVocabulary.RDFS.SEE_ALSO, null as RDFResource));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnAnnotatingLiteralPropertyBecauseNullSubject()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyPropertyModel()
+                        .DeclareObjectProperty(new RDFResource("ex:property1"))
+                        .AnnotateProperty(null, RDFVocabulary.RDFS.LABEL, new RDFPlainLiteral("label")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnAnnotatingLiteralPropertyBecauseNullPredicate()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyPropertyModel()
+                        .DeclareObjectProperty(new RDFResource("ex:property1"))
+                        .AnnotateProperty(new RDFResource("ex:property1"), null, new RDFPlainLiteral("label")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnAnnotatingLiteralPropertyBecauseBlankPredicate()
+           => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyPropertyModel()
+                       .DeclareObjectProperty(new RDFResource("ex:property1"))
+                       .AnnotateProperty(new RDFResource("ex:property1"), new RDFResource(), new RDFPlainLiteral("label")));
+        [TestMethod]
+        public void ShouldThrowExceptionOnAnnotatingLiteralPropertyBecauseNullObject()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyPropertyModel()
+                        .DeclareObjectProperty(new RDFResource("ex:property1"))
+                        .AnnotateProperty(new RDFResource("ex:property1"), RDFVocabulary.RDFS.LABEL, null as RDFLiteral));
+
+        [TestMethod]
+        public void ShouldDeclareSubProperties()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
+            propertyModel.DeclareSubProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));
+
+            Assert.IsTrue(propertyModel.TBoxGraph.TriplesCount == 3);
+            Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
+            Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
+            Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.RDFS.SUB_PROPERTY_OF, new RDFResource("ex:propertyB"))));
+            Assert.IsTrue(propertyModel.TBoxInferenceGraph.TriplesCount == 0);
+        }
+
+        [TestMethod]
+        public void ShouldEmitWarningOnDeclaringSubPropertiesBecauseIncompatibleProperties()
+        {
+            string warningMsg = null;
+            RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
+            propertyModel.DeclareSubProperties(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyA"));
+            propertyModel.DeclareSubProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));  //OWL-DL contraddiction (enforced by policy)
+
+            Assert.IsNotNull(warningMsg);
+            Assert.IsTrue(warningMsg.IndexOf("SubProperty relation between property 'ex:propertyA' and property 'ex:propertyB' cannot be declared to the model because it would violate OWL-DL integrity") > -1);
+            Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
+            Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
+            Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyB"), RDFVocabulary.RDFS.SUB_PROPERTY_OF, new RDFResource("ex:propertyA"))));
+            Assert.IsTrue(propertyModel.TBoxInferenceGraph.TriplesCount == 0);
+        }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringSubPropertiesBecauseNullChildProperty()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyPropertyModel()
+                        .DeclareObjectProperty(new RDFResource("ex:propertyA"))
+                        .DeclareObjectProperty(new RDFResource("ex:propertyB"))
+                        .DeclareSubProperties(null, new RDFResource("ex:propertyB")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringSubPropertiesBecauseNullMotherProperty()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyPropertyModel()
+                        .DeclareObjectProperty(new RDFResource("ex:propertyA"))
+                        .DeclareObjectProperty(new RDFResource("ex:propertyB"))
+                        .DeclareSubProperties(new RDFResource("ex:propertyA"), null));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringSubPropertiesBecauseSelfProperty()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyPropertyModel()
+                        .DeclareObjectProperty(new RDFResource("ex:propertyA"))
+                        .DeclareSubProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyA")));
+
+        [TestMethod]
+        public void ShouldDeclareEquivalentProperties()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
+            propertyModel.DeclareEquivalentProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));
+
+            Assert.IsTrue(propertyModel.TBoxGraph.TriplesCount == 3);
+            Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
+            Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
+            Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.OWL.EQUIVALENT_PROPERTY, new RDFResource("ex:propertyB"))));
+            Assert.IsTrue(propertyModel.TBoxInferenceGraph.TriplesCount == 1);
+            Assert.IsTrue(propertyModel.TBoxInferenceGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyB"), RDFVocabulary.OWL.EQUIVALENT_PROPERTY, new RDFResource("ex:propertyA"))));
+        }
+
+        [TestMethod]
+        public void ShouldEmitWarningOnDeclaringEquivalentPropertiesBecauseIncompatibleProperties()
+        {
+            string warningMsg = null;
+            RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
+            propertyModel.DeclareSubProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));
+            propertyModel.DeclareEquivalentProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));  //OWL-DL contraddiction (enforced by policy)
+
+            Assert.IsNotNull(warningMsg);
+            Assert.IsTrue(warningMsg.IndexOf("EquivalentProperty relation between property 'ex:propertyA' and property 'ex:propertyB' cannot be declared to the model because it would violate OWL-DL integrity") > -1);
+            Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
+            Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
+            Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.RDFS.SUB_PROPERTY_OF, new RDFResource("ex:propertyB"))));
+            Assert.IsTrue(propertyModel.TBoxInferenceGraph.TriplesCount == 0);
+        }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringEquivalentPropertiesBecauseNullLeftProperty()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyPropertyModel()
+                        .DeclareObjectProperty(new RDFResource("ex:propertyA"))
+                        .DeclareObjectProperty(new RDFResource("ex:propertyB"))
+                        .DeclareEquivalentProperties(null, new RDFResource("ex:propertyB")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringEquivalentPropertiesBecauseNullRightProperty()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyPropertyModel()
+                        .DeclareObjectProperty(new RDFResource("ex:propertyA"))
+                        .DeclareObjectProperty(new RDFResource("ex:propertyB"))
+                        .DeclareEquivalentProperties(new RDFResource("ex:propertyA"), null));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringEquivalentPropertiesBecauseSelfProperty()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyPropertyModel()
+                        .DeclareObjectProperty(new RDFResource("ex:propertyA"))
+                        .DeclareEquivalentProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyA")));
+
+        [TestMethod]
+        public void ShouldDeclareDisjointProperties()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
+            propertyModel.DeclareDisjointProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));
+
+            Assert.IsTrue(propertyModel.TBoxGraph.TriplesCount == 3);
+            Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
+            Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
+            Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.OWL.PROPERTY_DISJOINT_WITH, new RDFResource("ex:propertyB"))));
+            Assert.IsTrue(propertyModel.TBoxInferenceGraph.TriplesCount == 1);
+            Assert.IsTrue(propertyModel.TBoxInferenceGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyB"), RDFVocabulary.OWL.PROPERTY_DISJOINT_WITH, new RDFResource("ex:propertyA"))));
+        }
+
+        [TestMethod]
+        public void ShouldEmitWarningOnDeclaringDisjointPropertiesBecauseIncompatibleProperties()
+        {
+            string warningMsg = null;
+            RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
+            propertyModel.DeclareSubProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));
+            propertyModel.DeclareDisjointProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));  //OWL-DL contraddiction (enforced by policy)
+
+            Assert.IsNotNull(warningMsg);
+            Assert.IsTrue(warningMsg.IndexOf("PropertyDisjointWith relation between property 'ex:propertyA' and property 'ex:propertyB' cannot be declared to the model because it would violate OWL-DL integrity") > -1);
+            Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
+            Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
+            Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.RDFS.SUB_PROPERTY_OF, new RDFResource("ex:propertyB"))));
+            Assert.IsTrue(propertyModel.TBoxInferenceGraph.TriplesCount == 0);
+        }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringDisjointPropertiesBecauseNullLeftProperty()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyPropertyModel()
+                        .DeclareObjectProperty(new RDFResource("ex:propertyA"))
+                        .DeclareObjectProperty(new RDFResource("ex:propertyB"))
+                        .DeclareDisjointProperties(null, new RDFResource("ex:propertyB")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringDisjointPropertiesBecauseNullRightProperty()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyPropertyModel()
+                        .DeclareObjectProperty(new RDFResource("ex:propertyA"))
+                        .DeclareObjectProperty(new RDFResource("ex:propertyB"))
+                        .DeclareDisjointProperties(new RDFResource("ex:propertyA"), null));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringDisjointPropertiesBecauseSelfProperty()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyPropertyModel()
+                        .DeclareObjectProperty(new RDFResource("ex:propertyA"))
+                        .DeclareDisjointProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyA")));
+
+        [TestMethod]
+        public void ShouldDeclareInverseProperties()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
+            propertyModel.DeclareInverseProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));
+
+            Assert.IsTrue(propertyModel.TBoxGraph.TriplesCount == 3);
+            Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
+            Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
+            Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.OWL.INVERSE_OF, new RDFResource("ex:propertyB"))));
+            Assert.IsTrue(propertyModel.TBoxInferenceGraph.TriplesCount == 1);
+            Assert.IsTrue(propertyModel.TBoxInferenceGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyB"), RDFVocabulary.OWL.INVERSE_OF, new RDFResource("ex:propertyA"))));
+        }
+
+        [TestMethod]
+        public void ShouldEmitWarningOnDeclaringInversePropertiesBecauseIncompatibleProperties()
+        {
+            string warningMsg = null;
+            RDFSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
+            propertyModel.DeclareSubProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));
+            propertyModel.DeclareInverseProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));  //OWL-DL contraddiction (enforced by policy)
+
+            Assert.IsNotNull(warningMsg);
+            Assert.IsTrue(warningMsg.IndexOf("Inverse relation between property 'ex:propertyA' and property 'ex:propertyB' cannot be declared to the model because it would violate OWL-DL integrity") > -1);
+            Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
+            Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
+            Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.RDFS.SUB_PROPERTY_OF, new RDFResource("ex:propertyB"))));
+            Assert.IsTrue(propertyModel.TBoxInferenceGraph.TriplesCount == 0);
+        }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringInversePropertiesBecauseNullLeftProperty()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyPropertyModel()
+                        .DeclareObjectProperty(new RDFResource("ex:propertyA"))
+                        .DeclareObjectProperty(new RDFResource("ex:propertyB"))
+                        .DeclareInverseProperties(null, new RDFResource("ex:propertyB")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringInversePropertiesBecauseNullRightProperty()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyPropertyModel()
+                        .DeclareObjectProperty(new RDFResource("ex:propertyA"))
+                        .DeclareObjectProperty(new RDFResource("ex:propertyB"))
+                        .DeclareInverseProperties(new RDFResource("ex:propertyA"), null));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringInversePropertiesBecauseSelfProperty()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyPropertyModel()
+                        .DeclareObjectProperty(new RDFResource("ex:propertyA"))
+                        .DeclareInverseProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyA")));
+
+        [TestMethod]
+        public void ShouldDeclarePropertyChainAxiom()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:objprop1"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:objprop2"));
+            propertyModel.DeclarePropertyChainAxiom(new RDFResource("ex:propertyChainAxiom"), new List<RDFResource>() { new RDFResource("ex:objprop1"), new RDFResource("ex:objprop2") });
+
+            Assert.IsTrue(propertyModel.TBoxGraph.TriplesCount == 9);
+            Assert.IsTrue(propertyModel.TBoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY, null].TriplesCount == 2);
+            Assert.IsTrue(propertyModel.TBoxGraph[new RDFResource("ex:propertyChainAxiom"), RDFVocabulary.OWL.PROPERTY_CHAIN_AXIOM, null, null].TriplesCount == 1);
+            Assert.IsTrue(propertyModel.TBoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.RDF.LIST, null].TriplesCount == 2);
+            Assert.IsTrue(propertyModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:objprop1"), null].TriplesCount == 1);
+            Assert.IsTrue(propertyModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:objprop2"), null].TriplesCount == 1);
+            Assert.IsTrue(propertyModel.TBoxGraph[null, RDFVocabulary.RDF.REST, null, null].TriplesCount == 2);
+            Assert.IsTrue(propertyModel.TBoxInferenceGraph.TriplesCount == 0);
+            Assert.IsTrue(propertyModel.TBoxVirtualGraph.TriplesCount == 9);
+            Assert.IsTrue(propertyModel.TBoxVirtualGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY, null].TriplesCount == 2);
+            Assert.IsTrue(propertyModel.TBoxVirtualGraph[new RDFResource("ex:propertyChainAxiom"), RDFVocabulary.OWL.PROPERTY_CHAIN_AXIOM, null, null].TriplesCount == 1);
+            Assert.IsTrue(propertyModel.TBoxVirtualGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.RDF.LIST, null].TriplesCount == 2);
+            Assert.IsTrue(propertyModel.TBoxVirtualGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:objprop1"), null].TriplesCount == 1);
+            Assert.IsTrue(propertyModel.TBoxVirtualGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:objprop2"), null].TriplesCount == 1);
+            Assert.IsTrue(propertyModel.TBoxVirtualGraph[null, RDFVocabulary.RDF.REST, null, null].TriplesCount == 2);
+        }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringPropertyChainAxiomBecauseNullProperty()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyPropertyModel().DeclarePropertyChainAxiom(null, new List<RDFResource>() { new RDFResource("ex:objprop1") }));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringPropertyChainAxiomBecauseNullProperties()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyPropertyModel().DeclarePropertyChainAxiom(new RDFResource("ex:propertyChainAxiom"), null));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringPropertyChainAxiomBecauseEmptyProperties()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyPropertyModel().DeclarePropertyChainAxiom(new RDFResource("ex:propertyChainAxiom"), new List<RDFResource>()));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringPropertyChainAxiomBecauseSelfProperty()
+            => Assert.ThrowsException<RDFSemanticsException>(() => new RDFOntologyPropertyModel().DeclarePropertyChainAxiom(new RDFResource("ex:propertyChainAxiom"), new List<RDFResource>() { new RDFResource("ex:propertyChainAxiom") }));
+
+        [TestMethod]
+        public void ShouldExportToGraphWithInferences()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"), new RDFOntologyObjectPropertyBehavior() { Symmetric = true });
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"), new RDFOntologyObjectPropertyBehavior() { Asymmetric = true });
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyC"), new RDFOntologyObjectPropertyBehavior() { Transitive = true });
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyD"), new RDFOntologyObjectPropertyBehavior() {  Reflexive = true });
+            propertyModel.DeclareDatatypeProperty(new RDFResource("ex:propertyE"), new RDFOntologyObjectPropertyBehavior() { Domain = RDFVocabulary.RDFS.RESOURCE, Range = RDFVocabulary.RDFS.RESOURCE });
+            propertyModel.DeclareAnnotationProperty(new RDFResource("ex:propertyF"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyG"), new RDFOntologyObjectPropertyBehavior() { Deprecated = true });
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyH"), new RDFOntologyObjectPropertyBehavior() { Irreflexive = true });
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyI"), new RDFOntologyObjectPropertyBehavior() { Functional = true });
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyJ"), new RDFOntologyObjectPropertyBehavior() { InverseFunctional = true });
+            propertyModel.DeclareSubProperties(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyA"));
+            propertyModel.DeclareEquivalentProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyC"));
+            propertyModel.DeclareDisjointProperties(new RDFResource("ex:propertyC"), new RDFResource("ex:propertyD"));
+            propertyModel.DeclarePropertyChainAxiom(new RDFResource("ex:propertyChainAxiom"), new List<RDFResource>() { new RDFResource("ex:propertyA") });
+            propertyModel.DeclareAllDisjointProperties(new RDFResource("ex:allDisjointProperties"), new List<RDFResource>() { new RDFResource("ex:propertyH"), new RDFResource("ex:propertyI") });
+            propertyModel.AnnotateProperty(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyF"), new RDFPlainLiteral("comment"));
+            propertyModel.AnnotateProperty(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyF"), new RDFPlainLiteral("title"));
+            RDFGraph graph = propertyModel.ToRDFGraph(true);
+
+            Assert.IsNotNull(graph);
+            Assert.IsTrue(graph.TriplesCount == 39);
+        }
+
+        [TestMethod]
+        public void ShouldExportToGraphWithoutInferences()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"), new RDFOntologyObjectPropertyBehavior() { Symmetric = true });
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"), new RDFOntologyObjectPropertyBehavior() { Asymmetric = true });
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyC"), new RDFOntologyObjectPropertyBehavior() { Transitive = true });
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyD"), new RDFOntologyObjectPropertyBehavior() { Reflexive = true });
+            propertyModel.DeclareDatatypeProperty(new RDFResource("ex:propertyE"), new RDFOntologyObjectPropertyBehavior() { Domain = RDFVocabulary.RDFS.RESOURCE, Range = RDFVocabulary.RDFS.RESOURCE });
+            propertyModel.DeclareAnnotationProperty(new RDFResource("ex:propertyF"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyG"), new RDFOntologyObjectPropertyBehavior() { Deprecated = true });
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyH"), new RDFOntologyObjectPropertyBehavior() { Irreflexive = true });
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyI"), new RDFOntologyObjectPropertyBehavior() { Functional = true });
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyJ"), new RDFOntologyObjectPropertyBehavior() { InverseFunctional = true });
+            propertyModel.DeclareSubProperties(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyA"));
+            propertyModel.DeclareEquivalentProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyC"));
+            propertyModel.DeclareDisjointProperties(new RDFResource("ex:propertyC"), new RDFResource("ex:propertyD"));
+            propertyModel.DeclarePropertyChainAxiom(new RDFResource("ex:propertyChainAxiom"), new List<RDFResource>() { new RDFResource("ex:propertyA") });
+            propertyModel.DeclareAllDisjointProperties(new RDFResource("ex:allDisjointProperties"), new List<RDFResource>() { new RDFResource("ex:propertyH"), new RDFResource("ex:propertyI") });
+            propertyModel.AnnotateProperty(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyF"), new RDFPlainLiteral("comment"));
+            propertyModel.AnnotateProperty(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyF"), new RDFPlainLiteral("title"));
+            RDFGraph graph = propertyModel.ToRDFGraph(false);
+
+            Assert.IsNotNull(graph);
+            Assert.IsTrue(graph.TriplesCount == 37);
+        }
+
+        [TestMethod]
+        public async Task ShouldExportToGraphWithInferencesAsync()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"), new RDFOntologyObjectPropertyBehavior() { Symmetric = true });
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"), new RDFOntologyObjectPropertyBehavior() { Asymmetric = true });
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyC"), new RDFOntologyObjectPropertyBehavior() { Transitive = true });
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyD"), new RDFOntologyObjectPropertyBehavior() { Reflexive = true });
+            propertyModel.DeclareDatatypeProperty(new RDFResource("ex:propertyE"), new RDFOntologyObjectPropertyBehavior() { Domain = RDFVocabulary.RDFS.RESOURCE, Range = RDFVocabulary.RDFS.RESOURCE });
+            propertyModel.DeclareAnnotationProperty(new RDFResource("ex:propertyF"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyG"), new RDFOntologyObjectPropertyBehavior() { Deprecated = true });
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyH"), new RDFOntologyObjectPropertyBehavior() { Irreflexive = true });
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyI"), new RDFOntologyObjectPropertyBehavior() { Functional = true });
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyJ"), new RDFOntologyObjectPropertyBehavior() { InverseFunctional = true });
+            propertyModel.DeclareSubProperties(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyA"));
+            propertyModel.DeclareEquivalentProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyC"));
+            propertyModel.DeclareDisjointProperties(new RDFResource("ex:propertyC"), new RDFResource("ex:propertyD"));
+            propertyModel.DeclarePropertyChainAxiom(new RDFResource("ex:propertyChainAxiom"), new List<RDFResource>() { new RDFResource("ex:propertyA") });
+            propertyModel.DeclareAllDisjointProperties(new RDFResource("ex:allDisjointProperties"), new List<RDFResource>() { new RDFResource("ex:propertyH"), new RDFResource("ex:propertyI") });
+            propertyModel.AnnotateProperty(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyF"), new RDFPlainLiteral("comment"));
+            propertyModel.AnnotateProperty(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyF"), new RDFPlainLiteral("title"));
+            RDFGraph graph = await propertyModel.ToRDFGraphAsync(true);
+
+            Assert.IsNotNull(graph);
+            Assert.IsTrue(graph.TriplesCount == 39);
+        }
+
+        [TestMethod]
+        public async Task ShouldExportToGraphWithoutInferencesAsync()
+        {
+            RDFOntologyPropertyModel propertyModel = new RDFOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"), new RDFOntologyObjectPropertyBehavior() { Symmetric = true });
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"), new RDFOntologyObjectPropertyBehavior() { Asymmetric = true });
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyC"), new RDFOntologyObjectPropertyBehavior() { Transitive = true });
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyD"), new RDFOntologyObjectPropertyBehavior() { Reflexive = true });
+            propertyModel.DeclareDatatypeProperty(new RDFResource("ex:propertyE"), new RDFOntologyObjectPropertyBehavior() { Domain = RDFVocabulary.RDFS.RESOURCE, Range = RDFVocabulary.RDFS.RESOURCE });
+            propertyModel.DeclareAnnotationProperty(new RDFResource("ex:propertyF"));
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyG"), new RDFOntologyObjectPropertyBehavior() { Deprecated = true });
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyH"), new RDFOntologyObjectPropertyBehavior() { Irreflexive = true });
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyI"), new RDFOntologyObjectPropertyBehavior() { Functional = true });
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyJ"), new RDFOntologyObjectPropertyBehavior() { InverseFunctional = true });
+            propertyModel.DeclareSubProperties(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyA"));
+            propertyModel.DeclareEquivalentProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyC"));
+            propertyModel.DeclareDisjointProperties(new RDFResource("ex:propertyC"), new RDFResource("ex:propertyD"));
+            propertyModel.DeclarePropertyChainAxiom(new RDFResource("ex:propertyChainAxiom"), new List<RDFResource>() { new RDFResource("ex:propertyA") });
+            propertyModel.DeclareAllDisjointProperties(new RDFResource("ex:allDisjointProperties"), new List<RDFResource>() { new RDFResource("ex:propertyH"), new RDFResource("ex:propertyI") });
+            propertyModel.AnnotateProperty(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyF"), new RDFPlainLiteral("comment"));
+            propertyModel.AnnotateProperty(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyF"), new RDFPlainLiteral("title"));
+            RDFGraph graph = await propertyModel.ToRDFGraphAsync(false);
+
+            Assert.IsNotNull(graph);
+            Assert.IsTrue(graph.TriplesCount == 37);
+        }
         #endregion
     }
 }

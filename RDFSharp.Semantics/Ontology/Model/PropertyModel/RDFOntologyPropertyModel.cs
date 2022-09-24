@@ -646,7 +646,7 @@ namespace RDFSharp.Semantics
                 TBoxInferenceGraph.AddTriple(new RDFTriple(rightProperty, RDFVocabulary.OWL.EQUIVALENT_PROPERTY, leftProperty));
             }
             else
-                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("EquivalentProperty relation between leftProperty '{0}' and rightProperty '{1}' cannot be declared to the model because it would violate OWL-DL integrity", leftProperty, rightProperty));
+                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("EquivalentProperty relation between property '{0}' and property '{1}' cannot be declared to the model because it would violate OWL-DL integrity", leftProperty, rightProperty));
 
             return this;
         }
@@ -679,7 +679,7 @@ namespace RDFSharp.Semantics
                 TBoxInferenceGraph.AddTriple(new RDFTriple(rightProperty, RDFVocabulary.OWL.PROPERTY_DISJOINT_WITH, leftProperty));
             }
             else
-                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("PropertyDisjointWith relation between leftProperty '{0}' and rightProperty '{1}' cannot be declared to the model because it would violate OWL-DL integrity", leftProperty, rightProperty));
+                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("PropertyDisjointWith relation between property '{0}' and property '{1}' cannot be declared to the model because it would violate OWL-DL integrity", leftProperty, rightProperty));
 
             return this;
         }
@@ -734,7 +734,7 @@ namespace RDFSharp.Semantics
                 TBoxInferenceGraph.AddTriple(new RDFTriple(rightProperty, RDFVocabulary.OWL.INVERSE_OF, leftProperty));
             }
             else
-                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("Inverse relation between leftProperty '{0}' and rightProperty '{1}' cannot be declared to the model because it would violate OWL-DL integrity", leftProperty, rightProperty));
+                RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("Inverse relation between property '{0}' and property '{1}' cannot be declared to the model because it would violate OWL-DL integrity", leftProperty, rightProperty));
 
             return this;
         }
@@ -753,6 +753,8 @@ namespace RDFSharp.Semantics
                 throw new RDFSemanticsException("Cannot declare owl:propertyChainAxiom relation to the model because given \"owlProperty\" parameter is null");
             if (chainProperties == null)
                 throw new RDFSemanticsException("Cannot declare owl:propertyChainAxiom relation to the model because given \"chainProperties\" parameter is null");
+            if (chainProperties.Count == 0)
+                throw new RDFSemanticsException("Cannot declare owl:propertyChainAxiom relation to the model because given \"chainProperties\" parameter is an empty list");
             if (chainProperties.Any(chainAxiomPropertyStep => chainAxiomPropertyStep.Equals(owlProperty)))
                 throw new RDFSemanticsException("Cannot declare owl:propertyChainAxiom relation to the model because given \"owlProperty\" parameter is contained in the given \"chainProperties\" parameter");
 

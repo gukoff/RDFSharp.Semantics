@@ -1341,16 +1341,19 @@ namespace RDFSharp.Semantics.Test
             classModel.DeclareClass(new RDFResource("ex:classB"));
             classModel.DeclareClass(new RDFResource("ex:classC"));
             classModel.DeclareClass(new RDFResource("ex:classD"));
+            classModel.DeclareClass(new RDFResource("ex:classE"), new RDFOntologyClassBehavior() { Deprecated = true });
             classModel.DeclareSubClasses(new RDFResource("ex:indivB"), new RDFResource("ex:classA"));
             classModel.DeclareEquivalentClasses(new RDFResource("ex:indivA"), new RDFResource("ex:classC"));
             classModel.DeclareDisjointClasses(new RDFResource("ex:indivC"), new RDFResource("ex:classD"));
             classModel.DeclareHasKey(new RDFResource("ex:classA"), new List<RDFResource>() { RDFVocabulary.FOAF.ACCOUNT });
+            classModel.DeclareAllDisjointClasses(new RDFResource("ex:allDisjointClasses"), new List<RDFResource>() { new RDFResource("ex:classD"), new RDFResource("ex:classE") });
+            classModel.DeclareDisjointUnionClass(new RDFResource("ex:disjointUnionClass"), new List<RDFResource>() { new RDFResource("ex:classD"), new RDFResource("ex:classE") });
             classModel.AnnotateClass(new RDFResource("ex:classA"), RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("comment"));
             classModel.AnnotateClass(new RDFResource("ex:classB"), RDFVocabulary.DC.DESCRIPTION, new RDFPlainLiteral("title"));
             RDFGraph graph = classModel.ToRDFGraph(true);
 
             Assert.IsNotNull(graph);
-            Assert.IsTrue(graph.TriplesCount == 15);
+            Assert.IsTrue(graph.TriplesCount == 34);
         }
 
         [TestMethod]
@@ -1361,16 +1364,19 @@ namespace RDFSharp.Semantics.Test
             classModel.DeclareClass(new RDFResource("ex:classB"));
             classModel.DeclareClass(new RDFResource("ex:classC"));
             classModel.DeclareClass(new RDFResource("ex:classD"));
+            classModel.DeclareClass(new RDFResource("ex:classE"), new RDFOntologyClassBehavior() { Deprecated = true });
             classModel.DeclareSubClasses(new RDFResource("ex:indivB"), new RDFResource("ex:classA"));
             classModel.DeclareEquivalentClasses(new RDFResource("ex:indivA"), new RDFResource("ex:classC"));
             classModel.DeclareDisjointClasses(new RDFResource("ex:indivC"), new RDFResource("ex:classD"));
             classModel.DeclareHasKey(new RDFResource("ex:classA"), new List<RDFResource>() { RDFVocabulary.FOAF.ACCOUNT });
+            classModel.DeclareAllDisjointClasses(new RDFResource("ex:allDisjointClasses"), new List<RDFResource>() { new RDFResource("ex:classD"), new RDFResource("ex:classE") });
+            classModel.DeclareDisjointUnionClass(new RDFResource("ex:disjointUnionClass"), new List<RDFResource>() { new RDFResource("ex:classD"), new RDFResource("ex:classE") });
             classModel.AnnotateClass(new RDFResource("ex:classA"), RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("comment"));
             classModel.AnnotateClass(new RDFResource("ex:classB"), RDFVocabulary.DC.DESCRIPTION, new RDFPlainLiteral("title"));
             RDFGraph graph = classModel.ToRDFGraph(false);
 
             Assert.IsNotNull(graph);
-            Assert.IsTrue(graph.TriplesCount == 13);
+            Assert.IsTrue(graph.TriplesCount == 32);
         }
 
         [TestMethod]
