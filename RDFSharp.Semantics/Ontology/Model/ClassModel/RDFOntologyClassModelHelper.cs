@@ -280,7 +280,7 @@ namespace RDFSharp.Semantics
         /// Checks for the existence of "SubClass(motherClass,childClass)" relations within the model
         /// </summary>
         public static bool CheckAreSuperClasses(this RDFOntologyClassModel classModel, RDFResource motherClass, RDFResource childClass)
-            => childClass != null && motherClass != null && classModel != null && classModel.AnswerSuperClasses(childClass).Any(cls => cls.Equals(motherClass));
+            => childClass != null && motherClass != null && classModel != null && classModel.AnswerSubClasses(motherClass).Any(cls => cls.Equals(childClass));
 
         /// <summary>
         /// Analyzes "SubClass(X,owlClass)" relations of the model to answer the super classes of the given owl:Class
@@ -436,7 +436,7 @@ namespace RDFSharp.Semantics
                     if (allDisjointCollection.Items.Any(item => item.Equals(owlClass)))
                         allDisjointClasses.AddRange(allDisjointCollection.OfType<RDFResource>());
                 }
-            allDisjointClasses.RemoveAll(idv => idv.Equals(owlClass));
+            allDisjointClasses.RemoveAll(adm => adm.Equals(owlClass));
 
             // Find disjoint classes linked to the given one with owl:disjointWith relation
             List<RDFResource> disjointFromClasses = tboxGraph[owlClass, RDFVocabulary.OWL.DISJOINT_WITH, null, null]
