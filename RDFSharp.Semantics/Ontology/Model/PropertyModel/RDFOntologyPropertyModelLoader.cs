@@ -65,6 +65,10 @@ namespace RDFSharp.Semantics
             #endregion
 
             #region Taxonomies
+            RDFGraph subPropertyGraph = graph[null, RDFVocabulary.RDFS.SUB_CLASS_OF, null, null];
+            RDFGraph equivalentPropertyGraph = graph[null, RDFVocabulary.OWL.EQUIVALENT_PROPERTY, null, null];
+            RDFGraph inversePropertyGraph = graph[null, RDFVocabulary.OWL.INVERSE_OF, null, null];
+            RDFGraph disjointPropertyGraph = graph[null, RDFVocabulary.OWL.PROPERTY_DISJOINT_WITH, null, null];
             foreach (RDFResource property in ontology.Model.PropertyModel)
             {
                 //Annotations
@@ -77,13 +81,13 @@ namespace RDFSharp.Semantics
                 }
 
                 //Relations
-                foreach (RDFTriple subPropertyRelation in graph[property, RDFVocabulary.RDFS.SUB_PROPERTY_OF, null, null])
+                foreach (RDFTriple subPropertyRelation in subPropertyGraph[property, null, null, null])
                     ontology.Model.PropertyModel.DeclareSubProperties(property, (RDFResource)subPropertyRelation.Object);
-                foreach (RDFTriple equivalentPropertyRelation in graph[property, RDFVocabulary.OWL.EQUIVALENT_PROPERTY, null, null])
+                foreach (RDFTriple equivalentPropertyRelation in equivalentPropertyGraph[property, null, null, null])
                     ontology.Model.PropertyModel.DeclareEquivalentProperties(property, (RDFResource)equivalentPropertyRelation.Object);
-                foreach (RDFTriple inversePropertyRelation in graph[property, RDFVocabulary.OWL.INVERSE_OF, null, null])
+                foreach (RDFTriple inversePropertyRelation in inversePropertyGraph[property, null, null, null])
                     ontology.Model.PropertyModel.DeclareInverseProperties(property, (RDFResource)inversePropertyRelation.Object);
-                foreach (RDFTriple disjointPropertyRelation in graph[property, RDFVocabulary.OWL.PROPERTY_DISJOINT_WITH, null, null]) //OWL2
+                foreach (RDFTriple disjointPropertyRelation in disjointPropertyGraph[property, null, null, null]) //OWL2
                     ontology.Model.PropertyModel.DeclareDisjointProperties(property, (RDFResource)disjointPropertyRelation.Object);
             }
 
