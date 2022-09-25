@@ -91,14 +91,6 @@ namespace RDFSharp.Semantics
                     ontology.Model.ClassModel.DeclareEquivalentClasses(owlClass, (RDFResource)equivalentClassRelation.Object);
                 foreach (RDFTriple disjointClassRelation in graph[owlClass, RDFVocabulary.OWL.DISJOINT_WITH, null, null])
                     ontology.Model.ClassModel.DeclareDisjointClasses(owlClass, (RDFResource)disjointClassRelation.Object);
-                foreach (RDFTriple disjointUnionRelation in graph[owlClass, RDFVocabulary.OWL.DISJOINT_UNION_OF, null, null]) //OWL2
-                {
-                    List<RDFResource> disjointClasses = new List<RDFResource>();
-                    RDFCollection disjointClassesCollection = RDFModelUtilities.DeserializeCollectionFromGraph(graph, (RDFResource)disjointUnionRelation.Object, RDFModelEnums.RDFTripleFlavors.SPO);
-                    foreach (RDFPatternMember disjointClass in disjointClassesCollection)
-                        disjointClasses.Add((RDFResource)disjointClass);
-                    ontology.Model.ClassModel.DeclareDisjointUnionClass(owlClass, disjointClasses);
-                }
                 foreach (RDFTriple hasKeyRelation in graph[owlClass, RDFVocabulary.OWL.HAS_KEY, null, null]) //OWL2
                 {
                     List<RDFResource> keyProperties = new List<RDFResource>();
@@ -107,6 +99,16 @@ namespace RDFSharp.Semantics
                         keyProperties.Add((RDFResource)keyProperty);
                     ontology.Model.ClassModel.DeclareHasKey(owlClass, keyProperties);
                 }
+            }
+
+            //owl:disjointUnionOf [OWL2]
+            foreach (RDFTriple disjointUnion in graph[null, RDFVocabulary.OWL.DISJOINT_UNION_OF, null, null]) //OWL2
+            {
+                List<RDFResource> disjointClasses = new List<RDFResource>();
+                RDFCollection disjointClassesCollection = RDFModelUtilities.DeserializeCollectionFromGraph(graph, (RDFResource)disjointUnion.Object, RDFModelEnums.RDFTripleFlavors.SPO);
+                foreach (RDFPatternMember disjointClass in disjointClassesCollection)
+                    disjointClasses.Add((RDFResource)disjointClass);
+                ontology.Model.ClassModel.DeclareDisjointUnionClass((RDFResource)disjointUnion.Subject, disjointClasses);
             }
 
             //owl:AllDisjointClasses [OWL2]

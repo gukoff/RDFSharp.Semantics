@@ -52,13 +52,14 @@ namespace RDFSharp.Semantics
 
             //ObjectProperty (plus its derivate declarations)
             List<RDFResource> objectProperties = GetObjectPropertyDeclarations(graph)
-                                                  .Union(GetSymmetricPropertyDeclarations(graph))
-                                                   .Union(GetTransitivePropertyDeclarations(graph))
-                                                    .Union(GetInverseFunctionalPropertyDeclarations(graph))
-                                                     .Union(GetAsymmetricPropertyDeclarations(graph))
-                                                      .Union(GetReflexivePropertyDeclarations(graph))
-                                                       .Union(GetIrreflexivePropertyDeclarations(graph))
-                                                        .ToList();
+                                                  .Union(GetDeprecatedPropertyDeclarations(graph))
+                                                   .Union(GetSymmetricPropertyDeclarations(graph))
+                                                    .Union(GetTransitivePropertyDeclarations(graph))
+                                                     .Union(GetInverseFunctionalPropertyDeclarations(graph))
+                                                      .Union(GetAsymmetricPropertyDeclarations(graph))
+                                                       .Union(GetReflexivePropertyDeclarations(graph))
+                                                        .Union(GetIrreflexivePropertyDeclarations(graph))
+                                                         .ToList();
             foreach (RDFResource objectProperty in RDFQueryUtilities.RemoveDuplicates(objectProperties))
                 ontology.Model.PropertyModel.DeclareObjectProperty(objectProperty, GetObjectPropertyBehavior(objectProperty, graph));
             #endregion
@@ -84,14 +85,16 @@ namespace RDFSharp.Semantics
                     ontology.Model.PropertyModel.DeclareInverseProperties(property, (RDFResource)inversePropertyRelation.Object);
                 foreach (RDFTriple disjointPropertyRelation in graph[property, RDFVocabulary.OWL.PROPERTY_DISJOINT_WITH, null, null]) //OWL2
                     ontology.Model.PropertyModel.DeclareDisjointProperties(property, (RDFResource)disjointPropertyRelation.Object);
-                foreach (RDFTriple chainPropertyRelation in graph[property, RDFVocabulary.OWL.PROPERTY_CHAIN_AXIOM, null, null]) //OWL2
-                {
-                    List<RDFResource> chainProperties = new List<RDFResource>();
-                    RDFCollection chainPropertiesCollection = RDFModelUtilities.DeserializeCollectionFromGraph(graph, (RDFResource)chainPropertyRelation.Object, RDFModelEnums.RDFTripleFlavors.SPO);
-                    foreach (RDFPatternMember chainProperty in chainPropertiesCollection)
-                        chainProperties.Add((RDFResource)chainProperty);
-                    ontology.Model.PropertyModel.DeclarePropertyChainAxiom(property, chainProperties);
-                }
+            }
+
+            //owl:propertyChainAxiom [OWL2]
+            foreach (RDFTriple propertyChainAxiom in graph[null, RDFVocabulary.OWL.PROPERTY_CHAIN_AXIOM, null, null])
+            {
+                List<RDFResource> chainAxiomProperties = new List<RDFResource>();
+                RDFCollection chainAxiomPropertiesCollection = RDFModelUtilities.DeserializeCollectionFromGraph(graph, (RDFResource)propertyChainAxiom.Object, RDFModelEnums.RDFTripleFlavors.SPO);
+                foreach (RDFPatternMember chainAxiomProperty in chainAxiomPropertiesCollection)
+                    chainAxiomProperties.Add((RDFResource)chainAxiomProperty);
+                ontology.Model.PropertyModel.DeclarePropertyChainAxiom((RDFResource)propertyChainAxiom.Subject, chainAxiomProperties);
             }
 
             //owl:AllDisjointProperties [OWL2]
@@ -159,6 +162,14 @@ namespace RDFSharp.Semantics
         /// </summary>
         private static HashSet<RDFResource> GetObjectPropertyDeclarations(RDFGraph graph)
             => new HashSet<RDFResource>(graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY, null]
+                                           .Select(t => t.Subject)
+                                           .OfType<RDFResource>());
+
+        /// <summary>
+        /// Gets the owl:DeprecatedProperty declarations
+        /// </summary>
+        private static HashSet<RDFResource> GetDeprecatedPropertyDeclarations(RDFGraph graph)
+            => new HashSet<RDFResource>(graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.DEPRECATED_PROPERTY, null]
                                            .Select(t => t.Subject)
                                            .OfType<RDFResource>());
 
