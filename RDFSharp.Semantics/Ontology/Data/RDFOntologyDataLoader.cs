@@ -78,15 +78,17 @@ namespace RDFSharp.Semantics
                     ontology.Data.DeclareSameIndividuals(owlIndividual, (RDFResource)sameAsRelation.Object);
                 foreach (RDFTriple differentFromRelation in differentfromGraph[owlIndividual, null, null, null])
                     ontology.Data.DeclareDifferentIndividuals(owlIndividual, (RDFResource)differentFromRelation.Object);
-                foreach (RDFTriple negativeObjectAssertion in GetNegativeObjectAssertions(graph, owlIndividual))
-                    ontology.Data.DeclareNegativeObjectAssertion(owlIndividual, (RDFResource)negativeObjectAssertion.Predicate, (RDFResource)negativeObjectAssertion.Object);
-                foreach (RDFTriple negativeDatatypeAssertion in GetNegativeDatatypeAssertions(graph, owlIndividual))
-                    ontology.Data.DeclareNegativeDatatypeAssertion(owlIndividual, (RDFResource)negativeDatatypeAssertion.Predicate, (RDFLiteral)negativeDatatypeAssertion.Object);
                 foreach (RDFTriple objectAssertion in GetObjectAssertions(ontology, graph, owlIndividual))
                     ontology.Data.DeclareObjectAssertion(owlIndividual, (RDFResource)objectAssertion.Predicate, (RDFResource)objectAssertion.Object);
                 foreach (RDFTriple datatypeAssertion in GetDatatypeAssertions(ontology, graph, owlIndividual))
                     ontology.Data.DeclareDatatypeAssertion(owlIndividual, (RDFResource)datatypeAssertion.Predicate, (RDFLiteral)datatypeAssertion.Object);
             }
+
+            //owl:NegativePropertyAssertion [OWL2]
+            foreach (RDFTriple negativeObjectAssertion in GetNegativeObjectAssertions(graph))
+                ontology.Data.DeclareNegativeObjectAssertion((RDFResource)negativeObjectAssertion.Subject, (RDFResource)negativeObjectAssertion.Predicate, (RDFResource)negativeObjectAssertion.Object);
+            foreach (RDFTriple negativeDatatypeAssertion in GetNegativeDatatypeAssertions(graph))
+                ontology.Data.DeclareNegativeDatatypeAssertion((RDFResource)negativeDatatypeAssertion.Subject, (RDFResource)negativeDatatypeAssertion.Predicate, (RDFLiteral)negativeDatatypeAssertion.Object);
 
             //owl:AllDifferent [OWL2]
             foreach (RDFResource allDifferent in GetAllDifferentDeclarations(graph))
@@ -130,19 +132,21 @@ namespace RDFSharp.Semantics
                                            .OfType<RDFResource>());
 
         /// <summary>
-        /// Gets the negative object assertions of the given owl:Individual (same algorythm of DataLens)
+        /// Gets the negative object assertions of the given graph (same algorythm of DataLens)
         /// </summary>
-        private static RDFGraph GetNegativeObjectAssertions(RDFGraph graph, RDFResource owlIndividual)
+        private static RDFGraph GetNegativeObjectAssertions(RDFGraph graph)
         {
             //Perform a SPARQL query to fetch all negative object assertions of the given owl:Individual
             RDFSelectQuery negativeObjectAssertionQuery = new RDFSelectQuery()
                 .AddPatternGroup(new RDFPatternGroup()
                     .AddPattern(new RDFPattern(new RDFVariable("?NASN_REPRESENTATIVE"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION))
-                    .AddPattern(new RDFPattern(new RDFVariable("?NASN_REPRESENTATIVE"), RDFVocabulary.OWL.SOURCE_INDIVIDUAL, owlIndividual))
+                    .AddPattern(new RDFPattern(new RDFVariable("?NASN_REPRESENTATIVE"), RDFVocabulary.OWL.SOURCE_INDIVIDUAL, new RDFVariable("?NASN_SUBJECT")))
                     .AddPattern(new RDFPattern(new RDFVariable("?NASN_REPRESENTATIVE"), RDFVocabulary.OWL.ASSERTION_PROPERTY, new RDFVariable("?NASN_PROPERTY")))
                     .AddPattern(new RDFPattern(new RDFVariable("?NASN_REPRESENTATIVE"), RDFVocabulary.OWL.TARGET_INDIVIDUAL, new RDFVariable("?NASN_TARGET")))
+                    .AddFilter(new RDFIsUriFilter(new RDFVariable("?NASN_SUBJECT")))
                     .AddFilter(new RDFIsUriFilter(new RDFVariable("?NASN_PROPERTY")))
                     .AddFilter(new RDFIsUriFilter(new RDFVariable("?NASN_TARGET"))))
+                .AddProjectionVariable(new RDFVariable("?NASN_SUBJECT"))
                 .AddProjectionVariable(new RDFVariable("?NASN_PROPERTY"))
                 .AddProjectionVariable(new RDFVariable("?NASN_TARGET"));
             RDFSelectQueryResult negativeObjectAssertionQueryResult = negativeObjectAssertionQuery.ApplyToGraph(graph);
@@ -150,25 +154,27 @@ namespace RDFSharp.Semantics
             //Merge them into the results graph
             RDFGraph negativeObjectAssertionsGraph = new RDFGraph();
             foreach (DataRow negativeObjectAssertion in negativeObjectAssertionQueryResult.SelectResults.Rows)
-                negativeObjectAssertionsGraph.AddTriple(new RDFTriple(owlIndividual, new RDFResource(negativeObjectAssertion["?NASN_PROPERTY"].ToString()), new RDFResource(negativeObjectAssertion["?NASN_TARGET"].ToString())));
+                negativeObjectAssertionsGraph.AddTriple(new RDFTriple(new RDFResource(negativeObjectAssertion["?NASN_SUBJECT"].ToString()), new RDFResource(negativeObjectAssertion["?NASN_PROPERTY"].ToString()), new RDFResource(negativeObjectAssertion["?NASN_TARGET"].ToString())));
 
             return negativeObjectAssertionsGraph;
         }
 
         /// <summary>
-        /// Gets the negative data assertions of the given owl:Individual (same algorythm of DataLens)
+        /// Gets the negative data assertions of the given graph (same algorythm of DataLens)
         /// </summary>
-        private static RDFGraph GetNegativeDatatypeAssertions(RDFGraph graph, RDFResource owlIndividual)
+        private static RDFGraph GetNegativeDatatypeAssertions(RDFGraph graph)
         {
             //Perform a SPARQL query to fetch all negative datatype assertions of the given owl:Individual
             RDFSelectQuery negativeDatatypeAssertionQuery = new RDFSelectQuery()
                 .AddPatternGroup(new RDFPatternGroup()
                     .AddPattern(new RDFPattern(new RDFVariable("?NASN_REPRESENTATIVE"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION))
-                    .AddPattern(new RDFPattern(new RDFVariable("?NASN_REPRESENTATIVE"), RDFVocabulary.OWL.SOURCE_INDIVIDUAL, owlIndividual))
+                    .AddPattern(new RDFPattern(new RDFVariable("?NASN_REPRESENTATIVE"), RDFVocabulary.OWL.SOURCE_INDIVIDUAL, new RDFVariable("?NASN_SUBJECT")))
                     .AddPattern(new RDFPattern(new RDFVariable("?NASN_REPRESENTATIVE"), RDFVocabulary.OWL.ASSERTION_PROPERTY, new RDFVariable("?NASN_PROPERTY")))
                     .AddPattern(new RDFPattern(new RDFVariable("?NASN_REPRESENTATIVE"), RDFVocabulary.OWL.TARGET_VALUE, new RDFVariable("?NASN_TARGET")))
+                    .AddFilter(new RDFIsUriFilter(new RDFVariable("?NASN_SUBJECT")))
                     .AddFilter(new RDFIsUriFilter(new RDFVariable("?NASN_PROPERTY")))
                     .AddFilter(new RDFIsLiteralFilter(new RDFVariable("?NASN_TARGET"))))
+                .AddProjectionVariable(new RDFVariable("?NASN_SUBJECT"))
                 .AddProjectionVariable(new RDFVariable("?NASN_PROPERTY"))
                 .AddProjectionVariable(new RDFVariable("?NASN_TARGET"));
             RDFSelectQueryResult negativeDatatypeAssertionQueryResult = negativeDatatypeAssertionQuery.ApplyToGraph(graph);
@@ -176,7 +182,7 @@ namespace RDFSharp.Semantics
             //Merge them into the results graph
             RDFGraph negativeDatatypeAssertionsGraph = new RDFGraph();
             foreach (DataRow negativeDatatypeAssertion in negativeDatatypeAssertionQueryResult.SelectResults.Rows)
-                negativeDatatypeAssertionsGraph.AddTriple(new RDFTriple(owlIndividual, new RDFResource(negativeDatatypeAssertion["?NASN_PROPERTY"].ToString()), (RDFLiteral)RDFQueryUtilities.ParseRDFPatternMember(negativeDatatypeAssertion["?NASN_TARGET"].ToString())));
+                negativeDatatypeAssertionsGraph.AddTriple(new RDFTriple(new RDFResource(negativeDatatypeAssertion["?NASN_SUBJECT"].ToString()), new RDFResource(negativeDatatypeAssertion["?NASN_PROPERTY"].ToString()), (RDFLiteral)RDFQueryUtilities.ParseRDFPatternMember(negativeDatatypeAssertion["?NASN_TARGET"].ToString())));
 
             return negativeDatatypeAssertionsGraph;
         }
