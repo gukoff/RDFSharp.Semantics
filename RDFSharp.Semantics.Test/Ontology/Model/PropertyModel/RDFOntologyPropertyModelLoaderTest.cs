@@ -52,7 +52,6 @@ namespace RDFSharp.Semantics.Test
             graph.AddTriple(new RDFTriple(new RDFResource("ex:objprop6"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY));
             graph.AddTriple(new RDFTriple(new RDFResource("ex:dtprop2"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.DATATYPE_PROPERTY));
             graph.AddTriple(new RDFTriple(new RDFResource("ex:dtprop2"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.FUNCTIONAL_PROPERTY));
-            //graph.AddTriple(new RDFTriple(new RDFResource("ex:propertyChainAxiom"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY));
             graph.AddTriple(new RDFTriple(new RDFResource("ex:propertyChainAxiom"), RDFVocabulary.OWL.PROPERTY_CHAIN_AXIOM, new RDFResource("bnode:pcaMembers")));
             graph.AddTriple(new RDFTriple(new RDFResource("bnode:pcaMembers"), RDFVocabulary.RDF.TYPE, RDFVocabulary.RDF.LIST));
             graph.AddTriple(new RDFTriple(new RDFResource("bnode:pcaMembers"), RDFVocabulary.RDF.FIRST, new RDFResource("ex:objprop11")));
