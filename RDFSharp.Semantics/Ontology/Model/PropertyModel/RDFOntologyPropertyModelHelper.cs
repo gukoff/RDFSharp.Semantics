@@ -505,7 +505,7 @@ namespace RDFSharp.Semantics
                     && !propertyModel.CheckAreEquivalentProperties(leftProperty, rightProperty);
 
         /// <summary>
-        /// Checks if the given leftProperty can be inverse of the given rightProperty without tampering OWL-DL integrity [OWL2]
+        /// Checks if the given leftProperty can be inverse of the given rightProperty without tampering OWL-DL integrity
         /// </summary>
         internal static bool CheckInversePropertyCompatibility(this RDFOntologyPropertyModel propertyModel, RDFResource leftProperty, RDFResource rightProperty)
             => !propertyModel.CheckAreSubProperties(leftProperty, rightProperty)
