@@ -50,15 +50,18 @@ namespace RDFSharp.Semantics
                 ontology.Data.DeclareIndividual(owlIndividual);
 
             //Individuals (rdf:type owl:Class)
+            RDFGraph typeGraph = graph[null, RDFVocabulary.RDF.TYPE, null, null];
             foreach (RDFResource owlClass in ontology.Model.ClassModel.Where(cls => ontology.Model.ClassModel.CheckHasSimpleClass(cls)))
-                foreach (RDFTriple type in graph[null, RDFVocabulary.RDF.TYPE, owlClass, null])
+                foreach (RDFTriple type in typeGraph[null, null, owlClass, null])
                 {
                     ontology.Data.DeclareIndividual((RDFResource)type.Subject);
                     ontology.Data.DeclareIndividualType((RDFResource)type.Subject, owlClass);
-                }   
+                }
             #endregion
 
             #region Taxonomies
+            RDFGraph sameasGraph = graph[null, RDFVocabulary.OWL.SAME_AS, null, null];
+            RDFGraph differentfromGraph = graph[null, RDFVocabulary.OWL.DIFFERENT_FROM, null, null];
             foreach (RDFResource owlIndividual in ontology.Data)
             {
                 //Annotations
@@ -71,9 +74,9 @@ namespace RDFSharp.Semantics
                 }
 
                 //Relations
-                foreach (RDFTriple sameAsRelation in graph[owlIndividual, RDFVocabulary.OWL.SAME_AS, null, null])
+                foreach (RDFTriple sameAsRelation in sameasGraph[owlIndividual, null, null, null])
                     ontology.Data.DeclareSameIndividuals(owlIndividual, (RDFResource)sameAsRelation.Object);
-                foreach (RDFTriple differentFromRelation in graph[owlIndividual, RDFVocabulary.OWL.DIFFERENT_FROM, null, null])
+                foreach (RDFTriple differentFromRelation in differentfromGraph[owlIndividual, null, null, null])
                     ontology.Data.DeclareDifferentIndividuals(owlIndividual, (RDFResource)differentFromRelation.Object);
                 foreach (RDFTriple negativeObjectAssertion in GetNegativeObjectAssertions(graph, owlIndividual))
                     ontology.Data.DeclareNegativeObjectAssertion(owlIndividual, (RDFResource)negativeObjectAssertion.Predicate, (RDFResource)negativeObjectAssertion.Object);
