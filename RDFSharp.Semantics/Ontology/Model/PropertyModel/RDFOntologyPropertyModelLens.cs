@@ -61,7 +61,7 @@ namespace RDFSharp.Semantics
         /// Enlists the properties which are related with the lens property by rdfs:subPropertyOf
         /// </summary>
         public List<RDFResource> SubProperties()
-            => Ontology.Model.PropertyModel.AnswerSubProperties(Property);
+            => Ontology.Model.PropertyModel.GetSubPropertiesOf(Property);
 
         /// <summary>
         /// Asynchronously enlists the properties which are related with the lens property by rdfs:subPropertyOf
@@ -73,7 +73,7 @@ namespace RDFSharp.Semantics
         /// Enlists the properties to which the lens property is related by rdfs:subPropertyOf
         /// </summary>
         public List<RDFResource> SuperProperties()
-            => Ontology.Model.PropertyModel.AnswerSuperProperties(Property);
+            => Ontology.Model.PropertyModel.GetSuperPropertiesOf(Property);
 
         /// <summary>
         /// Asynchronously enlists the properties to which the lens property is related by rdfs:subPropertyOf
@@ -85,7 +85,7 @@ namespace RDFSharp.Semantics
         /// Enlists the properties which are related with the lens property by owl:equivalentProperty
         /// </summary>
         public List<RDFResource> EquivalentProperties()
-            => Ontology.Model.PropertyModel.AnswerEquivalentProperties(Property);
+            => Ontology.Model.PropertyModel.GetEquivalentPropertiesOf(Property);
 
         /// <summary>
         /// Asynchronously enlists the properties which are related with the lens property by owl:equivalentProperty
@@ -97,7 +97,7 @@ namespace RDFSharp.Semantics
         /// Enlists the properties which are related with the lens property by owl:propertyDisjointWith [OWL2]
         /// </summary>
         public List<RDFResource> DisjointProperties()
-            => Ontology.Model.PropertyModel.AnswerDisjointProperties(Property);
+            => Ontology.Model.PropertyModel.GetDisjointPropertiesWith(Property);
 
         /// <summary>
         /// Asynchronously enlists the properties which are related with the lens property owl:propertyDisjointWith [OWL2]
@@ -109,7 +109,7 @@ namespace RDFSharp.Semantics
         /// Enlists the properties which are related with the lens property by owl:inverseOf
         /// </summary>
         public List<RDFResource> InverseProperties()
-            => Ontology.Model.PropertyModel.AnswerInverseProperties(Property);
+            => Ontology.Model.PropertyModel.GetInversePropertiesOf(Property);
 
         /// <summary>
         /// Asynchronously enlists the properties which are related with the lens property by owl:inverseOf
@@ -121,7 +121,7 @@ namespace RDFSharp.Semantics
         /// Enlists the properties which are related with the lens property by owl:propertyChainAxiom [OWL2]
         /// </summary>
         public List<RDFResource> ChainAxiomProperties()
-            => Ontology.Model.PropertyModel.AnswerChainAxiomProperties(Property);
+            => Ontology.Model.PropertyModel.GetChainAxiomPropertiesOf(Property);
 
         /// <summary>
         /// Asynchronously enlists the properties which are related with the lens property by owl:propertyChainAxiom [OWL2]

@@ -626,11 +626,11 @@ namespace RDFSharp.Semantics.Test
             classModel.DeclareSubClasses(new RDFResource("ex:classC"), new RDFResource("ex:classB"));
             classModel.DeclareEquivalentClasses(new RDFResource("ex:classC"), new RDFResource("ex:classD"));
 
-            Assert.IsTrue(classModel.CheckAreSubClasses(new RDFResource("ex:classB"), new RDFResource("ex:classA")));
-            Assert.IsTrue(classModel.CheckAreSubClasses(new RDFResource("ex:classC"), new RDFResource("ex:classB")));
-            Assert.IsTrue(classModel.CheckAreSubClasses(new RDFResource("ex:classC"), new RDFResource("ex:classA"))); //Inferred
-            Assert.IsTrue(classModel.CheckAreSubClasses(new RDFResource("ex:classD"), new RDFResource("ex:classB"))); //Inferred
-            Assert.IsTrue(classModel.CheckAreSubClasses(new RDFResource("ex:classD"), new RDFResource("ex:classA"))); //Inferred
+            Assert.IsTrue(classModel.CheckIsSubClassOf(new RDFResource("ex:classB"), new RDFResource("ex:classA")));
+            Assert.IsTrue(classModel.CheckIsSubClassOf(new RDFResource("ex:classC"), new RDFResource("ex:classB")));
+            Assert.IsTrue(classModel.CheckIsSubClassOf(new RDFResource("ex:classC"), new RDFResource("ex:classA"))); //Inferred
+            Assert.IsTrue(classModel.CheckIsSubClassOf(new RDFResource("ex:classD"), new RDFResource("ex:classB"))); //Inferred
+            Assert.IsTrue(classModel.CheckIsSubClassOf(new RDFResource("ex:classD"), new RDFResource("ex:classA"))); //Inferred
         }
 
         [TestMethod]
@@ -645,11 +645,11 @@ namespace RDFSharp.Semantics.Test
             classModel.DeclareSubClasses(new RDFResource("ex:classC"), new RDFResource("ex:classB"));
             classModel.DeclareEquivalentClasses(new RDFResource("ex:classC"), new RDFResource("ex:classD"));
 
-            Assert.IsTrue(classModel.AnswerSubClasses(new RDFResource("ex:classA")).Any(sc => sc.Equals(new RDFResource("ex:classB"))));
-            Assert.IsTrue(classModel.AnswerSubClasses(new RDFResource("ex:classA")).Any(sc => sc.Equals(new RDFResource("ex:classC")))); //Inferred
-            Assert.IsTrue(classModel.AnswerSubClasses(new RDFResource("ex:classA")).Any(sc => sc.Equals(new RDFResource("ex:classD")))); //Inferred
-            Assert.IsTrue(classModel.AnswerSubClasses(new RDFResource("ex:classB")).Any(sc => sc.Equals(new RDFResource("ex:classC"))));
-            Assert.IsTrue(classModel.AnswerSubClasses(new RDFResource("ex:classB")).Any(sc => sc.Equals(new RDFResource("ex:classD")))); //Inferred
+            Assert.IsTrue(classModel.GetSubClassesOf(new RDFResource("ex:classA")).Any(sc => sc.Equals(new RDFResource("ex:classB"))));
+            Assert.IsTrue(classModel.GetSubClassesOf(new RDFResource("ex:classA")).Any(sc => sc.Equals(new RDFResource("ex:classC")))); //Inferred
+            Assert.IsTrue(classModel.GetSubClassesOf(new RDFResource("ex:classA")).Any(sc => sc.Equals(new RDFResource("ex:classD")))); //Inferred
+            Assert.IsTrue(classModel.GetSubClassesOf(new RDFResource("ex:classB")).Any(sc => sc.Equals(new RDFResource("ex:classC"))));
+            Assert.IsTrue(classModel.GetSubClassesOf(new RDFResource("ex:classB")).Any(sc => sc.Equals(new RDFResource("ex:classD")))); //Inferred
         }
 
         [TestMethod]
@@ -664,11 +664,11 @@ namespace RDFSharp.Semantics.Test
             classModel.DeclareSubClasses(new RDFResource("ex:classC"), new RDFResource("ex:classB"));
             classModel.DeclareEquivalentClasses(new RDFResource("ex:classC"), new RDFResource("ex:classD"));
 
-            Assert.IsTrue(classModel.CheckAreSuperClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB")));
-            Assert.IsTrue(classModel.CheckAreSuperClasses(new RDFResource("ex:classB"), new RDFResource("ex:classC")));
-            Assert.IsTrue(classModel.CheckAreSuperClasses(new RDFResource("ex:classA"), new RDFResource("ex:classC"))); //Inferred
-            Assert.IsTrue(classModel.CheckAreSuperClasses(new RDFResource("ex:classB"), new RDFResource("ex:classD"))); //Inferred
-            Assert.IsTrue(classModel.CheckAreSuperClasses(new RDFResource("ex:classA"), new RDFResource("ex:classD"))); //Inferred
+            Assert.IsTrue(classModel.CheckIsSuperClassOf(new RDFResource("ex:classA"), new RDFResource("ex:classB")));
+            Assert.IsTrue(classModel.CheckIsSuperClassOf(new RDFResource("ex:classB"), new RDFResource("ex:classC")));
+            Assert.IsTrue(classModel.CheckIsSuperClassOf(new RDFResource("ex:classA"), new RDFResource("ex:classC"))); //Inferred
+            Assert.IsTrue(classModel.CheckIsSuperClassOf(new RDFResource("ex:classB"), new RDFResource("ex:classD"))); //Inferred
+            Assert.IsTrue(classModel.CheckIsSuperClassOf(new RDFResource("ex:classA"), new RDFResource("ex:classD"))); //Inferred
         }
 
         [TestMethod]
@@ -683,11 +683,11 @@ namespace RDFSharp.Semantics.Test
             classModel.DeclareSubClasses(new RDFResource("ex:classC"), new RDFResource("ex:classB"));
             classModel.DeclareEquivalentClasses(new RDFResource("ex:classC"), new RDFResource("ex:classD"));
 
-            Assert.IsTrue(classModel.AnswerSuperClasses(new RDFResource("ex:classB")).Any(sc => sc.Equals(new RDFResource("ex:classA"))));
-            Assert.IsTrue(classModel.AnswerSuperClasses(new RDFResource("ex:classC")).Any(sc => sc.Equals(new RDFResource("ex:classB"))));
-            Assert.IsTrue(classModel.AnswerSuperClasses(new RDFResource("ex:classC")).Any(sc => sc.Equals(new RDFResource("ex:classA")))); //Inferred
-            Assert.IsTrue(classModel.AnswerSuperClasses(new RDFResource("ex:classD")).Any(sc => sc.Equals(new RDFResource("ex:classB")))); //Inferred
-            Assert.IsTrue(classModel.AnswerSuperClasses(new RDFResource("ex:classD")).Any(sc => sc.Equals(new RDFResource("ex:classA")))); //Inferred
+            Assert.IsTrue(classModel.GetSuperClassesOf(new RDFResource("ex:classB")).Any(sc => sc.Equals(new RDFResource("ex:classA"))));
+            Assert.IsTrue(classModel.GetSuperClassesOf(new RDFResource("ex:classC")).Any(sc => sc.Equals(new RDFResource("ex:classB"))));
+            Assert.IsTrue(classModel.GetSuperClassesOf(new RDFResource("ex:classC")).Any(sc => sc.Equals(new RDFResource("ex:classA")))); //Inferred
+            Assert.IsTrue(classModel.GetSuperClassesOf(new RDFResource("ex:classD")).Any(sc => sc.Equals(new RDFResource("ex:classB")))); //Inferred
+            Assert.IsTrue(classModel.GetSuperClassesOf(new RDFResource("ex:classD")).Any(sc => sc.Equals(new RDFResource("ex:classA")))); //Inferred
         }
 
         [TestMethod]
@@ -700,12 +700,12 @@ namespace RDFSharp.Semantics.Test
             classModel.DeclareEquivalentClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
             classModel.DeclareEquivalentClasses(new RDFResource("ex:classB"), new RDFResource("ex:classC"));
 
-            Assert.IsTrue(classModel.CheckAreEquivalentClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB")));
-            Assert.IsTrue(classModel.CheckAreEquivalentClasses(new RDFResource("ex:classA"), new RDFResource("ex:classC"))); //Inferred
-            Assert.IsTrue(classModel.CheckAreEquivalentClasses(new RDFResource("ex:classB"), new RDFResource("ex:classA"))); //Inferred            
-            Assert.IsTrue(classModel.CheckAreEquivalentClasses(new RDFResource("ex:classB"), new RDFResource("ex:classC")));
-            Assert.IsTrue(classModel.CheckAreEquivalentClasses(new RDFResource("ex:classC"), new RDFResource("ex:classB"))); //Inferred
-            Assert.IsTrue(classModel.CheckAreEquivalentClasses(new RDFResource("ex:classC"), new RDFResource("ex:classA"))); //Inferred
+            Assert.IsTrue(classModel.CheckIsEquivalentClassOf(new RDFResource("ex:classA"), new RDFResource("ex:classB")));
+            Assert.IsTrue(classModel.CheckIsEquivalentClassOf(new RDFResource("ex:classA"), new RDFResource("ex:classC"))); //Inferred
+            Assert.IsTrue(classModel.CheckIsEquivalentClassOf(new RDFResource("ex:classB"), new RDFResource("ex:classA"))); //Inferred            
+            Assert.IsTrue(classModel.CheckIsEquivalentClassOf(new RDFResource("ex:classB"), new RDFResource("ex:classC")));
+            Assert.IsTrue(classModel.CheckIsEquivalentClassOf(new RDFResource("ex:classC"), new RDFResource("ex:classB"))); //Inferred
+            Assert.IsTrue(classModel.CheckIsEquivalentClassOf(new RDFResource("ex:classC"), new RDFResource("ex:classA"))); //Inferred
         }
 
         [TestMethod]
@@ -718,12 +718,12 @@ namespace RDFSharp.Semantics.Test
             classModel.DeclareEquivalentClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
             classModel.DeclareEquivalentClasses(new RDFResource("ex:classB"), new RDFResource("ex:classC"));
 
-            Assert.IsTrue(classModel.AnswerEquivalentClasses(new RDFResource("ex:classA")).Any(sc => sc.Equals(new RDFResource("ex:classB"))));
-            Assert.IsTrue(classModel.AnswerEquivalentClasses(new RDFResource("ex:classA")).Any(sc => sc.Equals(new RDFResource("ex:classC")))); //Inferred
-            Assert.IsTrue(classModel.AnswerEquivalentClasses(new RDFResource("ex:classB")).Any(sc => sc.Equals(new RDFResource("ex:classA")))); //Inferred
-            Assert.IsTrue(classModel.AnswerEquivalentClasses(new RDFResource("ex:classB")).Any(sc => sc.Equals(new RDFResource("ex:classC"))));
-            Assert.IsTrue(classModel.AnswerEquivalentClasses(new RDFResource("ex:classC")).Any(sc => sc.Equals(new RDFResource("ex:classA")))); //Inferred
-            Assert.IsTrue(classModel.AnswerEquivalentClasses(new RDFResource("ex:classC")).Any(sc => sc.Equals(new RDFResource("ex:classB")))); //Inferred
+            Assert.IsTrue(classModel.GetEquivalentClassesOf(new RDFResource("ex:classA")).Any(sc => sc.Equals(new RDFResource("ex:classB"))));
+            Assert.IsTrue(classModel.GetEquivalentClassesOf(new RDFResource("ex:classA")).Any(sc => sc.Equals(new RDFResource("ex:classC")))); //Inferred
+            Assert.IsTrue(classModel.GetEquivalentClassesOf(new RDFResource("ex:classB")).Any(sc => sc.Equals(new RDFResource("ex:classA")))); //Inferred
+            Assert.IsTrue(classModel.GetEquivalentClassesOf(new RDFResource("ex:classB")).Any(sc => sc.Equals(new RDFResource("ex:classC"))));
+            Assert.IsTrue(classModel.GetEquivalentClassesOf(new RDFResource("ex:classC")).Any(sc => sc.Equals(new RDFResource("ex:classA")))); //Inferred
+            Assert.IsTrue(classModel.GetEquivalentClassesOf(new RDFResource("ex:classC")).Any(sc => sc.Equals(new RDFResource("ex:classB")))); //Inferred
         }
 
         [TestMethod]
@@ -738,10 +738,10 @@ namespace RDFSharp.Semantics.Test
             classModel.DeclareDisjointClasses(new RDFResource("ex:classB"), new RDFResource("ex:classC"));
             classModel.DeclareSubClasses(new RDFResource("ex:classD"), new RDFResource("ex:classC"));
 
-            Assert.IsTrue(classModel.CheckAreDisjointClasses(new RDFResource("ex:classA"), new RDFResource("ex:classC"))); //Inferred
-            Assert.IsTrue(classModel.CheckAreDisjointClasses(new RDFResource("ex:classB"), new RDFResource("ex:classC")));
-            Assert.IsTrue(classModel.CheckAreDisjointClasses(new RDFResource("ex:classB"), new RDFResource("ex:classD"))); //Inferred
-            Assert.IsTrue(classModel.CheckAreDisjointClasses(new RDFResource("ex:classA"), new RDFResource("ex:classD"))); //Inferred
+            Assert.IsTrue(classModel.CheckIsDisjointClassWith(new RDFResource("ex:classA"), new RDFResource("ex:classC"))); //Inferred
+            Assert.IsTrue(classModel.CheckIsDisjointClassWith(new RDFResource("ex:classB"), new RDFResource("ex:classC")));
+            Assert.IsTrue(classModel.CheckIsDisjointClassWith(new RDFResource("ex:classB"), new RDFResource("ex:classD"))); //Inferred
+            Assert.IsTrue(classModel.CheckIsDisjointClassWith(new RDFResource("ex:classA"), new RDFResource("ex:classD"))); //Inferred
         }
 
         [TestMethod]
@@ -756,14 +756,14 @@ namespace RDFSharp.Semantics.Test
             classModel.DeclareDisjointClasses(new RDFResource("ex:classB"), new RDFResource("ex:classC"));
             classModel.DeclareSubClasses(new RDFResource("ex:classD"), new RDFResource("ex:classC"));
 
-            Assert.IsTrue(classModel.AnswerDisjointClasses(new RDFResource("ex:classA")).Any(sc => sc.Equals(new RDFResource("ex:classC")))); //Inferred
-            Assert.IsTrue(classModel.AnswerDisjointClasses(new RDFResource("ex:classA")).Any(sc => sc.Equals(new RDFResource("ex:classD")))); //Inferred
-            Assert.IsTrue(classModel.AnswerDisjointClasses(new RDFResource("ex:classB")).Any(sc => sc.Equals(new RDFResource("ex:classC"))));
-            Assert.IsTrue(classModel.AnswerDisjointClasses(new RDFResource("ex:classB")).Any(sc => sc.Equals(new RDFResource("ex:classD")))); //Inferred
-            Assert.IsTrue(classModel.AnswerDisjointClasses(new RDFResource("ex:classC")).Any(sc => sc.Equals(new RDFResource("ex:classA")))); //Inferred
-            Assert.IsTrue(classModel.AnswerDisjointClasses(new RDFResource("ex:classC")).Any(sc => sc.Equals(new RDFResource("ex:classB")))); //Inferred
-            Assert.IsTrue(classModel.AnswerDisjointClasses(new RDFResource("ex:classD")).Any(sc => sc.Equals(new RDFResource("ex:classA")))); //Inferred
-            Assert.IsTrue(classModel.AnswerDisjointClasses(new RDFResource("ex:classD")).Any(sc => sc.Equals(new RDFResource("ex:classB")))); //Inferred
+            Assert.IsTrue(classModel.GetDisjointClassesWith(new RDFResource("ex:classA")).Any(sc => sc.Equals(new RDFResource("ex:classC")))); //Inferred
+            Assert.IsTrue(classModel.GetDisjointClassesWith(new RDFResource("ex:classA")).Any(sc => sc.Equals(new RDFResource("ex:classD")))); //Inferred
+            Assert.IsTrue(classModel.GetDisjointClassesWith(new RDFResource("ex:classB")).Any(sc => sc.Equals(new RDFResource("ex:classC"))));
+            Assert.IsTrue(classModel.GetDisjointClassesWith(new RDFResource("ex:classB")).Any(sc => sc.Equals(new RDFResource("ex:classD")))); //Inferred
+            Assert.IsTrue(classModel.GetDisjointClassesWith(new RDFResource("ex:classC")).Any(sc => sc.Equals(new RDFResource("ex:classA")))); //Inferred
+            Assert.IsTrue(classModel.GetDisjointClassesWith(new RDFResource("ex:classC")).Any(sc => sc.Equals(new RDFResource("ex:classB")))); //Inferred
+            Assert.IsTrue(classModel.GetDisjointClassesWith(new RDFResource("ex:classD")).Any(sc => sc.Equals(new RDFResource("ex:classA")))); //Inferred
+            Assert.IsTrue(classModel.GetDisjointClassesWith(new RDFResource("ex:classD")).Any(sc => sc.Equals(new RDFResource("ex:classB")))); //Inferred
         }
 
         [TestMethod]
@@ -780,9 +780,9 @@ namespace RDFSharp.Semantics.Test
             classModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY));
             classModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDFS.DOMAIN, new RDFResource("ex:classA")));
 
-            Assert.IsTrue(classModel.CheckIsDomainOfProperty(new RDFResource("ex:classA"), new RDFResource("ex:objprop")));
-            Assert.IsTrue(classModel.CheckIsDomainOfProperty(new RDFResource("ex:classB"), new RDFResource("ex:objprop"))); //Inferred
-            Assert.IsTrue(classModel.CheckIsDomainOfProperty(new RDFResource("ex:classC"), new RDFResource("ex:objprop"))); //Inferred
+            Assert.IsTrue(classModel.CheckIsDomainOf(new RDFResource("ex:classA"), new RDFResource("ex:objprop")));
+            Assert.IsTrue(classModel.CheckIsDomainOf(new RDFResource("ex:classB"), new RDFResource("ex:objprop"))); //Inferred
+            Assert.IsTrue(classModel.CheckIsDomainOf(new RDFResource("ex:classC"), new RDFResource("ex:objprop"))); //Inferred
         }
 
         [TestMethod]
@@ -800,10 +800,10 @@ namespace RDFSharp.Semantics.Test
             classModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDFS.DOMAIN, new RDFResource("ex:classA")));
             classModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:objprop2"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY));
 
-            Assert.IsTrue(classModel.AnswerDomainOfProperty(new RDFResource("ex:objprop")).Any(cls => cls.Equals(new RDFResource("ex:classA"))));
-            Assert.IsTrue(classModel.AnswerDomainOfProperty(new RDFResource("ex:objprop")).Any(cls => cls.Equals(new RDFResource("ex:classB")))); //Inferred
-            Assert.IsTrue(classModel.AnswerDomainOfProperty(new RDFResource("ex:objprop")).Any(cls => cls.Equals(new RDFResource("ex:classC")))); //Inferred
-            Assert.IsTrue(classModel.AnswerDomainOfProperty(new RDFResource("ex:objprop2")).Count == 0);
+            Assert.IsTrue(classModel.GetDomainOf(new RDFResource("ex:objprop")).Any(cls => cls.Equals(new RDFResource("ex:classA"))));
+            Assert.IsTrue(classModel.GetDomainOf(new RDFResource("ex:objprop")).Any(cls => cls.Equals(new RDFResource("ex:classB")))); //Inferred
+            Assert.IsTrue(classModel.GetDomainOf(new RDFResource("ex:objprop")).Any(cls => cls.Equals(new RDFResource("ex:classC")))); //Inferred
+            Assert.IsTrue(classModel.GetDomainOf(new RDFResource("ex:objprop2")).Count == 0);
         }
 
         [TestMethod]
@@ -820,9 +820,9 @@ namespace RDFSharp.Semantics.Test
             classModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY));
             classModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDFS.RANGE, new RDFResource("ex:classA")));
 
-            Assert.IsTrue(classModel.CheckIsRangeOfProperty(new RDFResource("ex:classA"), new RDFResource("ex:objprop")));
-            Assert.IsTrue(classModel.CheckIsRangeOfProperty(new RDFResource("ex:classB"), new RDFResource("ex:objprop"))); //Inferred
-            Assert.IsTrue(classModel.CheckIsRangeOfProperty(new RDFResource("ex:classC"), new RDFResource("ex:objprop"))); //Inferred
+            Assert.IsTrue(classModel.CheckIsRangeOf(new RDFResource("ex:classA"), new RDFResource("ex:objprop")));
+            Assert.IsTrue(classModel.CheckIsRangeOf(new RDFResource("ex:classB"), new RDFResource("ex:objprop"))); //Inferred
+            Assert.IsTrue(classModel.CheckIsRangeOf(new RDFResource("ex:classC"), new RDFResource("ex:objprop"))); //Inferred
         }
 
         [TestMethod]
@@ -840,10 +840,10 @@ namespace RDFSharp.Semantics.Test
             classModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDFS.RANGE, new RDFResource("ex:classA")));
             classModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:objpro2"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY));
 
-            Assert.IsTrue(classModel.AnswerRangeOfProperty(new RDFResource("ex:objprop")).Any(cls => cls.Equals(new RDFResource("ex:classA"))));
-            Assert.IsTrue(classModel.AnswerRangeOfProperty(new RDFResource("ex:objprop")).Any(cls => cls.Equals(new RDFResource("ex:classB")))); //Inferred
-            Assert.IsTrue(classModel.AnswerRangeOfProperty(new RDFResource("ex:objprop")).Any(cls => cls.Equals(new RDFResource("ex:classC")))); //Inferred
-            Assert.IsTrue(classModel.AnswerRangeOfProperty(new RDFResource("ex:objprop2")).Count == 0);
+            Assert.IsTrue(classModel.GetRangeOf(new RDFResource("ex:objprop")).Any(cls => cls.Equals(new RDFResource("ex:classA"))));
+            Assert.IsTrue(classModel.GetRangeOf(new RDFResource("ex:objprop")).Any(cls => cls.Equals(new RDFResource("ex:classB")))); //Inferred
+            Assert.IsTrue(classModel.GetRangeOf(new RDFResource("ex:objprop")).Any(cls => cls.Equals(new RDFResource("ex:classC")))); //Inferred
+            Assert.IsTrue(classModel.GetRangeOf(new RDFResource("ex:objprop2")).Count == 0);
         }
 
         [TestMethod]
@@ -854,9 +854,9 @@ namespace RDFSharp.Semantics.Test
             classModel.DeclareClass(new RDFResource("ex:classB"));
             classModel.DeclareHasKey(new RDFResource("ex:classA"), new List<RDFResource>() { new RDFResource("ex:objprop1"), new RDFResource("ex:objprop2") });
 
-            Assert.IsTrue(classModel.AnswerKeyProperties(new RDFResource("ex:classA")).Any(p => p.Equals(new RDFResource("ex:objprop1"))));
-            Assert.IsTrue(classModel.AnswerKeyProperties(new RDFResource("ex:classA")).Any(p => p.Equals(new RDFResource("ex:objprop2"))));
-            Assert.IsTrue(classModel.AnswerKeyProperties(new RDFResource("ex:classB")).Count == 0);
+            Assert.IsTrue(classModel.GetKeyPropertiesOf(new RDFResource("ex:classA")).Any(p => p.Equals(new RDFResource("ex:objprop1"))));
+            Assert.IsTrue(classModel.GetKeyPropertiesOf(new RDFResource("ex:classA")).Any(p => p.Equals(new RDFResource("ex:objprop2"))));
+            Assert.IsTrue(classModel.GetKeyPropertiesOf(new RDFResource("ex:classB")).Count == 0);
         }
         #endregion
 

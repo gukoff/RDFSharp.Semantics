@@ -103,19 +103,19 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Checks for the existence of "SameAs(leftIndividual,rightIndividual)" relations within the data
         /// </summary>
-        public static bool CheckAreSameIndividuals(this RDFOntologyData data, RDFResource leftIndividual, RDFResource rightIndividual)
-            => leftIndividual != null && rightIndividual != null && data != null && data.AnswerSameIndividuals(leftIndividual).Any(individual => individual.Equals(rightIndividual));
+        public static bool CheckIsSameIndividualOf(this RDFOntologyData data, RDFResource leftIndividual, RDFResource rightIndividual)
+            => leftIndividual != null && rightIndividual != null && data != null && data.GetSameIndividualsOf(leftIndividual).Any(individual => individual.Equals(rightIndividual));
 
         /// <summary>
         /// Analyzes "SameAs(leftIndividual, X)" relations of the data to answer the same individuals of the given owl:Individual
         /// </summary>
-        public static List<RDFResource> AnswerSameIndividuals(this RDFOntologyData data, RDFResource owlIndividual)
+        public static List<RDFResource> GetSameIndividualsOf(this RDFOntologyData data, RDFResource owlIndividual)
         {
             List<RDFResource> sameIndividuals = new List<RDFResource>();
 
             if (data != null && owlIndividual != null)
             {
-                sameIndividuals.AddRange(data.FindSameIndividuals(owlIndividual, data.ABoxVirtualGraph, new Dictionary<long, RDFResource>()));
+                sameIndividuals.AddRange(data.FindSameIndividualsOf(owlIndividual, data.ABoxVirtualGraph, new Dictionary<long, RDFResource>()));
                 
                 //We don't want to also enlist the given owl:Individual
                 sameIndividuals.RemoveAll(individual => individual.Equals(owlIndividual));
@@ -127,7 +127,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Finds "SameAs(owlIndividual, X)" relations to enlist the same individuals of the given owl:Individual
         /// </summary>
-        internal static List<RDFResource> FindSameIndividuals(this RDFOntologyData data, RDFResource owlIndividual, RDFGraph aboxGraph, Dictionary<long, RDFResource> visitContext)
+        internal static List<RDFResource> FindSameIndividualsOf(this RDFOntologyData data, RDFResource owlIndividual, RDFGraph aboxGraph, Dictionary<long, RDFResource> visitContext)
         {
             List<RDFResource> sameIndividuals = new List<RDFResource>();
 
@@ -146,7 +146,7 @@ namespace RDFSharp.Semantics
 
             // Inference: SAMEAS(A,B) ^ SAMEAS(B,C) -> SAMEAS(A,C)
             foreach (RDFResource sameIndividual in sameIndividuals.ToList())
-                sameIndividuals.AddRange(data.FindSameIndividuals(sameIndividual, aboxGraph, visitContext));
+                sameIndividuals.AddRange(data.FindSameIndividualsOf(sameIndividual, aboxGraph, visitContext));
 
             return sameIndividuals;
         }
@@ -154,19 +154,19 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Checks for the existence of "DifferentFrom(leftIndividual,rightIndividual)" relations within the data
         /// </summary>
-        public static bool CheckAreDifferentIndividuals(this RDFOntologyData data, RDFResource leftIndividual, RDFResource rightIndividual)
-            => leftIndividual != null && rightIndividual != null && data != null && data.AnswerDifferentIndividuals(leftIndividual).Any(individual => individual.Equals(rightIndividual));
+        public static bool CheckIsDifferentIndividualOf(this RDFOntologyData data, RDFResource leftIndividual, RDFResource rightIndividual)
+            => leftIndividual != null && rightIndividual != null && data != null && data.GetDifferentIndividualsOf(leftIndividual).Any(individual => individual.Equals(rightIndividual));
 
         /// <summary>
         /// Analyzes "DifferentFrom(leftIndividual, X)" relations of the data to answer the different individuals of the given owl:Individual
         /// </summary>
-        public static List<RDFResource> AnswerDifferentIndividuals(this RDFOntologyData data, RDFResource owlIndividual)
+        public static List<RDFResource> GetDifferentIndividualsOf(this RDFOntologyData data, RDFResource owlIndividual)
         {
             List<RDFResource> differentIndividuals = new List<RDFResource>();
 
             if (data != null && owlIndividual != null)
             {
-                differentIndividuals.AddRange(data.FindDifferentIndividuals(owlIndividual, data.ABoxVirtualGraph, new Dictionary<long, RDFResource>()));
+                differentIndividuals.AddRange(data.FindDifferentIndividualsOf(owlIndividual, data.ABoxVirtualGraph, new Dictionary<long, RDFResource>()));
 
                 //We don't want to also enlist the given owl:Individual
                 differentIndividuals.RemoveAll(individual => individual.Equals(owlIndividual));
@@ -178,7 +178,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Finds "DifferentFrom(owlIndividual, X)" relations to enlist the different individuals of the given owl:Individual
         /// </summary>
-        internal static List<RDFResource> FindDifferentIndividuals(this RDFOntologyData data, RDFResource owlIndividual, RDFGraph aboxGraph, Dictionary<long, RDFResource> visitContext)
+        internal static List<RDFResource> FindDifferentIndividualsOf(this RDFOntologyData data, RDFResource owlIndividual, RDFGraph aboxGraph, Dictionary<long, RDFResource> visitContext)
         {
             List<RDFResource> differentIndividuals = new List<RDFResource>();
             
@@ -217,12 +217,12 @@ namespace RDFSharp.Semantics
             foreach (RDFResource differentIndividual in differentIndividualsSet)
             {
                 differentIndividuals.Add(differentIndividual);
-                differentIndividuals.AddRange(data.FindSameIndividuals(differentIndividual, aboxGraph, visitContext));
+                differentIndividuals.AddRange(data.FindSameIndividualsOf(differentIndividual, aboxGraph, visitContext));
             }
 
             // Inference: SAMEAS(A,B) ^ DIFFERENTFROM(B,C) -> DIFFERENTFROM(A,C)
-            foreach (RDFResource sameAsIndividual in data.AnswerSameIndividuals(owlIndividual))
-                differentIndividuals.AddRange(data.FindDifferentIndividuals(sameAsIndividual, aboxGraph, visitContext));
+            foreach (RDFResource sameAsIndividual in data.GetSameIndividualsOf(owlIndividual))
+                differentIndividuals.AddRange(data.FindDifferentIndividualsOf(sameAsIndividual, aboxGraph, visitContext));
             #endregion
 
             return differentIndividuals;
@@ -231,13 +231,13 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Checks for the existence of "TransitiveObjectProperty(leftIndividual,rightIndividual)" relations within the data
         /// </summary>
-        public static bool CheckAreTransitiveRelatedIndividuals(this RDFOntologyData data, RDFResource leftIndividual, RDFResource transitiveObjectProperty, RDFResource rightIndividual)
-            => leftIndividual != null && rightIndividual != null && transitiveObjectProperty != null && data != null && data.AnswerTransitiveRelatedIndividuals(leftIndividual, transitiveObjectProperty).Any(individual => individual.Equals(rightIndividual));
+        internal static bool CheckIsTransitiveRelatedIndividualOf(this RDFOntologyData data, RDFResource leftIndividual, RDFResource transitiveObjectProperty, RDFResource rightIndividual)
+            => leftIndividual != null && rightIndividual != null && transitiveObjectProperty != null && data != null && data.GetTransitiveRelatedIndividualsOf(leftIndividual, transitiveObjectProperty).Any(individual => individual.Equals(rightIndividual));
 
         /// <summary>
         /// Analyzes "TransitiveObjectProperty(leftIndividual,X)" relations of the data to enlist the individuals which are related to the given owl:Individual through the given owl:TransitiveObjectProperty
         /// </summary>
-        public static List<RDFResource> AnswerTransitiveRelatedIndividuals(this RDFOntologyData data, RDFResource owlIndividual, RDFResource transitiveObjectProperty)
+        internal static List<RDFResource> GetTransitiveRelatedIndividualsOf(this RDFOntologyData data, RDFResource owlIndividual, RDFResource transitiveObjectProperty)
         {
             List<RDFResource> transitiveRelatedIndividuals = new List<RDFResource>();
 
@@ -247,7 +247,7 @@ namespace RDFSharp.Semantics
 
                 //Restrict A-BOX knowledge to the given owl:TransitiveObjectProperty relations (both explicit and inferred)
                 RDFGraph filteredABox = aboxVirtualGraph[null, transitiveObjectProperty, null, null];
-                transitiveRelatedIndividuals.AddRange(data.FindTransitiveRelatedIndividuals(owlIndividual, filteredABox, new Dictionary<long, RDFResource>()));
+                transitiveRelatedIndividuals.AddRange(data.FindTransitiveRelatedIndividualsOf(owlIndividual, filteredABox, new Dictionary<long, RDFResource>()));
             }
 
             return transitiveRelatedIndividuals;
@@ -256,7 +256,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Finds "TransitiveObjectProperty(leftIndividual,X)" relations to enlist the individuals which are related to the given owl:Individual through the given owl:TransitiveObjectProperty
         /// </summary>
-        internal static List<RDFResource> FindTransitiveRelatedIndividuals(this RDFOntologyData data, RDFResource owlIndividual, RDFGraph filteredABox, Dictionary<long, RDFResource> visitContext)
+        internal static List<RDFResource> FindTransitiveRelatedIndividualsOf(this RDFOntologyData data, RDFResource owlIndividual, RDFGraph filteredABox, Dictionary<long, RDFResource> visitContext)
         {
             List<RDFResource> transitiveRelatedIndividuals = new List<RDFResource>();
 
@@ -273,7 +273,7 @@ namespace RDFSharp.Semantics
 
             //INDIRECT (TRANSITIVE)
             foreach (RDFResource transitiveRelatedIndividual in transitiveRelatedIndividuals.ToList())
-                transitiveRelatedIndividuals.AddRange(data.FindTransitiveRelatedIndividuals(transitiveRelatedIndividual, filteredABox, visitContext));
+                transitiveRelatedIndividuals.AddRange(data.FindTransitiveRelatedIndividualsOf(transitiveRelatedIndividual, filteredABox, visitContext));
 
             return transitiveRelatedIndividuals;
         }
@@ -281,13 +281,13 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Checks for the existence of "Type(owlIndividual,owlClass)" relations within the data and model
         /// </summary>
-        public static bool CheckIsIndividualOfClass(this RDFOntologyData data, RDFOntologyModel model, RDFResource owlIndividual, RDFResource owlClass)
-            => owlIndividual != null && owlClass != null && model != null && data != null && data.AnswerIndividualsOfClass(model, owlClass).Any(individual => individual.Equals(owlIndividual));
+        public static bool CheckIsIndividualOf(this RDFOntologyData data, RDFOntologyModel model, RDFResource owlIndividual, RDFResource owlClass)
+            => owlIndividual != null && owlClass != null && model != null && data != null && data.GetIndividualsOf(model, owlClass).Any(individual => individual.Equals(owlIndividual));
 
         /// <summary>
         /// Checks for the existence of "Type(X,owlClass)" relations of the data and model to answer the individuals of the given owl:Class
         /// </summary>
-        public static List<RDFResource> AnswerIndividualsOfClass(this RDFOntologyData data, RDFOntologyModel model, RDFResource owlClass)
+        public static List<RDFResource> GetIndividualsOf(this RDFOntologyData data, RDFOntologyModel model, RDFResource owlClass)
         {
             List<RDFResource> individuals = new List<RDFResource>();
 
@@ -332,8 +332,8 @@ namespace RDFSharp.Semantics
             RDFResource onProperty = (RDFResource)model.ClassModel.TBoxGraph[owlRestriction, RDFVocabulary.OWL.ON_PROPERTY, null, null].First().Object;
 
             //Make the given owl:Restriction also work with sub properties and equivalent properties of the given owl:onProperty
-            List<RDFResource> compatibleProperties = model.PropertyModel.AnswerSubProperties(onProperty)
-                                                       .Union(model.PropertyModel.AnswerEquivalentProperties(onProperty)).ToList();
+            List<RDFResource> compatibleProperties = model.PropertyModel.GetSubPropertiesOf(onProperty)
+                                                       .Union(model.PropertyModel.GetEquivalentPropertiesOf(onProperty)).ToList();
 
             //Compute graph of assertions impacted by restricted properties
             RDFGraph aboxVirtualGraph = data.ABoxVirtualGraph;
@@ -435,7 +435,7 @@ namespace RDFSharp.Semantics
                 {
                     //Since we have to qualify the object individual, we consider only SPO assertions
                     if (assertionTriple.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPO 
-                          && data.CheckIsIndividualOfClass(model, (RDFResource)assertionTriple.Object, onClass))
+                          && data.CheckIsIndividualOf(model, (RDFResource)assertionTriple.Object, onClass))
                     {
                         long occurrencyCounter = cardinalityRestrictionRegistry[assertionTriple.Subject.PatternMemberID].Item2;
                         cardinalityRestrictionRegistry[assertionTriple.Subject.PatternMemberID] = (assertionTriple.Subject, occurrencyCounter + 1);
@@ -487,8 +487,8 @@ namespace RDFSharp.Semantics
                 throw new RDFSemanticsException($"Cannot find individuals of owl:[All|Some]ValuesFromRestriction '{owlRestriction}' because required owl:[all|some]ValuesFrom information is not declared in the model");
 
             //Make the given owl:Restriction also work with sub classes and equivalent classes of the given owl:[all|some]ValuesFrom
-            List<RDFResource> compatibleClasses = model.ClassModel.AnswerSubClasses(valuesFromClass)
-                                                     .Union(model.ClassModel.AnswerEquivalentClasses(valuesFromClass)).ToList();
+            List<RDFResource> compatibleClasses = model.ClassModel.GetSubClassesOf(valuesFromClass)
+                                                     .Union(model.ClassModel.GetEquivalentClassesOf(valuesFromClass)).ToList();
             #endregion
 
             #region Count
@@ -502,12 +502,12 @@ namespace RDFSharp.Semantics
                     valuesFromRegistry.Add(assertionTriple.Subject.PatternMemberID, (assertionTriple.Subject, 0, 0));
 
                 //Check if the object individual belongs to the given owl:[all|some]ValuesFrom class or any compatible classes
-                bool fromClassFound = data.CheckIsIndividualOfClass(model, (RDFResource)assertionTriple.Object, valuesFromClass);
+                bool fromClassFound = data.CheckIsIndividualOf(model, (RDFResource)assertionTriple.Object, valuesFromClass);
                 if (!fromClassFound)
                 {
                     IEnumerator<RDFResource> compatibleClassesEnumerator = compatibleClasses.GetEnumerator();
                     while (!fromClassFound && compatibleClassesEnumerator.MoveNext())
-                        fromClassFound = data.CheckIsIndividualOfClass(model, (RDFResource)assertionTriple.Object, compatibleClassesEnumerator.Current);
+                        fromClassFound = data.CheckIsIndividualOf(model, (RDFResource)assertionTriple.Object, compatibleClassesEnumerator.Current);
                 }
 
                 //Update the occurrence counters of the subject individual
@@ -553,7 +553,7 @@ namespace RDFSharp.Semantics
             if (hasValue is RDFResource hasValueIndividual)
             {
                 //Make the given owl:Restriction also work with same individuals of the given owl:hasValue individual
-                List<RDFResource> sameHasValueIndividuals = data.AnswerSameIndividuals(hasValueIndividual);
+                List<RDFResource> sameHasValueIndividuals = data.GetSameIndividualsOf(hasValueIndividual);
 
                 //Find SPO assertions having object individual compatible with owl:hasValue individual
                 foreach (RDFTriple assertionTriple in assertionsGraph.Where(t => t.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPO))
@@ -616,7 +616,7 @@ namespace RDFSharp.Semantics
                 //Compute union of answered individuals
                 RDFCollection unionOfCollection = RDFModelUtilities.DeserializeCollectionFromGraph(model.ClassModel.TBoxGraph, (RDFResource)unionOfGraph.First().Object, RDFModelEnums.RDFTripleFlavors.SPO);
                 foreach (RDFResource unionOfClass in unionOfCollection)
-                    compositeIndividuals.AddRange(data.AnswerIndividualsOfClass(model, unionOfClass));
+                    compositeIndividuals.AddRange(data.GetIndividualsOf(model, unionOfClass));
             }
 
             //owl:intersectionOf
@@ -630,7 +630,7 @@ namespace RDFSharp.Semantics
                 RDFCollection intersectionOfCollection = RDFModelUtilities.DeserializeCollectionFromGraph(model.ClassModel.TBoxGraph, (RDFResource)intersectionOfGraph.First().Object, RDFModelEnums.RDFTripleFlavors.SPO);
                 foreach (RDFResource intersectionOfClass in intersectionOfCollection)
                 {
-                    List<RDFResource> currentClassIndividuals = data.AnswerIndividualsOfClass(model, intersectionOfClass);
+                    List<RDFResource> currentClassIndividuals = data.GetIndividualsOf(model, intersectionOfClass);
                     if (isFirstIntersectionClass)
                     {
                         compositeIndividuals.AddRange(currentClassIndividuals);
@@ -648,7 +648,7 @@ namespace RDFSharp.Semantics
                 RDFGraph complementOfGraph = model.ClassModel.TBoxGraph[owlComposite, RDFVocabulary.OWL.COMPLEMENT_OF, null, null];
 
                 //Compute complement of answered individuals
-                List<RDFResource> complementedClassIndividuals = data.AnswerIndividualsOfClass(model, (RDFResource)complementOfGraph.First().Object);
+                List<RDFResource> complementedClassIndividuals = data.GetIndividualsOf(model, (RDFResource)complementOfGraph.First().Object);
                 compositeIndividuals.AddRange(data.Where(individual => !complementedClassIndividuals.Any(idv => idv.Equals(individual))));
             }
 
@@ -697,11 +697,11 @@ namespace RDFSharp.Semantics
             List<RDFResource> equivalentClassIndividuals = new List<RDFResource>();
             Parallel.Invoke(
                 () => {
-                    foreach (RDFResource subClass in model.ClassModel.AnswerSubClasses(owlClass))
+                    foreach (RDFResource subClass in model.ClassModel.GetSubClassesOf(owlClass))
                         subClassIndividuals.AddRange(data.FindIndividualsOfClass(model, subClass, filteredABox, visitContext));
                 },
                 () => {
-                    foreach (RDFResource equivalentClass in model.ClassModel.AnswerEquivalentClasses(owlClass))
+                    foreach (RDFResource equivalentClass in model.ClassModel.GetEquivalentClassesOf(owlClass))
                         equivalentClassIndividuals.AddRange(data.FindIndividualsOfClass(model, equivalentClass, filteredABox, visitContext));
                 });
             classIndividuals.AddRange(subClassIndividuals);
@@ -716,13 +716,13 @@ namespace RDFSharp.Semantics
         /// Checks if the given leftIndividual can be same as the given rightIndividual without tampering OWL-DL integrity
         /// </summary>
         internal static bool CheckSameAsCompatibility(this RDFOntologyData data, RDFResource leftIndividual, RDFResource rightIndividual)
-            => !data.CheckAreDifferentIndividuals(rightIndividual, leftIndividual);
+            => !data.CheckIsDifferentIndividualOf(rightIndividual, leftIndividual);
 
         /// <summary>
         /// Checks if the given leftIndividual can be different from the given rightIndividual without tampering OWL-DL integrity
         /// </summary>
         internal static bool CheckDifferentFromCompatibility(this RDFOntologyData data, RDFResource leftIndividual, RDFResource rightIndividual)
-            => !data.CheckAreSameIndividuals(rightIndividual, leftIndividual);
+            => !data.CheckIsSameIndividualOf(rightIndividual, leftIndividual);
 
         /// <summary>
         /// Checks if the given leftIndividual can be linked to the given rightIndividual though the given objectProperty without tampering OWL-DL integrity

@@ -179,34 +179,34 @@ namespace RDFSharp.Semantics.Test
         [TestMethod]
         public void ShouldLoadSubPropertyDeclarations()
         {
-            Assert.IsTrue(Ontology.Model.PropertyModel.AnswerSubProperties(new RDFResource("ex:objprop1")).Count == 2);
+            Assert.IsTrue(Ontology.Model.PropertyModel.GetSubPropertiesOf(new RDFResource("ex:objprop1")).Count == 2);
         }
 
         [TestMethod]
         public void ShouldLoadSuperPropertyDeclarations()
         {
-            Assert.IsTrue(Ontology.Model.PropertyModel.AnswerSuperProperties(new RDFResource("ex:objprop2")).Count == 1);
-            Assert.IsTrue(Ontology.Model.PropertyModel.AnswerSuperProperties(new RDFResource("ex:objprop3")).Count == 1);
+            Assert.IsTrue(Ontology.Model.PropertyModel.GetSuperPropertiesOf(new RDFResource("ex:objprop2")).Count == 1);
+            Assert.IsTrue(Ontology.Model.PropertyModel.GetSuperPropertiesOf(new RDFResource("ex:objprop3")).Count == 1);
         }
 
         [TestMethod]
         public void ShouldLoadEquivalentPropertyDeclarations()
         {
-            Assert.IsTrue(Ontology.Model.PropertyModel.AnswerEquivalentProperties(new RDFResource("ex:objprop2")).Count == 1);
-            Assert.IsTrue(Ontology.Model.PropertyModel.AnswerEquivalentProperties(new RDFResource("ex:objprop3")).Count == 1);
+            Assert.IsTrue(Ontology.Model.PropertyModel.GetEquivalentPropertiesOf(new RDFResource("ex:objprop2")).Count == 1);
+            Assert.IsTrue(Ontology.Model.PropertyModel.GetEquivalentPropertiesOf(new RDFResource("ex:objprop3")).Count == 1);
         }
 
         [TestMethod]
         public void ShouldLoadDisjointPropertyDeclarations()
         {
-            Assert.IsTrue(Ontology.Model.PropertyModel.AnswerDisjointProperties(new RDFResource("ex:objprop1")).Count == 2);
+            Assert.IsTrue(Ontology.Model.PropertyModel.GetDisjointPropertiesWith(new RDFResource("ex:objprop1")).Count == 2);
         }
 
         [TestMethod]
         public void ShouldLoadInversePropertyDeclarations()
         {
-            Assert.IsTrue(Ontology.Model.PropertyModel.AnswerInverseProperties(new RDFResource("ex:objprop1")).Count == 1);
-            Assert.IsTrue(Ontology.Model.PropertyModel.AnswerInverseProperties(new RDFResource("ex:objprop6")).Count == 1);
+            Assert.IsTrue(Ontology.Model.PropertyModel.GetInversePropertiesOf(new RDFResource("ex:objprop1")).Count == 1);
+            Assert.IsTrue(Ontology.Model.PropertyModel.GetInversePropertiesOf(new RDFResource("ex:objprop6")).Count == 1);
         }
 
         [TestMethod]

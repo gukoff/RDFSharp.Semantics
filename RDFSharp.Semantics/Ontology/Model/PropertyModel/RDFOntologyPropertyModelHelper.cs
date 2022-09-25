@@ -18,7 +18,6 @@ using RDFSharp.Model;
 using RDFSharp.Query;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace RDFSharp.Semantics
 {
@@ -141,24 +140,24 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Checks for the existence of "SubProperty(childProperty,motherProperty)" relations within the model
         /// </summary>
-        public static bool CheckAreSubProperties(this RDFOntologyPropertyModel propertyModel, RDFResource childProperty, RDFResource motherProperty)
-            => childProperty != null && motherProperty != null && propertyModel != null && propertyModel.AnswerSuperProperties(childProperty).Any(prop => prop.Equals(motherProperty));
+        public static bool CheckIsSubPropertyOf(this RDFOntologyPropertyModel propertyModel, RDFResource childProperty, RDFResource motherProperty)
+            => childProperty != null && motherProperty != null && propertyModel != null && propertyModel.GetSuperPropertiesOf(childProperty).Any(prop => prop.Equals(motherProperty));
 
         /// <summary>
         /// Analyzes "SubProperty(owlProperty, X)" relations of the model to answer the sub property of the given owl:Property
         /// </summary>
-        public static List<RDFResource> AnswerSubProperties(this RDFOntologyPropertyModel propertyModel, RDFResource owlProperty)
+        public static List<RDFResource> GetSubPropertiesOf(this RDFOntologyPropertyModel propertyModel, RDFResource owlProperty)
         {
             List<RDFResource> subProperties = new List<RDFResource>();
 
             if (propertyModel != null && owlProperty != null)
             {
                 //Reason on the given property
-                subProperties.AddRange(propertyModel.FindSubProperties(owlProperty));
+                subProperties.AddRange(propertyModel.FindSubPropertiesOf(owlProperty));
 
                 //Reason on the equivalent properties
-                foreach (RDFResource equivalentProperty in propertyModel.AnswerEquivalentProperties(owlProperty))
-                    subProperties.AddRange(propertyModel.FindSubProperties(equivalentProperty));
+                foreach (RDFResource equivalentProperty in propertyModel.GetEquivalentPropertiesOf(owlProperty))
+                    subProperties.AddRange(propertyModel.FindSubPropertiesOf(equivalentProperty));
 
                 //We don't want to also enlist the given owl:Property
                 subProperties.RemoveAll(prop => prop.Equals(owlProperty));
@@ -170,15 +169,15 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Finds "SubProperty(owlProperty, X)" relations to enlist the sub properties of the given owl:Property
         /// </summary>
-        internal static List<RDFResource> FindSubProperties(this RDFOntologyPropertyModel propertyModel, RDFResource owlProperty)
+        internal static List<RDFResource> FindSubPropertiesOf(this RDFOntologyPropertyModel propertyModel, RDFResource owlProperty)
         {
             //Direct subsumption of "rdfs:subPropertyOf" taxonomy
             List<RDFResource> subProperties = propertyModel.SubsumeSubPropertyHierarchy(owlProperty);
 
             //Enlist equivalent properties of subproperties
             foreach (RDFResource subProperty in subProperties.ToList())
-                subProperties.AddRange(propertyModel.AnswerEquivalentProperties(subProperty)
-                                                    .Union(propertyModel.AnswerSubProperties(subProperty)));
+                subProperties.AddRange(propertyModel.GetEquivalentPropertiesOf(subProperty)
+                                                    .Union(propertyModel.GetSubPropertiesOf(subProperty)));
 
             return subProperties;
         }
@@ -203,24 +202,24 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Checks for the existence of "SuperProperty(motherProperty,childProperty)" relations within the model
         /// </summary>
-        public static bool CheckAreSuperProperties(this RDFOntologyPropertyModel propertyModel, RDFResource motherProperty, RDFResource childProperty)
-            => childProperty != null && motherProperty != null && propertyModel != null && propertyModel.AnswerSuperProperties(childProperty).Any(prop => prop.Equals(motherProperty));
+        public static bool CheckIsSuperPropertyOf(this RDFOntologyPropertyModel propertyModel, RDFResource motherProperty, RDFResource childProperty)
+            => childProperty != null && motherProperty != null && propertyModel != null && propertyModel.GetSuperPropertiesOf(childProperty).Any(prop => prop.Equals(motherProperty));
 
         /// <summary>
         /// Analyzes "SuperProperty(owlProperty, X)" relations of the model to answer the super properties of the given owl:Property
         /// </summary>
-        public static List<RDFResource> AnswerSuperProperties(this RDFOntologyPropertyModel propertyModel, RDFResource owlProperty)
+        public static List<RDFResource> GetSuperPropertiesOf(this RDFOntologyPropertyModel propertyModel, RDFResource owlProperty)
         {
             List<RDFResource> subProperties = new List<RDFResource>();
 
             if (propertyModel != null && owlProperty != null)
             {
                 //Reason on the given property
-                subProperties.AddRange(propertyModel.FindSuperProperties(owlProperty));
+                subProperties.AddRange(propertyModel.FindSuperPropertiesOf(owlProperty));
 
                 //Reason on the equivalent properties
-                foreach (RDFResource equivalentProperty in propertyModel.AnswerEquivalentProperties(owlProperty))
-                    subProperties.AddRange(propertyModel.FindSuperProperties(equivalentProperty));
+                foreach (RDFResource equivalentProperty in propertyModel.GetEquivalentPropertiesOf(owlProperty))
+                    subProperties.AddRange(propertyModel.FindSuperPropertiesOf(equivalentProperty));
 
                 //We don't want to also enlist the given owl:Property
                 subProperties.RemoveAll(prop => prop.Equals(owlProperty));
@@ -232,15 +231,15 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Finds "SuperProperty(owlProperty, X)" relations to enlist the super properties of the given owl:Property
         /// </summary>
-        internal static List<RDFResource> FindSuperProperties(this RDFOntologyPropertyModel propertyModel, RDFResource owlProperty)
+        internal static List<RDFResource> FindSuperPropertiesOf(this RDFOntologyPropertyModel propertyModel, RDFResource owlProperty)
         {
             //Direct subsumption of "rdfs:subPropertyOf" taxonomy
             List<RDFResource> superProperties = propertyModel.SubsumeSuperPropertyHierarchy(owlProperty);
 
             //Enlist equivalent classes of superclasses
             foreach (RDFResource superProperty in superProperties.ToList())
-                superProperties.AddRange(propertyModel.AnswerEquivalentProperties(superProperty)
-                                                      .Union(propertyModel.AnswerSuperProperties(superProperty)));
+                superProperties.AddRange(propertyModel.GetEquivalentPropertiesOf(superProperty)
+                                                      .Union(propertyModel.GetSuperPropertiesOf(superProperty)));
 
             return superProperties;
         }
@@ -265,19 +264,19 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Checks for the existence of "EquivalentProperty(leftProperty,rightProperty)" relations within the model
         /// </summary>
-        public static bool CheckAreEquivalentProperties(this RDFOntologyPropertyModel propertyModel, RDFResource leftProperty, RDFResource rightProperty)
-            => leftProperty != null && rightProperty != null && propertyModel != null && propertyModel.AnswerEquivalentProperties(leftProperty).Any(prop => prop.Equals(rightProperty));
+        public static bool CheckIsEquivalentPropertyOf(this RDFOntologyPropertyModel propertyModel, RDFResource leftProperty, RDFResource rightProperty)
+            => leftProperty != null && rightProperty != null && propertyModel != null && propertyModel.GetEquivalentPropertiesOf(leftProperty).Any(prop => prop.Equals(rightProperty));
 
         /// <summary>
         /// Analyzes "EquivalentProperty(owlProperty, X)" relations of the model to answer the equivalent properties of the given owl:Property
         /// </summary>
-        public static List<RDFResource> AnswerEquivalentProperties(this RDFOntologyPropertyModel propertyModel, RDFResource owlProperty)
+        public static List<RDFResource> GetEquivalentPropertiesOf(this RDFOntologyPropertyModel propertyModel, RDFResource owlProperty)
         {
             List<RDFResource> equivalentProperties = new List<RDFResource>();
 
             if (propertyModel != null && owlProperty != null)
             {
-                equivalentProperties.AddRange(propertyModel.FindEquivalentProperties(owlProperty, propertyModel.TBoxVirtualGraph, new Dictionary<long, RDFResource>()));
+                equivalentProperties.AddRange(propertyModel.FindEquivalentPropertiesOf(owlProperty, propertyModel.TBoxVirtualGraph, new Dictionary<long, RDFResource>()));
 
                 //We don't want to also enlist the given owl:Property
                 equivalentProperties.RemoveAll(prop => prop.Equals(owlProperty));
@@ -289,7 +288,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Finds "EquivalentProperty(owlProperty, X)" relations to enlist the equivalent properties of the given owl:Property
         /// </summary>
-        internal static List<RDFResource> FindEquivalentProperties(this RDFOntologyPropertyModel propertyModel, RDFResource owlProperty, RDFGraph tboxGraph, Dictionary<long, RDFResource> visitContext)
+        internal static List<RDFResource> FindEquivalentPropertiesOf(this RDFOntologyPropertyModel propertyModel, RDFResource owlProperty, RDFGraph tboxGraph, Dictionary<long, RDFResource> visitContext)
         {
             List<RDFResource> equivalentProperties = new List<RDFResource>();
 
@@ -306,7 +305,7 @@ namespace RDFSharp.Semantics
 
             //INDIRECT (TRANSITIVE)
             foreach (RDFResource equivalentProperty in equivalentProperties.ToList())
-                equivalentProperties.AddRange(propertyModel.FindEquivalentProperties(equivalentProperty, tboxGraph, visitContext));
+                equivalentProperties.AddRange(propertyModel.FindEquivalentPropertiesOf(equivalentProperty, tboxGraph, visitContext));
 
             return equivalentProperties;
         }
@@ -314,19 +313,19 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Checks for the existence of "PropertyDisjointWith(leftProperty,rightProperty)" relations within the model [OWL2]
         /// </summary>
-        public static bool CheckAreDisjointProperties(this RDFOntologyPropertyModel propertyModel, RDFResource leftProperty, RDFResource rightProperty)
-            => leftProperty != null && rightProperty != null && propertyModel != null && propertyModel.AnswerDisjointProperties(leftProperty).Any(prop => prop.Equals(rightProperty));
+        public static bool CheckIsDisjointPropertyWith(this RDFOntologyPropertyModel propertyModel, RDFResource leftProperty, RDFResource rightProperty)
+            => leftProperty != null && rightProperty != null && propertyModel != null && propertyModel.GetDisjointPropertiesWith(leftProperty).Any(prop => prop.Equals(rightProperty));
 
         /// <summary>
         /// Analyzes "PropertyDisjointWith(leftProperty,rightProperty)" relations of the model to answer the disjoint properties of the given owl:Property [OWL2]
         /// </summary>
-        public static List<RDFResource> AnswerDisjointProperties(this RDFOntologyPropertyModel propertyModel, RDFResource owlProperty)
+        public static List<RDFResource> GetDisjointPropertiesWith(this RDFOntologyPropertyModel propertyModel, RDFResource owlProperty)
         {
             List<RDFResource> disjointProperties = new List<RDFResource>();
 
             if (propertyModel != null && owlProperty != null)
             {
-                disjointProperties.AddRange(propertyModel.FindDisjointProperties(owlProperty, propertyModel.TBoxVirtualGraph, new Dictionary<long, RDFResource>()));
+                disjointProperties.AddRange(propertyModel.FindDisjointPropertiesWith(owlProperty, propertyModel.TBoxVirtualGraph, new Dictionary<long, RDFResource>()));
 
                 //We don't want to also enlist the given owl:Property
                 disjointProperties.RemoveAll(prop => prop.Equals(owlProperty));
@@ -338,7 +337,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Finds "PropertyDisjointWith(owlProperty, X)" relations to enlist the disjoint properties of the given owl:Property [OWL2]
         /// </summary>
-        internal static List<RDFResource> FindDisjointProperties(this RDFOntologyPropertyModel propertyModel, RDFResource owlProperty, RDFGraph tboxGraph, Dictionary<long, RDFResource> visitContext)
+        internal static List<RDFResource> FindDisjointPropertiesWith(this RDFOntologyPropertyModel propertyModel, RDFResource owlProperty, RDFGraph tboxGraph, Dictionary<long, RDFResource> visitContext)
         {
             List<RDFResource> disjointProperties = new List<RDFResource>();
 
@@ -377,17 +376,17 @@ namespace RDFSharp.Semantics
             foreach (RDFResource disjointProperty in disjointPropertiesSet)
             {
                 disjointProperties.Add(disjointProperty);
-                disjointProperties.AddRange(propertyModel.FindEquivalentProperties(disjointProperty, tboxGraph, visitContext));
+                disjointProperties.AddRange(propertyModel.FindEquivalentPropertiesOf(disjointProperty, tboxGraph, visitContext));
             }
 
             // Inference: PROPERTYDISJOINTWITH(A,B) ^ SUBPROPERTY(C,B) -> PROPERTYDISJOINTWITH(A,C)
             foreach (RDFResource disjointProperty in disjointProperties.ToList())
-                disjointProperties.AddRange(propertyModel.FindSubProperties(disjointProperty));
+                disjointProperties.AddRange(propertyModel.FindSubPropertiesOf(disjointProperty));
 
             // Inference: EQUIVALENTPROPERTY(A,B) ^ PROPERTYDISJOINTWITH(B,C) -> PROPERTYDISJOINTWITH(A,C)
-            foreach (RDFResource compatibleClass in propertyModel.AnswerSuperProperties(owlProperty)
-                                                                 .Union(propertyModel.AnswerEquivalentProperties(owlProperty)))
-                disjointProperties.AddRange(propertyModel.FindDisjointProperties(compatibleClass, tboxGraph, visitContext));
+            foreach (RDFResource compatibleClass in propertyModel.GetSuperPropertiesOf(owlProperty)
+                                                                 .Union(propertyModel.GetEquivalentPropertiesOf(owlProperty)))
+                disjointProperties.AddRange(propertyModel.FindDisjointPropertiesWith(compatibleClass, tboxGraph, visitContext));
             #endregion
 
             return disjointProperties;
@@ -396,19 +395,19 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Checks for the existence of "InverseOf(leftProperty,rightProperty)" relations within the model
         /// </summary>
-        public static bool CheckAreInverseProperties(this RDFOntologyPropertyModel propertyModel, RDFResource leftProperty, RDFResource rightProperty)
-            => leftProperty != null && rightProperty != null && propertyModel != null && propertyModel.AnswerInverseProperties(leftProperty).Any(prop => prop.Equals(rightProperty));
+        public static bool CheckIsInversePropertyOf(this RDFOntologyPropertyModel propertyModel, RDFResource leftProperty, RDFResource rightProperty)
+            => leftProperty != null && rightProperty != null && propertyModel != null && propertyModel.GetInversePropertiesOf(leftProperty).Any(prop => prop.Equals(rightProperty));
 
         /// <summary>
         /// Analyzes "InverseOf(owlProperty, X)" relations of the model to answer the inverse properties of the given owl:Property
         /// </summary>
-        public static List<RDFResource> AnswerInverseProperties(this RDFOntologyPropertyModel propertyModel, RDFResource owlProperty)
+        public static List<RDFResource> GetInversePropertiesOf(this RDFOntologyPropertyModel propertyModel, RDFResource owlProperty)
         {
             List<RDFResource> inverseProperties = new List<RDFResource>();
 
             if (propertyModel != null && owlProperty != null)
             {
-                inverseProperties.AddRange(propertyModel.FindInverseProperties(owlProperty));
+                inverseProperties.AddRange(propertyModel.FindInversePropertiesOf(owlProperty));
 
                 //We don't want to also enlist the given owl:Property
                 inverseProperties.RemoveAll(prop => prop.Equals(owlProperty));
@@ -420,7 +419,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Finds "InverseOf(owlProperty, X)" relations to enlist the inverse properties of the given owl:Property
         /// </summary>
-        internal static List<RDFResource> FindInverseProperties(this RDFOntologyPropertyModel propertyModel, RDFResource owlProperty)
+        internal static List<RDFResource> FindInversePropertiesOf(this RDFOntologyPropertyModel propertyModel, RDFResource owlProperty)
         {
             List<RDFResource> inverseProperties = new List<RDFResource>();
             RDFGraph tboxGraph = propertyModel.TBoxVirtualGraph;
@@ -439,7 +438,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         ///  Analyzes "propertyChainAxiom(owlProperty,X)" relations of the model to answer the chain axiom properties of the given owl:Property [OWL2]
         /// </summary>
-        public static List<RDFResource> AnswerChainAxiomProperties(this RDFOntologyPropertyModel propertyModel, RDFResource owlProperty)
+        public static List<RDFResource> GetChainAxiomPropertiesOf(this RDFOntologyPropertyModel propertyModel, RDFResource owlProperty)
         {
             List<RDFResource> chainAxiomProperties = new List<RDFResource>();
 
@@ -477,9 +476,9 @@ namespace RDFSharp.Semantics
         /// Does not accept property chain definitions (OWL2-DL decidability)
         /// </summary>
         internal static bool CheckSubPropertyCompatibility(this RDFOntologyPropertyModel propertyModel, RDFResource childProperty, RDFResource motherProperty)
-            => !propertyModel.CheckAreSubProperties(motherProperty, childProperty)
-                  && !propertyModel.CheckAreEquivalentProperties(motherProperty, childProperty)
-                    && !propertyModel.CheckAreDisjointProperties(motherProperty, childProperty)
+            => !propertyModel.CheckIsSubPropertyOf(motherProperty, childProperty)
+                  && !propertyModel.CheckIsEquivalentPropertyOf(motherProperty, childProperty)
+                    && !propertyModel.CheckIsDisjointPropertyWith(motherProperty, childProperty)
                       //OWL2-DL decidability
                       && !propertyModel.CheckHasPropertyChainAxiom(childProperty)
                         && !propertyModel.CheckHasPropertyChainAxiom(motherProperty);
@@ -489,9 +488,9 @@ namespace RDFSharp.Semantics
         /// Does not accept property chain definitions (OWL2-DL decidability)
         /// </summary>
         internal static bool CheckEquivalentPropertyCompatibility(this RDFOntologyPropertyModel propertyModel, RDFResource leftProperty, RDFResource rightProperty)
-            => !propertyModel.CheckAreSubProperties(leftProperty, rightProperty)
-                  && !propertyModel.CheckAreSuperProperties(leftProperty, rightProperty)
-                    && !propertyModel.CheckAreDisjointProperties(leftProperty, rightProperty)
+            => !propertyModel.CheckIsSubPropertyOf(leftProperty, rightProperty)
+                  && !propertyModel.CheckIsSuperPropertyOf(leftProperty, rightProperty)
+                    && !propertyModel.CheckIsDisjointPropertyWith(leftProperty, rightProperty)
                       //OWL2-DL decidability
                       && !propertyModel.CheckHasPropertyChainAxiom(leftProperty)
                         && !propertyModel.CheckHasPropertyChainAxiom(rightProperty);
@@ -500,17 +499,17 @@ namespace RDFSharp.Semantics
         /// Checks if the given leftProperty can be propertyDisjointWith of the given rightProperty without tampering OWL-DL integrity [OWL2]
         /// </summary>
         internal static bool CheckDisjointPropertyCompatibility(this RDFOntologyPropertyModel propertyModel, RDFResource leftProperty, RDFResource rightProperty)
-            => !propertyModel.CheckAreSubProperties(leftProperty, rightProperty)
-                  && !propertyModel.CheckAreSuperProperties(leftProperty, rightProperty)
-                    && !propertyModel.CheckAreEquivalentProperties(leftProperty, rightProperty);
+            => !propertyModel.CheckIsSubPropertyOf(leftProperty, rightProperty)
+                  && !propertyModel.CheckIsSuperPropertyOf(leftProperty, rightProperty)
+                    && !propertyModel.CheckIsEquivalentPropertyOf(leftProperty, rightProperty);
 
         /// <summary>
         /// Checks if the given leftProperty can be inverse of the given rightProperty without tampering OWL-DL integrity
         /// </summary>
         internal static bool CheckInversePropertyCompatibility(this RDFOntologyPropertyModel propertyModel, RDFResource leftProperty, RDFResource rightProperty)
-            => !propertyModel.CheckAreSubProperties(leftProperty, rightProperty)
-                  && !propertyModel.CheckAreSuperProperties(leftProperty, rightProperty)
-                    && !propertyModel.CheckAreEquivalentProperties(leftProperty, rightProperty);
+            => !propertyModel.CheckIsSubPropertyOf(leftProperty, rightProperty)
+                  && !propertyModel.CheckIsSuperPropertyOf(leftProperty, rightProperty)
+                    && !propertyModel.CheckIsEquivalentPropertyOf(leftProperty, rightProperty);
         #endregion
     }
 }

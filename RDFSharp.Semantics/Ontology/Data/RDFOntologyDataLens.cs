@@ -61,7 +61,7 @@ namespace RDFSharp.Semantics
         /// Enlists the individuals which are related with the lens individual by owl:sameAs
         /// </summary>
         public List<RDFResource> SameIndividuals()
-            => Ontology.Data.AnswerSameIndividuals(Individual);
+            => Ontology.Data.GetSameIndividualsOf(Individual);
 
         /// <summary>
         /// Asynchronously enlists the individuals which are related with the lens individual by owl:sameAs
@@ -73,7 +73,7 @@ namespace RDFSharp.Semantics
         /// Enlists the individuals which are related with the lens individual by owl:differentFrom
         /// </summary>
         public List<RDFResource> DifferentIndividuals()
-            => Ontology.Data.AnswerDifferentIndividuals(Individual);
+            => Ontology.Data.GetDifferentIndividualsOf(Individual);
 
         /// <summary>
         /// Asynchronously enlists the individuals which are related with the lens individual by owl:differentFrom
@@ -94,7 +94,7 @@ namespace RDFSharp.Semantics
             foreach (RDFResource enumerateClass in Ontology.Model.ClassModel.Where(cls => Ontology.Model.ClassModel.CheckHasEnumerateClass(cls)))
             {
                 if (!classTypesCache.ContainsKey(enumerateClass.PatternMemberID))
-                    classTypesCache.Add(enumerateClass.PatternMemberID, Ontology.Data.AnswerIndividualsOfClass(Ontology.Model, enumerateClass));
+                    classTypesCache.Add(enumerateClass.PatternMemberID, Ontology.Data.GetIndividualsOf(Ontology.Model, enumerateClass));
 
                 if (classTypesCache[enumerateClass.PatternMemberID].Any(individual => individual.Equals(Individual)))
                     result.Add(enumerateClass);
@@ -104,7 +104,7 @@ namespace RDFSharp.Semantics
             foreach (RDFResource restrictionClass in Ontology.Model.ClassModel.Where(cls => Ontology.Model.ClassModel.CheckHasRestrictionClass(cls)))
             {
                 if (!classTypesCache.ContainsKey(restrictionClass.PatternMemberID))
-                    classTypesCache.Add(restrictionClass.PatternMemberID, Ontology.Data.AnswerIndividualsOfClass(Ontology.Model, restrictionClass));
+                    classTypesCache.Add(restrictionClass.PatternMemberID, Ontology.Data.GetIndividualsOf(Ontology.Model, restrictionClass));
 
                 if (classTypesCache[restrictionClass.PatternMemberID].Any(individual => individual.Equals(Individual)))
                     result.Add(restrictionClass);
@@ -114,7 +114,7 @@ namespace RDFSharp.Semantics
             foreach (RDFResource simpleClass in Ontology.Model.ClassModel.Where(cls => Ontology.Model.ClassModel.CheckHasSimpleClass(cls)))
             {
                 if (!classTypesCache.ContainsKey(simpleClass.PatternMemberID))
-                    classTypesCache.Add(simpleClass.PatternMemberID, Ontology.Data.AnswerIndividualsOfClass(Ontology.Model, simpleClass));
+                    classTypesCache.Add(simpleClass.PatternMemberID, Ontology.Data.GetIndividualsOf(Ontology.Model, simpleClass));
 
                 if (classTypesCache[simpleClass.PatternMemberID].Any(individual => individual.Equals(Individual)))
                     result.Add(simpleClass);
@@ -124,7 +124,7 @@ namespace RDFSharp.Semantics
             foreach (RDFResource compositeClass in Ontology.Model.ClassModel.Where(cls => Ontology.Model.ClassModel.CheckHasCompositeClass(cls)))
             {
                 if (!classTypesCache.ContainsKey(compositeClass.PatternMemberID))
-                    classTypesCache.Add(compositeClass.PatternMemberID, Ontology.Data.AnswerIndividualsOfClass(Ontology.Model, compositeClass));
+                    classTypesCache.Add(compositeClass.PatternMemberID, Ontology.Data.GetIndividualsOf(Ontology.Model, compositeClass));
 
                 if (classTypesCache[compositeClass.PatternMemberID].Any(individual => individual.Equals(Individual)))
                     result.Add(compositeClass);

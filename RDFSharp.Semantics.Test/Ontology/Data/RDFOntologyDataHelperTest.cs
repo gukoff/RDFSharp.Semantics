@@ -198,12 +198,12 @@ namespace RDFSharp.Semantics.Test
             data.DeclareSameIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB"));
             data.DeclareSameIndividuals(new RDFResource("ex:indivB"), new RDFResource("ex:indivC"));
 
-            Assert.IsTrue(data.CheckAreSameIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB")));
-            Assert.IsTrue(data.CheckAreSameIndividuals(new RDFResource("ex:indivB"), new RDFResource("ex:indivA"))); //Inferred
-            Assert.IsTrue(data.CheckAreSameIndividuals(new RDFResource("ex:indivB"), new RDFResource("ex:indivC")));
-            Assert.IsTrue(data.CheckAreSameIndividuals(new RDFResource("ex:indivC"), new RDFResource("ex:indivB"))); //Inferred
-            Assert.IsTrue(data.CheckAreSameIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivC"))); //Inferred
-            Assert.IsTrue(data.CheckAreSameIndividuals(new RDFResource("ex:indivC"), new RDFResource("ex:indivA"))); //Inferred
+            Assert.IsTrue(data.CheckIsSameIndividualOf(new RDFResource("ex:indivA"), new RDFResource("ex:indivB")));
+            Assert.IsTrue(data.CheckIsSameIndividualOf(new RDFResource("ex:indivB"), new RDFResource("ex:indivA"))); //Inferred
+            Assert.IsTrue(data.CheckIsSameIndividualOf(new RDFResource("ex:indivB"), new RDFResource("ex:indivC")));
+            Assert.IsTrue(data.CheckIsSameIndividualOf(new RDFResource("ex:indivC"), new RDFResource("ex:indivB"))); //Inferred
+            Assert.IsTrue(data.CheckIsSameIndividualOf(new RDFResource("ex:indivA"), new RDFResource("ex:indivC"))); //Inferred
+            Assert.IsTrue(data.CheckIsSameIndividualOf(new RDFResource("ex:indivC"), new RDFResource("ex:indivA"))); //Inferred
         }
 
         [TestMethod]
@@ -215,10 +215,10 @@ namespace RDFSharp.Semantics.Test
             data.DeclareIndividual(new RDFResource("ex:indivC"));
             data.DeclareSameIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB"));
 
-            Assert.IsFalse(data.CheckAreSameIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivC")));
-            Assert.IsFalse(data.CheckAreSameIndividuals(new RDFResource("ex:indivB"), new RDFResource("ex:indivC")));
-            Assert.IsFalse(data.CheckAreSameIndividuals(null, new RDFResource("ex:indivB")));
-            Assert.IsFalse(data.CheckAreSameIndividuals(new RDFResource("ex:indivA"), null));
+            Assert.IsFalse(data.CheckIsSameIndividualOf(new RDFResource("ex:indivA"), new RDFResource("ex:indivC")));
+            Assert.IsFalse(data.CheckIsSameIndividualOf(new RDFResource("ex:indivB"), new RDFResource("ex:indivC")));
+            Assert.IsFalse(data.CheckIsSameIndividualOf(null, new RDFResource("ex:indivB")));
+            Assert.IsFalse(data.CheckIsSameIndividualOf(new RDFResource("ex:indivA"), null));
         }
 
         [TestMethod]
@@ -235,16 +235,16 @@ namespace RDFSharp.Semantics.Test
             data.DeclareDifferentIndividuals(new RDFResource("ex:indivC"), new RDFResource("ex:indivD"));
             data.DeclareSameIndividuals(new RDFResource("ex:indivC"), new RDFResource("ex:indivE"));
 
-            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB")));
-            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivB"), new RDFResource("ex:indivA"))); //Inferred
-            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivC"))); //Inferred
-            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivC"), new RDFResource("ex:indivA"))); //Inferred
-            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivE"))); //Inferred
-            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivE"), new RDFResource("ex:indivA"))); //Inferred
-            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivB"), new RDFResource("ex:indivD"))); //Inferred
-            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivD"), new RDFResource("ex:indivB"))); //Inferred
-            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivD"), new RDFResource("ex:indivE"))); //Inferred
-            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivE"), new RDFResource("ex:indivD"))); //Inferred
+            Assert.IsTrue(data.CheckIsDifferentIndividualOf(new RDFResource("ex:indivA"), new RDFResource("ex:indivB")));
+            Assert.IsTrue(data.CheckIsDifferentIndividualOf(new RDFResource("ex:indivB"), new RDFResource("ex:indivA"))); //Inferred
+            Assert.IsTrue(data.CheckIsDifferentIndividualOf(new RDFResource("ex:indivA"), new RDFResource("ex:indivC"))); //Inferred
+            Assert.IsTrue(data.CheckIsDifferentIndividualOf(new RDFResource("ex:indivC"), new RDFResource("ex:indivA"))); //Inferred
+            Assert.IsTrue(data.CheckIsDifferentIndividualOf(new RDFResource("ex:indivA"), new RDFResource("ex:indivE"))); //Inferred
+            Assert.IsTrue(data.CheckIsDifferentIndividualOf(new RDFResource("ex:indivE"), new RDFResource("ex:indivA"))); //Inferred
+            Assert.IsTrue(data.CheckIsDifferentIndividualOf(new RDFResource("ex:indivB"), new RDFResource("ex:indivD"))); //Inferred
+            Assert.IsTrue(data.CheckIsDifferentIndividualOf(new RDFResource("ex:indivD"), new RDFResource("ex:indivB"))); //Inferred
+            Assert.IsTrue(data.CheckIsDifferentIndividualOf(new RDFResource("ex:indivD"), new RDFResource("ex:indivE"))); //Inferred
+            Assert.IsTrue(data.CheckIsDifferentIndividualOf(new RDFResource("ex:indivE"), new RDFResource("ex:indivD"))); //Inferred
         }
 
         [TestMethod]
@@ -256,9 +256,9 @@ namespace RDFSharp.Semantics.Test
             data.DeclareIndividual(new RDFResource("ex:indivC"));
             data.DeclareDifferentIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB"));
 
-            Assert.IsFalse(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivC")));
-            Assert.IsFalse(data.CheckAreDifferentIndividuals(null, new RDFResource("ex:indivC")));
-            Assert.IsFalse(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivB"), null));
+            Assert.IsFalse(data.CheckIsDifferentIndividualOf(new RDFResource("ex:indivA"), new RDFResource("ex:indivC")));
+            Assert.IsFalse(data.CheckIsDifferentIndividualOf(null, new RDFResource("ex:indivC")));
+            Assert.IsFalse(data.CheckIsDifferentIndividualOf(new RDFResource("ex:indivB"), null));
         }
 
         [TestMethod]
@@ -275,20 +275,20 @@ namespace RDFSharp.Semantics.Test
             data.DeclareSameIndividuals(new RDFResource("ex:indivC"), new RDFResource("ex:indivD"));
             data.DeclareSameIndividuals(new RDFResource("ex:indivE"), new RDFResource("ex:indivD"));
 
-            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB")));
-            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivB"), new RDFResource("ex:indivA"))); //Inferred
-            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivD")));
-            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivD"), new RDFResource("ex:indivA"))); //Inferred
-            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivB"), new RDFResource("ex:indivD")));
-            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivD"), new RDFResource("ex:indivB"))); //Inferred
-            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivC"))); //Inferred
-            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivC"), new RDFResource("ex:indivA"))); //Inferred
-            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivE"))); //Inferred
-            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivE"), new RDFResource("ex:indivA"))); //Inferred
-            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivB"), new RDFResource("ex:indivC"))); //Inferred
-            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivC"), new RDFResource("ex:indivB"))); //Inferred
-            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivB"), new RDFResource("ex:indivE"))); //Inferred
-            Assert.IsTrue(data.CheckAreDifferentIndividuals(new RDFResource("ex:indivE"), new RDFResource("ex:indivB"))); //Inferred
+            Assert.IsTrue(data.CheckIsDifferentIndividualOf(new RDFResource("ex:indivA"), new RDFResource("ex:indivB")));
+            Assert.IsTrue(data.CheckIsDifferentIndividualOf(new RDFResource("ex:indivB"), new RDFResource("ex:indivA"))); //Inferred
+            Assert.IsTrue(data.CheckIsDifferentIndividualOf(new RDFResource("ex:indivA"), new RDFResource("ex:indivD")));
+            Assert.IsTrue(data.CheckIsDifferentIndividualOf(new RDFResource("ex:indivD"), new RDFResource("ex:indivA"))); //Inferred
+            Assert.IsTrue(data.CheckIsDifferentIndividualOf(new RDFResource("ex:indivB"), new RDFResource("ex:indivD")));
+            Assert.IsTrue(data.CheckIsDifferentIndividualOf(new RDFResource("ex:indivD"), new RDFResource("ex:indivB"))); //Inferred
+            Assert.IsTrue(data.CheckIsDifferentIndividualOf(new RDFResource("ex:indivA"), new RDFResource("ex:indivC"))); //Inferred
+            Assert.IsTrue(data.CheckIsDifferentIndividualOf(new RDFResource("ex:indivC"), new RDFResource("ex:indivA"))); //Inferred
+            Assert.IsTrue(data.CheckIsDifferentIndividualOf(new RDFResource("ex:indivA"), new RDFResource("ex:indivE"))); //Inferred
+            Assert.IsTrue(data.CheckIsDifferentIndividualOf(new RDFResource("ex:indivE"), new RDFResource("ex:indivA"))); //Inferred
+            Assert.IsTrue(data.CheckIsDifferentIndividualOf(new RDFResource("ex:indivB"), new RDFResource("ex:indivC"))); //Inferred
+            Assert.IsTrue(data.CheckIsDifferentIndividualOf(new RDFResource("ex:indivC"), new RDFResource("ex:indivB"))); //Inferred
+            Assert.IsTrue(data.CheckIsDifferentIndividualOf(new RDFResource("ex:indivB"), new RDFResource("ex:indivE"))); //Inferred
+            Assert.IsTrue(data.CheckIsDifferentIndividualOf(new RDFResource("ex:indivE"), new RDFResource("ex:indivB"))); //Inferred
         }
 
         [TestMethod]
@@ -303,9 +303,9 @@ namespace RDFSharp.Semantics.Test
             data.DeclareObjectAssertion(new RDFResource("ex:indivB"), new RDFResource("ex:genderOf"), new RDFResource("ex:indivC"));
             data.DeclareObjectAssertion(new RDFResource("ex:indivC"), new RDFResource("ex:genderOf"), new RDFResource("ex:indivD"));
 
-            Assert.IsTrue(data.CheckAreTransitiveRelatedIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:genderOf"), new RDFResource("ex:indivC")));
-            Assert.IsTrue(data.CheckAreTransitiveRelatedIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:genderOf"), new RDFResource("ex:indivD")));
-            Assert.IsTrue(data.CheckAreTransitiveRelatedIndividuals(new RDFResource("ex:indivB"), new RDFResource("ex:genderOf"), new RDFResource("ex:indivD")));
+            Assert.IsTrue(data.CheckIsTransitiveRelatedIndividualOf(new RDFResource("ex:indivA"), new RDFResource("ex:genderOf"), new RDFResource("ex:indivC")));
+            Assert.IsTrue(data.CheckIsTransitiveRelatedIndividualOf(new RDFResource("ex:indivA"), new RDFResource("ex:genderOf"), new RDFResource("ex:indivD")));
+            Assert.IsTrue(data.CheckIsTransitiveRelatedIndividualOf(new RDFResource("ex:indivB"), new RDFResource("ex:genderOf"), new RDFResource("ex:indivD")));
         }
 
         [TestMethod]
@@ -319,10 +319,10 @@ namespace RDFSharp.Semantics.Test
             data.DeclareObjectAssertion(new RDFResource("ex:indivA"), new RDFResource("ex:genderOf"), new RDFResource("ex:indivB"));
             data.DeclareObjectAssertion(new RDFResource("ex:indivC"), new RDFResource("ex:genderOf"), new RDFResource("ex:indivD"));
 
-            Assert.IsFalse(data.CheckAreTransitiveRelatedIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:genderOf"), new RDFResource("ex:indivC")));
-            Assert.IsFalse(data.CheckAreTransitiveRelatedIndividuals(null, new RDFResource("ex:genderOf"), new RDFResource("ex:indivD")));
-            Assert.IsFalse(data.CheckAreTransitiveRelatedIndividuals(new RDFResource("ex:indivB"), null, new RDFResource("ex:indivD")));
-            Assert.IsFalse(data.CheckAreTransitiveRelatedIndividuals(new RDFResource("ex:indivB"), new RDFResource("ex:genderOf"), null));
+            Assert.IsFalse(data.CheckIsTransitiveRelatedIndividualOf(new RDFResource("ex:indivA"), new RDFResource("ex:genderOf"), new RDFResource("ex:indivC")));
+            Assert.IsFalse(data.CheckIsTransitiveRelatedIndividualOf(null, new RDFResource("ex:genderOf"), new RDFResource("ex:indivD")));
+            Assert.IsFalse(data.CheckIsTransitiveRelatedIndividualOf(new RDFResource("ex:indivB"), null, new RDFResource("ex:indivD")));
+            Assert.IsFalse(data.CheckIsTransitiveRelatedIndividualOf(new RDFResource("ex:indivB"), new RDFResource("ex:genderOf"), null));
         }
 
         [TestMethod]
@@ -340,13 +340,13 @@ namespace RDFSharp.Semantics.Test
             ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv2"), new RDFResource("ex:classB"));
             ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv3"), new RDFResource("ex:classC"));
 
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:classA")));
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:classB")));
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:classC")));
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:classA"))); //Inference
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:classC"))); //Inference
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:classA"))); //Inference
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:classB"))); //Inference
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:classA")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:classB")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:classC")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:classA"))); //Inference
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:classC"))); //Inference
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:classA"))); //Inference
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:classB"))); //Inference
         }
 
         [TestMethod]
@@ -358,8 +358,8 @@ namespace RDFSharp.Semantics.Test
             ontology.Data.DeclareIndividual(new RDFResource("ex:indiv1"));
             ontology.Data.DeclareIndividual(new RDFResource("ex:indiv2"));
 
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:enumClass")));
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:enumClass")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:enumClass")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:enumClass")));
         }
 
         [TestMethod]
@@ -375,9 +375,9 @@ namespace RDFSharp.Semantics.Test
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv2"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
 
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:cardRest")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:cardRest")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:cardRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:cardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:cardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:cardRest")));
         }
 
         [TestMethod]
@@ -395,9 +395,9 @@ namespace RDFSharp.Semantics.Test
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objChildProp"), new RDFResource("ex:indiv3"));
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv2"), new RDFResource("ex:objChildProp"), new RDFResource("ex:indiv3"));
 
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:cardRest")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:cardRest")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:cardRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:cardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:cardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:cardRest")));
         }
 
         [TestMethod]
@@ -426,10 +426,10 @@ namespace RDFSharp.Semantics.Test
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv5"));
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv6"));
 
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:qCardRest")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:qCardRest")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:qCardRest")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:qCardRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:qCardRest")));
         }
 
         [TestMethod]
@@ -460,10 +460,10 @@ namespace RDFSharp.Semantics.Test
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objPropEquiv"), new RDFResource("ex:indiv5"));
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objPropEquiv"), new RDFResource("ex:indiv6"));
 
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:qCardRest")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:qCardRest")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:qCardRest")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:qCardRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:qCardRest")));
         }
 
         [TestMethod]
@@ -479,9 +479,9 @@ namespace RDFSharp.Semantics.Test
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv2"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
 
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:cardRest")));
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:cardRest")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:cardRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:cardRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:cardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:cardRest")));
         }
 
         [TestMethod]
@@ -510,10 +510,10 @@ namespace RDFSharp.Semantics.Test
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv5"));
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv6"));
 
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:qCardRest")));
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:qCardRest")));
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:qCardRest")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:qCardRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:qCardRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:qCardRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:qCardRest")));
         }
 
         [TestMethod]
@@ -529,9 +529,9 @@ namespace RDFSharp.Semantics.Test
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv2"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
 
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:cardRest")));
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:cardRest")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:cardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:cardRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:cardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:cardRest")));
         }
 
         [TestMethod]
@@ -557,10 +557,10 @@ namespace RDFSharp.Semantics.Test
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv2"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv5"));
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv5"));
 
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:qCardRest")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:qCardRest")));
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:qCardRest")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:qCardRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:qCardRest")));
         }
 
         [TestMethod]
@@ -580,10 +580,10 @@ namespace RDFSharp.Semantics.Test
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv4"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv2"));
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv4"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
 
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:cardRest")));
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:cardRest")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:cardRest")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:cardRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:cardRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:cardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:cardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:cardRest")));
         }
 
         [TestMethod]
@@ -610,10 +610,10 @@ namespace RDFSharp.Semantics.Test
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv5"));
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv6"));
 
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:qCardRest")));
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:qCardRest")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:qCardRest")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:qCardRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:qCardRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:qCardRest")));
         }
         
         [TestMethod]
@@ -635,10 +635,10 @@ namespace RDFSharp.Semantics.Test
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv1"));
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv4"));
 
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:svFromRest")));
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:svFromRest")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:svFromRest")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:svFromRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:svFromRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:svFromRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:svFromRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:svFromRest")));
         }
 
         [TestMethod]
@@ -666,10 +666,10 @@ namespace RDFSharp.Semantics.Test
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objPropEquiv"), new RDFResource("ex:indiv1"));
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objPropEquiv"), new RDFResource("ex:indiv4"));
 
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:svFromRest")));
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:svFromRest")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:svFromRest")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:svFromRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:svFromRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:svFromRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:svFromRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:svFromRest")));
         }
 
         [TestMethod]
@@ -691,10 +691,10 @@ namespace RDFSharp.Semantics.Test
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv2"));
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv4"));
 
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:avFromRest")));
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:avFromRest")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:avFromRest")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:avFromRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:avFromRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:avFromRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:avFromRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:avFromRest")));
         }
 
         [TestMethod]
@@ -722,10 +722,10 @@ namespace RDFSharp.Semantics.Test
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objPropEquiv"), new RDFResource("ex:indiv2"));
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objPropEquiv"), new RDFResource("ex:indiv4"));
 
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:avFromRest")));
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:avFromRest")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:avFromRest")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:avFromRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:avFromRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:avFromRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:avFromRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:avFromRest")));
         }
 
         [TestMethod]
@@ -744,10 +744,10 @@ namespace RDFSharp.Semantics.Test
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv2"));
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv4"));
 
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:hvRest")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:hvRest")));
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:hvRest")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:hvRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:hvRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:hvRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:hvRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:hvRest")));
         }
 
         [TestMethod]
@@ -767,10 +767,10 @@ namespace RDFSharp.Semantics.Test
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv2"));
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv4"));
 
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:hvRest")));
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:hvRest")));
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:hvRest")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:hvRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:hvRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:hvRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:hvRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:hvRest")));
         }
 
         [TestMethod]
@@ -785,10 +785,10 @@ namespace RDFSharp.Semantics.Test
             ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:dtProp"), new RDFTypedLiteral("25", RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER));
             ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:dtProp"), new RDFTypedLiteral("25", RDFModelEnums.RDFDatatypes.XSD_GDAY));
 
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:hvRest")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:hvRest")));
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:hvRest")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:hvRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:hvRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:hvRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:hvRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:hvRest")));
         }
 
         [TestMethod]
@@ -807,10 +807,10 @@ namespace RDFSharp.Semantics.Test
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv4"));
 
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:hsRest")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:hsRest")));
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:hsRest")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:hsRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:hsRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:hsRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:hsRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:hsRest")));
         }
 
         [TestMethod]
@@ -829,10 +829,10 @@ namespace RDFSharp.Semantics.Test
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv4"));
 
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:hsRest")));
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:hsRest")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:hsRest")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:hsRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:hsRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:hsRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:hsRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:hsRest")));
         }
 
         [TestMethod]
@@ -851,9 +851,9 @@ namespace RDFSharp.Semantics.Test
             ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv2"), new RDFResource("ex:class2"));
             ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv3"), new RDFResource("ex:class3"));
 
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:unionClass")));
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:unionClass")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:unionClass")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:unionClass")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:unionClass")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:unionClass")));
         }
 
         [TestMethod]
@@ -874,9 +874,9 @@ namespace RDFSharp.Semantics.Test
             ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv3"), new RDFResource("ex:class2"));
             ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv3"), new RDFResource("ex:class3"));
 
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:intersectionClass")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:intersectionClass")));
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:intersectionClass")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:intersectionClass")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:intersectionClass")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:intersectionClass")));
         }
 
         [TestMethod]
@@ -896,9 +896,9 @@ namespace RDFSharp.Semantics.Test
             ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv3"), new RDFResource("ex:class2"));
             ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv3"), new RDFResource("ex:class3"));
 
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:complementClass")));
-            Assert.IsTrue(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:complementClass")));
-            Assert.IsFalse(ontology.Data.CheckIsIndividualOfClass(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:complementClass")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:complementClass")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:complementClass")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:complementClass")));
         }
         #endregion
 

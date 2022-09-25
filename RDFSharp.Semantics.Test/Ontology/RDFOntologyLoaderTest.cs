@@ -319,33 +319,33 @@ namespace RDFSharp.Semantics.Test
         [TestMethod]
         public void ShouldLoadHasKeyDeclarations()
         {
-            Assert.IsTrue(Ontology.Model.ClassModel.AnswerKeyProperties(new RDFResource("ex:class1")).Single().Equals(new RDFResource("ex:objprop")));
+            Assert.IsTrue(Ontology.Model.ClassModel.GetKeyPropertiesOf(new RDFResource("ex:class1")).Single().Equals(new RDFResource("ex:objprop")));
         }
 
         [TestMethod]
         public void ShouldLoadSubClassDeclarations()
         {
-            Assert.IsTrue(Ontology.Model.ClassModel.AnswerSubClasses(new RDFResource("ex:class1")).Count == 2);
+            Assert.IsTrue(Ontology.Model.ClassModel.GetSubClassesOf(new RDFResource("ex:class1")).Count == 2);
         }
 
         [TestMethod]
         public void ShouldLoadSuperClassDeclarations()
         {
-            Assert.IsTrue(Ontology.Model.ClassModel.AnswerSuperClasses(new RDFResource("ex:class2")).Count == 1);
-            Assert.IsTrue(Ontology.Model.ClassModel.AnswerSuperClasses(new RDFResource("ex:class3")).Count == 1);
+            Assert.IsTrue(Ontology.Model.ClassModel.GetSuperClassesOf(new RDFResource("ex:class2")).Count == 1);
+            Assert.IsTrue(Ontology.Model.ClassModel.GetSuperClassesOf(new RDFResource("ex:class3")).Count == 1);
         }
 
         [TestMethod]
         public void ShouldLoadEquivalentClassDeclarations()
         {
-            Assert.IsTrue(Ontology.Model.ClassModel.AnswerEquivalentClasses(new RDFResource("ex:class2")).Count == 1);
-            Assert.IsTrue(Ontology.Model.ClassModel.AnswerEquivalentClasses(new RDFResource("ex:class3")).Count == 1);
+            Assert.IsTrue(Ontology.Model.ClassModel.GetEquivalentClassesOf(new RDFResource("ex:class2")).Count == 1);
+            Assert.IsTrue(Ontology.Model.ClassModel.GetEquivalentClassesOf(new RDFResource("ex:class3")).Count == 1);
         }
 
         [TestMethod]
         public void ShouldLoadDisjointClassDeclarations()
         {
-            Assert.IsTrue(Ontology.Model.ClassModel.AnswerDisjointClasses(new RDFResource("ex:class1")).Count == 2);
+            Assert.IsTrue(Ontology.Model.ClassModel.GetDisjointClassesWith(new RDFResource("ex:class1")).Count == 2);
         }
         #endregion
 
@@ -441,34 +441,34 @@ namespace RDFSharp.Semantics.Test
         [TestMethod]
         public void ShouldLoadSubPropertyDeclarations()
         {
-            Assert.IsTrue(Ontology.Model.PropertyModel.AnswerSubProperties(new RDFResource("ex:objprop1")).Count == 2);
+            Assert.IsTrue(Ontology.Model.PropertyModel.GetSubPropertiesOf(new RDFResource("ex:objprop1")).Count == 2);
         }
 
         [TestMethod]
         public void ShouldLoadSuperPropertyDeclarations()
         {
-            Assert.IsTrue(Ontology.Model.PropertyModel.AnswerSuperProperties(new RDFResource("ex:objprop2")).Count == 1);
-            Assert.IsTrue(Ontology.Model.PropertyModel.AnswerSuperProperties(new RDFResource("ex:objprop3")).Count == 1);
+            Assert.IsTrue(Ontology.Model.PropertyModel.GetSuperPropertiesOf(new RDFResource("ex:objprop2")).Count == 1);
+            Assert.IsTrue(Ontology.Model.PropertyModel.GetSuperPropertiesOf(new RDFResource("ex:objprop3")).Count == 1);
         }
 
         [TestMethod]
         public void ShouldLoadEquivalentPropertyDeclarations()
         {
-            Assert.IsTrue(Ontology.Model.PropertyModel.AnswerEquivalentProperties(new RDFResource("ex:objprop2")).Count == 1);
-            Assert.IsTrue(Ontology.Model.PropertyModel.AnswerEquivalentProperties(new RDFResource("ex:objprop3")).Count == 1);
+            Assert.IsTrue(Ontology.Model.PropertyModel.GetEquivalentPropertiesOf(new RDFResource("ex:objprop2")).Count == 1);
+            Assert.IsTrue(Ontology.Model.PropertyModel.GetEquivalentPropertiesOf(new RDFResource("ex:objprop3")).Count == 1);
         }
 
         [TestMethod]
         public void ShouldLoadDisjointPropertyDeclarations()
         {
-            Assert.IsTrue(Ontology.Model.PropertyModel.AnswerDisjointProperties(new RDFResource("ex:objprop1")).Count == 2);
+            Assert.IsTrue(Ontology.Model.PropertyModel.GetDisjointPropertiesWith(new RDFResource("ex:objprop1")).Count == 2);
         }
 
         [TestMethod]
         public void ShouldLoadInversePropertyDeclarations()
         {
-            Assert.IsTrue(Ontology.Model.PropertyModel.AnswerInverseProperties(new RDFResource("ex:objprop1")).Count == 1);
-            Assert.IsTrue(Ontology.Model.PropertyModel.AnswerInverseProperties(new RDFResource("ex:objprop6")).Count == 1);
+            Assert.IsTrue(Ontology.Model.PropertyModel.GetInversePropertiesOf(new RDFResource("ex:objprop1")).Count == 1);
+            Assert.IsTrue(Ontology.Model.PropertyModel.GetInversePropertiesOf(new RDFResource("ex:objprop6")).Count == 1);
         }
 
         [TestMethod]
@@ -500,15 +500,15 @@ namespace RDFSharp.Semantics.Test
         [TestMethod]
         public void ShouldLoadSameAsRelations()
         {
-            Assert.IsTrue(Ontology.Data.CheckAreSameIndividuals(new RDFResource("ex:indiv1"), new RDFResource("ex:indiv2")));
-            Assert.IsTrue(Ontology.Data.CheckAreSameIndividuals(new RDFResource("ex:indiv2"), new RDFResource("ex:indiv1")));
+            Assert.IsTrue(Ontology.Data.CheckIsSameIndividualOf(new RDFResource("ex:indiv1"), new RDFResource("ex:indiv2")));
+            Assert.IsTrue(Ontology.Data.CheckIsSameIndividualOf(new RDFResource("ex:indiv2"), new RDFResource("ex:indiv1")));
         }
 
         [TestMethod]
         public void ShouldLoadDifferentFromRelations()
         {
-            Assert.IsTrue(Ontology.Data.CheckAreDifferentIndividuals(new RDFResource("ex:indiv1"), new RDFResource("ex:indiv3")));
-            Assert.IsTrue(Ontology.Data.CheckAreDifferentIndividuals(new RDFResource("ex:indiv3"), new RDFResource("ex:indiv1")));
+            Assert.IsTrue(Ontology.Data.CheckIsDifferentIndividualOf(new RDFResource("ex:indiv1"), new RDFResource("ex:indiv3")));
+            Assert.IsTrue(Ontology.Data.CheckIsDifferentIndividualOf(new RDFResource("ex:indiv3"), new RDFResource("ex:indiv1")));
         }
 
         [TestMethod]
@@ -534,7 +534,7 @@ namespace RDFSharp.Semantics.Test
             IEnumerator<RDFResource> alldiffEnum = Ontology.Data.AllDifferentEnumerator;
             while (alldiffEnum.MoveNext())
                 Assert.IsTrue(alldiffEnum.Current.Equals(new RDFResource("ex:alldiff")));
-            Ontology.Data.CheckAreDifferentIndividuals(new RDFResource("ex:indiv3"), new RDFResource("ex:indiv4"));
+            Ontology.Data.CheckIsDifferentIndividualOf(new RDFResource("ex:indiv3"), new RDFResource("ex:indiv4"));
         }
         #endregion
     }

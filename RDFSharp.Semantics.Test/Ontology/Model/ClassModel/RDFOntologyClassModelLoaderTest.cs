@@ -228,33 +228,33 @@ namespace RDFSharp.Semantics.Test
         [TestMethod]
         public void ShouldLoadHasKeyDeclarations()
         {
-            Assert.IsTrue(Ontology.Model.ClassModel.AnswerKeyProperties(new RDFResource("ex:class1")).Single().Equals(new RDFResource("ex:objprop")));
+            Assert.IsTrue(Ontology.Model.ClassModel.GetKeyPropertiesOf(new RDFResource("ex:class1")).Single().Equals(new RDFResource("ex:objprop")));
         }
 
         [TestMethod]
         public void ShouldLoadSubClassDeclarations()
         {
-            Assert.IsTrue(Ontology.Model.ClassModel.AnswerSubClasses(new RDFResource("ex:class1")).Count == 2);
+            Assert.IsTrue(Ontology.Model.ClassModel.GetSubClassesOf(new RDFResource("ex:class1")).Count == 2);
         }
 
         [TestMethod]
         public void ShouldLoadSuperClassDeclarations()
         {
-            Assert.IsTrue(Ontology.Model.ClassModel.AnswerSuperClasses(new RDFResource("ex:class2")).Count == 1);
-            Assert.IsTrue(Ontology.Model.ClassModel.AnswerSuperClasses(new RDFResource("ex:class3")).Count == 1);
+            Assert.IsTrue(Ontology.Model.ClassModel.GetSuperClassesOf(new RDFResource("ex:class2")).Count == 1);
+            Assert.IsTrue(Ontology.Model.ClassModel.GetSuperClassesOf(new RDFResource("ex:class3")).Count == 1);
         }
 
         [TestMethod]
         public void ShouldLoadEquivalentClassDeclarations()
         {
-            Assert.IsTrue(Ontology.Model.ClassModel.AnswerEquivalentClasses(new RDFResource("ex:class2")).Count == 1);
-            Assert.IsTrue(Ontology.Model.ClassModel.AnswerEquivalentClasses(new RDFResource("ex:class3")).Count == 1);
+            Assert.IsTrue(Ontology.Model.ClassModel.GetEquivalentClassesOf(new RDFResource("ex:class2")).Count == 1);
+            Assert.IsTrue(Ontology.Model.ClassModel.GetEquivalentClassesOf(new RDFResource("ex:class3")).Count == 1);
         }
 
         [TestMethod]
         public void ShouldLoadDisjointClassDeclarations()
         {
-            Assert.IsTrue(Ontology.Model.ClassModel.AnswerDisjointClasses(new RDFResource("ex:class1")).Count == 2);
+            Assert.IsTrue(Ontology.Model.ClassModel.GetDisjointClassesWith(new RDFResource("ex:class1")).Count == 2);
         }
         #endregion
     }

@@ -61,7 +61,7 @@ namespace RDFSharp.Semantics
         /// Enlists the classes which are related with the lens class by rdfs:subClassOf
         /// </summary>
         public List<RDFResource> SubClasses()
-            => Ontology.Model.ClassModel.AnswerSubClasses(Class);
+            => Ontology.Model.ClassModel.GetSubClassesOf(Class);
 
         /// <summary>
         /// Asynchronously enlists the classes which are related with the lens class by rdfs:subClassOf
@@ -73,7 +73,7 @@ namespace RDFSharp.Semantics
         /// Enlists the classes to which the lens class is related by rdfs:subClassOf
         /// </summary>
         public List<RDFResource> SuperClasses()
-            => Ontology.Model.ClassModel.AnswerSuperClasses(Class);
+            => Ontology.Model.ClassModel.GetSuperClassesOf(Class);
 
         /// <summary>
         /// Asynchronously enlists the classes to which the lens class is related by rdfs:subClassOf
@@ -85,7 +85,7 @@ namespace RDFSharp.Semantics
         /// Enlists the classes which are related with the lens class by owl:equivalentClass
         /// </summary>
         public List<RDFResource> EquivalentClasses()
-            => Ontology.Model.ClassModel.AnswerEquivalentClasses(Class);
+            => Ontology.Model.ClassModel.GetEquivalentClassesOf(Class);
 
         /// <summary>
         /// Asynchronously enlists the classes which are related with the lens class by owl:equivalentClass
@@ -97,7 +97,7 @@ namespace RDFSharp.Semantics
         /// Enlists the classes which are related with the lens class by owl:disjointWith
         /// </summary>
         public List<RDFResource> DisjointClasses()
-            => Ontology.Model.ClassModel.AnswerDisjointClasses(Class);
+            => Ontology.Model.ClassModel.GetDisjointClassesWith(Class);
 
         /// <summary>
         /// Asynchronously enlists the classes which are related with the lens class by owl:disjointWith
@@ -109,7 +109,7 @@ namespace RDFSharp.Semantics
         /// Enlists the properties which are related with the lens class by owl:hasKey [OWL2]
         /// </summary>
         public List<RDFResource> KeyProperties()
-            => Ontology.Model.ClassModel.AnswerKeyProperties(Class);
+            => Ontology.Model.ClassModel.GetKeyPropertiesOf(Class);
 
         /// <summary>
         /// Asynchronously enlists the properties which are related with the lens class by owl:hasKey [OWL2]
@@ -121,7 +121,7 @@ namespace RDFSharp.Semantics
         /// Enlists the individuals which are related with the lens class by rdf:type
         /// </summary>
         public List<RDFResource> Individuals()
-            => Ontology.Data.AnswerIndividualsOfClass(Ontology.Model, Class);
+            => Ontology.Data.GetIndividualsOf(Ontology.Model, Class);
 
         /// <summary>
         /// Asynchronously enlists the individuals which are related with the lens class by rdf:type
