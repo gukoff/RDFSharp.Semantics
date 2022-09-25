@@ -224,17 +224,23 @@ namespace RDFSharp.Semantics
         /// Analyzes "SubClass(owlClass,X)" relations of the model to answer the sub classes of the given owl:Class
         /// </summary>
         public static List<RDFResource> GetSubClassesOf(this RDFOntologyClassModel classModel, RDFResource owlClass)
+            => GetSubClassesOfInternal(classModel, owlClass, classModel?.TBoxVirtualGraph);
+
+        /// <summary>
+        /// Analyzes "SubClass(owlClass,X)" relations of the model to answer the sub classes of the given owl:Class (internal recursive signature)
+        /// </summary>
+        internal static List<RDFResource> GetSubClassesOfInternal(this RDFOntologyClassModel classModel, RDFResource owlClass, RDFGraph workingGraph)
         {
             List<RDFResource> subClasses = new List<RDFResource>();
 
             if (classModel != null && owlClass != null)
             {
                 //Reason on the given class
-                subClasses.AddRange(classModel.FindSubClassesOf(owlClass));
+                subClasses.AddRange(classModel.FindSubClassesOf(owlClass, workingGraph));
 
                 //Reason on the equivalent classes
-                foreach (RDFResource equivalentClass in classModel.GetEquivalentClassesOf(owlClass))
-                    subClasses.AddRange(classModel.FindSubClassesOf(equivalentClass));
+                foreach (RDFResource equivalentClass in classModel.GetEquivalentClassesOfInternal(owlClass, workingGraph))
+                    subClasses.AddRange(classModel.FindSubClassesOf(equivalentClass, workingGraph));
 
                 //We don't want to also enlist the given owl:Class
                 subClasses.RemoveAll(cls => cls.Equals(owlClass));
@@ -246,15 +252,15 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Finds "SubClass(owlClass,X)" relations of the model to answer the sub classes of the given owl:Class
         /// </summary>
-        internal static List<RDFResource> FindSubClassesOf(this RDFOntologyClassModel classModel, RDFResource owlClass)
+        internal static List<RDFResource> FindSubClassesOf(this RDFOntologyClassModel classModel, RDFResource owlClass, RDFGraph workingGraph)
         {
             //Direct subsumption of "rdfs:subClassOf" taxonomy
-            List<RDFResource> subClasses = classModel.SubsumeSubClassHierarchy(owlClass);
+            List<RDFResource> subClasses = classModel.SubsumeSubClassHierarchy(owlClass, workingGraph);
 
             //Enlist equivalent classes of subclasses
             foreach (RDFResource subClass in subClasses.ToList())
-                subClasses.AddRange(classModel.GetEquivalentClassesOf(subClass)
-                                              .Union(classModel.GetSubClassesOf(subClass)));
+                subClasses.AddRange(classModel.GetEquivalentClassesOfInternal(subClass, workingGraph)
+                                              .Union(classModel.GetSubClassesOfInternal(subClass, workingGraph)));
 
             return subClasses;
         }
@@ -262,15 +268,15 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Subsume "SubClass(owlClass,X)" relations of the model to answer the sub classes of the given owl:Class
         /// </summary>
-        internal static List<RDFResource> SubsumeSubClassHierarchy(this RDFOntologyClassModel classModel, RDFResource owlClass)
+        internal static List<RDFResource> SubsumeSubClassHierarchy(this RDFOntologyClassModel classModel, RDFResource owlClass, RDFGraph workingGraph)
         {
             List<RDFResource> subClasses = new List<RDFResource>();
 
             // SUBCLASS(A,B) ^ SUBCLASS(B,C) -> SUBCLASS(A,C)
-            foreach (RDFTriple subClassRelation in classModel.TBoxVirtualGraph[null, RDFVocabulary.RDFS.SUB_CLASS_OF, owlClass, null])
+            foreach (RDFTriple subClassRelation in workingGraph[null, RDFVocabulary.RDFS.SUB_CLASS_OF, owlClass, null])
             {
                 subClasses.Add((RDFResource)subClassRelation.Subject);
-                subClasses.AddRange(classModel.SubsumeSubClassHierarchy((RDFResource)subClassRelation.Subject));
+                subClasses.AddRange(classModel.SubsumeSubClassHierarchy((RDFResource)subClassRelation.Subject, workingGraph));
             }
 
             return subClasses;
@@ -286,37 +292,43 @@ namespace RDFSharp.Semantics
         /// Analyzes "SubClass(X,owlClass)" relations of the model to answer the super classes of the given owl:Class
         /// </summary>
         public static List<RDFResource> GetSuperClassesOf(this RDFOntologyClassModel classModel, RDFResource owlClass)
+            => GetSuperClassesOfInternal(classModel, owlClass, classModel?.TBoxVirtualGraph);
+
+        /// <summary>
+        /// Analyzes "SubClass(X,owlClass)" relations of the model to answer the super classes of the given owl:Class (internal recursive signature)
+        /// </summary>
+        internal static List<RDFResource> GetSuperClassesOfInternal(this RDFOntologyClassModel classModel, RDFResource owlClass, RDFGraph workingGraph)
         {
-            List<RDFResource> subClasses = new List<RDFResource>();
+            List<RDFResource> superClasses = new List<RDFResource>();
 
             if (classModel != null && owlClass != null)
             {
                 //Reason on the given class
-                subClasses.AddRange(classModel.FindSuperClassesOf(owlClass));
+                superClasses.AddRange(classModel.FindSuperClassesOf(owlClass, workingGraph));
 
                 //Reason on the equivalent classes
-                foreach (RDFResource equivalentClass in classModel.GetEquivalentClassesOf(owlClass))
-                    subClasses.AddRange(classModel.FindSuperClassesOf(equivalentClass));
+                foreach (RDFResource equivalentClass in classModel.GetEquivalentClassesOfInternal(owlClass, workingGraph))
+                    superClasses.AddRange(classModel.FindSuperClassesOf(equivalentClass, workingGraph));
 
                 //We don't want to also enlist the given owl:Class
-                subClasses.RemoveAll(cls => cls.Equals(owlClass));
+                superClasses.RemoveAll(cls => cls.Equals(owlClass));
             }
 
-            return subClasses;
+            return superClasses;
         }
 
         /// <summary>
         /// Finds "SubClass(X,owlClass)" relations of the model to answer the super classes of the given owl:Class
         /// </summary>
-        internal static List<RDFResource> FindSuperClassesOf(this RDFOntologyClassModel classModel, RDFResource owlClass)
+        internal static List<RDFResource> FindSuperClassesOf(this RDFOntologyClassModel classModel, RDFResource owlClass, RDFGraph workingGraph)
         {
             //Direct subsumption of "rdfs:subClassOf" taxonomy
-            List<RDFResource> superClasses = classModel.SubsumeSuperClassHierarchy(owlClass);
+            List<RDFResource> superClasses = classModel.SubsumeSuperClassHierarchy(owlClass, workingGraph);
 
             //Enlist equivalent classes of superclasses
             foreach (RDFResource superClass in superClasses.ToList())
-                superClasses.AddRange(classModel.GetEquivalentClassesOf(superClass)
-                                                .Union(classModel.GetSuperClassesOf(superClass)));
+                superClasses.AddRange(classModel.GetEquivalentClassesOfInternal(superClass, workingGraph)
+                                                .Union(classModel.GetSuperClassesOfInternal(superClass, workingGraph)));
 
             return superClasses;
         }
@@ -324,15 +336,15 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Subsumes "SubClass(X,owlClass)" relations of the model to answer the super classes of the given owl:Class
         /// </summary>
-        internal static List<RDFResource> SubsumeSuperClassHierarchy(this RDFOntologyClassModel classModel, RDFResource owlClass)
+        internal static List<RDFResource> SubsumeSuperClassHierarchy(this RDFOntologyClassModel classModel, RDFResource owlClass, RDFGraph workingGraph)
         {
             List<RDFResource> superClasses = new List<RDFResource>();
 
             // SUBCLASS(A,B) ^ SUBCLASS(B,C) -> SUBCLASS(A,C)
-            foreach (RDFTriple subClassRelation in classModel.TBoxVirtualGraph[owlClass, RDFVocabulary.RDFS.SUB_CLASS_OF, null, null])
+            foreach (RDFTriple subClassRelation in workingGraph[owlClass, RDFVocabulary.RDFS.SUB_CLASS_OF, null, null])
             {
                 superClasses.Add((RDFResource)subClassRelation.Object);
-                superClasses.AddRange(classModel.SubsumeSuperClassHierarchy((RDFResource)subClassRelation.Object));
+                superClasses.AddRange(classModel.SubsumeSuperClassHierarchy((RDFResource)subClassRelation.Object, workingGraph));
             }
 
             return superClasses;
@@ -348,12 +360,18 @@ namespace RDFSharp.Semantics
         /// Analyzes "EquivalentClass(owlClass, X)" relations of the model to answer the equivalent classes of the given owl:Class
         /// </summary>
         public static List<RDFResource> GetEquivalentClassesOf(this RDFOntologyClassModel classModel, RDFResource owlClass)
+            => GetEquivalentClassesOfInternal(classModel, owlClass, classModel?.TBoxVirtualGraph);
+
+        /// <summary>
+        /// Analyzes "EquivalentClass(owlClass, X)" relations of the model to answer the equivalent classes of the given owl:Class (internal recursive version)
+        /// </summary>
+        internal static List<RDFResource> GetEquivalentClassesOfInternal(this RDFOntologyClassModel classModel, RDFResource owlClass, RDFGraph workingGraph)
         {
             List<RDFResource> equivalentClasses = new List<RDFResource>();
 
             if (classModel != null && owlClass != null)
             {
-                equivalentClasses.AddRange(classModel.FindEquivalentClassesOf(owlClass, classModel.TBoxVirtualGraph, new Dictionary<long, RDFResource>()));
+                equivalentClasses.AddRange(classModel.FindEquivalentClassesOf(owlClass, workingGraph, new Dictionary<long, RDFResource>()));
 
                 //We don't want to also enlist the given owl:Class
                 equivalentClasses.RemoveAll(cls => cls.Equals(owlClass));
@@ -365,7 +383,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Finds "EquivalentClass(owlClass, X)" relations to enlist the equivalent classes of the given owl:Class
         /// </summary>
-        internal static List<RDFResource> FindEquivalentClassesOf(this RDFOntologyClassModel classModel, RDFResource owlClass, RDFGraph tboxGraph, Dictionary<long, RDFResource> visitContext)
+        internal static List<RDFResource> FindEquivalentClassesOf(this RDFOntologyClassModel classModel, RDFResource owlClass, RDFGraph workingGraph, Dictionary<long, RDFResource> visitContext)
         {
             List<RDFResource> equivalentClasses = new List<RDFResource>();
 
@@ -377,12 +395,12 @@ namespace RDFSharp.Semantics
             #endregion
 
             //DIRECT
-            foreach (RDFTriple equivalentClassRelation in tboxGraph[owlClass, RDFVocabulary.OWL.EQUIVALENT_CLASS, null, null])
+            foreach (RDFTriple equivalentClassRelation in workingGraph[owlClass, RDFVocabulary.OWL.EQUIVALENT_CLASS, null, null])
                 equivalentClasses.Add((RDFResource)equivalentClassRelation.Object);
 
             //INDIRECT (TRANSITIVE)
             foreach (RDFResource equivalentClass in equivalentClasses.ToList())
-                equivalentClasses.AddRange(classModel.FindEquivalentClassesOf(equivalentClass, tboxGraph, visitContext));
+                equivalentClasses.AddRange(classModel.FindEquivalentClassesOf(equivalentClass, workingGraph, visitContext));
 
             return equivalentClasses;
         }
@@ -397,12 +415,18 @@ namespace RDFSharp.Semantics
         /// Analyzes "DisjointWith(leftClass,rightClass)" relations of the model to answer the disjoint classes of the given owl:Class
         /// </summary>
         public static List<RDFResource> GetDisjointClassesWith(this RDFOntologyClassModel classModel, RDFResource owlClass)
+            => GetDisjointClassesWithInternal(classModel, owlClass, classModel?.TBoxVirtualGraph);
+
+        /// <summary>
+        /// Analyzes "DisjointWith(leftClass,rightClass)" relations of the model to answer the disjoint classes of the given owl:Class (internal recursive version)
+        /// </summary>
+        internal static List<RDFResource> GetDisjointClassesWithInternal(this RDFOntologyClassModel classModel, RDFResource owlClass, RDFGraph workingGraph)
         {
             List<RDFResource> disjointClasses = new List<RDFResource>();
 
             if (classModel != null && owlClass != null)
             {
-                disjointClasses.AddRange(classModel.FindDisjointClassesWith(owlClass, classModel.TBoxVirtualGraph, new Dictionary<long, RDFResource>()));
+                disjointClasses.AddRange(classModel.FindDisjointClassesWith(owlClass, workingGraph, new Dictionary<long, RDFResource>()));
 
                 //We don't want to also enlist the given owl:Class
                 disjointClasses.RemoveAll(cls => cls.Equals(owlClass));
@@ -414,7 +438,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Finds "DisjointWith(owlClass,X)" relations to enlist the disjoint classes of the given owl:Class
         /// </summary>
-        internal static List<RDFResource> FindDisjointClassesWith(this RDFOntologyClassModel classModel, RDFResource owlClass, RDFGraph tboxGraph, Dictionary<long, RDFResource> visitContext)
+        internal static List<RDFResource> FindDisjointClassesWith(this RDFOntologyClassModel classModel, RDFResource owlClass, RDFGraph workingGraph, Dictionary<long, RDFResource> visitContext)
         {
             List<RDFResource> disjointClasses = new List<RDFResource>();
 
@@ -430,16 +454,16 @@ namespace RDFSharp.Semantics
             List<RDFResource> allDisjointClasses = new List<RDFResource>();
             IEnumerator<RDFResource> allDisjoint = classModel.AllDisjointClassesEnumerator;
             while (allDisjoint.MoveNext())
-                foreach (RDFTriple allDisjointMembers in tboxGraph[allDisjoint.Current, RDFVocabulary.OWL.MEMBERS, null, null])
+                foreach (RDFTriple allDisjointMembers in workingGraph[allDisjoint.Current, RDFVocabulary.OWL.MEMBERS, null, null])
                 {
-                    RDFCollection allDisjointCollection = RDFModelUtilities.DeserializeCollectionFromGraph(tboxGraph, (RDFResource)allDisjointMembers.Object, RDFModelEnums.RDFTripleFlavors.SPO);
+                    RDFCollection allDisjointCollection = RDFModelUtilities.DeserializeCollectionFromGraph(workingGraph, (RDFResource)allDisjointMembers.Object, RDFModelEnums.RDFTripleFlavors.SPO);
                     if (allDisjointCollection.Items.Any(item => item.Equals(owlClass)))
                         allDisjointClasses.AddRange(allDisjointCollection.OfType<RDFResource>());
                 }
             allDisjointClasses.RemoveAll(adm => adm.Equals(owlClass));
 
             // Find disjoint classes linked to the given one with owl:disjointWith relation
-            List<RDFResource> disjointFromClasses = tboxGraph[owlClass, RDFVocabulary.OWL.DISJOINT_WITH, null, null]
+            List<RDFResource> disjointFromClasses = workingGraph[owlClass, RDFVocabulary.OWL.DISJOINT_WITH, null, null]
                                                       .Select(t => (RDFResource)t.Object)
                                                       .ToList();
 
@@ -453,17 +477,17 @@ namespace RDFSharp.Semantics
             foreach (RDFResource disjointClass in disjointClassesSet)
             {
                 disjointClasses.Add(disjointClass);
-                disjointClasses.AddRange(classModel.FindEquivalentClassesOf(disjointClass, tboxGraph, visitContext));
+                disjointClasses.AddRange(classModel.FindEquivalentClassesOf(disjointClass, workingGraph, visitContext));
             }
 
             // Inference: DISJOINTWITH(A,B) ^ SUBCLASS(C,B) -> DISJOINTWITH(A,C)
             foreach (RDFResource disjointClass in disjointClasses.ToList())
-                disjointClasses.AddRange(classModel.FindSubClassesOf(disjointClass));
+                disjointClasses.AddRange(classModel.FindSubClassesOf(disjointClass, workingGraph));
 
             // Inference: EQUIVALENTCLASS(A,B) ^ DISJOINTWITH(B,C) -> DISJOINTWITH(A,C)
-            foreach (RDFResource compatibleClass in classModel.GetSuperClassesOf(owlClass)
-                                                              .Union(classModel.GetEquivalentClassesOf(owlClass)))
-                disjointClasses.AddRange(classModel.FindDisjointClassesWith(compatibleClass, tboxGraph, visitContext));
+            foreach (RDFResource compatibleClass in classModel.GetSuperClassesOfInternal(owlClass, workingGraph)
+                                                              .Union(classModel.GetEquivalentClassesOfInternal(owlClass, workingGraph)))
+                disjointClasses.AddRange(classModel.FindDisjointClassesWith(compatibleClass, workingGraph, visitContext));
             #endregion
 
             return disjointClasses;
@@ -492,22 +516,22 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Finds "Domain(owlProperty,X)" relations to enlist the domain classes of the given owl:Property
         /// </summary>
-        internal static List<RDFResource> FindDomainOf(this RDFOntologyClassModel classModel, RDFResource owlProperty, RDFGraph tboxGraph)
+        internal static List<RDFResource> FindDomainOf(this RDFOntologyClassModel classModel, RDFResource owlProperty, RDFGraph workingGraph)
         {
             List<RDFResource> domainClasses = new List<RDFResource>();
 
             //DIRECT
-            RDFGraph domainGraph = tboxGraph[owlProperty, RDFVocabulary.RDFS.DOMAIN, null, null];
+            RDFGraph domainGraph = workingGraph[owlProperty, RDFVocabulary.RDFS.DOMAIN, null, null];
             foreach (RDFTriple domainTriple in domainGraph)
                 domainClasses.Add((RDFResource)domainTriple.Object);
 
             //Inference: DOMAIN(P,A) ^ SUBCLASS(B,A) -> DOMAIN(P,B) 
             foreach (RDFResource domainClass in domainClasses.ToList())
-                domainClasses.AddRange(classModel.GetSubClassesOf(domainClass));
+                domainClasses.AddRange(classModel.GetSubClassesOfInternal(domainClass, workingGraph));
 
             //Inference: DOMAIN(P,A) ^ EQUIVALENTCLASS(B,A) -> DOMAIN(P,B) 
             foreach (RDFResource domainClass in domainClasses.ToList())
-                domainClasses.AddRange(classModel.GetEquivalentClassesOf(domainClass));
+                domainClasses.AddRange(classModel.GetEquivalentClassesOfInternal(domainClass, workingGraph));
 
             return domainClasses;
         }
@@ -535,22 +559,22 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Finds "Range(owlProperty,X)" relations to enlist the range classes of the given owl:Property
         /// </summary>
-        internal static List<RDFResource> FindRangeOf(this RDFOntologyClassModel classModel, RDFResource owlProperty, RDFGraph tboxGraph)
+        internal static List<RDFResource> FindRangeOf(this RDFOntologyClassModel classModel, RDFResource owlProperty, RDFGraph workingGraph)
         {
             List<RDFResource> rangeClasses = new List<RDFResource>();
 
             //DIRECT
-            RDFGraph rangeGraph = tboxGraph[owlProperty, RDFVocabulary.RDFS.RANGE, null, null];
+            RDFGraph rangeGraph = workingGraph[owlProperty, RDFVocabulary.RDFS.RANGE, null, null];
             foreach (RDFTriple rangeTriple in rangeGraph)
                 rangeClasses.Add((RDFResource)rangeTriple.Object);
 
             //Inference: RANGE(P,A) ^ SUBCLASS(B,A) -> RANGE(P,B) 
             foreach (RDFResource rangeClass in rangeClasses.ToList())
-                rangeClasses.AddRange(classModel.GetSubClassesOf(rangeClass));
+                rangeClasses.AddRange(classModel.GetSubClassesOfInternal(rangeClass, workingGraph));
 
             //Inference: RANGE(P,A) ^ EQUIVALENTCLASS(B,A) -> RANGE(P,B) 
             foreach (RDFResource rangeClass in rangeClasses.ToList())
-                rangeClasses.AddRange(classModel.GetEquivalentClassesOf(rangeClass));
+                rangeClasses.AddRange(classModel.GetEquivalentClassesOfInternal(rangeClass, workingGraph));
 
             return rangeClasses;
         }
