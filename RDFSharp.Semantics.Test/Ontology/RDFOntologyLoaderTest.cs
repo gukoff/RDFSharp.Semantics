@@ -500,15 +500,15 @@ namespace RDFSharp.Semantics.Test
         [TestMethod]
         public void ShouldLoadSameAsRelations()
         {
-            Assert.IsTrue(Ontology.Data.CheckIsSameIndividualOf(new RDFResource("ex:indiv1"), new RDFResource("ex:indiv2")));
-            Assert.IsTrue(Ontology.Data.CheckIsSameIndividualOf(new RDFResource("ex:indiv2"), new RDFResource("ex:indiv1")));
+            Assert.IsTrue(Ontology.Data.CheckIsSameIndividual(new RDFResource("ex:indiv1"), new RDFResource("ex:indiv2")));
+            Assert.IsTrue(Ontology.Data.CheckIsSameIndividual(new RDFResource("ex:indiv2"), new RDFResource("ex:indiv1")));
         }
 
         [TestMethod]
         public void ShouldLoadDifferentFromRelations()
         {
-            Assert.IsTrue(Ontology.Data.CheckIsDifferentIndividualOf(new RDFResource("ex:indiv1"), new RDFResource("ex:indiv3")));
-            Assert.IsTrue(Ontology.Data.CheckIsDifferentIndividualOf(new RDFResource("ex:indiv3"), new RDFResource("ex:indiv1")));
+            Assert.IsTrue(Ontology.Data.CheckIsDifferentIndividual(new RDFResource("ex:indiv1"), new RDFResource("ex:indiv3")));
+            Assert.IsTrue(Ontology.Data.CheckIsDifferentIndividual(new RDFResource("ex:indiv3"), new RDFResource("ex:indiv1")));
         }
 
         [TestMethod]
@@ -534,7 +534,7 @@ namespace RDFSharp.Semantics.Test
             IEnumerator<RDFResource> alldiffEnum = Ontology.Data.AllDifferentEnumerator;
             while (alldiffEnum.MoveNext())
                 Assert.IsTrue(alldiffEnum.Current.Equals(new RDFResource("ex:alldiff")));
-            Ontology.Data.CheckIsDifferentIndividualOf(new RDFResource("ex:indiv3"), new RDFResource("ex:indiv4"));
+            Ontology.Data.CheckIsDifferentIndividual(new RDFResource("ex:indiv3"), new RDFResource("ex:indiv4"));
         }
         #endregion
     }

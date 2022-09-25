@@ -61,7 +61,7 @@ namespace RDFSharp.Semantics
         /// Enlists the individuals which are related with the lens individual by owl:sameAs
         /// </summary>
         public List<RDFResource> SameIndividuals()
-            => Ontology.Data.GetSameIndividualsOf(Individual);
+            => Ontology.Data.GetSameIndividuals(Individual);
 
         /// <summary>
         /// Asynchronously enlists the individuals which are related with the lens individual by owl:sameAs
@@ -73,7 +73,7 @@ namespace RDFSharp.Semantics
         /// Enlists the individuals which are related with the lens individual by owl:differentFrom
         /// </summary>
         public List<RDFResource> DifferentIndividuals()
-            => Ontology.Data.GetDifferentIndividualsOf(Individual);
+            => Ontology.Data.GetDifferentIndividuals(Individual);
 
         /// <summary>
         /// Asynchronously enlists the individuals which are related with the lens individual by owl:differentFrom
