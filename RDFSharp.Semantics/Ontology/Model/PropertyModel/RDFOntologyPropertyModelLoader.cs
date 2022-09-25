@@ -65,7 +65,7 @@ namespace RDFSharp.Semantics
             #endregion
 
             #region Taxonomies
-            RDFGraph subPropertyGraph = graph[null, RDFVocabulary.RDFS.SUB_CLASS_OF, null, null];
+            RDFGraph subPropertyGraph = graph[null, RDFVocabulary.RDFS.SUB_PROPERTY_OF, null, null];
             RDFGraph equivalentPropertyGraph = graph[null, RDFVocabulary.OWL.EQUIVALENT_PROPERTY, null, null];
             RDFGraph inversePropertyGraph = graph[null, RDFVocabulary.OWL.INVERSE_OF, null, null];
             RDFGraph disjointPropertyGraph = graph[null, RDFVocabulary.OWL.PROPERTY_DISJOINT_WITH, null, null];
