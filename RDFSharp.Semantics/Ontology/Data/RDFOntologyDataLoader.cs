@@ -60,8 +60,6 @@ namespace RDFSharp.Semantics
             #endregion
 
             #region Taxonomies
-            RDFGraph sameasGraph = graph[null, RDFVocabulary.OWL.SAME_AS, null, null];
-            RDFGraph differentfromGraph = graph[null, RDFVocabulary.OWL.DIFFERENT_FROM, null, null];
             foreach (RDFResource owlIndividual in ontology.Data)
             {
                 //Annotations
@@ -74,9 +72,9 @@ namespace RDFSharp.Semantics
                 }
 
                 //Relations
-                foreach (RDFTriple sameAsRelation in sameasGraph[owlIndividual, null, null, null])
+                foreach (RDFTriple sameAsRelation in graph[owlIndividual, RDFVocabulary.OWL.SAME_AS, null, null])
                     ontology.Data.DeclareSameIndividuals(owlIndividual, (RDFResource)sameAsRelation.Object);
-                foreach (RDFTriple differentFromRelation in differentfromGraph[owlIndividual, null, null, null])
+                foreach (RDFTriple differentFromRelation in graph[owlIndividual, RDFVocabulary.OWL.DIFFERENT_FROM, null, null])
                     ontology.Data.DeclareDifferentIndividuals(owlIndividual, (RDFResource)differentFromRelation.Object);
                 foreach (RDFTriple objectAssertion in GetObjectAssertions(ontology, graph, owlIndividual))
                     ontology.Data.DeclareObjectAssertion(owlIndividual, (RDFResource)objectAssertion.Predicate, (RDFResource)objectAssertion.Object);
@@ -192,10 +190,18 @@ namespace RDFSharp.Semantics
         /// </summary>
         private static RDFGraph GetObjectAssertions(RDFOntology ontology, RDFGraph graph, RDFResource owlIndividual)
         {
+            #region Filters
+            bool IsObjectAssertion(RDFTriple triple)
+                => triple.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPO
+                     && !triple.Subject.Equals(ontology)
+                       && !ontology.Model.ClassModel.CheckHasClass((RDFResource)triple.Subject)
+                         && !ontology.Model.PropertyModel.CheckHasProperty((RDFResource)triple.Subject);
+            #endregion
+
             RDFGraph objectAssertions = new RDFGraph();
 
             foreach (RDFResource owlProperty in ontology.Model.PropertyModel.Where(objProp => ontology.Model.PropertyModel.CheckHasObjectProperty(objProp)))
-                foreach (RDFTriple objectAssertion in graph[owlIndividual, owlProperty, null, null].Where(asn => asn.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPO))
+                foreach (RDFTriple objectAssertion in graph[owlIndividual, owlProperty, null, null].Where(asn => IsObjectAssertion(asn)))
                     objectAssertions.AddTriple(objectAssertion);
 
             return objectAssertions;
@@ -206,10 +212,18 @@ namespace RDFSharp.Semantics
         /// </summary>
         private static RDFGraph GetDatatypeAssertions(RDFOntology ontology, RDFGraph graph, RDFResource owlIndividual)
         {
+            #region Filters
+            bool IsDatatypeAssertion(RDFTriple triple)
+                => triple.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPL
+                     && !triple.Subject.Equals(ontology)
+                       && !ontology.Model.ClassModel.CheckHasClass((RDFResource)triple.Subject)
+                         && !ontology.Model.PropertyModel.CheckHasProperty((RDFResource)triple.Subject);
+            #endregion
+
             RDFGraph datatypeAssertions = new RDFGraph();
 
             foreach (RDFResource owlProperty in ontology.Model.PropertyModel.Where(dtProp => ontology.Model.PropertyModel.CheckHasDatatypeProperty(dtProp)))
-                foreach (RDFTriple datatypeAssertion in graph[owlIndividual, owlProperty, null, null].Where(asn => asn.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPL))
+                foreach (RDFTriple datatypeAssertion in graph[owlIndividual, owlProperty, null, null].Where(asn => IsDatatypeAssertion(asn)))
                     datatypeAssertions.AddTriple(datatypeAssertion);
 
             return datatypeAssertions;

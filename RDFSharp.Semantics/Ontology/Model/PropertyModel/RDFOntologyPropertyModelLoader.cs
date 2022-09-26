@@ -65,30 +65,26 @@ namespace RDFSharp.Semantics
             #endregion
 
             #region Taxonomies
-            RDFGraph subPropertyGraph = graph[null, RDFVocabulary.RDFS.SUB_PROPERTY_OF, null, null];
-            RDFGraph equivalentPropertyGraph = graph[null, RDFVocabulary.OWL.EQUIVALENT_PROPERTY, null, null];
-            RDFGraph inversePropertyGraph = graph[null, RDFVocabulary.OWL.INVERSE_OF, null, null];
-            RDFGraph disjointPropertyGraph = graph[null, RDFVocabulary.OWL.PROPERTY_DISJOINT_WITH, null, null];
-            foreach (RDFResource property in ontology.Model.PropertyModel)
+            foreach (RDFResource owlProperty in ontology.Model.PropertyModel)
             {
                 //Annotations
-                foreach (RDFTriple propertyAnnotation in graph[property, null, null, null].Where(t => annotationProperties.Contains(t.Predicate.PatternMemberID)))
+                foreach (RDFTriple propertyAnnotation in graph[owlProperty, null, null, null].Where(t => annotationProperties.Contains(t.Predicate.PatternMemberID)))
                 {
                     if (propertyAnnotation.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPO)
-                        ontology.Model.PropertyModel.AnnotateProperty(property, (RDFResource)propertyAnnotation.Predicate, (RDFResource)propertyAnnotation.Object);
+                        ontology.Model.PropertyModel.AnnotateProperty(owlProperty, (RDFResource)propertyAnnotation.Predicate, (RDFResource)propertyAnnotation.Object);
                     else
-                        ontology.Model.PropertyModel.AnnotateProperty(property, (RDFResource)propertyAnnotation.Predicate, (RDFLiteral)propertyAnnotation.Object);
+                        ontology.Model.PropertyModel.AnnotateProperty(owlProperty, (RDFResource)propertyAnnotation.Predicate, (RDFLiteral)propertyAnnotation.Object);
                 }
 
                 //Relations
-                foreach (RDFTriple subPropertyRelation in subPropertyGraph[property, null, null, null])
-                    ontology.Model.PropertyModel.DeclareSubProperties(property, (RDFResource)subPropertyRelation.Object);
-                foreach (RDFTriple equivalentPropertyRelation in equivalentPropertyGraph[property, null, null, null])
-                    ontology.Model.PropertyModel.DeclareEquivalentProperties(property, (RDFResource)equivalentPropertyRelation.Object);
-                foreach (RDFTriple inversePropertyRelation in inversePropertyGraph[property, null, null, null])
-                    ontology.Model.PropertyModel.DeclareInverseProperties(property, (RDFResource)inversePropertyRelation.Object);
-                foreach (RDFTriple disjointPropertyRelation in disjointPropertyGraph[property, null, null, null]) //OWL2
-                    ontology.Model.PropertyModel.DeclareDisjointProperties(property, (RDFResource)disjointPropertyRelation.Object);
+                foreach (RDFTriple subPropertyRelation in graph[owlProperty, RDFVocabulary.RDFS.SUB_PROPERTY_OF, null, null])
+                    ontology.Model.PropertyModel.DeclareSubProperties(owlProperty, (RDFResource)subPropertyRelation.Object);
+                foreach (RDFTriple equivalentPropertyRelation in graph[owlProperty, RDFVocabulary.OWL.EQUIVALENT_PROPERTY, null, null])
+                    ontology.Model.PropertyModel.DeclareEquivalentProperties(owlProperty, (RDFResource)equivalentPropertyRelation.Object);
+                foreach (RDFTriple inversePropertyRelation in graph[owlProperty, RDFVocabulary.OWL.INVERSE_OF, null, null])
+                    ontology.Model.PropertyModel.DeclareInverseProperties(owlProperty, (RDFResource)inversePropertyRelation.Object);
+                foreach (RDFTriple disjointPropertyRelation in graph[owlProperty, RDFVocabulary.OWL.PROPERTY_DISJOINT_WITH, null, null]) //OWL2
+                    ontology.Model.PropertyModel.DeclareDisjointProperties(owlProperty, (RDFResource)disjointPropertyRelation.Object);
             }
 
             //owl:propertyChainAxiom [OWL2]
