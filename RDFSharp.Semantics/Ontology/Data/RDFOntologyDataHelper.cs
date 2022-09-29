@@ -67,14 +67,12 @@ namespace RDFSharp.Semantics
         {
             if (leftIndividual != null && owlProperty != null && rightIndividual != null && data != null)
             {
-                RDFGraph aboxVirtualGraph = data.ABoxVirtualGraph;
-
                 //Lookup the owl:NegativePropertyAssertion reification
                 RDFTriple negativeObjectAssertion = new RDFTriple(leftIndividual, owlProperty, rightIndividual);
-                return aboxVirtualGraph.ContainsTriple(new RDFTriple(negativeObjectAssertion.ReificationSubject, RDFVocabulary.OWL.SOURCE_INDIVIDUAL, leftIndividual))
-                          && aboxVirtualGraph.ContainsTriple(new RDFTriple(negativeObjectAssertion.ReificationSubject, RDFVocabulary.OWL.ASSERTION_PROPERTY, owlProperty))
-                             && aboxVirtualGraph.ContainsTriple(new RDFTriple(negativeObjectAssertion.ReificationSubject, RDFVocabulary.OWL.TARGET_INDIVIDUAL, rightIndividual))
-                                && aboxVirtualGraph.ContainsTriple(new RDFTriple(negativeObjectAssertion.ReificationSubject, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION));
+                return data.ABoxGraph.ContainsTriple(new RDFTriple(negativeObjectAssertion.ReificationSubject, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION))
+                         && data.ABoxGraph.ContainsTriple(new RDFTriple(negativeObjectAssertion.ReificationSubject, RDFVocabulary.OWL.SOURCE_INDIVIDUAL, leftIndividual))
+                           && data.ABoxGraph.ContainsTriple(new RDFTriple(negativeObjectAssertion.ReificationSubject, RDFVocabulary.OWL.ASSERTION_PROPERTY, owlProperty))
+                             && data.ABoxGraph.ContainsTriple(new RDFTriple(negativeObjectAssertion.ReificationSubject, RDFVocabulary.OWL.TARGET_INDIVIDUAL, rightIndividual));
             }
             return false;
         }
@@ -86,14 +84,12 @@ namespace RDFSharp.Semantics
         {
             if (individual != null && owlProperty != null && value != null && data != null)
             {
-                RDFGraph aboxVirtualGraph = data.ABoxVirtualGraph;
-
                 //Lookup the owl:NegativePropertyAssertion reification
                 RDFTriple negativeDatatypeAssertion = new RDFTriple(individual, owlProperty, value);
-                return aboxVirtualGraph.ContainsTriple(new RDFTriple(negativeDatatypeAssertion.ReificationSubject, RDFVocabulary.OWL.SOURCE_INDIVIDUAL, individual))
-                          && aboxVirtualGraph.ContainsTriple(new RDFTriple(negativeDatatypeAssertion.ReificationSubject, RDFVocabulary.OWL.ASSERTION_PROPERTY, owlProperty))
-                             && aboxVirtualGraph.ContainsTriple(new RDFTriple(negativeDatatypeAssertion.ReificationSubject, RDFVocabulary.OWL.TARGET_VALUE, value))
-                                && aboxVirtualGraph.ContainsTriple(new RDFTriple(negativeDatatypeAssertion.ReificationSubject, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION));
+                return data.ABoxGraph.ContainsTriple(new RDFTriple(negativeDatatypeAssertion.ReificationSubject, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION))
+                         && data.ABoxGraph.ContainsTriple(new RDFTriple(negativeDatatypeAssertion.ReificationSubject, RDFVocabulary.OWL.SOURCE_INDIVIDUAL, individual))
+                           && data.ABoxGraph.ContainsTriple(new RDFTriple(negativeDatatypeAssertion.ReificationSubject, RDFVocabulary.OWL.ASSERTION_PROPERTY, owlProperty))
+                             && data.ABoxGraph.ContainsTriple(new RDFTriple(negativeDatatypeAssertion.ReificationSubject, RDFVocabulary.OWL.TARGET_VALUE, value));
             }
             return false;
         }
