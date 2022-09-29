@@ -575,17 +575,15 @@ namespace RDFSharp.Semantics
 
             if (classModel != null && owlClass != null)
             {
-                RDFGraph workingGraph = classModel.TBoxVirtualGraph;
-
                 //Restrict T-BOX knowledge to owl:hasKey relations of the given owl:Class (both explicit and inferred)
-                RDFResource hasKeyRepresentative = workingGraph[owlClass, RDFVocabulary.OWL.HAS_KEY, null, null]
+                RDFResource hasKeyRepresentative = classModel.TBoxGraph[owlClass, RDFVocabulary.OWL.HAS_KEY, null, null]
                                                      .Select(t => t.Object)
                                                      .OfType<RDFResource>()
                                                      .FirstOrDefault();
                 if (hasKeyRepresentative != null)
                 {
                     //Reconstruct collection of key properties from T-BOX knowledge
-                    RDFCollection keyPropertiesCollection = RDFModelUtilities.DeserializeCollectionFromGraph(workingGraph, hasKeyRepresentative, RDFModelEnums.RDFTripleFlavors.SPO);
+                    RDFCollection keyPropertiesCollection = RDFModelUtilities.DeserializeCollectionFromGraph(classModel.TBoxGraph, hasKeyRepresentative, RDFModelEnums.RDFTripleFlavors.SPO);
                     foreach (RDFPatternMember keyProperty in keyPropertiesCollection)
                         keyProperties.Add((RDFResource)keyProperty);
                 }

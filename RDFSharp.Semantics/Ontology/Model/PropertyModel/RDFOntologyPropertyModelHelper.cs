@@ -452,17 +452,15 @@ namespace RDFSharp.Semantics
 
             if (propertyModel != null && owlProperty != null)
             {
-                RDFGraph workingGraph = propertyModel.TBoxVirtualGraph;
-
                 //Restrict T-BOX knowledge to owl:propertyChainAxiom relations of the given owl:Property (both explicit and inferred)
-                RDFResource chainAxiomPropertiesRepresentative = workingGraph[owlProperty, RDFVocabulary.OWL.PROPERTY_CHAIN_AXIOM, null, null]
+                RDFResource chainAxiomPropertiesRepresentative = propertyModel.TBoxGraph[owlProperty, RDFVocabulary.OWL.PROPERTY_CHAIN_AXIOM, null, null]
                                                                     .Select(t => t.Object)
                                                                     .OfType<RDFResource>()
                                                                     .FirstOrDefault();
                 if (chainAxiomPropertiesRepresentative != null)
                 {
                     //Reconstruct collection of chain axiom properties from T-BOX knowledge
-                    RDFCollection chainAxiomPropertiesCollection = RDFModelUtilities.DeserializeCollectionFromGraph(workingGraph, chainAxiomPropertiesRepresentative, RDFModelEnums.RDFTripleFlavors.SPO);
+                    RDFCollection chainAxiomPropertiesCollection = RDFModelUtilities.DeserializeCollectionFromGraph(propertyModel.TBoxGraph, chainAxiomPropertiesRepresentative, RDFModelEnums.RDFTripleFlavors.SPO);
                     foreach (RDFPatternMember chainAxiomProperty in chainAxiomPropertiesCollection)
                         chainAxiomProperties.Add((RDFResource)chainAxiomProperty);
                 }
