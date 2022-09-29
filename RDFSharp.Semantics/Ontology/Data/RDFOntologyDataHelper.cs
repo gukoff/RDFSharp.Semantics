@@ -52,39 +52,29 @@ namespace RDFSharp.Semantics
         /// Checks for the existence of the given "ObjectProperty(leftIndividual,rightIndividual)" assertion within the data
         /// </summary>
         public static bool CheckHasObjectAssertion(this RDFOntologyData data, RDFResource leftIndividual, RDFResource owlProperty, RDFResource rightIndividual)
-            => CheckHasObjectAssertionInternal(data, leftIndividual, owlProperty, rightIndividual, data?.ABoxVirtualGraph);
-
-        /// <summary>
-        /// Checks for the existence of the given "ObjectProperty(leftIndividual,rightIndividual)" assertion within the data (internal optimized version)
-        /// </summary>
-        internal static bool CheckHasObjectAssertionInternal(this RDFOntologyData data, RDFResource leftIndividual, RDFResource owlProperty, RDFResource rightIndividual, RDFGraph workingGraph)
-            => leftIndividual != null && owlProperty != null && rightIndividual != null && data != null && workingGraph.ContainsTriple(new RDFTriple(leftIndividual, owlProperty, rightIndividual));
+            => leftIndividual != null && owlProperty != null && rightIndividual != null && data != null && data.ABoxVirtualGraph.ContainsTriple(new RDFTriple(leftIndividual, owlProperty, rightIndividual));
 
         /// <summary>
         /// Checks for the existence of the given "DatatypeProperty(leftIndividual,value)" assertion within the data
         /// </summary>
         public static bool CheckHasDatatypeAssertion(this RDFOntologyData data, RDFResource owlIndividual, RDFResource owlProperty, RDFLiteral value)
-            => CheckHasDatatypeAssertionInternal(data, owlIndividual, owlProperty, value, data?.ABoxVirtualGraph);
-
-        /// <summary>
-        /// Checks for the existence of the given "DatatypeProperty(leftIndividual,value)" assertion within the data (internal optimized version)
-        /// </summary>
-        internal static bool CheckHasDatatypeAssertionInternal(this RDFOntologyData data, RDFResource owlIndividual, RDFResource owlProperty, RDFLiteral value, RDFGraph workingGraph)
-            => owlIndividual != null && owlProperty != null && value != null && data != null && workingGraph.ContainsTriple(new RDFTriple(owlIndividual, owlProperty, value));
+            => owlIndividual != null && owlProperty != null && value != null && data != null && data.ABoxVirtualGraph.ContainsTriple(new RDFTriple(owlIndividual, owlProperty, value));
 
         /// <summary>
         /// Checks for the existence of the given "NegativeObjectProperty(leftIndividual,rightIndividual)" assertion within the data [OWL2]
         /// </summary>
         public static bool CheckHasNegativeObjectAssertion(this RDFOntologyData data, RDFResource leftIndividual, RDFResource owlProperty, RDFResource rightIndividual)
-        { 
+        {
             if (leftIndividual != null && owlProperty != null && rightIndividual != null && data != null)
             {
+                RDFGraph aboxVirtualGraph = data.ABoxVirtualGraph;
+
                 //Lookup the owl:NegativePropertyAssertion reification
                 RDFTriple negativeObjectAssertion = new RDFTriple(leftIndividual, owlProperty, rightIndividual);
-                return data.ABoxGraph.ContainsTriple(new RDFTriple(negativeObjectAssertion.ReificationSubject, RDFVocabulary.OWL.SOURCE_INDIVIDUAL, leftIndividual))
-                          && data.ABoxGraph.ContainsTriple(new RDFTriple(negativeObjectAssertion.ReificationSubject, RDFVocabulary.OWL.ASSERTION_PROPERTY, owlProperty))
-                             && data.ABoxGraph.ContainsTriple(new RDFTriple(negativeObjectAssertion.ReificationSubject, RDFVocabulary.OWL.TARGET_INDIVIDUAL, rightIndividual))
-                                && data.ABoxGraph.ContainsTriple(new RDFTriple(negativeObjectAssertion.ReificationSubject, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION));
+                return aboxVirtualGraph.ContainsTriple(new RDFTriple(negativeObjectAssertion.ReificationSubject, RDFVocabulary.OWL.SOURCE_INDIVIDUAL, leftIndividual))
+                          && aboxVirtualGraph.ContainsTriple(new RDFTriple(negativeObjectAssertion.ReificationSubject, RDFVocabulary.OWL.ASSERTION_PROPERTY, owlProperty))
+                             && aboxVirtualGraph.ContainsTriple(new RDFTriple(negativeObjectAssertion.ReificationSubject, RDFVocabulary.OWL.TARGET_INDIVIDUAL, rightIndividual))
+                                && aboxVirtualGraph.ContainsTriple(new RDFTriple(negativeObjectAssertion.ReificationSubject, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION));
             }
             return false;
         }
@@ -96,12 +86,14 @@ namespace RDFSharp.Semantics
         {
             if (individual != null && owlProperty != null && value != null && data != null)
             {
+                RDFGraph aboxVirtualGraph = data.ABoxVirtualGraph;
+
                 //Lookup the owl:NegativePropertyAssertion reification
                 RDFTriple negativeDatatypeAssertion = new RDFTriple(individual, owlProperty, value);
-                return data.ABoxGraph.ContainsTriple(new RDFTriple(negativeDatatypeAssertion.ReificationSubject, RDFVocabulary.OWL.SOURCE_INDIVIDUAL, individual))
-                          && data.ABoxGraph.ContainsTriple(new RDFTriple(negativeDatatypeAssertion.ReificationSubject, RDFVocabulary.OWL.ASSERTION_PROPERTY, owlProperty))
-                             && data.ABoxGraph.ContainsTriple(new RDFTriple(negativeDatatypeAssertion.ReificationSubject, RDFVocabulary.OWL.TARGET_VALUE, value))
-                                && data.ABoxGraph.ContainsTriple(new RDFTriple(negativeDatatypeAssertion.ReificationSubject, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION));
+                return aboxVirtualGraph.ContainsTriple(new RDFTriple(negativeDatatypeAssertion.ReificationSubject, RDFVocabulary.OWL.SOURCE_INDIVIDUAL, individual))
+                          && aboxVirtualGraph.ContainsTriple(new RDFTriple(negativeDatatypeAssertion.ReificationSubject, RDFVocabulary.OWL.ASSERTION_PROPERTY, owlProperty))
+                             && aboxVirtualGraph.ContainsTriple(new RDFTriple(negativeDatatypeAssertion.ReificationSubject, RDFVocabulary.OWL.TARGET_VALUE, value))
+                                && aboxVirtualGraph.ContainsTriple(new RDFTriple(negativeDatatypeAssertion.ReificationSubject, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION));
             }
             return false;
         }
@@ -123,8 +115,8 @@ namespace RDFSharp.Semantics
 
             if (data != null && owlIndividual != null)
             {
-                sameIndividuals.AddRange(data.FindSameIndividuals(owlIndividual, data.ABoxVirtualGraph, new Dictionary<long, RDFResource>()));
-                
+                sameIndividuals.AddRange(data.FindSameIndividuals(owlIndividual, new Dictionary<long, RDFResource>()));
+
                 //We don't want to also enlist the given owl:Individual
                 sameIndividuals.RemoveAll(individual => individual.Equals(owlIndividual));
             }
@@ -135,9 +127,11 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Finds "SameAs(owlIndividual, X)" relations to enlist the same individuals of the given owl:Individual
         /// </summary>
-        internal static List<RDFResource> FindSameIndividuals(this RDFOntologyData data, RDFResource owlIndividual, RDFGraph workingGraph, Dictionary<long, RDFResource> visitContext)
+        internal static List<RDFResource> FindSameIndividuals(this RDFOntologyData data, RDFResource owlIndividual, Dictionary<long, RDFResource> visitContext, RDFGraph workingGraph=null)
         {
             List<RDFResource> sameIndividuals = new List<RDFResource>();
+            if (workingGraph == null)
+                workingGraph = data.ABoxVirtualGraph;
 
             #region VisitContext
             if (!visitContext.ContainsKey(owlIndividual.PatternMemberID))
@@ -154,7 +148,7 @@ namespace RDFSharp.Semantics
 
             // Inference: SAMEAS(A,B) ^ SAMEAS(B,C) -> SAMEAS(A,C)
             foreach (RDFResource sameIndividual in sameIndividuals.ToList())
-                sameIndividuals.AddRange(data.FindSameIndividuals(sameIndividual, workingGraph, visitContext));
+                sameIndividuals.AddRange(data.FindSameIndividuals(sameIndividual, visitContext, workingGraph));
 
             return sameIndividuals;
         }
@@ -174,7 +168,7 @@ namespace RDFSharp.Semantics
 
             if (data != null && owlIndividual != null)
             {
-                differentIndividuals.AddRange(data.FindDifferentIndividuals(owlIndividual, data.ABoxVirtualGraph, new Dictionary<long, RDFResource>()));
+                differentIndividuals.AddRange(data.FindDifferentIndividuals(owlIndividual, new Dictionary<long, RDFResource>()));
 
                 //We don't want to also enlist the given owl:Individual
                 differentIndividuals.RemoveAll(individual => individual.Equals(owlIndividual));
@@ -186,10 +180,12 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Finds "DifferentFrom(owlIndividual, X)" relations to enlist the different individuals of the given owl:Individual
         /// </summary>
-        internal static List<RDFResource> FindDifferentIndividuals(this RDFOntologyData data, RDFResource owlIndividual, RDFGraph workingGraph, Dictionary<long, RDFResource> visitContext)
+        internal static List<RDFResource> FindDifferentIndividuals(this RDFOntologyData data, RDFResource owlIndividual, Dictionary<long, RDFResource> visitContext, RDFGraph workingGraph=null)
         {
             List<RDFResource> differentIndividuals = new List<RDFResource>();
-            
+            if (workingGraph == null)
+                workingGraph = data.ABoxVirtualGraph;
+
             #region VisitContext
             if (!visitContext.ContainsKey(owlIndividual.PatternMemberID))
                 visitContext.Add(owlIndividual.PatternMemberID, owlIndividual);
@@ -216,8 +212,7 @@ namespace RDFSharp.Semantics
                                                            .ToList();
 
             // Merge individuals from both sets into a unique deduplicate working set
-            List<RDFResource> differentIndividualsSet = RDFQueryUtilities.RemoveDuplicates(allDifferentIndividuals.Union(differentFromIndividuals)
-                                                                                                                  .ToList());
+            List<RDFResource> differentIndividualsSet = RDFQueryUtilities.RemoveDuplicates(allDifferentIndividuals.Union(differentFromIndividuals).ToList());
             #endregion
 
             #region Analyze
@@ -225,12 +220,12 @@ namespace RDFSharp.Semantics
             foreach (RDFResource differentIndividual in differentIndividualsSet)
             {
                 differentIndividuals.Add(differentIndividual);
-                differentIndividuals.AddRange(data.FindSameIndividuals(differentIndividual, workingGraph, visitContext));
+                differentIndividuals.AddRange(data.FindSameIndividuals(differentIndividual, visitContext, workingGraph));
             }
 
             // Inference: SAMEAS(A,B) ^ DIFFERENTFROM(B,C) -> DIFFERENTFROM(A,C)
             foreach (RDFResource sameAsIndividual in data.GetSameIndividuals(owlIndividual))
-                differentIndividuals.AddRange(data.FindDifferentIndividuals(sameAsIndividual, workingGraph, visitContext));
+                differentIndividuals.AddRange(data.FindDifferentIndividuals(sameAsIndividual, visitContext, workingGraph));
             #endregion
 
             return differentIndividuals;
@@ -250,13 +245,7 @@ namespace RDFSharp.Semantics
             List<RDFResource> transitiveRelatedIndividuals = new List<RDFResource>();
 
             if (data != null && owlIndividual != null)
-            {
-                RDFGraph aboxVirtualGraph = data.ABoxVirtualGraph;
-
-                //Restrict A-BOX knowledge to the given owl:TransitiveObjectProperty relations (both explicit and inferred)
-                RDFGraph filteredABox = aboxVirtualGraph[null, transitiveObjectProperty, null, null];
-                transitiveRelatedIndividuals.AddRange(data.FindTransitiveRelatedIndividuals(owlIndividual, filteredABox, new Dictionary<long, RDFResource>()));
-            }
+                transitiveRelatedIndividuals.AddRange(data.FindTransitiveRelatedIndividuals(owlIndividual, transitiveObjectProperty, new Dictionary<long, RDFResource>()));
 
             return transitiveRelatedIndividuals;
         }
@@ -264,9 +253,11 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Finds "TransitiveObjectProperty(leftIndividual,X)" relations to enlist the individuals which are related to the given owl:Individual through the given owl:TransitiveObjectProperty
         /// </summary>
-        internal static List<RDFResource> FindTransitiveRelatedIndividuals(this RDFOntologyData data, RDFResource owlIndividual, RDFGraph filteredABox, Dictionary<long, RDFResource> visitContext)
+        internal static List<RDFResource> FindTransitiveRelatedIndividuals(this RDFOntologyData data, RDFResource owlIndividual, RDFResource transitiveObjectProperty, Dictionary<long, RDFResource> visitContext, RDFGraph workingGraph=null)
         {
             List<RDFResource> transitiveRelatedIndividuals = new List<RDFResource>();
+            if (workingGraph == null)
+                workingGraph = data.ABoxVirtualGraph;
 
             #region VisitContext
             if (!visitContext.ContainsKey(owlIndividual.PatternMemberID))
@@ -276,12 +267,12 @@ namespace RDFSharp.Semantics
             #endregion
 
             //DIRECT
-            foreach (RDFTriple transitiveRelation in filteredABox[owlIndividual, null, null, null])
+            foreach (RDFTriple transitiveRelation in workingGraph[owlIndividual, transitiveObjectProperty, null, null])
                 transitiveRelatedIndividuals.Add((RDFResource)transitiveRelation.Object);
 
             //INDIRECT (TRANSITIVE)
             foreach (RDFResource transitiveRelatedIndividual in transitiveRelatedIndividuals.ToList())
-                transitiveRelatedIndividuals.AddRange(data.FindTransitiveRelatedIndividuals(transitiveRelatedIndividual, filteredABox, visitContext));
+                transitiveRelatedIndividuals.AddRange(data.FindTransitiveRelatedIndividuals(transitiveRelatedIndividual, transitiveObjectProperty, visitContext, workingGraph));
 
             return transitiveRelatedIndividuals;
         }
@@ -315,7 +306,7 @@ namespace RDFSharp.Semantics
 
                 //Class
                 else if (model.ClassModel.CheckHasClass(owlClass))
-                    individuals.AddRange(data.FindIndividualsOfClass(model, owlClass, data.ABoxVirtualGraph, new Dictionary<long, RDFResource>()));
+                    individuals.AddRange(data.FindIndividualsOfClass(model, owlClass, new Dictionary<long, RDFResource>()));
             }
 
             //We don't want to enlist duplicate individuals
@@ -433,7 +424,7 @@ namespace RDFSharp.Semantics
                 if (isQualified)
                 {
                     //Since we have to qualify the object individual, we consider only SPO assertions
-                    if (assertionTriple.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPO 
+                    if (assertionTriple.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPO
                           && data.CheckIsIndividualOf(model, (RDFResource)assertionTriple.Object, onClass))
                     {
                         long occurrencyCounter = cardinalityRestrictionRegistry[assertionTriple.Subject.PatternMemberID].Item2;
@@ -675,9 +666,11 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Finds "Type(X,owlClass)" relations to enlist the individuals of the given owl:Class
         /// </summary>
-        internal static List<RDFResource> FindIndividualsOfClass(this RDFOntologyData data, RDFOntologyModel model, RDFResource owlClass, RDFGraph workingGraph, Dictionary<long, RDFResource> visitContext)
+        internal static List<RDFResource> FindIndividualsOfClass(this RDFOntologyData data, RDFOntologyModel model, RDFResource owlClass, Dictionary<long, RDFResource> visitContext, RDFGraph workingGraph=null)
         {
             List<RDFResource> classIndividuals = new List<RDFResource>();
+            if (workingGraph == null)
+                workingGraph = data.ABoxVirtualGraph;
 
             #region VisitContext
             if (!visitContext.ContainsKey(owlClass.PatternMemberID))
@@ -697,11 +690,11 @@ namespace RDFSharp.Semantics
             Parallel.Invoke(
                 () => {
                     foreach (RDFResource subClass in model.ClassModel.GetSubClassesOf(owlClass))
-                        subClassIndividuals.AddRange(data.FindIndividualsOfClass(model, subClass, workingGraph, visitContext));
+                        subClassIndividuals.AddRange(data.FindIndividualsOfClass(model, subClass, visitContext, workingGraph));
                 },
                 () => {
                     foreach (RDFResource equivalentClass in model.ClassModel.GetEquivalentClassesOf(owlClass))
-                        equivalentClassIndividuals.AddRange(data.FindIndividualsOfClass(model, equivalentClass, workingGraph, visitContext));
+                        equivalentClassIndividuals.AddRange(data.FindIndividualsOfClass(model, equivalentClass, visitContext, workingGraph));
                 });
             classIndividuals.AddRange(subClassIndividuals);
             classIndividuals.AddRange(equivalentClassIndividuals);
@@ -739,13 +732,13 @@ namespace RDFSharp.Semantics
         /// Checks if the given leftIndividual can be linked to the given rightIndividual though the given negative objectProperty without tampering OWL-DL integrity [OWL2]
         /// </summary>
         internal static bool CheckNegativeObjectAssertionCompatibility(this RDFOntologyData data, RDFResource leftIndividual, RDFResource objectProperty, RDFResource rightIndividual)
-            => !data.CheckHasObjectAssertionInternal(leftIndividual, objectProperty, rightIndividual, data.ABoxVirtualGraph);
+            => !data.CheckHasObjectAssertion(leftIndividual, objectProperty, rightIndividual);
 
         /// <summary>
         /// Checks if the given leftIndividual can be linked to the given value though the given negative datatypeProperty without tampering OWL-DL integrity [OWL2]
         /// </summary>
         internal static bool CheckNegativeDatatypeAssertionCompatibility(this RDFOntologyData data, RDFResource individual, RDFResource datatypeProperty, RDFLiteral value)
-            => !data.CheckHasDatatypeAssertionInternal(individual, datatypeProperty, value, data.ABoxVirtualGraph);
+            => !data.CheckHasDatatypeAssertion(individual, datatypeProperty, value);
         #endregion
     }
 }
