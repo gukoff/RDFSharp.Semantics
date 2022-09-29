@@ -200,9 +200,12 @@ namespace RDFSharp.Semantics
 
             RDFGraph objectAssertions = new RDFGraph();
 
-            foreach (RDFResource owlProperty in ontology.Model.PropertyModel.Where(objProp => ontology.Model.PropertyModel.CheckHasObjectProperty(objProp)))
-                foreach (RDFTriple objectAssertion in graph[owlIndividual, owlProperty, null, null].Where(asn => IsObjectAssertion(asn)))
+            IEnumerator<RDFResource> objectPropertiesEnumerator = ontology.Model.PropertyModel.ObjectPropertiesEnumerator;
+            while (objectPropertiesEnumerator.MoveNext())
+            { 
+                foreach (RDFTriple objectAssertion in graph[owlIndividual, objectPropertiesEnumerator.Current, null, null].Where(asn => IsObjectAssertion(asn)))
                     objectAssertions.AddTriple(objectAssertion);
+            }
 
             return objectAssertions;
         }
@@ -222,9 +225,12 @@ namespace RDFSharp.Semantics
 
             RDFGraph datatypeAssertions = new RDFGraph();
 
-            foreach (RDFResource owlProperty in ontology.Model.PropertyModel.Where(dtProp => ontology.Model.PropertyModel.CheckHasDatatypeProperty(dtProp)))
-                foreach (RDFTriple datatypeAssertion in graph[owlIndividual, owlProperty, null, null].Where(asn => IsDatatypeAssertion(asn)))
+            IEnumerator<RDFResource> datatypePropertiesEnumerator = ontology.Model.PropertyModel.DatatypePropertiesEnumerator;
+            while (datatypePropertiesEnumerator.MoveNext())
+            {
+                foreach (RDFTriple datatypeAssertion in graph[owlIndividual, datatypePropertiesEnumerator.Current, null, null].Where(asn => IsDatatypeAssertion(asn)))
                     datatypeAssertions.AddTriple(datatypeAssertion);
+            }   
 
             return datatypeAssertions;
         }
