@@ -75,8 +75,10 @@ namespace RDFSharp.Semantics
             #region Taxonomies
             foreach (RDFResource owlClass in ontology.Model.ClassModel)
             {
+                RDFGraph classGraph = graph[owlClass, null, null, null];
+
                 //Annotations
-                foreach (RDFTriple classAnnotation in graph[owlClass, null, null, null].Where(t => annotationProperties.Contains(t.Predicate.PatternMemberID)))
+                foreach (RDFTriple classAnnotation in classGraph.Where(t => annotationProperties.Contains(t.Predicate.PatternMemberID)))
                 {
                     if (classAnnotation.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPO)
                         ontology.Model.ClassModel.AnnotateClass(owlClass, (RDFResource)classAnnotation.Predicate, (RDFResource)classAnnotation.Object);
@@ -85,13 +87,13 @@ namespace RDFSharp.Semantics
                 }
 
                 //Relations
-                foreach (RDFTriple subClassRelation in graph[owlClass, RDFVocabulary.RDFS.SUB_CLASS_OF, null, null])
+                foreach (RDFTriple subClassRelation in classGraph[null, RDFVocabulary.RDFS.SUB_CLASS_OF, null, null])
                     ontology.Model.ClassModel.DeclareSubClasses(owlClass, (RDFResource)subClassRelation.Object);
-                foreach (RDFTriple equivalentClassRelation in graph[owlClass, RDFVocabulary.OWL.EQUIVALENT_CLASS, null, null])
+                foreach (RDFTriple equivalentClassRelation in classGraph[null, RDFVocabulary.OWL.EQUIVALENT_CLASS, null, null])
                     ontology.Model.ClassModel.DeclareEquivalentClasses(owlClass, (RDFResource)equivalentClassRelation.Object);
-                foreach (RDFTriple disjointClassRelation in graph[owlClass, RDFVocabulary.OWL.DISJOINT_WITH, null, null])
+                foreach (RDFTriple disjointClassRelation in classGraph[null, RDFVocabulary.OWL.DISJOINT_WITH, null, null])
                     ontology.Model.ClassModel.DeclareDisjointClasses(owlClass, (RDFResource)disjointClassRelation.Object);
-                foreach (RDFTriple hasKeyRelation in graph[owlClass, RDFVocabulary.OWL.HAS_KEY, null, null]) //OWL2
+                foreach (RDFTriple hasKeyRelation in classGraph[null, RDFVocabulary.OWL.HAS_KEY, null, null]) //OWL2
                 {
                     List<RDFResource> keyProperties = new List<RDFResource>();
                     RDFCollection keyPropertiesCollection = RDFModelUtilities.DeserializeCollectionFromGraph(graph, (RDFResource)hasKeyRelation.Object, RDFModelEnums.RDFTripleFlavors.SPO);

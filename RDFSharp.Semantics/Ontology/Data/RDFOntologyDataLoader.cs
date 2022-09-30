@@ -62,8 +62,10 @@ namespace RDFSharp.Semantics
             #region Taxonomies
             foreach (RDFResource owlIndividual in ontology.Data)
             {
+                RDFGraph individualGraph = graph[owlIndividual, null, null, null];
+
                 //Annotations
-                foreach (RDFTriple individualAnnotation in graph[owlIndividual, null, null, null].Where(t => annotationProperties.Contains(t.Predicate.PatternMemberID)))
+                foreach (RDFTriple individualAnnotation in individualGraph.Where(t => annotationProperties.Contains(t.Predicate.PatternMemberID)))
                 {
                     if (individualAnnotation.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPO)
                         ontology.Data.AnnotateIndividual(owlIndividual, (RDFResource)individualAnnotation.Predicate, (RDFResource)individualAnnotation.Object);
@@ -72,13 +74,13 @@ namespace RDFSharp.Semantics
                 }
 
                 //Relations
-                foreach (RDFTriple sameAsRelation in graph[owlIndividual, RDFVocabulary.OWL.SAME_AS, null, null])
+                foreach (RDFTriple sameAsRelation in individualGraph[null, RDFVocabulary.OWL.SAME_AS, null, null])
                     ontology.Data.DeclareSameIndividuals(owlIndividual, (RDFResource)sameAsRelation.Object);
-                foreach (RDFTriple differentFromRelation in graph[owlIndividual, RDFVocabulary.OWL.DIFFERENT_FROM, null, null])
+                foreach (RDFTriple differentFromRelation in individualGraph[null, RDFVocabulary.OWL.DIFFERENT_FROM, null, null])
                     ontology.Data.DeclareDifferentIndividuals(owlIndividual, (RDFResource)differentFromRelation.Object);
-                foreach (RDFTriple objectAssertion in GetObjectAssertions(ontology, graph, owlIndividual))
+                foreach (RDFTriple objectAssertion in GetObjectAssertions(ontology, individualGraph))
                     ontology.Data.DeclareObjectAssertion(owlIndividual, (RDFResource)objectAssertion.Predicate, (RDFResource)objectAssertion.Object);
-                foreach (RDFTriple datatypeAssertion in GetDatatypeAssertions(ontology, graph, owlIndividual))
+                foreach (RDFTriple datatypeAssertion in GetDatatypeAssertions(ontology, individualGraph))
                     ontology.Data.DeclareDatatypeAssertion(owlIndividual, (RDFResource)datatypeAssertion.Predicate, (RDFLiteral)datatypeAssertion.Object);
             }
 
@@ -188,7 +190,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets the object relations of the given owl:Individual
         /// </summary>
-        private static RDFGraph GetObjectAssertions(RDFOntology ontology, RDFGraph graph, RDFResource owlIndividual)
+        private static RDFGraph GetObjectAssertions(RDFOntology ontology, RDFGraph graph)
         {
             #region Filters
             bool IsObjectAssertion(RDFTriple triple)
@@ -203,7 +205,7 @@ namespace RDFSharp.Semantics
             IEnumerator<RDFResource> objectPropertiesEnumerator = ontology.Model.PropertyModel.ObjectPropertiesEnumerator;
             while (objectPropertiesEnumerator.MoveNext())
             { 
-                foreach (RDFTriple objectAssertion in graph[owlIndividual, objectPropertiesEnumerator.Current, null, null].Where(asn => IsObjectAssertion(asn)))
+                foreach (RDFTriple objectAssertion in graph[null, objectPropertiesEnumerator.Current, null, null].Where(asn => IsObjectAssertion(asn)))
                     objectAssertions.AddTriple(objectAssertion);
             }
 
@@ -213,7 +215,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets the data relations of the given owl:Individual
         /// </summary>
-        private static RDFGraph GetDatatypeAssertions(RDFOntology ontology, RDFGraph graph, RDFResource owlIndividual)
+        private static RDFGraph GetDatatypeAssertions(RDFOntology ontology, RDFGraph graph)
         {
             #region Filters
             bool IsDatatypeAssertion(RDFTriple triple)
@@ -228,7 +230,7 @@ namespace RDFSharp.Semantics
             IEnumerator<RDFResource> datatypePropertiesEnumerator = ontology.Model.PropertyModel.DatatypePropertiesEnumerator;
             while (datatypePropertiesEnumerator.MoveNext())
             {
-                foreach (RDFTriple datatypeAssertion in graph[owlIndividual, datatypePropertiesEnumerator.Current, null, null].Where(asn => IsDatatypeAssertion(asn)))
+                foreach (RDFTriple datatypeAssertion in graph[null, datatypePropertiesEnumerator.Current, null, null].Where(asn => IsDatatypeAssertion(asn)))
                     datatypeAssertions.AddTriple(datatypeAssertion);
             }   
 
