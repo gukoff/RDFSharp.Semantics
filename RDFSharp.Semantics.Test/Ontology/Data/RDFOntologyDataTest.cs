@@ -207,10 +207,11 @@ namespace RDFSharp.Semantics.Test
             data.DeclareIndividual(new RDFResource("ex:indivB"));
             data.DeclareSameIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB"));
 
-            Assert.IsTrue(data.ABoxGraph.TriplesCount == 3);
+            Assert.IsTrue(data.ABoxGraph.TriplesCount == 4);
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.OWL.SAME_AS, new RDFResource("ex:indivB"))));
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.OWL.SAME_AS, new RDFResource("ex:indivA"))));
         }
 
         [TestMethod]
@@ -260,10 +261,11 @@ namespace RDFSharp.Semantics.Test
             data.DeclareIndividual(new RDFResource("ex:indivB"));
             data.DeclareDifferentIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB"));
 
-            Assert.IsTrue(data.ABoxGraph.TriplesCount == 3);
+            Assert.IsTrue(data.ABoxGraph.TriplesCount == 4);
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.OWL.DIFFERENT_FROM, new RDFResource("ex:indivB"))));
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.OWL.DIFFERENT_FROM, new RDFResource("ex:indivA"))));
         }
 
         [TestMethod]

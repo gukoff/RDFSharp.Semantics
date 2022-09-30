@@ -1006,10 +1006,11 @@ namespace RDFSharp.Semantics.Test
             classModel.DeclareClass(new RDFResource("ex:classB"));
             classModel.DeclareEquivalentClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
 
-            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 3);
+            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 4);
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.OWL.EQUIVALENT_CLASS, new RDFResource("ex:classB"))));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.OWL.EQUIVALENT_CLASS, new RDFResource("ex:classA"))));
         }
 
         [TestMethod]
@@ -1059,10 +1060,11 @@ namespace RDFSharp.Semantics.Test
             classModel.DeclareClass(new RDFResource("ex:classB"));
             classModel.DeclareDisjointClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
 
-            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 3);
+            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 4);
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.OWL.DISJOINT_WITH, new RDFResource("ex:classB"))));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.OWL.DISJOINT_WITH, new RDFResource("ex:classA"))));
         }
 
         [TestMethod]
