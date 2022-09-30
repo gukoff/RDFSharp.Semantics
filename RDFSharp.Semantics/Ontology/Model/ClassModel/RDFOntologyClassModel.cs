@@ -199,17 +199,6 @@ namespace RDFSharp.Semantics
         /// T-BOX knowledge describing classes
         /// </summary>
         internal RDFGraph TBoxGraph { get; set; }
-
-        /// <summary>
-        /// T-BOX knowledge inferred
-        /// </summary>
-        internal RDFGraph TBoxInferenceGraph { get; set; }
-
-        /// <summary>
-        /// T-BOX virtual knowledge (comprehensive of both available and inferred)
-        /// </summary>
-        internal RDFGraph TBoxVirtualGraph
-            => TBoxGraph.UnionWith(TBoxInferenceGraph);
         #endregion
 
         #region Ctors
@@ -220,7 +209,6 @@ namespace RDFSharp.Semantics
         {
             Classes = new Dictionary<long, RDFResource>();
             TBoxGraph = new RDFGraph();
-            TBoxInferenceGraph = new RDFGraph();
         }
         #endregion
 
@@ -751,7 +739,7 @@ namespace RDFSharp.Semantics
                 TBoxGraph.AddTriple(new RDFTriple(leftClass, RDFVocabulary.OWL.EQUIVALENT_CLASS, rightClass));
 
                 //Also add an automatic T-BOX inference exploiting symmetry of owl:equivalentClass relation
-                TBoxInferenceGraph.AddTriple(new RDFTriple(rightClass, RDFVocabulary.OWL.EQUIVALENT_CLASS, leftClass));
+                TBoxGraph.AddTriple(new RDFTriple(rightClass, RDFVocabulary.OWL.EQUIVALENT_CLASS, leftClass));
             }
             else
                 RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("EquivalentClass relation between class '{0}' and class '{1}' cannot be declared to the model because it would violate OWL-DL integrity", leftClass, rightClass));
@@ -784,7 +772,7 @@ namespace RDFSharp.Semantics
                 TBoxGraph.AddTriple(new RDFTriple(leftClass, RDFVocabulary.OWL.DISJOINT_WITH, rightClass));
 
                 //Also add an automatic T-BOX inference exploiting symmetry of owl:disjointWith relation
-                TBoxInferenceGraph.AddTriple(new RDFTriple(rightClass, RDFVocabulary.OWL.DISJOINT_WITH, leftClass));
+                TBoxGraph.AddTriple(new RDFTriple(rightClass, RDFVocabulary.OWL.DISJOINT_WITH, leftClass));
             }
             else
                 RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("DisjointWith relation between class '{0}' and class '{1}' cannot be declared to the model because it would violate OWL-DL integrity", leftClass, rightClass));
@@ -838,14 +826,14 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets a graph representation of the model
         /// </summary>
-        public RDFGraph ToRDFGraph(bool includeInferences)
-            => includeInferences ? TBoxVirtualGraph : TBoxGraph;
+        public RDFGraph ToRDFGraph()
+            => TBoxGraph;
 
         /// <summary>
         /// Asynchronously gets a graph representation of the model
         /// </summary>
-        public Task<RDFGraph> ToRDFGraphAsync(bool includeInferences)
-            => Task.Run(() => ToRDFGraph(includeInferences));
+        public Task<RDFGraph> ToRDFGraphAsync()
+            => Task.Run(() => ToRDFGraph());
         #endregion
     }
 

@@ -185,17 +185,15 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Subsume "SubProperty(owlProperty,X)" relations of the model to answer the sub properties of the given owl:Property
         /// </summary>
-        internal static List<RDFResource> SubsumeSubPropertyHierarchy(this RDFOntologyPropertyModel propertyModel, RDFResource owlProperty, RDFGraph workingGraph=null)
+        internal static List<RDFResource> SubsumeSubPropertyHierarchy(this RDFOntologyPropertyModel propertyModel, RDFResource owlProperty)
         {
             List<RDFResource> subProperties = new List<RDFResource>();
-            if (workingGraph == null)
-                workingGraph = propertyModel.TBoxVirtualGraph;
 
             // SUBPROPERTY(A,B) ^ SUBPROPERTY(B,C) -> SUBPROPERTY(A,C)
-            foreach (RDFTriple subPropertyRelation in workingGraph[null, RDFVocabulary.RDFS.SUB_PROPERTY_OF, owlProperty, null])
+            foreach (RDFTriple subPropertyRelation in propertyModel.TBoxGraph[null, RDFVocabulary.RDFS.SUB_PROPERTY_OF, owlProperty, null])
             {
                 subProperties.Add((RDFResource)subPropertyRelation.Subject);
-                subProperties.AddRange(propertyModel.SubsumeSubPropertyHierarchy((RDFResource)subPropertyRelation.Subject, workingGraph));
+                subProperties.AddRange(propertyModel.SubsumeSubPropertyHierarchy((RDFResource)subPropertyRelation.Subject));
             }
 
             return subProperties;
@@ -249,17 +247,15 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Subsumes "SubProperty(X,owlProperty)" relations of the model to answer the super properties of the given owl:Property
         /// </summary>
-        internal static List<RDFResource> SubsumeSuperPropertyHierarchy(this RDFOntologyPropertyModel propertyModel, RDFResource owlProperty, RDFGraph workingGraph=null)
+        internal static List<RDFResource> SubsumeSuperPropertyHierarchy(this RDFOntologyPropertyModel propertyModel, RDFResource owlProperty)
         {
             List<RDFResource> superProperties = new List<RDFResource>();
-            if (workingGraph == null)
-                workingGraph = propertyModel.TBoxVirtualGraph;
 
             // SUBPROPERTY(A,B) ^ SUBPROPERTY(B,C) -> SUBPROPERTY(A,C)
-            foreach (RDFTriple subPropertyRelation in workingGraph[owlProperty, RDFVocabulary.RDFS.SUB_PROPERTY_OF, null, null])
+            foreach (RDFTriple subPropertyRelation in propertyModel.TBoxGraph[owlProperty, RDFVocabulary.RDFS.SUB_PROPERTY_OF, null, null])
             {
                 superProperties.Add((RDFResource)subPropertyRelation.Object);
-                superProperties.AddRange(propertyModel.SubsumeSuperPropertyHierarchy((RDFResource)subPropertyRelation.Object, workingGraph));
+                superProperties.AddRange(propertyModel.SubsumeSuperPropertyHierarchy((RDFResource)subPropertyRelation.Object));
             }
 
             return superProperties;
@@ -292,11 +288,9 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Finds "EquivalentProperty(owlProperty, X)" relations to enlist the equivalent properties of the given owl:Property
         /// </summary>
-        internal static List<RDFResource> FindEquivalentPropertiesOf(this RDFOntologyPropertyModel propertyModel, RDFResource owlProperty, Dictionary<long, RDFResource> visitContext, RDFGraph workingGraph=null)
+        internal static List<RDFResource> FindEquivalentPropertiesOf(this RDFOntologyPropertyModel propertyModel, RDFResource owlProperty, Dictionary<long, RDFResource> visitContext)
         {
             List<RDFResource> equivalentProperties = new List<RDFResource>();
-            if (workingGraph == null)
-                workingGraph = propertyModel.TBoxVirtualGraph;
 
             #region VisitContext
             if (!visitContext.ContainsKey(owlProperty.PatternMemberID))
@@ -306,12 +300,12 @@ namespace RDFSharp.Semantics
             #endregion
 
             //DIRECT
-            foreach (RDFTriple equivalentPropertyRelation in workingGraph[owlProperty, RDFVocabulary.OWL.EQUIVALENT_PROPERTY, null, null])
+            foreach (RDFTriple equivalentPropertyRelation in propertyModel.TBoxGraph[owlProperty, RDFVocabulary.OWL.EQUIVALENT_PROPERTY, null, null])
                 equivalentProperties.Add((RDFResource)equivalentPropertyRelation.Object);
 
             //INDIRECT (TRANSITIVE)
             foreach (RDFResource equivalentProperty in equivalentProperties.ToList())
-                equivalentProperties.AddRange(propertyModel.FindEquivalentPropertiesOf(equivalentProperty, visitContext, workingGraph));
+                equivalentProperties.AddRange(propertyModel.FindEquivalentPropertiesOf(equivalentProperty, visitContext));
 
             return equivalentProperties;
         }
@@ -343,11 +337,9 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Finds "PropertyDisjointWith(owlProperty, X)" relations to enlist the disjoint properties of the given owl:Property [OWL2]
         /// </summary>
-        internal static List<RDFResource> FindDisjointPropertiesWith(this RDFOntologyPropertyModel propertyModel, RDFResource owlProperty, Dictionary<long, RDFResource> visitContext, RDFGraph workingGraph=null)
+        internal static List<RDFResource> FindDisjointPropertiesWith(this RDFOntologyPropertyModel propertyModel, RDFResource owlProperty, Dictionary<long, RDFResource> visitContext)
         {
             List<RDFResource> disjointProperties = new List<RDFResource>();
-            if (workingGraph == null)
-                workingGraph = propertyModel.TBoxVirtualGraph;
 
             #region VisitContext
             if (!visitContext.ContainsKey(owlProperty.PatternMemberID))
@@ -361,16 +353,16 @@ namespace RDFSharp.Semantics
             List<RDFResource> allDisjointProperties = new List<RDFResource>();
             IEnumerator<RDFResource> allDisjoint = propertyModel.AllDisjointPropertiesEnumerator;
             while (allDisjoint.MoveNext())
-                foreach (RDFTriple allDisjointMembers in workingGraph[allDisjoint.Current, RDFVocabulary.OWL.MEMBERS, null, null])
+                foreach (RDFTriple allDisjointMembers in propertyModel.TBoxGraph[allDisjoint.Current, RDFVocabulary.OWL.MEMBERS, null, null])
                 {
-                    RDFCollection allDisjointCollection = RDFModelUtilities.DeserializeCollectionFromGraph(workingGraph, (RDFResource)allDisjointMembers.Object, RDFModelEnums.RDFTripleFlavors.SPO);
+                    RDFCollection allDisjointCollection = RDFModelUtilities.DeserializeCollectionFromGraph(propertyModel.TBoxGraph, (RDFResource)allDisjointMembers.Object, RDFModelEnums.RDFTripleFlavors.SPO);
                     if (allDisjointCollection.Items.Any(item => item.Equals(owlProperty)))
                         allDisjointProperties.AddRange(allDisjointCollection.OfType<RDFResource>());
                 }
             allDisjointProperties.RemoveAll(adm => adm.Equals(owlProperty));
 
             // Find disjoint properties linked to the given one with owl:propertyDisjointWith relation [OWL2]
-            List<RDFResource> disjointFromProperties = workingGraph[owlProperty, RDFVocabulary.OWL.PROPERTY_DISJOINT_WITH, null, null]
+            List<RDFResource> disjointFromProperties = propertyModel.TBoxGraph[owlProperty, RDFVocabulary.OWL.PROPERTY_DISJOINT_WITH, null, null]
                                                          .Select(t => (RDFResource)t.Object)
                                                          .ToList();
 
@@ -383,7 +375,7 @@ namespace RDFSharp.Semantics
             foreach (RDFResource disjointProperty in disjointPropertiesSet)
             {
                 disjointProperties.Add(disjointProperty);
-                disjointProperties.AddRange(propertyModel.FindEquivalentPropertiesOf(disjointProperty, visitContext, workingGraph));
+                disjointProperties.AddRange(propertyModel.FindEquivalentPropertiesOf(disjointProperty, visitContext));
             }
 
             // Inference: PROPERTYDISJOINTWITH(A,B) ^ SUBPROPERTY(C,B) -> PROPERTYDISJOINTWITH(A,C)
@@ -393,7 +385,7 @@ namespace RDFSharp.Semantics
             // Inference: EQUIVALENTPROPERTY(A,B) ^ PROPERTYDISJOINTWITH(B,C) -> PROPERTYDISJOINTWITH(A,C)
             foreach (RDFResource compatibleClass in propertyModel.GetSuperPropertiesOf(owlProperty)
                                                                  .Union(propertyModel.GetEquivalentPropertiesOf(owlProperty)))
-                disjointProperties.AddRange(propertyModel.FindDisjointPropertiesWith(compatibleClass, visitContext, workingGraph));
+                disjointProperties.AddRange(propertyModel.FindDisjointPropertiesWith(compatibleClass, visitContext));
             #endregion
 
             return disjointProperties;
@@ -426,18 +418,16 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Finds "InverseOf(owlProperty, X)" relations to enlist the inverse properties of the given owl:Property
         /// </summary>
-        internal static List<RDFResource> FindInversePropertiesOf(this RDFOntologyPropertyModel propertyModel, RDFResource owlProperty, RDFGraph workingGraph=null)
+        internal static List<RDFResource> FindInversePropertiesOf(this RDFOntologyPropertyModel propertyModel, RDFResource owlProperty)
         {
             List<RDFResource> inverseProperties = new List<RDFResource>();
-            if (workingGraph == null)
-                workingGraph = propertyModel.TBoxVirtualGraph;
 
             //DIRECT
-            foreach (RDFTriple inversePropertyRelation in workingGraph[owlProperty, RDFVocabulary.OWL.INVERSE_OF, null, null])
+            foreach (RDFTriple inversePropertyRelation in propertyModel.TBoxGraph[owlProperty, RDFVocabulary.OWL.INVERSE_OF, null, null])
                 inverseProperties.Add((RDFResource)inversePropertyRelation.Object);
 
             //INDIRECT (SYMMETRIC)
-            foreach (RDFTriple inversePropertyRelation in workingGraph[null, RDFVocabulary.OWL.INVERSE_OF, owlProperty, null])
+            foreach (RDFTriple inversePropertyRelation in propertyModel.TBoxGraph[null, RDFVocabulary.OWL.INVERSE_OF, owlProperty, null])
                 inverseProperties.Add((RDFResource)inversePropertyRelation.Subject);
 
             return inverseProperties;

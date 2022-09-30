@@ -146,10 +146,9 @@ namespace RDFSharp.Semantics
         {
             List<RDFTriple> result = new List<RDFTriple>();
 
-            RDFGraph aboxVirtualGraph = Ontology.Data.ABoxVirtualGraph;
-            result.AddRange(aboxVirtualGraph.Where(asn => asn.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPO
-                                                            && Ontology.Model.PropertyModel.CheckHasObjectProperty((RDFResource)asn.Predicate)
-                                                              && (asn.Subject.Equals(Individual) || asn.Object.Equals(Individual))));
+            result.AddRange(Ontology.Data.ABoxGraph.Where(asn => asn.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPO
+                                                                  && Ontology.Model.PropertyModel.CheckHasObjectProperty((RDFResource)asn.Predicate)
+                                                                   && (asn.Subject.Equals(Individual) || asn.Object.Equals(Individual))));
 
             return result;
         }
@@ -167,10 +166,9 @@ namespace RDFSharp.Semantics
         {
             List<RDFTriple> result = new List<RDFTriple>();
 
-            RDFGraph aboxVirtualGraph = Ontology.Data.ABoxVirtualGraph;
-            result.AddRange(aboxVirtualGraph.Where(asn => asn.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPL
-                                                            && Ontology.Model.PropertyModel.CheckHasDatatypeProperty((RDFResource)asn.Predicate)
-                                                              && asn.Subject.Equals(Individual)));
+            result.AddRange(Ontology.Data.ABoxGraph.Where(asn => asn.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPL
+                                                                  && Ontology.Model.PropertyModel.CheckHasDatatypeProperty((RDFResource)asn.Predicate)
+                                                                   && asn.Subject.Equals(Individual)));
 
             return result;
         }
@@ -188,7 +186,6 @@ namespace RDFSharp.Semantics
         {
             List<RDFTriple> result = new List<RDFTriple>();
 
-            RDFGraph aboxVirtualGraph = Ontology.Data.ABoxVirtualGraph;
             RDFSelectQuery negativeObjectAssertionQuery = new RDFSelectQuery()
                 //Subject
                 .AddPatternGroup(new RDFPatternGroup()
@@ -210,7 +207,7 @@ namespace RDFSharp.Semantics
                 .AddProjectionVariable(new RDFVariable("?NASN_SOURCE"))
                 .AddProjectionVariable(new RDFVariable("?NASN_PROPERTY"))
                 .AddProjectionVariable(new RDFVariable("?NASN_TARGET"));
-            RDFSelectQueryResult negativeObjectAssertionQueryResult = negativeObjectAssertionQuery.ApplyToGraph(aboxVirtualGraph);
+            RDFSelectQueryResult negativeObjectAssertionQueryResult = negativeObjectAssertionQuery.ApplyToGraph(Ontology.Data.ABoxGraph);
 
             foreach (DataRow negativeObjectAssertion in negativeObjectAssertionQueryResult.SelectResults.Rows)
             {
@@ -238,7 +235,6 @@ namespace RDFSharp.Semantics
         {
             List<RDFTriple> result = new List<RDFTriple>();
 
-            RDFGraph aboxVirtualGraph = Ontology.Data.ABoxVirtualGraph;
             RDFSelectQuery negativeDatatypeAssertionQuery = new RDFSelectQuery()
                 .AddPatternGroup(new RDFPatternGroup()
                     .AddPattern(new RDFPattern(new RDFVariable("?NASN_REPRESENTATIVE"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION))
@@ -249,7 +245,7 @@ namespace RDFSharp.Semantics
                     .AddFilter(new RDFIsLiteralFilter(new RDFVariable("?NASN_TARGET"))))
                 .AddProjectionVariable(new RDFVariable("?NASN_PROPERTY"))
                 .AddProjectionVariable(new RDFVariable("?NASN_TARGET"));
-            RDFSelectQueryResult negativeDatatypeAssertionQueryResult = negativeDatatypeAssertionQuery.ApplyToGraph(aboxVirtualGraph);
+            RDFSelectQueryResult negativeDatatypeAssertionQueryResult = negativeDatatypeAssertionQuery.ApplyToGraph(Ontology.Data.ABoxGraph);
 
             foreach (DataRow negativeDatatypeAssertion in negativeDatatypeAssertionQueryResult.SelectResults.Rows)
                 result.Add(new RDFTriple(Individual, new RDFResource(negativeDatatypeAssertion["?NASN_PROPERTY"].ToString()), (RDFLiteral)RDFQueryUtilities.ParseRDFPatternMember(negativeDatatypeAssertion["?NASN_TARGET"].ToString())));

@@ -413,17 +413,6 @@ namespace RDFSharp.Semantics
         /// T-BOX knowledge describing properties
         /// </summary>
         internal RDFGraph TBoxGraph { get; set; }
-
-        /// <summary>
-        /// T-BOX knowledge inferred
-        /// </summary>
-        internal RDFGraph TBoxInferenceGraph { get; set; }
-
-        /// <summary>
-        /// T-BOX virtual knowledge (comprehensive of both available and inferred)
-        /// </summary>
-        internal RDFGraph TBoxVirtualGraph
-            => TBoxGraph.UnionWith(TBoxInferenceGraph);
         #endregion
 
         #region Ctors
@@ -434,7 +423,6 @@ namespace RDFSharp.Semantics
         {
             Properties = new Dictionary<long, RDFResource>();
             TBoxGraph = new RDFGraph();
-            TBoxInferenceGraph = new RDFGraph();
         }
         #endregion
 
@@ -643,7 +631,7 @@ namespace RDFSharp.Semantics
                 TBoxGraph.AddTriple(new RDFTriple(leftProperty, RDFVocabulary.OWL.EQUIVALENT_PROPERTY, rightProperty));
 
                 //Also add an automatic T-BOX inference exploiting symmetry of owl:equivalentProperty relation
-                TBoxInferenceGraph.AddTriple(new RDFTriple(rightProperty, RDFVocabulary.OWL.EQUIVALENT_PROPERTY, leftProperty));
+                TBoxGraph.AddTriple(new RDFTriple(rightProperty, RDFVocabulary.OWL.EQUIVALENT_PROPERTY, leftProperty));
             }
             else
                 RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("EquivalentProperty relation between property '{0}' and property '{1}' cannot be declared to the model because it would violate OWL-DL integrity", leftProperty, rightProperty));
@@ -676,7 +664,7 @@ namespace RDFSharp.Semantics
                 TBoxGraph.AddTriple(new RDFTriple(leftProperty, RDFVocabulary.OWL.PROPERTY_DISJOINT_WITH, rightProperty));
 
                 //Also add an automatic T-BOX inference exploiting symmetry of owl:propertyDisjointWith relation
-                TBoxInferenceGraph.AddTriple(new RDFTriple(rightProperty, RDFVocabulary.OWL.PROPERTY_DISJOINT_WITH, leftProperty));
+                TBoxGraph.AddTriple(new RDFTriple(rightProperty, RDFVocabulary.OWL.PROPERTY_DISJOINT_WITH, leftProperty));
             }
             else
                 RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("PropertyDisjointWith relation between property '{0}' and property '{1}' cannot be declared to the model because it would violate OWL-DL integrity", leftProperty, rightProperty));
@@ -731,7 +719,7 @@ namespace RDFSharp.Semantics
                 TBoxGraph.AddTriple(new RDFTriple(leftProperty, RDFVocabulary.OWL.INVERSE_OF, rightProperty));
 
                 //Also add an automatic T-BOX inference exploiting symmetry of owl:inverseProperty relation
-                TBoxInferenceGraph.AddTriple(new RDFTriple(rightProperty, RDFVocabulary.OWL.INVERSE_OF, leftProperty));
+                TBoxGraph.AddTriple(new RDFTriple(rightProperty, RDFVocabulary.OWL.INVERSE_OF, leftProperty));
             }
             else
                 RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("Inverse relation between property '{0}' and property '{1}' cannot be declared to the model because it would violate OWL-DL integrity", leftProperty, rightProperty));
@@ -780,14 +768,14 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets a graph representation of the model
         /// </summary>
-        public RDFGraph ToRDFGraph(bool includeInferences)
-            => includeInferences ? TBoxVirtualGraph : TBoxGraph;
+        public RDFGraph ToRDFGraph()
+            => TBoxGraph;
 
         /// <summary>
         /// Asynchronously gets a graph representation of the model
         /// </summary>
-        public Task<RDFGraph> ToRDFGraphAsync(bool includeInferences)
-            => Task.Run(() => ToRDFGraph(includeInferences));
+        public Task<RDFGraph> ToRDFGraphAsync()
+            => Task.Run(() => ToRDFGraph());
         #endregion
     }
 

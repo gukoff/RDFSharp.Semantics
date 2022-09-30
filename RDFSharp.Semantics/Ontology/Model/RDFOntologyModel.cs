@@ -62,15 +62,15 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets a graph representation of the model
         /// </summary>
-        public RDFGraph ToRDFGraph(bool includeInferences)
-            => ClassModel.ToRDFGraph(includeInferences)
-                  .UnionWith(PropertyModel.ToRDFGraph(includeInferences));
+        public RDFGraph ToRDFGraph()
+            => ClassModel.ToRDFGraph()
+                  .UnionWith(PropertyModel.ToRDFGraph());
 
         /// <summary>
         /// Asynchronously gets a graph representation of the model
         /// </summary>
-        public Task<RDFGraph> ToRDFGraphAsync(bool includeInferences)
-            => Task.Run(() => ToRDFGraph(includeInferences));
+        public Task<RDFGraph> ToRDFGraphAsync()
+            => Task.Run(() => ToRDFGraph());
         #endregion
     }
 }

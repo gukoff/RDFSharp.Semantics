@@ -38,10 +38,6 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(data.AllDifferentCount == 0);
             Assert.IsNotNull(data.ABoxGraph);
             Assert.IsTrue(data.ABoxGraph.TriplesCount == 0);
-            Assert.IsNotNull(data.ABoxInferenceGraph);
-            Assert.IsTrue(data.ABoxInferenceGraph.TriplesCount == 0);
-            Assert.IsNotNull(data.ABoxVirtualGraph);
-            Assert.IsTrue(data.ABoxVirtualGraph.TriplesCount == 0);
 
             int i = 0;
             IEnumerator<RDFResource> individualsEnumerator = data.IndividualsEnumerator;
@@ -67,10 +63,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(data.AllDifferentCount == 0);
             Assert.IsTrue(data.ABoxGraph.TriplesCount == 1);
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
-            Assert.IsTrue(data.ABoxInferenceGraph.TriplesCount == 0);
-            Assert.IsTrue(data.ABoxVirtualGraph.TriplesCount == 1);
-            Assert.IsTrue(data.ABoxVirtualGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
-
+            
             int i = 0;
             IEnumerator<RDFResource> individualsEnumerator = data.IndividualsEnumerator;
             while (individualsEnumerator.MoveNext())
@@ -218,8 +211,6 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.OWL.SAME_AS, new RDFResource("ex:indivB"))));
-            Assert.IsTrue(data.ABoxInferenceGraph.TriplesCount == 1);
-            Assert.IsTrue(data.ABoxInferenceGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.OWL.SAME_AS, new RDFResource("ex:indivA"))));
         }
 
         [TestMethod]
@@ -239,8 +230,6 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.OWL.DIFFERENT_FROM, new RDFResource("ex:indivB"))));
-            Assert.IsTrue(data.ABoxInferenceGraph.TriplesCount == 1);
-            Assert.IsTrue(data.ABoxInferenceGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.OWL.DIFFERENT_FROM, new RDFResource("ex:indivA"))));
         }
 
         [TestMethod]
@@ -275,8 +264,6 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.OWL.DIFFERENT_FROM, new RDFResource("ex:indivB"))));
-            Assert.IsTrue(data.ABoxInferenceGraph.TriplesCount == 1);
-            Assert.IsTrue(data.ABoxInferenceGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.OWL.DIFFERENT_FROM, new RDFResource("ex:indivA"))));
         }
 
         [TestMethod]
@@ -296,8 +283,6 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.OWL.SAME_AS, new RDFResource("ex:indivB"))));
-            Assert.IsTrue(data.ABoxInferenceGraph.TriplesCount == 1);
-            Assert.IsTrue(data.ABoxInferenceGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.OWL.SAME_AS, new RDFResource("ex:indivA"))));
         }
 
         [TestMethod]
@@ -615,7 +600,7 @@ namespace RDFSharp.Semantics.Test
         }
         
         [TestMethod]
-        public void ShouldExportToGraphWithInferences()
+        public void ShouldExportToGraph()
         {
             RDFOntologyData data = new RDFOntologyData();
             data.DeclareIndividual(new RDFResource("ex:indivA"));
@@ -625,14 +610,14 @@ namespace RDFSharp.Semantics.Test
             data.AnnotateIndividual(new RDFResource("ex:indivA"), RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("comment"));
             data.AnnotateIndividual(new RDFResource("ex:indivB"), RDFVocabulary.DC.DESCRIPTION, new RDFPlainLiteral("title"));
             data.DeclareSameIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB"));
-            RDFGraph graph = data.ToRDFGraph(true);
+            RDFGraph graph = data.ToRDFGraph();
 
             Assert.IsNotNull(graph);
             Assert.IsTrue(graph.TriplesCount == 8);
         }
 
         [TestMethod]
-        public void ShouldExportToGraphWithoutInferences()
+        public async Task ShouldExportToGraphAsync()
         {
             RDFOntologyData data = new RDFOntologyData();
             data.DeclareIndividual(new RDFResource("ex:indivA"));
@@ -642,44 +627,10 @@ namespace RDFSharp.Semantics.Test
             data.AnnotateIndividual(new RDFResource("ex:indivA"), RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("comment"));
             data.AnnotateIndividual(new RDFResource("ex:indivB"), RDFVocabulary.DC.DESCRIPTION, new RDFPlainLiteral("title"));
             data.DeclareSameIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB"));
-            RDFGraph graph = data.ToRDFGraph(false);
-
-            Assert.IsNotNull(graph);
-            Assert.IsTrue(graph.TriplesCount == 7);
-        }
-
-        [TestMethod]
-        public async Task ShouldExportToGraphWithInferencesAsync()
-        {
-            RDFOntologyData data = new RDFOntologyData();
-            data.DeclareIndividual(new RDFResource("ex:indivA"));
-            data.DeclareIndividual(new RDFResource("ex:indivB"));
-            data.DeclareIndividualType(new RDFResource("ex:indivA"), new RDFResource("ex:classA"));
-            data.DeclareIndividualType(new RDFResource("ex:indivB"), new RDFResource("ex:classB"));
-            data.AnnotateIndividual(new RDFResource("ex:indivA"), RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("comment"));
-            data.AnnotateIndividual(new RDFResource("ex:indivB"), RDFVocabulary.DC.DESCRIPTION, new RDFPlainLiteral("title"));
-            data.DeclareSameIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB"));
-            RDFGraph graph = await data.ToRDFGraphAsync(true);
+            RDFGraph graph = await data.ToRDFGraphAsync();
 
             Assert.IsNotNull(graph);
             Assert.IsTrue(graph.TriplesCount == 8);
-        }
-
-        [TestMethod]
-        public async Task ShouldExportToGraphWithoutInferencesAsync()
-        {
-            RDFOntologyData data = new RDFOntologyData();
-            data.DeclareIndividual(new RDFResource("ex:indivA"));
-            data.DeclareIndividual(new RDFResource("ex:indivB"));
-            data.DeclareIndividualType(new RDFResource("ex:indivA"), new RDFResource("ex:classA"));
-            data.DeclareIndividualType(new RDFResource("ex:indivB"), new RDFResource("ex:classB"));
-            data.AnnotateIndividual(new RDFResource("ex:indivA"), RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("comment"));
-            data.AnnotateIndividual(new RDFResource("ex:indivB"), RDFVocabulary.DC.DESCRIPTION, new RDFPlainLiteral("title"));
-            data.DeclareSameIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB"));
-            RDFGraph graph = await data.ToRDFGraphAsync(false);
-
-            Assert.IsNotNull(graph);
-            Assert.IsTrue(graph.TriplesCount == 7);
         }
         #endregion
     }

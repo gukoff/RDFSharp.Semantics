@@ -46,7 +46,7 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
-        public void ShouldExportToGraphWithInferences()
+        public void ShouldExportToGraph()
         {
             RDFOntologyModel model = new RDFOntologyModel();
 
@@ -84,14 +84,14 @@ namespace RDFSharp.Semantics.Test
             model.PropertyModel.AnnotateProperty(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyF"), new RDFPlainLiteral("comment"));
             model.PropertyModel.AnnotateProperty(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyF"), new RDFPlainLiteral("title"));
 
-            RDFGraph graph = model.ToRDFGraph(true);
+            RDFGraph graph = model.ToRDFGraph();
 
             Assert.IsNotNull(graph);
             Assert.IsTrue(graph.TriplesCount == 74);
         }
 
         [TestMethod]
-        public async Task ShouldExportToGraphWithInferencesAsync()
+        public async Task ShouldExportToGraphAsync()
         {
             RDFOntologyModel model = new RDFOntologyModel();
 
@@ -129,100 +129,10 @@ namespace RDFSharp.Semantics.Test
             model.PropertyModel.AnnotateProperty(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyF"), new RDFPlainLiteral("comment"));
             model.PropertyModel.AnnotateProperty(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyF"), new RDFPlainLiteral("title"));
 
-            RDFGraph graph = await model.ToRDFGraphAsync(true);
+            RDFGraph graph = await model.ToRDFGraphAsync();
 
             Assert.IsNotNull(graph);
             Assert.IsTrue(graph.TriplesCount == 74);
-        }
-
-        [TestMethod]
-        public void ShouldExportToGraphWithoutInferences()
-        {
-            RDFOntologyModel model = new RDFOntologyModel();
-
-            //ClassModel definition from tests
-            model.ClassModel.DeclareClass(new RDFResource("ex:classA"));
-            model.ClassModel.DeclareClass(new RDFResource("ex:classB"));
-            model.ClassModel.DeclareClass(new RDFResource("ex:classC"));
-            model.ClassModel.DeclareClass(new RDFResource("ex:classD"));
-            model.ClassModel.DeclareClass(new RDFResource("ex:classE"), new RDFOntologyClassBehavior() { Deprecated = true });
-            model.ClassModel.DeclareSubClasses(new RDFResource("ex:indivB"), new RDFResource("ex:classA"));
-            model.ClassModel.DeclareEquivalentClasses(new RDFResource("ex:indivA"), new RDFResource("ex:classC"));
-            model.ClassModel.DeclareDisjointClasses(new RDFResource("ex:indivC"), new RDFResource("ex:classD"));
-            model.ClassModel.DeclareHasKey(new RDFResource("ex:classA"), new List<RDFResource>() { RDFVocabulary.FOAF.ACCOUNT });
-            model.ClassModel.DeclareAllDisjointClasses(new RDFResource("ex:allDisjointClasses"), new List<RDFResource>() { new RDFResource("ex:classD"), new RDFResource("ex:classE") });
-            model.ClassModel.DeclareDisjointUnionClass(new RDFResource("ex:disjointUnionClass"), new List<RDFResource>() { new RDFResource("ex:classD"), new RDFResource("ex:classE") });
-            model.ClassModel.AnnotateClass(new RDFResource("ex:classA"), RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("comment"));
-            model.ClassModel.AnnotateClass(new RDFResource("ex:classB"), RDFVocabulary.DC.DESCRIPTION, new RDFPlainLiteral("title"));
-
-            //PropertyModel definition from tests
-            model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"), new RDFOntologyObjectPropertyBehavior() { Symmetric = true });
-            model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"), new RDFOntologyObjectPropertyBehavior() { Asymmetric = true });
-            model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:propertyC"), new RDFOntologyObjectPropertyBehavior() { Transitive = true });
-            model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:propertyD"), new RDFOntologyObjectPropertyBehavior() { Reflexive = true });
-            model.PropertyModel.DeclareDatatypeProperty(new RDFResource("ex:propertyE"), new RDFOntologyObjectPropertyBehavior() { Domain = RDFVocabulary.RDFS.RESOURCE, Range = RDFVocabulary.RDFS.RESOURCE });
-            model.PropertyModel.DeclareAnnotationProperty(new RDFResource("ex:propertyF"));
-            model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:propertyG"), new RDFOntologyObjectPropertyBehavior() { Deprecated = true });
-            model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:propertyH"), new RDFOntologyObjectPropertyBehavior() { Irreflexive = true });
-            model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:propertyI"), new RDFOntologyObjectPropertyBehavior() { Functional = true });
-            model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:propertyJ"), new RDFOntologyObjectPropertyBehavior() { InverseFunctional = true });
-            model.PropertyModel.DeclareSubProperties(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyA"));
-            model.PropertyModel.DeclareEquivalentProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyC"));
-            model.PropertyModel.DeclareDisjointProperties(new RDFResource("ex:propertyC"), new RDFResource("ex:propertyD"));
-            model.PropertyModel.DeclarePropertyChainAxiom(new RDFResource("ex:propertyChainAxiom"), new List<RDFResource>() { new RDFResource("ex:propertyA") });
-            model.PropertyModel.DeclareAllDisjointProperties(new RDFResource("ex:allDisjointProperties"), new List<RDFResource>() { new RDFResource("ex:propertyH"), new RDFResource("ex:propertyI") });
-            model.PropertyModel.AnnotateProperty(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyF"), new RDFPlainLiteral("comment"));
-            model.PropertyModel.AnnotateProperty(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyF"), new RDFPlainLiteral("title"));
-
-            RDFGraph graph = model.ToRDFGraph(false);
-
-            Assert.IsNotNull(graph);
-            Assert.IsTrue(graph.TriplesCount == 70);
-        }
-
-        [TestMethod]
-        public async Task ShouldExportToGraphWithoutInferencesAsync()
-        {
-            RDFOntologyModel model = new RDFOntologyModel();
-
-            //ClassModel definition from tests
-            model.ClassModel.DeclareClass(new RDFResource("ex:classA"));
-            model.ClassModel.DeclareClass(new RDFResource("ex:classB"));
-            model.ClassModel.DeclareClass(new RDFResource("ex:classC"));
-            model.ClassModel.DeclareClass(new RDFResource("ex:classD"));
-            model.ClassModel.DeclareClass(new RDFResource("ex:classE"), new RDFOntologyClassBehavior() { Deprecated = true });
-            model.ClassModel.DeclareSubClasses(new RDFResource("ex:indivB"), new RDFResource("ex:classA"));
-            model.ClassModel.DeclareEquivalentClasses(new RDFResource("ex:indivA"), new RDFResource("ex:classC"));
-            model.ClassModel.DeclareDisjointClasses(new RDFResource("ex:indivC"), new RDFResource("ex:classD"));
-            model.ClassModel.DeclareHasKey(new RDFResource("ex:classA"), new List<RDFResource>() { RDFVocabulary.FOAF.ACCOUNT });
-            model.ClassModel.DeclareAllDisjointClasses(new RDFResource("ex:allDisjointClasses"), new List<RDFResource>() { new RDFResource("ex:classD"), new RDFResource("ex:classE") });
-            model.ClassModel.DeclareDisjointUnionClass(new RDFResource("ex:disjointUnionClass"), new List<RDFResource>() { new RDFResource("ex:classD"), new RDFResource("ex:classE") });
-            model.ClassModel.AnnotateClass(new RDFResource("ex:classA"), RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("comment"));
-            model.ClassModel.AnnotateClass(new RDFResource("ex:classB"), RDFVocabulary.DC.DESCRIPTION, new RDFPlainLiteral("title"));
-
-            //PropertyModel definition from tests
-            model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"), new RDFOntologyObjectPropertyBehavior() { Symmetric = true });
-            model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"), new RDFOntologyObjectPropertyBehavior() { Asymmetric = true });
-            model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:propertyC"), new RDFOntologyObjectPropertyBehavior() { Transitive = true });
-            model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:propertyD"), new RDFOntologyObjectPropertyBehavior() { Reflexive = true });
-            model.PropertyModel.DeclareDatatypeProperty(new RDFResource("ex:propertyE"), new RDFOntologyObjectPropertyBehavior() { Domain = RDFVocabulary.RDFS.RESOURCE, Range = RDFVocabulary.RDFS.RESOURCE });
-            model.PropertyModel.DeclareAnnotationProperty(new RDFResource("ex:propertyF"));
-            model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:propertyG"), new RDFOntologyObjectPropertyBehavior() { Deprecated = true });
-            model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:propertyH"), new RDFOntologyObjectPropertyBehavior() { Irreflexive = true });
-            model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:propertyI"), new RDFOntologyObjectPropertyBehavior() { Functional = true });
-            model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:propertyJ"), new RDFOntologyObjectPropertyBehavior() { InverseFunctional = true });
-            model.PropertyModel.DeclareSubProperties(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyA"));
-            model.PropertyModel.DeclareEquivalentProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyC"));
-            model.PropertyModel.DeclareDisjointProperties(new RDFResource("ex:propertyC"), new RDFResource("ex:propertyD"));
-            model.PropertyModel.DeclarePropertyChainAxiom(new RDFResource("ex:propertyChainAxiom"), new List<RDFResource>() { new RDFResource("ex:propertyA") });
-            model.PropertyModel.DeclareAllDisjointProperties(new RDFResource("ex:allDisjointProperties"), new List<RDFResource>() { new RDFResource("ex:propertyH"), new RDFResource("ex:propertyI") });
-            model.PropertyModel.AnnotateProperty(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyF"), new RDFPlainLiteral("comment"));
-            model.PropertyModel.AnnotateProperty(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyF"), new RDFPlainLiteral("title"));
-
-            RDFGraph graph = await model.ToRDFGraphAsync(false);
-
-            Assert.IsNotNull(graph);
-            Assert.IsTrue(graph.TriplesCount == 70);
         }
         #endregion
     }

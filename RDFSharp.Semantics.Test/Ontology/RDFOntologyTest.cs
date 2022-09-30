@@ -101,7 +101,7 @@ namespace RDFSharp.Semantics.Test
         {
             RDFOntology ontology = new RDFOntology("ex:ont");
             ontology.Annotate(RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("This is a test ontology"));
-            RDFGraph graph = ontology.ToRDFGraph(false);
+            RDFGraph graph = ontology.ToRDFGraph();
 
             Assert.IsNotNull(graph);
             Assert.IsTrue(graph[new RDFResource("ex:ont"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ONTOLOGY, null].Any());
@@ -113,7 +113,7 @@ namespace RDFSharp.Semantics.Test
         {
             RDFOntology ontology = new RDFOntology("ex:ont");
             ontology.Annotate(RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("This is a test ontology"));
-            RDFGraph graph = await ontology.ToRDFGraphAsync(false);
+            RDFGraph graph = await ontology.ToRDFGraphAsync();
 
             Assert.IsNotNull(graph);
             Assert.IsTrue(graph[new RDFResource("ex:ont"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ONTOLOGY, null].Any());

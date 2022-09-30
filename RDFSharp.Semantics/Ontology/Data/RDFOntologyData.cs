@@ -72,17 +72,6 @@ namespace RDFSharp.Semantics
         /// A-BOX knowledge available to the data
         /// </summary>
         internal RDFGraph ABoxGraph { get; set; }
-
-        /// <summary>
-        /// A-BOX knowledge inferred
-        /// </summary>
-        internal RDFGraph ABoxInferenceGraph { get; set; }
-
-        /// <summary>
-        /// A-BOX virtual knowledge (comprehensive of both available and inferred)
-        /// </summary>
-        internal RDFGraph ABoxVirtualGraph 
-            => ABoxGraph.UnionWith(ABoxInferenceGraph);
         #endregion
 
         #region Ctors
@@ -93,7 +82,6 @@ namespace RDFSharp.Semantics
         {
             Individuals = new Dictionary<long, RDFResource>();
             ABoxGraph = new RDFGraph();
-            ABoxInferenceGraph = new RDFGraph();
         }
         #endregion
 
@@ -221,7 +209,7 @@ namespace RDFSharp.Semantics
                 ABoxGraph.AddTriple(new RDFTriple(leftIndividual, RDFVocabulary.OWL.SAME_AS, rightIndividual));
 
                 //Also add an automatic A-BOX inference exploiting symmetry of owl:sameAs relation
-                ABoxInferenceGraph.AddTriple(new RDFTriple(rightIndividual, RDFVocabulary.OWL.SAME_AS, leftIndividual));
+                ABoxGraph.AddTriple(new RDFTriple(rightIndividual, RDFVocabulary.OWL.SAME_AS, leftIndividual));
             }
             else
                 RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("SameAs relation between individual '{0}' and individual '{1}' cannot be declared to the data because it would violate OWL-DL integrity", leftIndividual, rightIndividual));
@@ -252,7 +240,7 @@ namespace RDFSharp.Semantics
                 ABoxGraph.AddTriple(new RDFTriple(leftIndividual, RDFVocabulary.OWL.DIFFERENT_FROM, rightIndividual));
 
                 //Also add an automatic A-BOX inference exploiting symmetry of owl:differentFrom relation
-                ABoxInferenceGraph.AddTriple(new RDFTriple(rightIndividual, RDFVocabulary.OWL.DIFFERENT_FROM, leftIndividual));
+                ABoxGraph.AddTriple(new RDFTriple(rightIndividual, RDFVocabulary.OWL.DIFFERENT_FROM, leftIndividual));
             }
             else
                 RDFSemanticsEvents.RaiseSemanticsWarning(string.Format("DifferentFrom relation between individual '{0}' and individual '{1}' cannot be declared to the data because it would violate OWL-DL integrity", leftIndividual, rightIndividual));
@@ -415,14 +403,14 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets a graph representation of the data
         /// </summary>
-        public RDFGraph ToRDFGraph(bool includeInferences)
-            => includeInferences ? ABoxVirtualGraph : ABoxGraph;
+        public RDFGraph ToRDFGraph()
+            => ABoxGraph;
 
         /// <summary>
         /// Asynchronously gets a graph representation of the data
         /// </summary>
-        public Task<RDFGraph> ToRDFGraphAsync(bool includeInferences)
-            => Task.Run(() => ToRDFGraph(includeInferences));
+        public Task<RDFGraph> ToRDFGraphAsync()
+            => Task.Run(() => ToRDFGraph());
         #endregion
     }
 }

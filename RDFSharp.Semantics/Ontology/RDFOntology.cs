@@ -106,16 +106,16 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets a graph representation of the ontology
         /// </summary>
-        public RDFGraph ToRDFGraph(bool includeInferences)
-            => Model.ToRDFGraph(includeInferences)
-                 .UnionWith(Data.ToRDFGraph(includeInferences))
+        public RDFGraph ToRDFGraph()
+            => Model.ToRDFGraph()
+                 .UnionWith(Data.ToRDFGraph())
                     .UnionWith(OBoxGraph);
 
         /// <summary>
         /// Asynchronously gets a graph representation of the ontology
         /// </summary>
-        public Task<RDFGraph> ToRDFGraphAsync(bool includeInferences)
-            => Task.Run(() => ToRDFGraph(includeInferences));
+        public Task<RDFGraph> ToRDFGraphAsync()
+            => Task.Run(() => ToRDFGraph());
 
         /// <summary>
         /// Gets an ontology representation from the given graph
