@@ -66,14 +66,9 @@ namespace RDFSharp.Semantics
         public static bool CheckHasNegativeObjectAssertion(this RDFOntologyData data, RDFResource leftIndividual, RDFResource owlProperty, RDFResource rightIndividual)
         {
             if (leftIndividual != null && owlProperty != null && rightIndividual != null && data != null)
-            {
-                //Lookup the owl:NegativePropertyAssertion reification
-                RDFTriple negativeObjectAssertion = new RDFTriple(leftIndividual, owlProperty, rightIndividual);
-                return data.ABoxGraph[negativeObjectAssertion.ReificationSubject, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION, null].Any()
-                         && data.ABoxGraph[negativeObjectAssertion.ReificationSubject, RDFVocabulary.OWL.SOURCE_INDIVIDUAL, leftIndividual, null].Any()
-                           && data.ABoxGraph[negativeObjectAssertion.ReificationSubject, RDFVocabulary.OWL.ASSERTION_PROPERTY, owlProperty, null].Any()
-                             && data.ABoxGraph[negativeObjectAssertion.ReificationSubject, RDFVocabulary.OWL.TARGET_INDIVIDUAL, rightIndividual, null].Any();
-            }
+                return data.ABoxGraph[null, RDFVocabulary.OWL.SOURCE_INDIVIDUAL, leftIndividual, null].TriplesCount > 0
+                         && data.ABoxGraph[null, RDFVocabulary.OWL.ASSERTION_PROPERTY, owlProperty, null].TriplesCount > 0
+                           && data.ABoxGraph[null, RDFVocabulary.OWL.TARGET_INDIVIDUAL, rightIndividual, null].TriplesCount > 0;
             return false;
         }
 
@@ -83,14 +78,9 @@ namespace RDFSharp.Semantics
         public static bool CheckHasNegativeDatatypeAssertion(this RDFOntologyData data, RDFResource individual, RDFResource owlProperty, RDFLiteral value)
         {
             if (individual != null && owlProperty != null && value != null && data != null)
-            {
-                //Lookup the owl:NegativePropertyAssertion reification
-                RDFTriple negativeDatatypeAssertion = new RDFTriple(individual, owlProperty, value);
-                return data.ABoxGraph[negativeDatatypeAssertion.ReificationSubject, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION, null].Any()
-                         && data.ABoxGraph[negativeDatatypeAssertion.ReificationSubject, RDFVocabulary.OWL.SOURCE_INDIVIDUAL, individual, null].Any()
-                           && data.ABoxGraph[negativeDatatypeAssertion.ReificationSubject, RDFVocabulary.OWL.ASSERTION_PROPERTY, owlProperty, null].Any()
-                             && data.ABoxGraph[negativeDatatypeAssertion.ReificationSubject, RDFVocabulary.OWL.TARGET_VALUE, null, value].Any();
-            }
+                return data.ABoxGraph[null, RDFVocabulary.OWL.SOURCE_INDIVIDUAL, individual, null].TriplesCount > 0
+                         && data.ABoxGraph[null, RDFVocabulary.OWL.ASSERTION_PROPERTY, owlProperty, null].TriplesCount > 0
+                           && data.ABoxGraph[null, RDFVocabulary.OWL.TARGET_VALUE, null, value].TriplesCount > 0;
             return false;
         }
         #endregion
