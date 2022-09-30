@@ -61,11 +61,7 @@ namespace RDFSharp.Semantics
 
             #region Taxonomies
             foreach (RDFResource owlIndividual in ontology.Data)
-            {
-                RDFGraph individualGraph = graph[owlIndividual, null, null, null];
-
-                //Annotations
-                foreach (RDFTriple individualAnnotation in individualGraph.Where(t => annotationProperties.Contains(t.Predicate.PatternMemberID)))
+                foreach (RDFTriple individualAnnotation in graph[owlIndividual, null, null, null].Where(t => annotationProperties.Contains(t.Predicate.PatternMemberID)))
                 {
                     if (individualAnnotation.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPO)
                         ontology.Data.AnnotateIndividual(owlIndividual, (RDFResource)individualAnnotation.Predicate, (RDFResource)individualAnnotation.Object);
@@ -73,16 +69,21 @@ namespace RDFSharp.Semantics
                         ontology.Data.AnnotateIndividual(owlIndividual, (RDFResource)individualAnnotation.Predicate, (RDFLiteral)individualAnnotation.Object);
                 }
 
-                //Relations
-                foreach (RDFTriple sameAsRelation in individualGraph[null, RDFVocabulary.OWL.SAME_AS, null, null])
-                    ontology.Data.DeclareSameIndividuals(owlIndividual, (RDFResource)sameAsRelation.Object);
-                foreach (RDFTriple differentFromRelation in individualGraph[null, RDFVocabulary.OWL.DIFFERENT_FROM, null, null])
-                    ontology.Data.DeclareDifferentIndividuals(owlIndividual, (RDFResource)differentFromRelation.Object);
-                foreach (RDFTriple objectAssertion in GetObjectAssertions(ontology, individualGraph))
-                    ontology.Data.DeclareObjectAssertion(owlIndividual, (RDFResource)objectAssertion.Predicate, (RDFResource)objectAssertion.Object);
-                foreach (RDFTriple datatypeAssertion in GetDatatypeAssertions(ontology, individualGraph))
-                    ontology.Data.DeclareDatatypeAssertion(owlIndividual, (RDFResource)datatypeAssertion.Predicate, (RDFLiteral)datatypeAssertion.Object);
-            }
+            //owl:sameAs
+            foreach (RDFTriple sameAsRelation in graph[null, RDFVocabulary.OWL.SAME_AS, null, null])
+                ontology.Data.DeclareSameIndividuals((RDFResource)sameAsRelation.Subject, (RDFResource)sameAsRelation.Object);
+
+            //owl:differentFrom
+            foreach (RDFTriple differentFromRelation in graph[null, RDFVocabulary.OWL.DIFFERENT_FROM, null, null])
+                ontology.Data.DeclareDifferentIndividuals((RDFResource)differentFromRelation.Subject, (RDFResource)differentFromRelation.Object);
+
+            //owl:ObjectPropertyAssertion
+            foreach (RDFTriple objectAssertion in GetObjectAssertions(ontology, graph))
+                ontology.Data.DeclareObjectAssertion((RDFResource)objectAssertion.Subject, (RDFResource)objectAssertion.Predicate, (RDFResource)objectAssertion.Object);
+
+            //owl:DatatypeAssertion
+            foreach (RDFTriple datatypeAssertion in GetDatatypeAssertions(ontology, graph))
+                ontology.Data.DeclareDatatypeAssertion((RDFResource)datatypeAssertion.Subject, (RDFResource)datatypeAssertion.Predicate, (RDFLiteral)datatypeAssertion.Object);
 
             //owl:NegativePropertyAssertion [OWL2]
             foreach (RDFTriple negativeObjectAssertion in GetNegativeObjectAssertions(graph))

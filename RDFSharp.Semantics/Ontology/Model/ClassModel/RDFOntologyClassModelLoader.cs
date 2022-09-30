@@ -14,7 +14,6 @@
    limitations under the License.
 */
 
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -74,11 +73,7 @@ namespace RDFSharp.Semantics
 
             #region Taxonomies
             foreach (RDFResource owlClass in ontology.Model.ClassModel)
-            {
-                RDFGraph classGraph = graph[owlClass, null, null, null];
-
-                //Annotations
-                foreach (RDFTriple classAnnotation in classGraph.Where(t => annotationProperties.Contains(t.Predicate.PatternMemberID)))
+                foreach (RDFTriple classAnnotation in graph[owlClass, null, null, null].Where(t => annotationProperties.Contains(t.Predicate.PatternMemberID)))
                 {
                     if (classAnnotation.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPO)
                         ontology.Model.ClassModel.AnnotateClass(owlClass, (RDFResource)classAnnotation.Predicate, (RDFResource)classAnnotation.Object);
@@ -86,21 +81,26 @@ namespace RDFSharp.Semantics
                         ontology.Model.ClassModel.AnnotateClass(owlClass, (RDFResource)classAnnotation.Predicate, (RDFLiteral)classAnnotation.Object);
                 }
 
-                //Relations
-                foreach (RDFTriple subClassRelation in classGraph[null, RDFVocabulary.RDFS.SUB_CLASS_OF, null, null])
-                    ontology.Model.ClassModel.DeclareSubClasses(owlClass, (RDFResource)subClassRelation.Object);
-                foreach (RDFTriple equivalentClassRelation in classGraph[null, RDFVocabulary.OWL.EQUIVALENT_CLASS, null, null])
-                    ontology.Model.ClassModel.DeclareEquivalentClasses(owlClass, (RDFResource)equivalentClassRelation.Object);
-                foreach (RDFTriple disjointClassRelation in classGraph[null, RDFVocabulary.OWL.DISJOINT_WITH, null, null])
-                    ontology.Model.ClassModel.DeclareDisjointClasses(owlClass, (RDFResource)disjointClassRelation.Object);
-                foreach (RDFTriple hasKeyRelation in classGraph[null, RDFVocabulary.OWL.HAS_KEY, null, null]) //OWL2
-                {
-                    List<RDFResource> keyProperties = new List<RDFResource>();
-                    RDFCollection keyPropertiesCollection = RDFModelUtilities.DeserializeCollectionFromGraph(graph, (RDFResource)hasKeyRelation.Object, RDFModelEnums.RDFTripleFlavors.SPO);
-                    foreach (RDFPatternMember keyProperty in keyPropertiesCollection)
-                        keyProperties.Add((RDFResource)keyProperty);
-                    ontology.Model.ClassModel.DeclareHasKey(owlClass, keyProperties);
-                }
+            //rdfs:subClassOf
+            foreach (RDFTriple subClassRelation in graph[null, RDFVocabulary.RDFS.SUB_CLASS_OF, null, null])
+                ontology.Model.ClassModel.DeclareSubClasses((RDFResource)subClassRelation.Subject, (RDFResource)subClassRelation.Object);
+
+            //owl:equivalentClass
+            foreach (RDFTriple equivalentClassRelation in graph[null, RDFVocabulary.OWL.EQUIVALENT_CLASS, null, null])
+                ontology.Model.ClassModel.DeclareEquivalentClasses((RDFResource)equivalentClassRelation.Subject, (RDFResource)equivalentClassRelation.Object);
+
+            //owl:disjointWith
+            foreach (RDFTriple disjointClassRelation in graph[null, RDFVocabulary.OWL.DISJOINT_WITH, null, null])
+                ontology.Model.ClassModel.DeclareDisjointClasses((RDFResource)disjointClassRelation.Subject, (RDFResource)disjointClassRelation.Object);
+
+            //owl:hasKey [OWL2]
+            foreach (RDFTriple hasKeyRelation in graph[null, RDFVocabulary.OWL.HAS_KEY, null, null])
+            {
+                List<RDFResource> keyProperties = new List<RDFResource>();
+                RDFCollection keyPropertiesCollection = RDFModelUtilities.DeserializeCollectionFromGraph(graph, (RDFResource)hasKeyRelation.Object, RDFModelEnums.RDFTripleFlavors.SPO);
+                foreach (RDFPatternMember keyProperty in keyPropertiesCollection)
+                    keyProperties.Add((RDFResource)keyProperty);
+                ontology.Model.ClassModel.DeclareHasKey((RDFResource)hasKeyRelation.Subject, keyProperties);
             }
 
             //owl:disjointUnionOf [OWL2]
