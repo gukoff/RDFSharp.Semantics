@@ -126,7 +126,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         /// <summary>
         /// Gets the complete list of concepts contained in the collection
         /// </summary>
-        public List<RDFResource> GetMembers()
+        internal List<RDFResource> GetMembers()
         {
             List<RDFResource> concepts = new List<RDFResource>();
 
