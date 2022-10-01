@@ -32,7 +32,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets an ontology data representation of the given graph
         /// </summary>
-        internal static void LoadData(this RDFOntology ontology, RDFGraph graph)
+        internal static void LoadData(this RDFOntology ontology, RDFGraph graph, Action<RDFOntology,RDFGraph> dataExtensionPoint=null)
         {
             if (graph == null)
                 throw new RDFSemanticsException("Cannot get ontology data from RDFGraph because given \"graph\" parameter is null");
@@ -101,6 +101,9 @@ namespace RDFSharp.Semantics
                         differentIndividuals.Add((RDFResource)differentIndividual);
                     ontology.Data.DeclareAllDifferentIndividuals(allDifferent, differentIndividuals);
                 }
+
+            //Extension point (e.g.: SKOS)
+            dataExtensionPoint?.Invoke(ontology, graph);
             #endregion
 
             RDFSemanticsEvents.RaiseSemanticsInfo(string.Format("Graph '{0}' has been parsed as Data", graph.Context));

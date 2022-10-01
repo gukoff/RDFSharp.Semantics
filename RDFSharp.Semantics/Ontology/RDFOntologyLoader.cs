@@ -31,15 +31,15 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets an ontology representation of the given graph
         /// </summary>
-        internal static RDFOntology FromRDFGraph(RDFGraph graph)
+        internal static RDFOntology FromRDFGraph(RDFGraph graph, Action<RDFOntology,RDFGraph> classModelExtensionPoint=null, Action<RDFOntology,RDFGraph> propertyModelExtensionPoint=null, Action<RDFOntology,RDFGraph> dataExtensionPoint=null)
         {
             if (graph == null)
                 throw new RDFSemanticsException("Cannot get ontology from RDFGraph because given \"graph\" parameter is null");
 
             RDFSemanticsEvents.RaiseSemanticsInfo(string.Format("Graph '{0}' is going to be parsed as Ontology...", graph.Context));
             LoadOntology(graph, out RDFOntology ontology);
-            ontology.LoadModel(graph);
-            ontology.LoadData(graph);
+            ontology.LoadModel(graph, classModelExtensionPoint, propertyModelExtensionPoint);
+            ontology.LoadData(graph, dataExtensionPoint);
             RDFSemanticsEvents.RaiseSemanticsInfo(string.Format("Graph '{0}' has been parsed as Ontology", graph.Context));
 
             return ontology;

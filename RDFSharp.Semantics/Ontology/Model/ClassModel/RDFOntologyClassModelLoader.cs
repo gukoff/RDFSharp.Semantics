@@ -14,6 +14,7 @@
    limitations under the License.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -31,7 +32,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets an ontology class model representation of the given graph
         /// </summary>
-        internal static void LoadClassModel(this RDFOntology ontology, RDFGraph graph)
+        internal static void LoadClassModel(this RDFOntology ontology, RDFGraph graph, Action<RDFOntology,RDFGraph> classModelExtensionPoint=null)
         {
             if (graph == null)
                 throw new RDFSemanticsException("Cannot get ontology class model from RDFGraph because given \"graph\" parameter is null");
@@ -123,6 +124,9 @@ namespace RDFSharp.Semantics
                         disjointClasses.Add((RDFResource)disjointClass);
                     ontology.Model.ClassModel.DeclareAllDisjointClasses(allDisjointClasses, disjointClasses);
                 }
+
+            //Extension point (e.g.: SKOS)
+            classModelExtensionPoint?.Invoke(ontology, graph);
             #endregion
 
             RDFSemanticsEvents.RaiseSemanticsInfo(string.Format("Graph '{0}' has been parsed as ClassModel", graph.Context));

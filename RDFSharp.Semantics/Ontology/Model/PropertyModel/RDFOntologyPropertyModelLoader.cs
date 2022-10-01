@@ -14,6 +14,7 @@
    limitations under the License.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using RDFSharp.Model;
@@ -30,7 +31,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets an ontology property model representation of the given graph
         /// </summary>
-        internal static void LoadPropertyModel(this RDFOntology ontology, RDFGraph graph)
+        internal static void LoadPropertyModel(this RDFOntology ontology, RDFGraph graph, Action<RDFOntology,RDFGraph> propertyModelExtensionPoint=null)
         {
             if (graph == null)
                 throw new RDFSemanticsException("Cannot get ontology property model from RDFGraph because given \"graph\" parameter is null");
@@ -109,6 +110,9 @@ namespace RDFSharp.Semantics
                         disjointProperties.Add((RDFResource)disjointProperty);
                     ontology.Model.PropertyModel.DeclareAllDisjointProperties(allDisjointProperties, disjointProperties);
                 }
+
+            //Extension point (e.g.: SKOS)
+            propertyModelExtensionPoint?.Invoke(ontology, graph);
             #endregion
 
             RDFSemanticsEvents.RaiseSemanticsInfo(string.Format("Graph '{0}' has been parsed as PropertyModel", graph.Context));
