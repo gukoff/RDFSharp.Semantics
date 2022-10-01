@@ -21,7 +21,7 @@ using System.Collections.Generic;
 namespace RDFSharp.Semantics.Extensions.SKOS
 {
     /// <summary>
-    /// SKOSConceptScheme represents an organized collection of skos:Concept individuals
+    /// SKOSConceptScheme represents an organized taxonomy describing relations between skos:Concept individuals
     /// </summary>
     public class SKOSConceptScheme : RDFResource, IEnumerable<RDFResource>
     {
@@ -31,6 +31,12 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         /// </summary>
         public long ConceptsCount
             => Concepts.Count;
+
+        /// <summary>
+        /// Count of the collections
+        /// </summary>
+        public long CollectionsCount
+            => Collections.Count;
 
         /// <summary>
         /// Count of the labels [SKOS-XL]
@@ -45,6 +51,12 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             => Concepts.Values.GetEnumerator();
 
         /// <summary>
+        /// Gets the enumerator on the collections for iteration
+        /// </summary>
+        public IEnumerator<RDFResource> CollectionsEnumerator
+            => Collections.Values.GetEnumerator();
+
+        /// <summary>
         /// Gets the enumerator on the labels for iteration [SKOS-XL]
         /// </summary>
         public IEnumerator<RDFResource> LabelsEnumerator
@@ -54,6 +66,11 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         /// Collection of concepts
         /// </summary>
         internal Dictionary<long, RDFResource> Concepts { get; set; }
+
+        /// <summary>
+        /// Collection of collections
+        /// </summary>
+        internal Dictionary<long, SKOSCollection> Collections { get; set; }
 
         /// <summary>
         /// Collection of labels [SKOS-XL]
@@ -73,11 +90,9 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         public SKOSConceptScheme(string conceptSchemeURI) : base(conceptSchemeURI)
         {
             Concepts = new Dictionary<long, RDFResource>();
+            Collections = new Dictionary<long, SKOSCollection>();
             Labels = new Dictionary<long, RDFResource>();
-            Ontology = new OWLOntology(conceptSchemeURI) {
-                Model = SKOSOntology.Instance.Model,
-                Data = SKOSOntology.Instance.Data
-            };
+            Ontology = new OWLOntology(conceptSchemeURI) { Model = SKOSOntology.Instance.Model, Data = SKOSOntology.Instance.Data };
 
             //Declare concept scheme to the data
             Ontology.Data.DeclareIndividual(this);
@@ -116,6 +131,26 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             Ontology.Data.DeclareIndividual(skosConcept);
             Ontology.Data.DeclareIndividualType(skosConcept, RDFVocabulary.SKOS.CONCEPT);
             Ontology.Data.DeclareObjectAssertion(skosConcept, RDFVocabulary.SKOS.IN_SCHEME, this);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the given skos:Collection instance to the concept scheme
+        /// </summary>
+        public SKOSConceptScheme DeclareCollection(SKOSCollection skosCollection)
+        {
+            if (skosCollection == null)
+                throw new OWLSemanticsException("Cannot declare skos:Collection instance to the concept scheme because given \"skosCollection\" parameter is null");
+
+            //Declare collection to the concept scheme
+            if (!Collections.ContainsKey(skosCollection.PatternMemberID))
+                Collections.Add(skosCollection.PatternMemberID, skosCollection);
+
+            //Add knowledge to the A-BOX
+            Ontology.Data.DeclareObjectAssertion(skosCollection, RDFVocabulary.SKOS.IN_SCHEME, this);
+            foreach (RDFTriple skosCollectionTriple in skosCollection.Ontology.Data.ABoxGraph)
+                Ontology.Data.ABoxGraph.AddTriple(skosCollectionTriple);
 
             return this;
         }
