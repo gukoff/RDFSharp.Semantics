@@ -33,15 +33,32 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             => Concepts.Count;
 
         /// <summary>
+        /// Count of the labels [SKOS-XL]
+        /// </summary>
+        public long LabelsCount
+            => Labels.Count;
+
+        /// <summary>
         /// Gets the enumerator on the concepts for iteration
         /// </summary>
         public IEnumerator<RDFResource> ConceptsEnumerator
             => Concepts.Values.GetEnumerator();
 
         /// <summary>
+        /// Gets the enumerator on the labels for iteration [SKOS-XL]
+        /// </summary>
+        public IEnumerator<RDFResource> LabelsEnumerator
+            => Labels.Values.GetEnumerator();
+
+        /// <summary>
         /// Collection of concepts
         /// </summary>
         internal Dictionary<long, RDFResource> Concepts { get; set; }
+
+        /// <summary>
+        /// Collection of labels [SKOS-XL]
+        /// </summary>
+        internal Dictionary<long, RDFResource> Labels { get; set; }
 
         /// <summary>
         /// Knowledge describing the concept scheme (always initialized with SKOS ontology)
@@ -56,6 +73,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         public SKOSConceptScheme(string conceptSchemeURI) : base(conceptSchemeURI)
         {
             Concepts = new Dictionary<long, RDFResource>();
+            Labels = new Dictionary<long, RDFResource>();
             Ontology = new OWLOntology(conceptSchemeURI) {
                 Model = SKOSOntology.Instance.Model,
                 Data = SKOSOntology.Instance.Data
@@ -90,7 +108,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (skosConcept == null)
                 throw new OWLSemanticsException("Cannot declare skos:Concept instance to the concept scheme because given \"skosConcept\" parameter is null");
 
-            //Declare individual to the concept scheme
+            //Declare concept to the concept scheme
             if (!Concepts.ContainsKey(skosConcept.PatternMemberID))
                 Concepts.Add(skosConcept.PatternMemberID, skosConcept);
 
@@ -98,6 +116,26 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             Ontology.Data.DeclareIndividual(skosConcept);
             Ontology.Data.DeclareIndividualType(skosConcept, RDFVocabulary.SKOS.CONCEPT);
             Ontology.Data.DeclareObjectAssertion(skosConcept, RDFVocabulary.SKOS.IN_SCHEME, this);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the given skosxl:Label instance to the concept scheme
+        /// </summary>
+        public SKOSConceptScheme DeclareLabel(RDFResource skosLabel)
+        {
+            if (skosLabel == null)
+                throw new OWLSemanticsException("Cannot declare skosxl:Label instance to the concept scheme because given \"skosLabel\" parameter is null");
+
+            //Declare label to the concept scheme
+            if (!Labels.ContainsKey(skosLabel.PatternMemberID))
+                Labels.Add(skosLabel.PatternMemberID, skosLabel);
+
+            //Add knowledge to the A-BOX
+            Ontology.Data.DeclareIndividual(skosLabel);
+            Ontology.Data.DeclareIndividualType(skosLabel, RDFVocabulary.SKOS.SKOSXL.LABEL);
+            Ontology.Data.DeclareObjectAssertion(skosLabel, RDFVocabulary.SKOS.IN_SCHEME, this);
 
             return this;
         }
