@@ -16,12 +16,14 @@
 
 using RDFSharp.Model;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace RDFSharp.Semantics.Extensions.SKOS
 {
     /// <summary>
     /// SKOSOntology represents an OWL-DL ontology implementation of W3C SKOS vocabulary
     /// </summary>
+    [ExcludeFromCodeCoverage]
     internal static class SKOSOntology
     {
         #region Properties
