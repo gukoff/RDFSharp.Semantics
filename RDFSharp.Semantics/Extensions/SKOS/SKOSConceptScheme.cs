@@ -148,9 +148,9 @@ namespace RDFSharp.Semantics.Extensions.SKOS
                 Collections.Add(skosCollection.PatternMemberID, skosCollection);
 
             //Add knowledge to the A-BOX
-            Ontology.Data.DeclareObjectAssertion(skosCollection, RDFVocabulary.SKOS.IN_SCHEME, this);
             foreach (RDFTriple skosCollectionTriple in skosCollection.Ontology.Data.ABoxGraph)
                 Ontology.Data.ABoxGraph.AddTriple(skosCollectionTriple);
+            Ontology.Data.DeclareObjectAssertion(skosCollection, RDFVocabulary.SKOS.IN_SCHEME, this);
 
             return this;
         }
