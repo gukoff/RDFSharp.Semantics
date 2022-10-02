@@ -169,13 +169,21 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (!Collections.ContainsKey(skosCollection.PatternMemberID))
                 Collections.Add(skosCollection.PatternMemberID, skosCollection);
 
-            //Add knowledge to the A-BOX
+            //Add knowledge to the A-BOX (collection)
             Ontology.Data.DeclareIndividual(skosCollection);
             Ontology.Data.DeclareIndividualType(skosCollection, RDFVocabulary.SKOS.COLLECTION);
             Ontology.Data.DeclareObjectAssertion(skosCollection, RDFVocabulary.SKOS.IN_SCHEME, this);
-            skosConcepts.ForEach(skosConcept => {
+
+            //Add knowledge to the A-BOX (concepts)
+            skosConcepts.ForEach(skosConcept => 
+            {
+                //Declare concept to the concept scheme
+                if (!Concepts.ContainsKey(skosConcept.PatternMemberID))
+                    Concepts.Add(skosConcept.PatternMemberID, skosConcept);
                 Ontology.Data.DeclareIndividual(skosConcept);
                 Ontology.Data.DeclareIndividualType(skosConcept, RDFVocabulary.SKOS.CONCEPT);
+
+                //Declare concept membership with given collection
                 Ontology.Data.DeclareObjectAssertion(skosCollection, RDFVocabulary.SKOS.MEMBER, skosConcept);
             });
 
@@ -198,19 +206,26 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (!OrderedCollections.ContainsKey(skosOrderedCollection.PatternMemberID))
                 OrderedCollections.Add(skosOrderedCollection.PatternMemberID, skosOrderedCollection);
 
-            //Add knowledge to the A-BOX
+            //Add knowledge to the A-BOX (ordered collection)
             Ontology.Data.DeclareIndividual(skosOrderedCollection);
             Ontology.Data.DeclareIndividualType(skosOrderedCollection, RDFVocabulary.SKOS.ORDERED_COLLECTION);
             Ontology.Data.DeclareObjectAssertion(skosOrderedCollection, RDFVocabulary.SKOS.IN_SCHEME, this);
-            RDFCollection rdfOrderedCollection = new RDFCollection(RDFModelEnums.RDFItemTypes.Resource);
+
+            //Add knowledge to the A-BOX (concepts)
+            RDFCollection rdfCollection = new RDFCollection(RDFModelEnums.RDFItemTypes.Resource);
             skosConcepts.ForEach(skosConcept => 
             {
+                //Declare concept to the concept scheme
+                if (!Concepts.ContainsKey(skosConcept.PatternMemberID))
+                    Concepts.Add(skosConcept.PatternMemberID, skosConcept);
                 Ontology.Data.DeclareIndividual(skosConcept);
                 Ontology.Data.DeclareIndividualType(skosConcept, RDFVocabulary.SKOS.CONCEPT);
-                rdfOrderedCollection.AddItem(skosConcept);
+
+                //Prepare concept membership with given ordered collection
+                rdfCollection.AddItem(skosConcept);
             });
-            Ontology.Data.ABoxGraph.AddCollection(rdfOrderedCollection);
-            Ontology.Data.DeclareObjectAssertion(skosOrderedCollection, RDFVocabulary.SKOS.MEMBER_LIST, rdfOrderedCollection.ReificationSubject);
+            Ontology.Data.ABoxGraph.AddCollection(rdfCollection);
+            Ontology.Data.DeclareObjectAssertion(skosOrderedCollection, RDFVocabulary.SKOS.MEMBER_LIST, rdfCollection.ReificationSubject);
 
             return this;
         }
