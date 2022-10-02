@@ -249,7 +249,9 @@ namespace RDFSharp.Semantics.Extensions.SKOS
 
             return this;
         }
+        #endregion
 
+        #region Utilities
         /// <summary>
         /// Builds a reference SKOS model
         /// </summary>
