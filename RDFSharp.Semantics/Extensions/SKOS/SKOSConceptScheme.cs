@@ -17,6 +17,8 @@
 using RDFSharp.Model;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace RDFSharp.Semantics.Extensions.SKOS
 {
@@ -30,69 +32,97 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         /// Count of the concepts
         /// </summary>
         public long ConceptsCount
-            => Concepts.Count;
+        {
+            get
+            {
+                long count = 0;
+                IEnumerator<RDFResource> concepts = ConceptsEnumerator;
+                while (concepts.MoveNext())
+                    count++;
+                return count;
+            }
+        }
 
         /// <summary>
         /// Count of the collections
         /// </summary>
         public long CollectionsCount
-            => Collections.Count;
+        {
+            get
+            {
+                long count = 0;
+                IEnumerator<RDFResource> collections = CollectionsEnumerator;
+                while (collections.MoveNext())
+                    count++;
+                return count;
+            }
+        }
 
         /// <summary>
         /// Count of the ordered collections
         /// </summary>
         public long OrderedCollectionsCount
-            => OrderedCollections.Count;
+        {
+            get
+            {
+                long count = 0;
+                IEnumerator<RDFResource> orderedCollections = OrderedCollectionsEnumerator;
+                while (orderedCollections.MoveNext())
+                    count++;
+                return count;
+            }
+        }
 
         /// <summary>
         /// Count of the labels [SKOS-XL]
         /// </summary>
         public long LabelsCount
-            => Labels.Count;
+        {
+            get
+            {
+                long count = 0;
+                IEnumerator<RDFResource> labels = LabelsEnumerator;
+                while (labels.MoveNext())
+                    count++;
+                return count;
+            }
+        }
 
         /// <summary>
         /// Gets the enumerator on the concepts for iteration
         /// </summary>
         public IEnumerator<RDFResource> ConceptsEnumerator
-            => Concepts.Values.GetEnumerator();
+            => Ontology.Data.ABoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.SKOS.CONCEPT, null]
+                            .Select(t => t.Subject)
+                            .OfType<RDFResource>()
+                            .GetEnumerator();
 
         /// <summary>
         /// Gets the enumerator on the collections for iteration
         /// </summary>
         public IEnumerator<RDFResource> CollectionsEnumerator
-            => Collections.Values.GetEnumerator();
+            => Ontology.Data.ABoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.SKOS.COLLECTION, null]
+                            .Select(t => t.Subject)
+                            .OfType<RDFResource>()
+                            .GetEnumerator();
 
         /// <summary>
         /// Gets the enumerator on the ordered collections for iteration
         /// </summary>
         public IEnumerator<RDFResource> OrderedCollectionsEnumerator
-            => OrderedCollections.Values.GetEnumerator();
+            => Ontology.Data.ABoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.SKOS.ORDERED_COLLECTION, null]
+                            .Select(t => t.Subject)
+                            .OfType<RDFResource>()
+                            .GetEnumerator();
 
         /// <summary>
         /// Gets the enumerator on the labels for iteration [SKOS-XL]
         /// </summary>
         public IEnumerator<RDFResource> LabelsEnumerator
-            => Labels.Values.GetEnumerator();
-
-        /// <summary>
-        /// Collection of concepts
-        /// </summary>
-        internal Dictionary<long, RDFResource> Concepts { get; set; }
-
-        /// <summary>
-        /// Collection of collections
-        /// </summary>
-        internal Dictionary<long, RDFResource> Collections { get; set; }
-
-        /// <summary>
-        /// Collection of ordered collections
-        /// </summary>
-        internal Dictionary<long, RDFResource> OrderedCollections { get; set; }
-
-        /// <summary>
-        /// Collection of labels [SKOS-XL]
-        /// </summary>
-        internal Dictionary<long, RDFResource> Labels { get; set; }
+            => Ontology.Data.ABoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.SKOS.SKOSXL.LABEL, null]
+                            .Select(t => t.Subject)
+                            .OfType<RDFResource>()
+                            .GetEnumerator();
 
         /// <summary>
         /// Knowledge describing the concept scheme (always initialized with SKOS ontology)
@@ -106,10 +136,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         /// </summary>
         public SKOSConceptScheme(string conceptSchemeURI) : base(conceptSchemeURI)
         {
-            Concepts = new Dictionary<long, RDFResource>();
-            Collections = new Dictionary<long, RDFResource>();
-            OrderedCollections = new Dictionary<long, RDFResource>();
-            Labels = new Dictionary<long, RDFResource>();
             Ontology = new OWLOntology(conceptSchemeURI) { Model = BuildSKOSModel() };
 
             //Declare concept scheme to the data
@@ -141,10 +167,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (skosConcept == null)
                 throw new OWLSemanticsException("Cannot declare skos:Concept instance to the concept scheme because given \"skosConcept\" parameter is null");
 
-            //Declare concept to the concept scheme
-            if (!Concepts.ContainsKey(skosConcept.PatternMemberID))
-                Concepts.Add(skosConcept.PatternMemberID, skosConcept);
-
             //Add knowledge to the A-BOX
             Ontology.Data.DeclareIndividual(skosConcept);
             Ontology.Data.DeclareIndividualType(skosConcept, RDFVocabulary.SKOS.CONCEPT);
@@ -165,10 +187,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (skosConcepts.Count == 0)
                 throw new OWLSemanticsException("Cannot declare skos:Collection instance to the concept scheme because given \"skosConcepts\" parameter is an empty list");
 
-            //Declare collection to the concept scheme
-            if (!Collections.ContainsKey(skosCollection.PatternMemberID))
-                Collections.Add(skosCollection.PatternMemberID, skosCollection);
-
             //Add knowledge to the A-BOX (collection)
             Ontology.Data.DeclareIndividual(skosCollection);
             Ontology.Data.DeclareIndividualType(skosCollection, RDFVocabulary.SKOS.COLLECTION);
@@ -177,13 +195,8 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             //Add knowledge to the A-BOX (concepts)
             skosConcepts.ForEach(skosConcept => 
             {
-                //Declare concept to the concept scheme
-                if (!Concepts.ContainsKey(skosConcept.PatternMemberID))
-                    Concepts.Add(skosConcept.PatternMemberID, skosConcept);
                 Ontology.Data.DeclareIndividual(skosConcept);
                 Ontology.Data.DeclareIndividualType(skosConcept, RDFVocabulary.SKOS.CONCEPT);
-
-                //Declare concept membership with given collection
                 Ontology.Data.DeclareObjectAssertion(skosCollection, RDFVocabulary.SKOS.MEMBER, skosConcept);
             });
 
@@ -202,10 +215,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (skosConcepts.Count == 0)
                 throw new OWLSemanticsException("Cannot declare skos:OrderedCollection instance to the concept scheme because given \"skosConcepts\" parameter is an empty list");
 
-            //Declare ordered collection to the concept scheme
-            if (!OrderedCollections.ContainsKey(skosOrderedCollection.PatternMemberID))
-                OrderedCollections.Add(skosOrderedCollection.PatternMemberID, skosOrderedCollection);
-
             //Add knowledge to the A-BOX (ordered collection)
             Ontology.Data.DeclareIndividual(skosOrderedCollection);
             Ontology.Data.DeclareIndividualType(skosOrderedCollection, RDFVocabulary.SKOS.ORDERED_COLLECTION);
@@ -215,13 +224,8 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             RDFCollection rdfCollection = new RDFCollection(RDFModelEnums.RDFItemTypes.Resource);
             skosConcepts.ForEach(skosConcept => 
             {
-                //Declare concept to the concept scheme
-                if (!Concepts.ContainsKey(skosConcept.PatternMemberID))
-                    Concepts.Add(skosConcept.PatternMemberID, skosConcept);
                 Ontology.Data.DeclareIndividual(skosConcept);
                 Ontology.Data.DeclareIndividualType(skosConcept, RDFVocabulary.SKOS.CONCEPT);
-
-                //Prepare concept membership with given ordered collection
                 rdfCollection.AddItem(skosConcept);
             });
             Ontology.Data.ABoxGraph.AddCollection(rdfCollection);
@@ -238,10 +242,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (skosLabel == null)
                 throw new OWLSemanticsException("Cannot declare skosxl:Label instance to the concept scheme because given \"skosLabel\" parameter is null");
 
-            //Declare label to the concept scheme
-            if (!Labels.ContainsKey(skosLabel.PatternMemberID))
-                Labels.Add(skosLabel.PatternMemberID, skosLabel);
-
             //Add knowledge to the A-BOX
             Ontology.Data.DeclareIndividual(skosLabel);
             Ontology.Data.DeclareIndividualType(skosLabel, RDFVocabulary.SKOS.SKOSXL.LABEL);
@@ -249,6 +249,30 @@ namespace RDFSharp.Semantics.Extensions.SKOS
 
             return this;
         }
+
+        /// <summary>
+        /// Gets a graph representation of the concept scheme
+        /// </summary>
+        public RDFGraph ToRDFGraph()
+            => Ontology.ToRDFGraph();
+
+        /// <summary>
+        /// Asynchronously gets a graph representation of the concept scheme
+        /// </summary>
+        public Task<RDFGraph> ToRDFGraphAsync()
+            => Task.Run(() => ToRDFGraph());
+
+        /// <summary>
+        /// Gets a concept scheme representation from the given graph
+        /// </summary>
+        public static SKOSConceptScheme FromRDFGraph(RDFGraph graph)
+            => SKOSConceptSchemeLoader.FromRDFGraph(graph);
+
+        /// <summary>
+        /// Asynchronously gets a concept scheme representation from the given graph
+        /// </summary>
+        public static Task<SKOSConceptScheme> FromRDFGraphAsync(RDFGraph graph)
+            => Task.Run(() => FromRDFGraph(graph));
         #endregion
 
         #region Utilities

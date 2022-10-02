@@ -140,6 +140,7 @@ namespace RDFSharp.Semantics
                 RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION.PatternMemberID,
                 RDFVocabulary.OWL.AXIOM.PatternMemberID
             };
+
             ReservedProperties = new HashSet<long>()
             {
                 //RDF
@@ -210,6 +211,7 @@ namespace RDFSharp.Semantics
                 RDFVocabulary.OWL.ANNOTATION_PROPERTY.PatternMemberID,
                 RDFVocabulary.OWL.ANNOTATED_TARGET.PatternMemberID
             };
+
             StandardResourceAnnotations = new HashSet<long>()
             {
                 //RDFS
@@ -241,8 +243,20 @@ namespace RDFSharp.Semantics
                 { RDFVocabulary.DC.DCTERMS.DATE_ACCEPTED.PatternMemberID },
                 { RDFVocabulary.DC.DCTERMS.DATE_SUBMITTED.PatternMemberID },
                 { RDFVocabulary.DC.DCTERMS.DATE_COPYRIGHTED.PatternMemberID },
-                { RDFVocabulary.DC.DCTERMS.LICENSE.PatternMemberID }
+                { RDFVocabulary.DC.DCTERMS.LICENSE.PatternMemberID },
+                //SKOS
+                { RDFVocabulary.SKOS.ALT_LABEL.PatternMemberID },
+                { RDFVocabulary.SKOS.CHANGE_NOTE.PatternMemberID },
+                { RDFVocabulary.SKOS.DEFINITION.PatternMemberID },
+                { RDFVocabulary.SKOS.EDITORIAL_NOTE.PatternMemberID },
+                { RDFVocabulary.SKOS.EXAMPLE.PatternMemberID },
+                { RDFVocabulary.SKOS.HIDDEN_LABEL.PatternMemberID },
+                { RDFVocabulary.SKOS.HISTORY_NOTE.PatternMemberID },
+                { RDFVocabulary.SKOS.NOTE.PatternMemberID },
+                { RDFVocabulary.SKOS.PREF_LABEL.PatternMemberID },
+                { RDFVocabulary.SKOS.SCOPE_NOTE.PatternMemberID }
             };
+
             StandardOntologyAnnotations = new HashSet<long>(StandardResourceAnnotations)
             {
                 //OWL
