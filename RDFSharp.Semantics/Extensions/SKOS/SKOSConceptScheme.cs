@@ -39,6 +39,12 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             => Collections.Count;
 
         /// <summary>
+        /// Count of the ordered collections
+        /// </summary>
+        public long OrderedCollectionsCount
+            => OrderedCollections.Count;
+
+        /// <summary>
         /// Count of the labels [SKOS-XL]
         /// </summary>
         public long LabelsCount
@@ -57,6 +63,12 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             => Collections.Values.GetEnumerator();
 
         /// <summary>
+        /// Gets the enumerator on the ordered collections for iteration
+        /// </summary>
+        public IEnumerator<RDFResource> OrderedCollectionsEnumerator
+            => OrderedCollections.Values.GetEnumerator();
+
+        /// <summary>
         /// Gets the enumerator on the labels for iteration [SKOS-XL]
         /// </summary>
         public IEnumerator<RDFResource> LabelsEnumerator
@@ -70,7 +82,12 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         /// <summary>
         /// Collection of collections
         /// </summary>
-        internal Dictionary<long, SKOSCollection> Collections { get; set; }
+        internal Dictionary<long, RDFResource> Collections { get; set; }
+
+        /// <summary>
+        /// Collection of ordered collections
+        /// </summary>
+        internal Dictionary<long, RDFResource> OrderedCollections { get; set; }
 
         /// <summary>
         /// Collection of labels [SKOS-XL]
@@ -90,7 +107,8 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         public SKOSConceptScheme(string conceptSchemeURI) : base(conceptSchemeURI)
         {
             Concepts = new Dictionary<long, RDFResource>();
-            Collections = new Dictionary<long, SKOSCollection>();
+            Collections = new Dictionary<long, RDFResource>();
+            OrderedCollections = new Dictionary<long, RDFResource>();
             Labels = new Dictionary<long, RDFResource>();
             Ontology = new OWLOntology(conceptSchemeURI) { Model = SKOSOntology.Instance.Model, Data = SKOSOntology.Instance.Data };
 
@@ -138,19 +156,61 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         /// <summary>
         /// Declares the given skos:Collection instance to the concept scheme
         /// </summary>
-        public SKOSConceptScheme DeclareCollection(SKOSCollection skosCollection)
+        public SKOSConceptScheme DeclareCollection(RDFResource skosCollection, List<RDFResource> skosConcepts)
         {
             if (skosCollection == null)
                 throw new OWLSemanticsException("Cannot declare skos:Collection instance to the concept scheme because given \"skosCollection\" parameter is null");
+            if (skosConcepts == null)
+                throw new OWLSemanticsException("Cannot declare skos:Collection instance to the concept scheme because given \"skosConcepts\" parameter is null");
+            if (skosConcepts.Count == 0)
+                throw new OWLSemanticsException("Cannot declare skos:Collection instance to the concept scheme because given \"skosConcepts\" parameter is an empty list");
 
             //Declare collection to the concept scheme
             if (!Collections.ContainsKey(skosCollection.PatternMemberID))
                 Collections.Add(skosCollection.PatternMemberID, skosCollection);
 
             //Add knowledge to the A-BOX
-            foreach (RDFTriple skosCollectionTriple in skosCollection.Ontology.Data.ABoxGraph)
-                Ontology.Data.ABoxGraph.AddTriple(skosCollectionTriple);
+            Ontology.Data.DeclareIndividual(skosCollection);
+            Ontology.Data.DeclareIndividualType(skosCollection, RDFVocabulary.SKOS.COLLECTION);
             Ontology.Data.DeclareObjectAssertion(skosCollection, RDFVocabulary.SKOS.IN_SCHEME, this);
+            skosConcepts.ForEach(skosConcept => {
+                Ontology.Data.DeclareIndividual(skosConcept);
+                Ontology.Data.DeclareIndividualType(skosConcept, RDFVocabulary.SKOS.CONCEPT);
+                Ontology.Data.DeclareObjectAssertion(skosCollection, RDFVocabulary.SKOS.MEMBER, skosConcept);
+            });
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the given skos:OrderedCollection instance to the concept scheme
+        /// </summary>
+        public SKOSConceptScheme DeclareOrderedCollection(RDFResource skosOrderedCollection, List<RDFResource> skosConcepts)
+        {
+            if (skosOrderedCollection == null)
+                throw new OWLSemanticsException("Cannot declare skos:OrderedCollection instance to the concept scheme because given \"skosOrderedCollection\" parameter is null");
+            if (skosConcepts == null)
+                throw new OWLSemanticsException("Cannot declare skos:OrderedCollection instance to the concept scheme because given \"skosConcepts\" parameter is null");
+            if (skosConcepts.Count == 0)
+                throw new OWLSemanticsException("Cannot declare skos:OrderedCollection instance to the concept scheme because given \"skosConcepts\" parameter is an empty list");
+
+            //Declare ordered collection to the concept scheme
+            if (!OrderedCollections.ContainsKey(skosOrderedCollection.PatternMemberID))
+                OrderedCollections.Add(skosOrderedCollection.PatternMemberID, skosOrderedCollection);
+
+            //Add knowledge to the A-BOX
+            Ontology.Data.DeclareIndividual(skosOrderedCollection);
+            Ontology.Data.DeclareIndividualType(skosOrderedCollection, RDFVocabulary.SKOS.ORDERED_COLLECTION);
+            Ontology.Data.DeclareObjectAssertion(skosOrderedCollection, RDFVocabulary.SKOS.IN_SCHEME, this);
+            RDFCollection rdfOrderedCollection = new RDFCollection(RDFModelEnums.RDFItemTypes.Resource);
+            skosConcepts.ForEach(skosConcept => 
+            {
+                Ontology.Data.DeclareIndividual(skosConcept);
+                Ontology.Data.DeclareIndividualType(skosConcept, RDFVocabulary.SKOS.CONCEPT);
+                rdfOrderedCollection.AddItem(skosConcept);
+            });
+            Ontology.Data.ABoxGraph.AddCollection(rdfOrderedCollection);
+            Ontology.Data.DeclareObjectAssertion(skosOrderedCollection, RDFVocabulary.SKOS.MEMBER_LIST, rdfOrderedCollection.ReificationSubject);
 
             return this;
         }
