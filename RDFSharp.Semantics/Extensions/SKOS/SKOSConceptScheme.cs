@@ -193,12 +193,12 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             Ontology.Data.DeclareObjectAssertion(skosCollection, RDFVocabulary.SKOS.IN_SCHEME, this);
 
             //Add knowledge to the A-BOX (concepts)
-            skosConcepts.ForEach(skosConcept => 
+            foreach (RDFResource skosConcept in skosConcepts)
             {
                 Ontology.Data.DeclareIndividual(skosConcept);
                 Ontology.Data.DeclareIndividualType(skosConcept, RDFVocabulary.SKOS.CONCEPT);
                 Ontology.Data.DeclareObjectAssertion(skosCollection, RDFVocabulary.SKOS.MEMBER, skosConcept);
-            });
+            }
 
             return this;
         }

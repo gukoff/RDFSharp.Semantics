@@ -52,6 +52,16 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         /// </summary>
         internal static void SKOSDataExtensionPoint(OWLOntology ontology, RDFGraph graph)
         {
+            //skos:Collection
+            foreach (RDFTriple typeCollection in graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.SKOS.COLLECTION, null])
+                foreach (RDFTriple memberRelation in graph[(RDFResource)typeCollection.Subject, RDFVocabulary.SKOS.MEMBER, null, null])
+                {
+                    //Also declare concepts of the collection
+                    ontology.Data.DeclareIndividual((RDFResource)memberRelation.Object);
+                    ontology.Data.DeclareIndividualType((RDFResource)memberRelation.Object, RDFVocabulary.SKOS.CONCEPT);
+                    ontology.Data.DeclareObjectAssertion((RDFResource)typeCollection.Subject, RDFVocabulary.SKOS.MEMBER, (RDFResource)memberRelation.Object);
+                }
+
             //skos:OrderedCollection
             foreach (RDFTriple typeOrderedCollection in graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.SKOS.ORDERED_COLLECTION, null])
                 foreach (RDFTriple memberListRelation in graph[(RDFResource)typeOrderedCollection.Subject, RDFVocabulary.SKOS.MEMBER_LIST, null, null])
@@ -59,7 +69,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
                     RDFCollection skosOrderedCollection = RDFModelUtilities.DeserializeCollectionFromGraph(graph, (RDFResource)memberListRelation.Object, RDFModelEnums.RDFTripleFlavors.SPO);
                     if (skosOrderedCollection.ItemsCount > 0)
                     {
-                        //Also declare concepts of the ordred collection
+                        //Also declare concepts of the ordered collection
                         foreach (RDFPatternMember skosConcept in skosOrderedCollection)
                         {
                             ontology.Data.DeclareIndividual((RDFResource)skosConcept);
