@@ -448,6 +448,125 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             return this;
         }
 
+        /// <summary>
+        ///  Declares the existence of the given "Note(skosConcept,noteValue)" annotation to the concept scheme
+        /// </summary>
+        public SKOSConceptScheme DeclareNote(RDFResource skosConcept, RDFLiteral noteValue)
+        {
+            if (skosConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:note annotation to the concept scheme because given \"skosConcept\" parameter is null");
+            if (noteValue == null)
+                throw new OWLSemanticsException("Cannot declare skos:note annotation to the concept scheme because given \"noteValue\" parameter is null");
+
+            //Add knowledge to the A-BOX
+            DeclareConcept(skosConcept);
+            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.NOTE, noteValue));
+
+            return this;
+        }
+
+        /// <summary>
+        ///  Declares the existence of the given "ChangeNote(skosConcept,changeNoteValue)" annotation to the concept scheme
+        /// </summary>
+        public SKOSConceptScheme DeclareChangeNote(RDFResource skosConcept, RDFLiteral changeNoteValue)
+        {
+            if (skosConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:changeNote annotation to the concept scheme because given \"skosConcept\" parameter is null");
+            if (changeNoteValue == null)
+                throw new OWLSemanticsException("Cannot declare skos:changeNote annotation to the concept scheme because given \"changeNoteValue\" parameter is null");
+
+            //Add knowledge to the A-BOX
+            DeclareConcept(skosConcept);
+            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.CHANGE_NOTE, changeNoteValue));
+
+            return this;
+        }
+
+        /// <summary>
+        ///  Declares the existence of the given "EditorialNote(skosConcept,editorialNoteValue)" annotation to the concept scheme
+        /// </summary>
+        public SKOSConceptScheme DeclareEditorialNote(RDFResource skosConcept, RDFLiteral editorialNoteValue)
+        {
+            if (skosConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:editorialNote annotation to the concept scheme because given \"skosConcept\" parameter is null");
+            if (editorialNoteValue == null)
+                throw new OWLSemanticsException("Cannot declare skos:editorialNote annotation to the concept scheme because given \"editorialNoteValue\" parameter is null");
+
+            //Add knowledge to the A-BOX
+            DeclareConcept(skosConcept);
+            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.EDITORIAL_NOTE, editorialNoteValue));
+
+            return this;
+        }
+
+        /// <summary>
+        ///  Declares the existence of the given "HistoryNote(skosConcept,historyNoteValue)" annotation to the concept scheme
+        /// </summary>
+        public SKOSConceptScheme DeclareHistoryNote(RDFResource skosConcept, RDFLiteral historyNoteValue)
+        {
+            if (skosConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:historyNote annotation to the concept scheme because given \"skosConcept\" parameter is null");
+            if (historyNoteValue == null)
+                throw new OWLSemanticsException("Cannot declare skos:historyNote annotation to the concept scheme because given \"historyNoteValue\" parameter is null");
+
+            //Add knowledge to the A-BOX
+            DeclareConcept(skosConcept);
+            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.HISTORY_NOTE, historyNoteValue));
+
+            return this;
+        }
+
+        /// <summary>
+        ///  Declares the existence of the given "ScopeNote(skosConcept,scopeNoteValue)" annotation to the concept scheme
+        /// </summary>
+        public SKOSConceptScheme DeclareScopeNote(RDFResource skosConcept, RDFLiteral scopeNoteValue)
+        {
+            if (skosConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:scopeNote annotation to the concept scheme because given \"skosConcept\" parameter is null");
+            if (scopeNoteValue == null)
+                throw new OWLSemanticsException("Cannot declare skos:scopeNote annotation to the concept scheme because given \"scopeNoteValue\" parameter is null");
+
+            //Add knowledge to the A-BOX
+            DeclareConcept(skosConcept);
+            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.SCOPE_NOTE, scopeNoteValue));
+
+            return this;
+        }
+
+        /// <summary>
+        ///  Declares the existence of the given "Definition(skosConcept,definitionValue)" annotation to the concept scheme
+        /// </summary>
+        public SKOSConceptScheme DeclareDefinition(RDFResource skosConcept, RDFLiteral definitionValue)
+        {
+            if (skosConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:definition annotation to the concept scheme because given \"skosConcept\" parameter is null");
+            if (definitionValue == null)
+                throw new OWLSemanticsException("Cannot declare skos:definition annotation to the concept scheme because given \"definitionValue\" parameter is null");
+
+            //Add knowledge to the A-BOX
+            DeclareConcept(skosConcept);
+            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.DEFINITION, definitionValue));
+
+            return this;
+        }
+
+        /// <summary>
+        ///  Declares the existence of the given "Example(skosConcept,exampleValue)" annotation to the concept scheme
+        /// </summary>
+        public SKOSConceptScheme DeclareExample(RDFResource skosConcept, RDFLiteral exampleValue)
+        {
+            if (skosConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:example annotation to the concept scheme because given \"skosConcept\" parameter is null");
+            if (exampleValue == null)
+                throw new OWLSemanticsException("Cannot declare skos:example annotation to the concept scheme because given \"exampleValue\" parameter is null");
+
+            //Add knowledge to the A-BOX
+            DeclareConcept(skosConcept);
+            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.EXAMPLE, exampleValue));
+
+            return this;
+        }
+
         //RELATIONS
 
         /// <summary>
@@ -455,25 +574,15 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         /// </summary>
         public SKOSConceptScheme DeclareTopConcept(RDFResource skosConcept)
         {
-            #region SKOS Integrity Checks
-            bool SKOSIntegrityChecks()
-                => this.CheckTopConceptCompatibility(skosConcept);
-            #endregion
-
             if (skosConcept == null)
                 throw new OWLSemanticsException("Cannot declare skos:topConceptOf relation to the concept scheme because given \"skosConcept\" parameter is null");
 
-            //Add knowledge to the A-BOX (or raise warning if violations are detected)
-            if (SKOSIntegrityChecks())
-            {
-                DeclareConcept(skosConcept);
-                Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.TOP_CONCEPT_OF, this));
+            //Add knowledge to the A-BOX
+            DeclareConcept(skosConcept);
+            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.TOP_CONCEPT_OF, this));
 
-                //Also add an automatic A-BOX inference exploiting owl:inverseOf relation
-                Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(this, RDFVocabulary.SKOS.HAS_TOP_CONCEPT, skosConcept));
-            }
-            else
-                OWLSemanticsEvents.RaiseSemanticsWarning(string.Format("HasTopConcept relation between concept scheme '{0}' and concept '{1}' cannot be declared to the model because it would violate SKOS integrity", this, skosConcept));
+            //Also add an automatic A-BOX inference exploiting owl:inverseOf relation
+            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(this, RDFVocabulary.SKOS.HAS_TOP_CONCEPT, skosConcept));
 
             return this;
         }
@@ -513,6 +622,159 @@ namespace RDFSharp.Semantics.Extensions.SKOS
 
             //Also add an automatic A-BOX inference exploiting symmetry of skos:related relation
             Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(rightConcept, RDFVocabulary.SKOS.RELATED, leftConcept));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the existence of the given "Broader(childConcept,motherConcept)" relation to the concept scheme
+        /// </summary>
+        public SKOSConceptScheme DeclareBroaderConcepts(RDFResource childConcept, RDFResource motherConcept)
+        {
+            #region SKOS Integrity Checks
+            bool SKOSIntegrityChecks()
+                => this.CheckBroaderCompatibility(childConcept, motherConcept);
+            #endregion
+
+            if (childConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:broader relation to the concept scheme because given \"childConcept\" parameter is null");
+            if (motherConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:broader relation to the concept scheme because given \"motherConcept\" parameter is null");
+            if (childConcept.Equals(motherConcept))
+                throw new OWLSemanticsException("Cannot declare skos:broader relation to the concept scheme because given \"childConcept\" parameter refers to the same concept as the given \"motherConcept\" parameter");
+
+            //Add knowledge to the A-BOX (or raise warning if violations are detected)
+            if (SKOSIntegrityChecks())
+            {
+                //Add knowledge to the A-BOX
+                DeclareConcept(childConcept);
+                DeclareConcept(motherConcept);
+                Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(childConcept, RDFVocabulary.SKOS.BROADER, motherConcept));
+
+                //Also add an automatic A-BOX inference exploiting owl:inverseOf relation
+                Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(motherConcept, RDFVocabulary.SKOS.NARROWER, childConcept));
+            }
+            else
+                OWLSemanticsEvents.RaiseSemanticsWarning(string.Format("Broader relation between concept '{0}' and concept '{1}' cannot be declared to the concept scheme because it would violate SKOS integrity", childConcept, motherConcept));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the existence of the given "BroaderTransitive(childConcept,motherConcept)" relation to the concept scheme
+        /// </summary>
+        public SKOSConceptScheme DeclareBroaderTransitiveConcepts(RDFResource childConcept, RDFResource motherConcept)
+        {
+            #region SKOS Integrity Checks
+            bool SKOSIntegrityChecks()
+                => this.CheckBroaderCompatibility(childConcept, motherConcept);
+            #endregion
+
+            if (childConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:broaderTransitive relation to the concept scheme because given \"childConcept\" parameter is null");
+            if (motherConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:broaderTransitive relation to the concept scheme because given \"motherConcept\" parameter is null");
+            if (childConcept.Equals(motherConcept))
+                throw new OWLSemanticsException("Cannot declare skos:broaderTransitive relation to the concept scheme because given \"childConcept\" parameter refers to the same concept as the given \"motherConcept\" parameter");
+
+            //Add knowledge to the A-BOX (or raise warning if violations are detected)
+            if (SKOSIntegrityChecks())
+            {
+                //Add knowledge to the A-BOX
+                DeclareConcept(childConcept);
+                DeclareConcept(motherConcept);
+                Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(childConcept, RDFVocabulary.SKOS.BROADER_TRANSITIVE, motherConcept));
+
+                //Also add an automatic A-BOX inference exploiting owl:inverseOf relation
+                Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(motherConcept, RDFVocabulary.SKOS.NARROWER_TRANSITIVE, childConcept));
+            }
+            else
+                OWLSemanticsEvents.RaiseSemanticsWarning(string.Format("BroaderTransitive relation between concept '{0}' and concept '{1}' cannot be declared to the concept scheme because it would violate SKOS integrity", childConcept, motherConcept));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the existence of the given "Narrower(motherConcept,childConcept)" relation to the concept scheme
+        /// </summary>
+        public SKOSConceptScheme DeclareNarrowerConcepts(RDFResource motherConcept, RDFResource childConcept)
+        {
+            #region SKOS Integrity Checks
+            bool SKOSIntegrityChecks()
+                => this.CheckNarrowerCompatibility(motherConcept, childConcept);
+            #endregion
+
+            if (childConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:narrower relation to the concept scheme because given \"childConcept\" parameter is null");
+            if (motherConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:narrower relation to the concept scheme because given \"motherConcept\" parameter is null");
+            if (childConcept.Equals(motherConcept))
+                throw new OWLSemanticsException("Cannot declare skos:narrower relation to the concept scheme because given \"childConcept\" parameter refers to the same concept as the given \"motherConcept\" parameter");
+
+            //Add knowledge to the A-BOX (or raise warning if violations are detected)
+            if (SKOSIntegrityChecks())
+            {
+                //Add knowledge to the A-BOX
+                DeclareConcept(childConcept);
+                DeclareConcept(motherConcept);
+                Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(motherConcept, RDFVocabulary.SKOS.NARROWER, childConcept));
+
+                //Also add an automatic A-BOX inference exploiting owl:inverseOf relation
+                Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(childConcept, RDFVocabulary.SKOS.BROADER, motherConcept));
+            }
+            else
+                OWLSemanticsEvents.RaiseSemanticsWarning(string.Format("Narrower relation between concept '{0}' and concept '{1}' cannot be declared to the concept scheme because it would violate SKOS integrity", motherConcept, childConcept));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the existence of the given "NarrowerTransitive(motherConcept,childConcept)" relation to the concept scheme
+        /// </summary>
+        public SKOSConceptScheme DeclareNarrowerTransitiveConcepts(RDFResource motherConcept, RDFResource childConcept)
+        {
+            #region SKOS Integrity Checks
+            bool SKOSIntegrityChecks()
+                => this.CheckNarrowerCompatibility(motherConcept, childConcept);
+            #endregion
+
+            if (childConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:narrowerTransitive relation to the concept scheme because given \"childConcept\" parameter is null");
+            if (motherConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:narrowerTransitive relation to the concept scheme because given \"motherConcept\" parameter is null");
+            if (childConcept.Equals(motherConcept))
+                throw new OWLSemanticsException("Cannot declare skos:narrowerTransitive relation to the concept scheme because given \"childConcept\" parameter refers to the same concept as the given \"motherConcept\" parameter");
+
+            //Add knowledge to the A-BOX (or raise warning if violations are detected)
+            if (SKOSIntegrityChecks())
+            {
+                //Add knowledge to the A-BOX
+                DeclareConcept(childConcept);
+                DeclareConcept(motherConcept);
+                Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(motherConcept, RDFVocabulary.SKOS.NARROWER_TRANSITIVE, childConcept));
+
+                //Also add an automatic A-BOX inference exploiting owl:inverseOf relation
+                Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(childConcept, RDFVocabulary.SKOS.BROADER_TRANSITIVE, motherConcept));
+            }
+            else
+                OWLSemanticsEvents.RaiseSemanticsWarning(string.Format("NarrowerTransitive relation between concept '{0}' and concept '{1}' cannot be declared to the concept scheme because it would violate SKOS integrity", motherConcept, childConcept));
+
+            return this;
+        }
+
+        /// <summary>
+        ///  Declares the existence of the given "Notation(skosConcept,notationValue)" relation to the concept scheme
+        /// </summary>
+        public SKOSConceptScheme DeclareNotation(RDFResource skosConcept, RDFLiteral notationValue)
+        {
+            if (skosConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:notation relation to the concept scheme because given \"skosConcept\" parameter is null");
+            if (notationValue == null)
+                throw new OWLSemanticsException("Cannot declare skos:notation relation to the concept scheme because given \"notationValue\" parameter is null");
+
+            //Add knowledge to the A-BOX
+            DeclareConcept(skosConcept);
+            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.NOTATION, notationValue));
 
             return this;
         }
