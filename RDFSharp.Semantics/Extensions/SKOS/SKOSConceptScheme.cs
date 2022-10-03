@@ -250,12 +250,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             return this;
         }
 
-        //ANNOTATIONS
-
-        //RELATIONS
-
-        //EXPORT
-
         /// <summary>
         /// Gets a graph representation of the concept scheme
         /// </summary>
@@ -267,8 +261,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         /// </summary>
         public Task<RDFGraph> ToRDFGraphAsync()
             => Task.Run(() => ToRDFGraph());
-
-        //IMPORT
 
         /// <summary>
         /// Gets a concept scheme representation from the given graph
