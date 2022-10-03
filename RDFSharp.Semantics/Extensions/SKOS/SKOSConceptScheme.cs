@@ -252,6 +252,46 @@ namespace RDFSharp.Semantics.Extensions.SKOS
 
         //ANNOTATIONS
 
+        /// <summary>
+        /// Annotates the given skos:Concept with the given "annotationProperty -> annotationValue"
+        /// </summary>
+        public SKOSConceptScheme AnnotateConcept(RDFResource skosConcept, RDFResource annotationProperty, RDFResource annotationValue)
+        {
+            if (skosConcept == null)
+                throw new OWLSemanticsException("Cannot annotate concept because given \"skosConcept\" parameter is null");
+            if (annotationProperty == null)
+                throw new OWLSemanticsException("Cannot annotate concept because given \"annotationProperty\" parameter is null");
+            if (annotationProperty.IsBlank)
+                throw new OWLSemanticsException("Cannot annotate concept because given \"annotationProperty\" parameter is a blank predicate");
+            if (annotationValue == null)
+                throw new OWLSemanticsException("Cannot annotate concept because given \"annotationValue\" parameter is null");
+
+            //Add knowledge to the A-BOX
+            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, annotationProperty, annotationValue));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Annotates the given skos:Concept with the given "annotationProperty -> annotationValue"
+        /// </summary>
+        public SKOSConceptScheme AnnotateConcept(RDFResource skosConcept, RDFResource annotationProperty, RDFLiteral annotationValue)
+        {
+            if (skosConcept == null)
+                throw new OWLSemanticsException("Cannot annotate concept because given \"skosConcept\" parameter is null");
+            if (annotationProperty == null)
+                throw new OWLSemanticsException("Cannot annotate concept because given \"annotationProperty\" parameter is null");
+            if (annotationProperty.IsBlank)
+                throw new OWLSemanticsException("Cannot annotate concept because given \"annotationProperty\" parameter is a blank predicate");
+            if (annotationValue == null)
+                throw new OWLSemanticsException("Cannot annotate concept because given \"annotationValue\" parameter is null");
+
+            //Add knowledge to the A-BOX
+            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, annotationProperty, annotationValue));
+
+            return this;
+        }
+
 
         //RELATIONS
 
