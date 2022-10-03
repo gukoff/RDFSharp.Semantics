@@ -450,6 +450,34 @@ namespace RDFSharp.Semantics.Extensions.SKOS
 
         //RELATIONS
 
+        /// <summary>
+        /// Declares the existence of the given "topConceptOf(skosConcept,skosConceptScheme)" relation to the concept scheme
+        /// </summary>
+        public SKOSConceptScheme DeclareTopConcept(RDFResource skosConcept)
+        {
+            #region SKOS Integrity Checks
+            bool SKOSIntegrityChecks()
+                => this.CheckTopConceptCompatibility(skosConcept);
+            #endregion
+
+            if (skosConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:topConceptOf relation to the concept scheme because given \"skosConcept\" parameter is null");
+
+            //Add knowledge to the A-BOX (or raise warning if violations are detected)
+            if (SKOSIntegrityChecks())
+            {
+                DeclareConcept(skosConcept);
+                Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.TOP_CONCEPT_OF, this));
+
+                //Also add an automatic A-BOX inference exploiting owl:inverseOf relation
+                Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(this, RDFVocabulary.SKOS.HAS_TOP_CONCEPT, skosConcept));
+            }
+            else
+                OWLSemanticsEvents.RaiseSemanticsWarning(string.Format("HasTopConcept relation between concept scheme '{0}' and concept '{1}' cannot be declared to the model because it would violate SKOS integrity", this, skosConcept));
+
+            return this;
+        }
+
 
         //EXPORT
 

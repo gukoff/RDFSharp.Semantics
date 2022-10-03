@@ -14,15 +14,24 @@
    limitations under the License.
 */
 
+using RDFSharp.Model;
+using System;
+
 namespace RDFSharp.Semantics.Extensions.SKOS
 {
     /// <summary>
-    /// SKOSConceptSchemeHelper contains methods for analyzing relations describing SKOS concepts schemes
+    /// SKOSConceptSchemeHelper contains methods for analyzing relations describing SKOS concept schemes
     /// </summary>
     public static class SKOSConceptSchemeHelper
     {
         #region Methods
-
+        /// <summary>
+        /// Checks if the given concept can be topConcept of the given concept scheme without tampering SKOS integrity
+        /// </summary>
+        internal static bool CheckTopConceptCompatibility(this SKOSConceptScheme conceptScheme, RDFResource skosConcept)
+        {
+            throw new NotImplementedException(); //TODO: reason like a class to not have superclasses
+        }
         #endregion
     }
 }
