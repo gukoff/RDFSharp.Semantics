@@ -19,6 +19,8 @@ using RDFSharp.Query;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Xml.Serialization;
 
 namespace RDFSharp.Semantics.Extensions.SKOS
 {
@@ -36,17 +38,36 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (graph == null)
                 throw new OWLSemanticsException("Cannot get concept scheme from RDFGraph because given \"graph\" parameter is null");
 
-            //Get OWL ontology with SKOS extensions
-            OWLOntology ontology = OWLOntologyLoader.FromRDFGraph(graph, dataExtensionPoint: SKOSDataExtensionPoint);
+            //Get OWL ontology with SKOS extension points
+            OWLOntology ontology = OWLOntologyLoader.FromRDFGraph(graph,
+               classModelExtensionPoint: SKOSClassModelExtensionPoint,
+               propertyModelExtensionPoint: SKOSPropertyModelExtensionPoint,
+               dataExtensionPoint: SKOSDataExtensionPoint);
 
-            //Wrap OWL ontology into SKOS concept scheme
-            SKOSConceptScheme conceptScheme = new SKOSConceptScheme(ontology.URI.ToString()) { Ontology = ontology };
+            //Build SKOS concept scheme from OWL ontology 
+            RDFResource conceptSchemeURI = graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.SKOS.CONCEPT_SCHEME, null]
+                                             .FirstOrDefault()?.Subject as RDFResource ?? ontology;
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme(conceptSchemeURI.ToString()) { Ontology = ontology };
+            conceptScheme.Ontology.Data.DeclareIndividual(conceptScheme);
+            conceptScheme.Ontology.Data.DeclareIndividualType(conceptScheme, RDFVocabulary.SKOS.CONCEPT_SCHEME);
 
             return conceptScheme;
         }
         #endregion
 
         #region Utilities
+        /// <summary>
+        /// Extends OWL class model loading with support for SKOS artifacts
+        /// </summary>
+        internal static void SKOSClassModelExtensionPoint(OWLOntology ontology, RDFGraph graph)
+            => ontology.Model.ClassModel = SKOSConceptScheme.BuildSKOSClassModel();
+
+        /// <summary>
+        /// Extends OWL property model loading with support for SKOS artifacts
+        /// </summary>
+        internal static void SKOSPropertyModelExtensionPoint(OWLOntology ontology, RDFGraph graph)
+            => ontology.Model.PropertyModel = SKOSConceptScheme.BuildSKOSPropertyModel();
+
         /// <summary>
         /// Extends OWL data loading with support for SKOS artifacts
         /// </summary>
