@@ -253,6 +253,42 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         //ANNOTATIONS
 
         /// <summary>
+        /// Annotates the concept scheme with the given "annotationProperty -> annotationValue"
+        /// </summary>
+        public SKOSConceptScheme Annotate(RDFResource annotationProperty, RDFResource annotationValue)
+        {
+            if (annotationProperty == null)
+                throw new OWLSemanticsException("Cannot annotate concept scheme because given \"annotationProperty\" parameter is null");
+            if (annotationProperty.IsBlank)
+                throw new OWLSemanticsException("Cannot annotate concept scheme because given \"annotationProperty\" parameter is a blank predicate");
+            if (annotationValue == null)
+                throw new OWLSemanticsException("Cannot annotate concept scheme because given \"annotationValue\" parameter is null");
+
+            //Add knowledge to the A-BOX
+            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(this, annotationProperty, annotationValue));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Annotates the concept scheme with the given "annotationProperty -> annotationValue"
+        /// </summary>
+        public SKOSConceptScheme Annotate(RDFResource annotationProperty, RDFLiteral annotationValue)
+        {
+            if (annotationProperty == null)
+                throw new OWLSemanticsException("Cannot annotate concept scheme because given \"annotationProperty\" parameter is null");
+            if (annotationProperty.IsBlank)
+                throw new OWLSemanticsException("Cannot annotate concept scheme because given \"annotationProperty\" parameter is a blank predicate");
+            if (annotationValue == null)
+                throw new OWLSemanticsException("Cannot annotate concept scheme because given \"annotationValue\" parameter is null");
+
+            //Add knowledge to the A-BOX
+            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(this, annotationProperty, annotationValue));
+
+            return this;
+        }
+
+        /// <summary>
         /// Annotates the given skos:Concept with the given "annotationProperty -> annotationValue"
         /// </summary>
         public SKOSConceptScheme AnnotateConcept(RDFResource skosConcept, RDFResource annotationProperty, RDFResource annotationValue)
@@ -292,6 +328,125 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             return this;
         }
 
+        /// <summary>
+        /// Annotates the given skosxl:Label with the given "annotationProperty -> annotationValue"
+        /// </summary>
+        public SKOSConceptScheme AnnotateLabel(RDFResource skosxlLabel, RDFResource annotationProperty, RDFResource annotationValue)
+        {
+            if (skosxlLabel == null)
+                throw new OWLSemanticsException("Cannot annotate label because given \"skosxlLabel\" parameter is null");
+            if (annotationProperty == null)
+                throw new OWLSemanticsException("Cannot annotate label because given \"annotationProperty\" parameter is null");
+            if (annotationProperty.IsBlank)
+                throw new OWLSemanticsException("Cannot annotate label because given \"annotationProperty\" parameter is a blank predicate");
+            if (annotationValue == null)
+                throw new OWLSemanticsException("Cannot annotate label because given \"annotationValue\" parameter is null");
+
+            //Add knowledge to the A-BOX
+            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosxlLabel, annotationProperty, annotationValue));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Annotates the given skosxl:Label with the given "annotationProperty -> annotationValue"
+        /// </summary>
+        public SKOSConceptScheme AnnotateLabel(RDFResource skosxlLabel, RDFResource annotationProperty, RDFLiteral annotationValue)
+        {
+            if (skosxlLabel == null)
+                throw new OWLSemanticsException("Cannot annotate label because given \"skosxlLabel\" parameter is null");
+            if (annotationProperty == null)
+                throw new OWLSemanticsException("Cannot annotate label because given \"annotationProperty\" parameter is null");
+            if (annotationProperty.IsBlank)
+                throw new OWLSemanticsException("Cannot annotate label because given \"annotationProperty\" parameter is a blank predicate");
+            if (annotationValue == null)
+                throw new OWLSemanticsException("Cannot annotate label because given \"annotationValue\" parameter is null");
+
+            //Add knowledge to the A-BOX
+            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosxlLabel, annotationProperty, annotationValue));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Annotates the given skos:Collection with the given "annotationProperty -> annotationValue"
+        /// </summary>
+        public SKOSConceptScheme AnnotateCollection(RDFResource skosCollection, RDFResource annotationProperty, RDFResource annotationValue)
+        {
+            if (skosCollection == null)
+                throw new OWLSemanticsException("Cannot annotate collection because given \"skosCollection\" parameter is null");
+            if (annotationProperty == null)
+                throw new OWLSemanticsException("Cannot annotate collection because given \"annotationProperty\" parameter is null");
+            if (annotationProperty.IsBlank)
+                throw new OWLSemanticsException("Cannot annotate collection because given \"annotationProperty\" parameter is a blank predicate");
+            if (annotationValue == null)
+                throw new OWLSemanticsException("Cannot annotate collection because given \"annotationValue\" parameter is null");
+
+            //Add knowledge to the A-BOX
+            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosCollection, annotationProperty, annotationValue));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Annotates the given skos:Collection with the given "annotationProperty -> annotationValue"
+        /// </summary>
+        public SKOSConceptScheme AnnotateCollection(RDFResource skosCollection, RDFResource annotationProperty, RDFLiteral annotationValue)
+        {
+            if (skosCollection == null)
+                throw new OWLSemanticsException("Cannot annotate collection because given \"skosCollection\" parameter is null");
+            if (annotationProperty == null)
+                throw new OWLSemanticsException("Cannot annotate collection because given \"annotationProperty\" parameter is null");
+            if (annotationProperty.IsBlank)
+                throw new OWLSemanticsException("Cannot annotate collection because given \"annotationProperty\" parameter is a blank predicate");
+            if (annotationValue == null)
+                throw new OWLSemanticsException("Cannot annotate collection because given \"annotationValue\" parameter is null");
+
+            //Add knowledge to the A-BOX
+            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosCollection, annotationProperty, annotationValue));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Annotates the given skos:OrderedCollection with the given "annotationProperty -> annotationValue"
+        /// </summary>
+        public SKOSConceptScheme AnnotateOrderedCollection(RDFResource skosOrderedCollection, RDFResource annotationProperty, RDFResource annotationValue)
+        {
+            if (skosOrderedCollection == null)
+                throw new OWLSemanticsException("Cannot annotate ordered collection because given \"skosOrderedCollection\" parameter is null");
+            if (annotationProperty == null)
+                throw new OWLSemanticsException("Cannot annotate ordered collection because given \"annotationProperty\" parameter is null");
+            if (annotationProperty.IsBlank)
+                throw new OWLSemanticsException("Cannot annotate ordered collection because given \"annotationProperty\" parameter is a blank predicate");
+            if (annotationValue == null)
+                throw new OWLSemanticsException("Cannot annotate ordered collection because given \"annotationValue\" parameter is null");
+
+            //Add knowledge to the A-BOX
+            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosOrderedCollection, annotationProperty, annotationValue));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Annotates the given skos:OrderedCollection with the given "annotationProperty -> annotationValue"
+        /// </summary>
+        public SKOSConceptScheme AnnotateOrderedCollection(RDFResource skosOrderedCollection, RDFResource annotationProperty, RDFLiteral annotationValue)
+        {
+            if (skosOrderedCollection == null)
+                throw new OWLSemanticsException("Cannot annotate ordered collection because given \"skosOrderedCollection\" parameter is null");
+            if (annotationProperty == null)
+                throw new OWLSemanticsException("Cannot annotate ordered collection because given \"annotationProperty\" parameter is null");
+            if (annotationProperty.IsBlank)
+                throw new OWLSemanticsException("Cannot annotate ordered collection because given \"annotationProperty\" parameter is a blank predicate");
+            if (annotationValue == null)
+                throw new OWLSemanticsException("Cannot annotate ordered collection because given \"annotationValue\" parameter is null");
+
+            //Add knowledge to the A-BOX
+            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosOrderedCollection, annotationProperty, annotationValue));
+
+            return this;
+        }
 
         //RELATIONS
 
