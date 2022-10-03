@@ -451,7 +451,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         //RELATIONS
 
         /// <summary>
-        /// Declares the existence of the given "topConceptOf(skosConcept,skosConceptScheme)" relation to the concept scheme
+        /// Declares the existence of the given "TopConceptOf(skosConcept,skosConceptScheme)" relation to the concept scheme
         /// </summary>
         public SKOSConceptScheme DeclareTopConcept(RDFResource skosConcept)
         {
@@ -478,6 +478,44 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             return this;
         }
 
+        /// <summary>
+        /// Declares the existence of the given "SemanticRelation(leftConcept,rightConcept)" relation to the concept scheme
+        /// </summary>
+        public SKOSConceptScheme DeclareSemanticRelation(RDFResource leftConcept, RDFResource rightConcept)
+        {
+            if (leftConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:semanticRelation relation to the concept scheme because given \"leftConcept\" parameter is null");
+            if (rightConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:semanticRelation relation to the concept scheme because given \"rightConcept\" parameter is null");
+
+            //Add knowledge to the A-BOX
+            DeclareConcept(leftConcept);
+            DeclareConcept(rightConcept);
+            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(leftConcept, RDFVocabulary.SKOS.SEMANTIC_RELATION, rightConcept));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the existence of the given "Related(leftConcept,rightConcept)" relation to the concept scheme
+        /// </summary>
+        public SKOSConceptScheme DeclareRelatedRelation(RDFResource leftConcept, RDFResource rightConcept)
+        {
+            if (leftConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:related relation to the concept scheme because given \"leftConcept\" parameter is null");
+            if (rightConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:related relation to the concept scheme because given \"rightConcept\" parameter is null");
+
+            //Add knowledge to the A-BOX
+            DeclareConcept(leftConcept);
+            DeclareConcept(rightConcept);
+            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(leftConcept, RDFVocabulary.SKOS.RELATED, rightConcept));
+
+            //Also add an automatic A-BOX inference exploiting symmetry of skos:related relation
+            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(rightConcept, RDFVocabulary.SKOS.RELATED, leftConcept));
+
+            return this;
+        }
 
         //EXPORT
 
