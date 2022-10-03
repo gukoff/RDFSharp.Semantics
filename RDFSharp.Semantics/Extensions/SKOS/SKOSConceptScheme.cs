@@ -481,7 +481,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         /// <summary>
         /// Declares the existence of the given "SemanticRelation(leftConcept,rightConcept)" relation to the concept scheme
         /// </summary>
-        public SKOSConceptScheme DeclareSemanticRelation(RDFResource leftConcept, RDFResource rightConcept)
+        public SKOSConceptScheme DeclareSemanticRelatedConcepts(RDFResource leftConcept, RDFResource rightConcept)
         {
             if (leftConcept == null)
                 throw new OWLSemanticsException("Cannot declare skos:semanticRelation relation to the concept scheme because given \"leftConcept\" parameter is null");
@@ -499,7 +499,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         /// <summary>
         /// Declares the existence of the given "Related(leftConcept,rightConcept)" relation to the concept scheme
         /// </summary>
-        public SKOSConceptScheme DeclareRelatedRelation(RDFResource leftConcept, RDFResource rightConcept)
+        public SKOSConceptScheme DeclareRelatedConcepts(RDFResource leftConcept, RDFResource rightConcept)
         {
             if (leftConcept == null)
                 throw new OWLSemanticsException("Cannot declare skos:related relation to the concept scheme because given \"leftConcept\" parameter is null");
