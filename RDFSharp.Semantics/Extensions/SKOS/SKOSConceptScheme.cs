@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 namespace RDFSharp.Semantics.Extensions.SKOS
 {
     /// <summary>
-    /// SKOSConceptScheme represents an organized taxonomy describing relations between skos:Concept individuals
+    /// SKOSConceptScheme represents an OWL ontology specialized in describing relations between skos:Concept individuals
     /// </summary>
     public class SKOSConceptScheme : RDFResource, IEnumerable<RDFResource>
     {

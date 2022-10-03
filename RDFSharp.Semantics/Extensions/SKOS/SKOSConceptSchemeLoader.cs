@@ -16,11 +16,7 @@
 
 using RDFSharp.Model;
 using RDFSharp.Query;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Serialization;
 
 namespace RDFSharp.Semantics.Extensions.SKOS
 {
@@ -44,7 +40,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
                propertyModelExtensionPoint: SKOSPropertyModelExtensionPoint,
                dataExtensionPoint: SKOSDataExtensionPoint);
 
-            //Build SKOS concept scheme from OWL ontology 
+            //Build SKOS concept scheme from OWL ontology
             RDFResource conceptSchemeURI = graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.SKOS.CONCEPT_SCHEME, null]
                                              .FirstOrDefault()?.Subject as RDFResource ?? ontology;
             SKOSConceptScheme conceptScheme = new SKOSConceptScheme(conceptSchemeURI.ToString()) { Ontology = ontology };
