@@ -59,8 +59,14 @@ namespace RDFSharp.Semantics.Extensions.SKOS
                     RDFCollection skosOrderedCollection = RDFModelUtilities.DeserializeCollectionFromGraph(graph, (RDFResource)memberListRelation.Object, RDFModelEnums.RDFTripleFlavors.SPO);
                     if (skosOrderedCollection.ItemsCount > 0)
                     {
+                        //Also declare concepts of the ordred collection
+                        foreach (RDFPatternMember skosConcept in skosOrderedCollection)
+                        {
+                            ontology.Data.DeclareIndividual((RDFResource)skosConcept);
+                            ontology.Data.DeclareIndividualType((RDFResource)skosConcept, RDFVocabulary.SKOS.CONCEPT);
+                        }
                         ontology.Data.ABoxGraph.AddCollection(skosOrderedCollection);
-                        ontology.Data.ABoxGraph.AddTriple(new RDFTriple((RDFResource)typeOrderedCollection.Subject, RDFVocabulary.SKOS.MEMBER_LIST, skosOrderedCollection.ReificationSubject));
+                        ontology.Data.DeclareObjectAssertion((RDFResource)typeOrderedCollection.Subject, RDFVocabulary.SKOS.MEMBER_LIST, skosOrderedCollection.ReificationSubject);
                     }
                 }
         }

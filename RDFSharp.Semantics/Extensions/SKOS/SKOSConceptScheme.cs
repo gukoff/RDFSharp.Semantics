@@ -222,12 +222,12 @@ namespace RDFSharp.Semantics.Extensions.SKOS
 
             //Add knowledge to the A-BOX (concepts)
             RDFCollection rdfCollection = new RDFCollection(RDFModelEnums.RDFItemTypes.Resource);
-            skosConcepts.ForEach(skosConcept => 
+            foreach (RDFResource skosConcept in skosConcepts)
             {
                 Ontology.Data.DeclareIndividual(skosConcept);
                 Ontology.Data.DeclareIndividualType(skosConcept, RDFVocabulary.SKOS.CONCEPT);
                 rdfCollection.AddItem(skosConcept);
-            });
+            }
             Ontology.Data.ABoxGraph.AddCollection(rdfCollection);
             Ontology.Data.DeclareObjectAssertion(skosOrderedCollection, RDFVocabulary.SKOS.MEMBER_LIST, rdfCollection.ReificationSubject);
 
