@@ -16,6 +16,8 @@
 
 using RDFSharp.Model;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace RDFSharp.Semantics.Extensions.SKOS
 {
@@ -24,7 +26,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
     /// </summary>
     public static class SKOSConceptSchemeHelper
     {
-        #region Methods
+        #region Declarer
         /// <summary>
         /// Checks if the given leftConcept can be skos:[broader|broaderTransitive|broadMatch] than the given rightConcept without tampering SKOS integrity
         /// </summary>
@@ -104,6 +106,61 @@ namespace RDFSharp.Semantics.Extensions.SKOS
                                                       && !conceptScheme.CheckHasRelatedMatchConcept(leftConcept, rightConcept);
 
             return canAddCloseOrExactMatchRelation;
+        }
+        #endregion
+
+        #region Analyzer
+        /// <summary>
+        /// Checks for the existence of "Broader(childConcept,motherConcept)" relations within the concept scheme
+        /// </summary>
+        public static bool CheckHasBroaderConcept(this SKOSConceptScheme conceptScheme, RDFResource childConcept, RDFResource motherConcept)
+            => childConcept != null && motherConcept != null && conceptScheme != null && conceptScheme.GetBroaderConcepts(childConcept).Any(concept => concept.Equals(motherConcept));
+
+        /// <summary>
+        /// Analyzes "Broader(skosConcept, X)" relations of the concept scheme to answer the broader concepts of the given skos:Concept
+        /// </summary>
+        public static List<RDFResource> GetBroaderConcepts(this SKOSConceptScheme conceptScheme, RDFResource skosConcept)
+        {
+            List<RDFResource> broaderConcepts = new List<RDFResource>();
+
+            if (skosConcept != null && conceptScheme != null)
+            {
+                //Get skos:broader concepts
+                foreach (RDFTriple broaderRelation in conceptScheme.Ontology.Data.ABoxGraph[skosConcept, RDFVocabulary.SKOS.BROADER, null, null])
+                    broaderConcepts.Add((RDFResource)broaderRelation.Object);
+
+                //Get skos:broaderTransitive concepts
+                broaderConcepts.AddRange(conceptScheme.GetBroaderConceptsInternal(skosConcept, new Dictionary<long, RDFResource>()));
+            }
+
+            return broaderConcepts;
+        }
+
+        /// <summary>
+        /// Subsumes the "skos:broaderTransitive" taxonomy to discover direct and indirect broader concepts of the given skos:Concept
+        /// </summary>
+        internal static List<RDFResource> GetBroaderConceptsInternal(this SKOSConceptScheme conceptScheme, RDFResource skosConcept, Dictionary<long, RDFResource> visitContext)
+        {
+            List<RDFResource> broaderTransitiveConcepts = new List<RDFResource>();
+
+            #region visitContext
+            if (!visitContext.ContainsKey(skosConcept.PatternMemberID))
+                visitContext.Add(skosConcept.PatternMemberID, skosConcept);
+            else
+                return broaderTransitiveConcepts;
+            #endregion
+
+            #region Discovery
+            //Find broader concepts linked to the given one with skos:broaderTransitive relation
+            foreach (RDFTriple broaderTransitiveRelation in conceptScheme.Ontology.Data.ABoxGraph[skosConcept, RDFVocabulary.SKOS.BROADER_TRANSITIVE, null, null])
+                broaderTransitiveConcepts.Add((RDFResource)broaderTransitiveRelation.Object);
+            #endregion
+
+            // Inference: BROADERTRANSITIVE(A,B) ^ BROADERTRANSITIVE(B,C) -> BROADERTRANSITIVE(A,C)
+            foreach (RDFResource broaderTransitiveConcept in broaderTransitiveConcepts.ToList())
+                broaderTransitiveConcepts.AddRange(conceptScheme.GetBroaderConceptsInternal(broaderTransitiveConcept, visitContext));
+
+            return broaderTransitiveConcepts;
         }
         #endregion
     }

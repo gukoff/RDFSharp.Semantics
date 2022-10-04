@@ -92,7 +92,7 @@ namespace RDFSharp.Semantics
             => leftIndividual != null && rightIndividual != null && data != null && data.GetSameIndividuals(leftIndividual).Any(individual => individual.Equals(rightIndividual));
 
         /// <summary>
-        /// Analyzes "SameAs(leftIndividual, X)" relations of the data to answer the same individuals of the given owl:Individual
+        /// Analyzes "SameAs(owlIndividual, X)" relations of the data to answer the same individuals of the given owl:Individual
         /// </summary>
         public static List<RDFResource> GetSameIndividuals(this OWLOntologyData data, RDFResource owlIndividual)
         {
@@ -143,7 +143,7 @@ namespace RDFSharp.Semantics
             => leftIndividual != null && rightIndividual != null && data != null && data.GetDifferentIndividuals(leftIndividual).Any(individual => individual.Equals(rightIndividual));
 
         /// <summary>
-        /// Analyzes "DifferentFrom(leftIndividual, X)" relations of the data to answer the different individuals of the given owl:Individual
+        /// Analyzes "DifferentFrom(owlIndividual, X)" relations of the data to answer the different individuals of the given owl:Individual
         /// </summary>
         public static List<RDFResource> GetDifferentIndividuals(this OWLOntologyData data, RDFResource owlIndividual)
         {
@@ -219,7 +219,7 @@ namespace RDFSharp.Semantics
             => leftIndividual != null && rightIndividual != null && transitiveObjectProperty != null && data != null && data.GetTransitiveRelatedIndividuals(leftIndividual, transitiveObjectProperty).Any(individual => individual.Equals(rightIndividual));
 
         /// <summary>
-        /// Analyzes "TransitiveObjectProperty(leftIndividual,X)" relations of the data to enlist the individuals which are related to the given owl:Individual through the given owl:TransitiveObjectProperty
+        /// Analyzes "TransitiveObjectProperty(owlIndividual,X)" relations of the data to enlist the individuals which are related to the given owl:Individual through the given owl:TransitiveObjectProperty
         /// </summary>
         internal static List<RDFResource> GetTransitiveRelatedIndividuals(this OWLOntologyData data, RDFResource owlIndividual, RDFResource transitiveObjectProperty)
         {
@@ -232,7 +232,7 @@ namespace RDFSharp.Semantics
         }
 
         /// <summary>
-        /// Finds "TransitiveObjectProperty(leftIndividual,X)" relations to enlist the individuals which are related to the given owl:Individual through the given owl:TransitiveObjectProperty
+        /// Finds "TransitiveObjectProperty(owlIndividual,X)" relations to enlist the individuals which are related to the given owl:Individual through the given owl:TransitiveObjectProperty
         /// </summary>
         internal static List<RDFResource> FindTransitiveRelatedIndividuals(this OWLOntologyData data, RDFResource owlIndividual, RDFResource transitiveObjectProperty, Dictionary<long, RDFResource> visitContext)
         {
