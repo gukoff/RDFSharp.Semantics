@@ -459,7 +459,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS
                 throw new OWLSemanticsException("Cannot declare skos:note annotation to the concept scheme because given \"noteValue\" parameter is null");
 
             //Add knowledge to the A-BOX
-            DeclareConcept(skosConcept);
             Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.NOTE, noteValue));
 
             return this;
@@ -476,7 +475,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS
                 throw new OWLSemanticsException("Cannot declare skos:changeNote annotation to the concept scheme because given \"changeNoteValue\" parameter is null");
 
             //Add knowledge to the A-BOX
-            DeclareConcept(skosConcept);
             Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.CHANGE_NOTE, changeNoteValue));
 
             return this;
@@ -493,7 +491,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS
                 throw new OWLSemanticsException("Cannot declare skos:editorialNote annotation to the concept scheme because given \"editorialNoteValue\" parameter is null");
 
             //Add knowledge to the A-BOX
-            DeclareConcept(skosConcept);
             Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.EDITORIAL_NOTE, editorialNoteValue));
 
             return this;
@@ -510,7 +507,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS
                 throw new OWLSemanticsException("Cannot declare skos:historyNote annotation to the concept scheme because given \"historyNoteValue\" parameter is null");
 
             //Add knowledge to the A-BOX
-            DeclareConcept(skosConcept);
             Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.HISTORY_NOTE, historyNoteValue));
 
             return this;
@@ -527,7 +523,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS
                 throw new OWLSemanticsException("Cannot declare skos:scopeNote annotation to the concept scheme because given \"scopeNoteValue\" parameter is null");
 
             //Add knowledge to the A-BOX
-            DeclareConcept(skosConcept);
             Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.SCOPE_NOTE, scopeNoteValue));
 
             return this;
@@ -544,7 +539,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS
                 throw new OWLSemanticsException("Cannot declare skos:definition annotation to the concept scheme because given \"definitionValue\" parameter is null");
 
             //Add knowledge to the A-BOX
-            DeclareConcept(skosConcept);
             Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.DEFINITION, definitionValue));
 
             return this;
@@ -561,7 +555,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS
                 throw new OWLSemanticsException("Cannot declare skos:example annotation to the concept scheme because given \"exampleValue\" parameter is null");
 
             //Add knowledge to the A-BOX
-            DeclareConcept(skosConcept);
             Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.EXAMPLE, exampleValue));
 
             return this;
@@ -578,7 +571,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS
                 throw new OWLSemanticsException("Cannot declare skos:topConceptOf relation to the concept scheme because given \"skosConcept\" parameter is null");
 
             //Add knowledge to the A-BOX
-            DeclareConcept(skosConcept);
             Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.TOP_CONCEPT_OF, this));
 
             //Also add an automatic A-BOX inference exploiting owl:inverseOf relation
@@ -598,8 +590,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS
                 throw new OWLSemanticsException("Cannot declare skos:semanticRelation relation to the concept scheme because given \"rightConcept\" parameter is null");
 
             //Add knowledge to the A-BOX
-            DeclareConcept(leftConcept);
-            DeclareConcept(rightConcept);
             Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(leftConcept, RDFVocabulary.SKOS.SEMANTIC_RELATION, rightConcept));
 
             return this;
@@ -616,8 +606,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS
                 throw new OWLSemanticsException("Cannot declare skos:mappingRelation relation to the concept scheme because given \"rightConcept\" parameter is null");
 
             //Add knowledge to the A-BOX
-            DeclareConcept(leftConcept);
-            DeclareConcept(rightConcept);
             Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(leftConcept, RDFVocabulary.SKOS.MAPPING_RELATION, rightConcept));
 
             return this;
@@ -634,8 +622,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS
                 throw new OWLSemanticsException("Cannot declare skos:related relation to the concept scheme because given \"rightConcept\" parameter is null");
 
             //Add knowledge to the A-BOX
-            DeclareConcept(leftConcept);
-            DeclareConcept(rightConcept);
             Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(leftConcept, RDFVocabulary.SKOS.RELATED, rightConcept));
 
             //Also add an automatic A-BOX inference exploiting symmetry of skos:related relation
@@ -665,8 +651,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (SKOSIntegrityChecks())
             {
                 //Add knowledge to the A-BOX
-                DeclareConcept(childConcept);
-                DeclareConcept(motherConcept);
                 Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(childConcept, RDFVocabulary.SKOS.BROADER, motherConcept));
 
                 //Also add an automatic A-BOX inference exploiting owl:inverseOf relation
@@ -699,8 +683,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (SKOSIntegrityChecks())
             {
                 //Add knowledge to the A-BOX
-                DeclareConcept(childConcept);
-                DeclareConcept(motherConcept);
                 Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(childConcept, RDFVocabulary.SKOS.BROADER_TRANSITIVE, motherConcept));
 
                 //Also add an automatic A-BOX inference exploiting owl:inverseOf relation
@@ -733,8 +715,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (SKOSIntegrityChecks())
             {
                 //Add knowledge to the A-BOX
-                DeclareConcept(childConcept);
-                DeclareConcept(motherConcept);
                 Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(motherConcept, RDFVocabulary.SKOS.NARROWER, childConcept));
 
                 //Also add an automatic A-BOX inference exploiting owl:inverseOf relation
@@ -767,8 +747,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (SKOSIntegrityChecks())
             {
                 //Add knowledge to the A-BOX
-                DeclareConcept(childConcept);
-                DeclareConcept(motherConcept);
                 Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(motherConcept, RDFVocabulary.SKOS.NARROWER_TRANSITIVE, childConcept));
 
                 //Also add an automatic A-BOX inference exploiting owl:inverseOf relation
@@ -801,8 +779,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (SKOSIntegrityChecks())
             {
                 //Add knowledge to the A-BOX
-                DeclareConcept(leftConcept);
-                DeclareConcept(rightConcept);
                 Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(leftConcept, RDFVocabulary.SKOS.CLOSE_MATCH, rightConcept));
 
                 //Also add an automatic A-BOX inference exploiting simmetry of skos:closeMatch relation
@@ -835,8 +811,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (SKOSIntegrityChecks())
             {
                 //Add knowledge to the A-BOX
-                DeclareConcept(leftConcept);
-                DeclareConcept(rightConcept);
                 Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(leftConcept, RDFVocabulary.SKOS.EXACT_MATCH, rightConcept));
 
                 //Also add an automatic A-BOX inference exploiting simmetry of skos:exactMatch relation
@@ -869,8 +843,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (SKOSIntegrityChecks())
             {
                 //Add knowledge to the A-BOX
-                DeclareConcept(leftConcept);
-                DeclareConcept(rightConcept);
                 Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(leftConcept, RDFVocabulary.SKOS.BROAD_MATCH, rightConcept));
 
                 //Also add an automatic A-BOX inference exploiting owl:inverseOf relation
@@ -903,8 +875,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (SKOSIntegrityChecks())
             {
                 //Add knowledge to the A-BOX
-                DeclareConcept(leftConcept);
-                DeclareConcept(rightConcept);
                 Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(leftConcept, RDFVocabulary.SKOS.NARROW_MATCH, rightConcept));
 
                 //Also add an automatic A-BOX inference exploiting owl:inverseOf relation
@@ -937,8 +907,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (SKOSIntegrityChecks())
             {
                 //Add knowledge to the A-BOX
-                DeclareConcept(leftConcept);
-                DeclareConcept(rightConcept);
                 Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(leftConcept, RDFVocabulary.SKOS.RELATED_MATCH, rightConcept));
 
                 //Also add an automatic A-BOX inference exploiting simmetry of skos:relatedMatch relation
@@ -961,7 +929,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS
                 throw new OWLSemanticsException("Cannot declare skos:notation relation to the concept scheme because given \"notationValue\" parameter is null");
 
             //Add knowledge to the A-BOX
-            DeclareConcept(skosConcept);
             Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.NOTATION, notationValue));
 
             return this;
