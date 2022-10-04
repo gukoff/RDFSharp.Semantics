@@ -15,7 +15,7 @@
 */
 
 using RDFSharp.Model;
-using System;
+using RDFSharp.Query;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -214,6 +214,172 @@ namespace RDFSharp.Semantics.Extensions.SKOS
                 narrowerTransitiveConcepts.AddRange(conceptScheme.GetNarrowerConceptsInternal(narrowerTransitiveConcept, visitContext));
 
             return narrowerTransitiveConcepts;
+        }
+
+        /// <summary>
+        /// Checks for the existence of "Related(leftConcept,rightConcept)" relations within the concept scheme
+        /// </summary>
+        public static bool CheckHasRelatedConcept(this SKOSConceptScheme conceptScheme, RDFResource leftConcept, RDFResource rightConcept)
+            => rightConcept != null && leftConcept != null && conceptScheme != null && conceptScheme.GetRelatedConcepts(leftConcept).Any(concept => concept.Equals(rightConcept));
+
+        /// <summary>
+        /// Analyzes "Related(skosConcept, X)" relations of the concept scheme to answer the related concepts of the given skos:Concept
+        /// </summary>
+        public static List<RDFResource> GetRelatedConcepts(this SKOSConceptScheme conceptScheme, RDFResource skosConcept)
+        {
+            List<RDFResource> relatedConcepts = new List<RDFResource>();
+
+            if (skosConcept != null && conceptScheme != null)
+            {
+                //Get skos:related concepts
+                foreach (RDFTriple relatedRelation in conceptScheme.Ontology.Data.ABoxGraph[skosConcept, RDFVocabulary.SKOS.RELATED, null, null])
+                    relatedConcepts.Add((RDFResource)relatedRelation.Object);
+            }
+
+            return relatedConcepts;
+        }
+
+        /// <summary>
+        /// Checks for the existence of "BroadMatch(childConcept,motherConcept)" relations within the concept scheme
+        /// </summary>
+        public static bool CheckHasBroadMatchConcept(this SKOSConceptScheme conceptScheme, RDFResource childConcept, RDFResource motherConcept)
+            => childConcept != null && motherConcept != null && conceptScheme != null && conceptScheme.GetBroadMatchConcepts(childConcept).Any(concept => concept.Equals(motherConcept));
+
+        /// <summary>
+        /// Analyzes "BroadMatch(skosConcept, X)" relations of the concept scheme to answer the broad match concepts of the given skos:Concept
+        /// </summary>
+        public static List<RDFResource> GetBroadMatchConcepts(this SKOSConceptScheme conceptScheme, RDFResource skosConcept)
+        {
+            List<RDFResource> broadMatchConcepts = new List<RDFResource>();
+
+            if (skosConcept != null && conceptScheme != null)
+            {
+                //Get skos:broadMatch concepts
+                foreach (RDFTriple broadMatchRelation in conceptScheme.Ontology.Data.ABoxGraph[skosConcept, RDFVocabulary.SKOS.BROAD_MATCH, null, null])
+                    broadMatchConcepts.Add((RDFResource)broadMatchRelation.Object);
+            }
+
+            return broadMatchConcepts;
+        }
+
+        /// <summary>
+        /// Checks for the existence of "NarrowMatch(motherConcept,childConcept)" relations within the concept scheme
+        /// </summary>
+        public static bool CheckHasNarrowMatchConcept(this SKOSConceptScheme conceptScheme, RDFResource motherConcept, RDFResource childConcept)
+            => childConcept != null && motherConcept != null && conceptScheme != null && conceptScheme.GetNarrowMatchConcepts(motherConcept).Any(concept => concept.Equals(childConcept));
+
+        /// <summary>
+        /// Analyzes "NarrowMatch(skosConcept, X)" relations of the concept scheme to answer the narrow match concepts of the given skos:Concept
+        /// </summary>
+        public static List<RDFResource> GetNarrowMatchConcepts(this SKOSConceptScheme conceptScheme, RDFResource skosConcept)
+        {
+            List<RDFResource> narrowMatchConcepts = new List<RDFResource>();
+
+            if (skosConcept != null && conceptScheme != null)
+            {
+                //Get skos:narrowMatch concepts
+                foreach (RDFTriple narrowMatchRelation in conceptScheme.Ontology.Data.ABoxGraph[skosConcept, RDFVocabulary.SKOS.NARROW_MATCH, null, null])
+                    narrowMatchConcepts.Add((RDFResource)narrowMatchRelation.Object);
+            }
+
+            return narrowMatchConcepts;
+        }
+
+        /// <summary>
+        /// Checks for the existence of "RelatedMatch(leftConcept,rightConcept)" relations within the concept scheme
+        /// </summary>
+        public static bool CheckHasRelatedMatchConcept(this SKOSConceptScheme conceptScheme, RDFResource leftConcept, RDFResource rightConcept)
+            => rightConcept != null && leftConcept != null && conceptScheme != null && conceptScheme.GetRelatedMatchConcepts(leftConcept).Any(concept => concept.Equals(rightConcept));
+
+        /// <summary>
+        /// Analyzes "RelatedMatch(skosConcept, X)" relations of the concept scheme to answer the related match concepts of the given skos:Concept
+        /// </summary>
+        public static List<RDFResource> GetRelatedMatchConcepts(this SKOSConceptScheme conceptScheme, RDFResource skosConcept)
+        {
+            List<RDFResource> relatedMatchConcepts = new List<RDFResource>();
+
+            if (skosConcept != null && conceptScheme != null)
+            {
+                //Get skos:relatedMatch concepts
+                foreach (RDFTriple relatedMatchRelation in conceptScheme.Ontology.Data.ABoxGraph[skosConcept, RDFVocabulary.SKOS.RELATED_MATCH, null, null])
+                    relatedMatchConcepts.Add((RDFResource)relatedMatchRelation.Object);
+            }
+
+            return relatedMatchConcepts;
+        }
+
+        /// <summary>
+        /// Checks for the existence of "CloseMatch(leftConcept,rightConcept)" relations within the concept scheme
+        /// </summary>
+        public static bool CheckHasCloseMatchConcept(this SKOSConceptScheme conceptScheme, RDFResource leftConcept, RDFResource rightConcept)
+            => rightConcept != null && leftConcept != null && conceptScheme != null && conceptScheme.GetCloseMatchConcepts(leftConcept).Any(concept => concept.Equals(rightConcept));
+
+        /// <summary>
+        /// Analyzes "CloseMatch(skosConcept, X)" relations of the concept scheme to answer the close match concepts of the given skos:Concept
+        /// </summary>
+        public static List<RDFResource> GetCloseMatchConcepts(this SKOSConceptScheme conceptScheme, RDFResource skosConcept)
+        {
+            List<RDFResource> closeMatchConcepts = new List<RDFResource>();
+
+            if (skosConcept != null && conceptScheme != null)
+            {
+                //Get skos:closeMatch concepts
+                foreach (RDFTriple closeMatchRelation in conceptScheme.Ontology.Data.ABoxGraph[skosConcept, RDFVocabulary.SKOS.CLOSE_MATCH, null, null])
+                    closeMatchConcepts.Add((RDFResource)closeMatchRelation.Object);
+            }
+
+            return closeMatchConcepts;
+        }
+
+        /// <summary>
+        /// Checks for the existence of "ExactMatch(leftConcept,rightConcept)" relations within the concept scheme
+        /// </summary>
+        public static bool CheckHasExactMatchConcept(this SKOSConceptScheme conceptScheme, RDFResource leftConcept, RDFResource rightConcept)
+            => leftConcept != null && rightConcept != null && conceptScheme != null && conceptScheme.GetExactMatchConcepts(leftConcept).Any(concept => concept.Equals(rightConcept));
+
+        /// <summary>
+        /// Analyzes "ExactMatch(skosConcept, X)" relations of the concept scheme to answer the exact match concepts of the given skos:Concept
+        /// </summary>
+        public static List<RDFResource> GetExactMatchConcepts(this SKOSConceptScheme conceptScheme, RDFResource skosConcept)
+        {
+            List<RDFResource> exactMatchConcepts = new List<RDFResource>();
+
+            if (conceptScheme != null && skosConcept != null)
+            {
+                exactMatchConcepts.AddRange(conceptScheme.FindExactMatchConcepts(skosConcept, new Dictionary<long, RDFResource>()));
+
+                //We don't want to also enlist the given skos:Concept
+                exactMatchConcepts.RemoveAll(concept => concept.Equals(skosConcept));
+            }
+
+            return RDFQueryUtilities.RemoveDuplicates(exactMatchConcepts);
+        }
+
+        /// <summary>
+        /// Finds "ExactMatch(skosConcept, X)" relations to enlist the exact match concepts of the given skos:Concept
+        /// </summary>
+        internal static List<RDFResource> FindExactMatchConcepts(this SKOSConceptScheme conceptScheme, RDFResource skosConcept, Dictionary<long, RDFResource> visitContext)
+        {
+            List<RDFResource> exactMatchConcepts = new List<RDFResource>();
+
+            #region VisitContext
+            if (!visitContext.ContainsKey(skosConcept.PatternMemberID))
+                visitContext.Add(skosConcept.PatternMemberID, skosConcept);
+            else
+                return exactMatchConcepts;
+            #endregion
+
+            #region Discovery
+            //Find exact match concepts linked to the given one with skos:exactMatch relation
+            foreach (RDFTriple exactMatchRelation in conceptScheme.Ontology.Data.ABoxGraph[skosConcept, RDFVocabulary.SKOS.EXACT_MATCH, null, null])
+                exactMatchConcepts.Add((RDFResource)exactMatchRelation.Object);
+            #endregion
+
+            // Inference: EXACTMATCH(A,B) ^ EXACTMATCH(B,C) -> EXACTMATCH(A,C)
+            foreach (RDFResource exactMatchConcept in exactMatchConcepts.ToList())
+                exactMatchConcepts.AddRange(conceptScheme.FindExactMatchConcepts(exactMatchConcept, visitContext));
+
+            return exactMatchConcepts;
         }
         #endregion
     }
