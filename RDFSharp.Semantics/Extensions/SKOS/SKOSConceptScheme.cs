@@ -934,6 +934,63 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             return this;
         }
 
+        /// <summary>
+        /// Declares the existence of the given "PrefLabel(skosConcept,preferredLabelValue)" relation to the concept scheme
+        /// </summary>
+        public SKOSConceptScheme DeclarePreferredLabel(RDFResource skosConcept, RDFPlainLiteral preferredLabelValue)
+        {
+            #region SKOS Integrity Checks
+            bool SKOSIntegrityChecks()
+                => this.CheckPreferredLabelCompatibility(skosConcept, preferredLabelValue);
+            #endregion
+
+            if (skosConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:prefLabel relation to the concept scheme because given \"skosConcept\" parameter is null");
+            if (preferredLabelValue == null)
+                throw new OWLSemanticsException("Cannot declare skos:prefLabel relation to the concept scheme because given \"preferredLabelValue\" parameter is null");
+
+            //Add knowledge to the A-BOX (or raise warning if violations are detected)
+            if (SKOSIntegrityChecks())
+            {
+                //Add knowledge to the A-BOX
+                Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.PREF_LABEL, preferredLabelValue));
+            }
+            else
+                OWLSemanticsEvents.RaiseSemanticsWarning(string.Format("PrefLabel relation between concept '{0}' and value '{1}' cannot be declared to the concept scheme because it would violate SKOS integrity", skosConcept, preferredLabelValue));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the existence of the given "PrefLabel(skosConcept,skosxlLabel) ^ LiteralForm(skosxlLabel,preferredLabelValue)" relations to the concept scheme [SKOS-XL]
+        /// </summary>
+        public SKOSConceptScheme DeclarePreferredLabel(RDFResource skosConcept, RDFResource skosxlLabel, RDFPlainLiteral preferredLabelValue)
+        {
+            #region SKOS Integrity Checks
+            bool SKOSIntegrityChecks()
+                => this.CheckPreferredLabelCompatibility(skosConcept, preferredLabelValue);
+            #endregion
+
+            if (skosConcept == null)
+                throw new OWLSemanticsException("Cannot declare skosxl:prefLabel relation to the concept scheme because given \"skosConcept\" parameter is null");
+            if (skosxlLabel == null)
+                throw new OWLSemanticsException("Cannot declare skosxl:prefLabel relation to the concept scheme because given \"skosxlLabel\" parameter is null");
+            if (preferredLabelValue == null)
+                throw new OWLSemanticsException("Cannot declare skosxl:prefLabel relation to the concept scheme because given \"preferredLabelValue\" parameter is null");
+
+            //Add knowledge to the A-BOX (or raise warning if violations are detected)
+            if (SKOSIntegrityChecks())
+            {
+                //Add knowledge to the A-BOX
+                Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.SKOSXL.PREF_LABEL, skosxlLabel));
+                Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosxlLabel, RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, preferredLabelValue));
+            }
+            else
+                OWLSemanticsEvents.RaiseSemanticsWarning(string.Format("PrefLabel relation between concept '{0}' and label '{1}' with value '{2}' cannot be declared to the concept scheme because it would violate SKOS integrity", skosConcept, skosxlLabel, preferredLabelValue));
+            
+            return this;
+        }
+
         //EXPORT
 
         /// <summary>

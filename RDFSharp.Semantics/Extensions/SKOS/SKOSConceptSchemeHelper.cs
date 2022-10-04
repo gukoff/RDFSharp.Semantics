@@ -107,6 +107,55 @@ namespace RDFSharp.Semantics.Extensions.SKOS
 
             return canAddCloseOrExactMatchRelation;
         }
+
+        /// <summary>
+        /// Checks if the given skosConcept can be assigned the given [skos|skosxl]:prefLabel attribution without tampering SKOS integrity
+        /// </summary>
+        internal static bool CheckPreferredLabelCompatibility(this SKOSConceptScheme conceptScheme, RDFResource skosConcept, RDFPlainLiteral preferredLabelValue)
+        {
+            //Check skos:prefLabel annotation => no occurrences of the given value's language must be found (in order to accept the annotation)
+            RDFSelectQuery skosPrefLabelQuery = new RDFSelectQuery()
+                .AddPatternGroup(new RDFPatternGroup()
+                    .AddPattern(new RDFPattern(skosConcept, RDFVocabulary.SKOS.PREF_LABEL, new RDFVariable("?PREFLABEL")))
+                    .AddFilter(new RDFIsLiteralFilter(new RDFVariable("?PREFLABEL")))
+                    .AddFilter(new RDFLangMatchesFilter(new RDFVariable("?PREFLABEL"), preferredLabelValue.Language)));
+            RDFSelectQueryResult skosPrefLabelQueryResult = skosPrefLabelQuery.ApplyToGraph(conceptScheme.Ontology.Data.ABoxGraph);
+            bool canAddPreferredLabel = skosPrefLabelQueryResult.SelectResultsCount == 0;
+
+            //Check skosxl:prefLabel relation => no occurrences of the given value's language must be found (in order to accept the relation)
+            if (canAddPreferredLabel)
+            {
+                RDFSelectQuery skosxlPrefLabelQuery = new RDFSelectQuery()
+                    .AddPatternGroup(new RDFPatternGroup()
+                        .AddPattern(new RDFPattern(skosConcept, RDFVocabulary.SKOS.SKOSXL.PREF_LABEL, new RDFVariable("?PREFLABEL")))
+                        .AddPattern(new RDFPattern(new RDFVariable("?PREFLABEL"), RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, new RDFVariable("?LITERALFORM")))
+                        .AddFilter(new RDFIsUriFilter(new RDFVariable("?PREFLABEL")))
+                        .AddFilter(new RDFIsLiteralFilter(new RDFVariable("?LITERALFORM")))
+                        .AddFilter(new RDFLangMatchesFilter(new RDFVariable("?LITERALFORM"), preferredLabelValue.Language)));
+                RDFSelectQueryResult skosxlPrefLabelQueryResult = skosxlPrefLabelQuery.ApplyToGraph(conceptScheme.Ontology.Data.ABoxGraph);
+                canAddPreferredLabel = skosxlPrefLabelQueryResult.SelectResultsCount == 0;
+            }
+
+            //Check pairwise disjointness with skos:hiddenLabel annotation => no occurrences of the given value must be found (in order to accept the annotation)
+            if (canAddPreferredLabel)
+                canAddPreferredLabel = conceptScheme.Ontology.Data.ABoxGraph[skosConcept, RDFVocabulary.SKOS.HIDDEN_LABEL, null, preferredLabelValue].TriplesCount == 0;
+
+            //Check pairwise disjointness with skosxl:hiddenLabel relation => no occurrences of the given value must be found (in order to accept the relation)
+            if (canAddPreferredLabel)
+            {
+                RDFSelectQuery skosxlHiddenLabelQuery = new RDFSelectQuery()
+                    .AddPatternGroup(new RDFPatternGroup()
+                        .AddPattern(new RDFPattern(skosConcept, RDFVocabulary.SKOS.SKOSXL.HIDDEN_LABEL, new RDFVariable("?HIDDENLABEL")))
+                        .AddPattern(new RDFPattern(new RDFVariable("?HIDDENLABEL"), RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, new RDFVariable("?LITERALFORM")))
+                        .AddFilter(new RDFIsUriFilter(new RDFVariable("?HIDDENLABEL")))
+                        .AddFilter(new RDFIsLiteralFilter(new RDFVariable("?LITERALFORM")))
+                        .AddFilter(new RDFSameTermFilter(new RDFVariable("?LITERALFORM"), preferredLabelValue)));
+                RDFSelectQueryResult skosxlHiddenLabelQueryResult = skosxlHiddenLabelQuery.ApplyToGraph(conceptScheme.Ontology.Data.ABoxGraph);
+                canAddPreferredLabel = skosxlHiddenLabelQueryResult.SelectResultsCount == 0;
+            }
+
+            return canAddPreferredLabel;
+        }
         #endregion
 
         #region Analyzer
