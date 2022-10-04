@@ -78,7 +78,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         {
             //Avoid clash with hierarchical relations
             bool canAddRelatedRelation = !conceptScheme.CheckHasBroaderConcept(leftConcept, rightConcept)
-                                           && !conceptScheme.CheckHasNarrowerConcept(leftConcept, rightConcept));
+                                           && !conceptScheme.CheckHasNarrowerConcept(leftConcept, rightConcept);
 
             //Avoid clash with mapping relations
             if (canAddRelatedRelation)
@@ -161,6 +161,59 @@ namespace RDFSharp.Semantics.Extensions.SKOS
                 broaderTransitiveConcepts.AddRange(conceptScheme.GetBroaderConceptsInternal(broaderTransitiveConcept, visitContext));
 
             return broaderTransitiveConcepts;
+        }
+
+        /// <summary>
+        /// Checks for the existence of "Narrower(motherConcept,childConcept)" relations within the concept scheme
+        /// </summary>
+        public static bool CheckHasNarrowerConcept(this SKOSConceptScheme conceptScheme, RDFResource motherConcept, RDFResource childConcept)
+            => childConcept != null && motherConcept != null && conceptScheme != null && conceptScheme.GetNarrowerConcepts(motherConcept).Any(concept => concept.Equals(childConcept));
+
+        /// <summary>
+        /// Analyzes "Narrower(skosConcept, X)" relations of the concept scheme to answer the narrower concepts of the given skos:Concept
+        /// </summary>
+        public static List<RDFResource> GetNarrowerConcepts(this SKOSConceptScheme conceptScheme, RDFResource skosConcept)
+        {
+            List<RDFResource> narrowerConcepts = new List<RDFResource>();
+
+            if (skosConcept != null && conceptScheme != null)
+            {
+                //Get skos:narrower concepts
+                foreach (RDFTriple narrowerRelation in conceptScheme.Ontology.Data.ABoxGraph[skosConcept, RDFVocabulary.SKOS.NARROWER, null, null])
+                    narrowerConcepts.Add((RDFResource)narrowerRelation.Object);
+
+                //Get skos:narrowerTransitive concepts
+                narrowerConcepts.AddRange(conceptScheme.GetNarrowerConceptsInternal(skosConcept, new Dictionary<long, RDFResource>()));
+            }
+
+            return narrowerConcepts;
+        }
+
+        /// <summary>
+        /// Subsumes the "skos:narrowerTransitive" taxonomy to discover direct and indirect narrower concepts of the given skos:Concept
+        /// </summary>
+        internal static List<RDFResource> GetNarrowerConceptsInternal(this SKOSConceptScheme conceptScheme, RDFResource skosConcept, Dictionary<long, RDFResource> visitContext)
+        {
+            List<RDFResource> narrowerTransitiveConcepts = new List<RDFResource>();
+
+            #region visitContext
+            if (!visitContext.ContainsKey(skosConcept.PatternMemberID))
+                visitContext.Add(skosConcept.PatternMemberID, skosConcept);
+            else
+                return narrowerTransitiveConcepts;
+            #endregion
+
+            #region Discovery
+            //Find narrower concepts linked to the given one with skos:narrowerTransitive relation
+            foreach (RDFTriple narrowerTransitiveRelation in conceptScheme.Ontology.Data.ABoxGraph[skosConcept, RDFVocabulary.SKOS.NARROWER_TRANSITIVE, null, null])
+                narrowerTransitiveConcepts.Add((RDFResource)narrowerTransitiveRelation.Object);
+            #endregion
+
+            // Inference: NARROWERTRANSITIVE(A,B) ^ NARROWERTRANSITIVE(B,C) -> NARROWERTRANSITIVE(A,C)
+            foreach (RDFResource narrowerTransitiveConcept in narrowerTransitiveConcepts.ToList())
+                narrowerTransitiveConcepts.AddRange(conceptScheme.GetNarrowerConceptsInternal(narrowerTransitiveConcept, visitContext));
+
+            return narrowerTransitiveConcepts;
         }
         #endregion
     }
