@@ -606,6 +606,24 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         }
 
         /// <summary>
+        /// Declares the existence of the given "MappingRelation(leftConcept,rightConcept)" relation to the concept scheme
+        /// </summary>
+        public SKOSConceptScheme DeclareMappingRelatedConcepts(RDFResource leftConcept, RDFResource rightConcept)
+        {
+            if (leftConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:mappingRelation relation to the concept scheme because given \"leftConcept\" parameter is null");
+            if (rightConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:mappingRelation relation to the concept scheme because given \"rightConcept\" parameter is null");
+
+            //Add knowledge to the A-BOX
+            DeclareConcept(leftConcept);
+            DeclareConcept(rightConcept);
+            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(leftConcept, RDFVocabulary.SKOS.MAPPING_RELATION, rightConcept));
+
+            return this;
+        }
+
+        /// <summary>
         /// Declares the existence of the given "Related(leftConcept,rightConcept)" relation to the concept scheme
         /// </summary>
         public SKOSConceptScheme DeclareRelatedConcepts(RDFResource leftConcept, RDFResource rightConcept)
@@ -627,7 +645,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         }
 
         /// <summary>
-        /// Declares the existence of the given "Broader(childConcept,motherConcept)" relation to the concept scheme
+        /// Declares the existence of the given "Broader(leftConcept,rightConcept)" relation to the concept scheme
         /// </summary>
         public SKOSConceptScheme DeclareBroaderConcepts(RDFResource childConcept, RDFResource motherConcept)
         {
@@ -661,7 +679,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         }
 
         /// <summary>
-        /// Declares the existence of the given "BroaderTransitive(childConcept,motherConcept)" relation to the concept scheme
+        /// Declares the existence of the given "BroaderTransitive(leftConcept,rightConcept)" relation to the concept scheme
         /// </summary>
         public SKOSConceptScheme DeclareBroaderTransitiveConcepts(RDFResource childConcept, RDFResource motherConcept)
         {
@@ -695,7 +713,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         }
 
         /// <summary>
-        /// Declares the existence of the given "Narrower(motherConcept,childConcept)" relation to the concept scheme
+        /// Declares the existence of the given "Narrower(rightConcept,leftConcept)" relation to the concept scheme
         /// </summary>
         public SKOSConceptScheme DeclareNarrowerConcepts(RDFResource motherConcept, RDFResource childConcept)
         {
@@ -729,7 +747,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         }
 
         /// <summary>
-        /// Declares the existence of the given "NarrowerTransitive(motherConcept,childConcept)" relation to the concept scheme
+        /// Declares the existence of the given "NarrowerTransitive(rightConcept,leftConcept)" relation to the concept scheme
         /// </summary>
         public SKOSConceptScheme DeclareNarrowerTransitiveConcepts(RDFResource motherConcept, RDFResource childConcept)
         {
@@ -758,6 +776,176 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             }
             else
                 OWLSemanticsEvents.RaiseSemanticsWarning(string.Format("NarrowerTransitive relation between concept '{0}' and concept '{1}' cannot be declared to the concept scheme because it would violate SKOS integrity", motherConcept, childConcept));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the existence of the given "CloseMatch(leftConcept,rightConcept)" relation to the concept scheme
+        /// </summary>
+        public SKOSConceptScheme DeclareCloseMatchConcepts(RDFResource leftConcept, RDFResource rightConcept)
+        {
+            #region SKOS Integrity Checks
+            bool SKOSIntegrityChecks()
+                => this.CheckCloseOrExactMatchCompatibility(leftConcept, rightConcept);
+            #endregion
+
+            if (leftConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:closeMatch relation to the concept scheme because given \"leftConcept\" parameter is null");
+            if (rightConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:closeMatch relation to the concept scheme because given \"rightConcept\" parameter is null");
+            if (leftConcept.Equals(rightConcept))
+                throw new OWLSemanticsException("Cannot declare skos:closeMatch relation to the concept scheme because given \"leftConcept\" parameter refers to the same concept as the given \"rightConcept\" parameter");
+
+            //Add knowledge to the A-BOX (or raise warning if violations are detected)
+            if (SKOSIntegrityChecks())
+            {
+                //Add knowledge to the A-BOX
+                DeclareConcept(leftConcept);
+                DeclareConcept(rightConcept);
+                Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(leftConcept, RDFVocabulary.SKOS.CLOSE_MATCH, rightConcept));
+
+                //Also add an automatic A-BOX inference exploiting simmetry of skos:closeMatch relation
+                Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(rightConcept, RDFVocabulary.SKOS.CLOSE_MATCH, leftConcept));
+            }
+            else
+                OWLSemanticsEvents.RaiseSemanticsWarning(string.Format("CloseMatch relation between concept '{0}' and concept '{1}' cannot be declared to the concept scheme because it would violate SKOS integrity", leftConcept, rightConcept));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the existence of the given "ExactMatch(leftConcept,rightConcept)" relation to the concept scheme
+        /// </summary>
+        public SKOSConceptScheme DeclareExactMatchConcepts(RDFResource leftConcept, RDFResource rightConcept)
+        {
+            #region SKOS Integrity Checks
+            bool SKOSIntegrityChecks()
+                => this.CheckCloseOrExactMatchCompatibility(leftConcept, rightConcept);
+            #endregion
+
+            if (leftConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:exactMatch relation to the concept scheme because given \"leftConcept\" parameter is null");
+            if (rightConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:exactMatch relation to the concept scheme because given \"rightConcept\" parameter is null");
+            if (leftConcept.Equals(rightConcept))
+                throw new OWLSemanticsException("Cannot declare skos:exactMatch relation to the concept scheme because given \"leftConcept\" parameter refers to the same concept as the given \"rightConcept\" parameter");
+
+            //Add knowledge to the A-BOX (or raise warning if violations are detected)
+            if (SKOSIntegrityChecks())
+            {
+                //Add knowledge to the A-BOX
+                DeclareConcept(leftConcept);
+                DeclareConcept(rightConcept);
+                Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(leftConcept, RDFVocabulary.SKOS.EXACT_MATCH, rightConcept));
+
+                //Also add an automatic A-BOX inference exploiting simmetry of skos:exactMatch relation
+                Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(rightConcept, RDFVocabulary.SKOS.EXACT_MATCH, leftConcept));
+            }
+            else
+                OWLSemanticsEvents.RaiseSemanticsWarning(string.Format("ExactMatch relation between concept '{0}' and concept '{1}' cannot be declared to the concept scheme because it would violate SKOS integrity", leftConcept, rightConcept));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the existence of the given "BroadMatch(leftConcept,rightConcept)" relation to the concept scheme
+        /// </summary>
+        public SKOSConceptScheme DeclareBroadMatchConcepts(RDFResource leftConcept, RDFResource rightConcept)
+        {
+            #region SKOS Integrity Checks
+            bool SKOSIntegrityChecks()
+                => this.CheckBroaderCompatibility(leftConcept, rightConcept);
+            #endregion
+
+            if (leftConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:broadMatch relation to the concept scheme because given \"leftConcept\" parameter is null");
+            if (rightConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:broadMatch relation to the concept scheme because given \"rightConcept\" parameter is null");
+            if (leftConcept.Equals(rightConcept))
+                throw new OWLSemanticsException("Cannot declare skos:broadMatch relation to the concept scheme because given \"leftConcept\" parameter refers to the same concept as the given \"rightConcept\" parameter");
+
+            //Add knowledge to the A-BOX (or raise warning if violations are detected)
+            if (SKOSIntegrityChecks())
+            {
+                //Add knowledge to the A-BOX
+                DeclareConcept(leftConcept);
+                DeclareConcept(rightConcept);
+                Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(leftConcept, RDFVocabulary.SKOS.BROAD_MATCH, rightConcept));
+
+                //Also add an automatic A-BOX inference exploiting owl:inverseOf relation
+                Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(rightConcept, RDFVocabulary.SKOS.NARROW_MATCH, leftConcept));
+            }
+            else
+                OWLSemanticsEvents.RaiseSemanticsWarning(string.Format("BroadMatch relation between concept '{0}' and concept '{1}' cannot be declared to the concept scheme because it would violate SKOS integrity", leftConcept, rightConcept));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the existence of the given "NarrowMatch(leftConcept,rightConcept)" relation to the concept scheme
+        /// </summary>
+        public SKOSConceptScheme DeclareNarrowMatchConcepts(RDFResource leftConcept, RDFResource rightConcept)
+        {
+            #region SKOS Integrity Checks
+            bool SKOSIntegrityChecks()
+                => this.CheckNarrowerCompatibility(leftConcept, rightConcept);
+            #endregion
+
+            if (leftConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:narrowMatch relation to the concept scheme because given \"leftConcept\" parameter is null");
+            if (rightConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:narrowMatch relation to the concept scheme because given \"rightConcept\" parameter is null");
+            if (leftConcept.Equals(rightConcept))
+                throw new OWLSemanticsException("Cannot declare skos:narrowMatch relation to the concept scheme because given \"leftConcept\" parameter refers to the same concept as the given \"rightConcept\" parameter");
+
+            //Add knowledge to the A-BOX (or raise warning if violations are detected)
+            if (SKOSIntegrityChecks())
+            {
+                //Add knowledge to the A-BOX
+                DeclareConcept(leftConcept);
+                DeclareConcept(rightConcept);
+                Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(leftConcept, RDFVocabulary.SKOS.NARROW_MATCH, rightConcept));
+
+                //Also add an automatic A-BOX inference exploiting owl:inverseOf relation
+                Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(rightConcept, RDFVocabulary.SKOS.BROAD_MATCH, leftConcept));
+            }
+            else
+                OWLSemanticsEvents.RaiseSemanticsWarning(string.Format("NarrowMatch relation between concept '{0}' and concept '{1}' cannot be declared to the concept scheme because it would violate SKOS integrity", leftConcept, rightConcept));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the existence of the given "RelatedMatch(leftConcept,rightConcept)" relation to the concept scheme
+        /// </summary>
+        public SKOSConceptScheme DeclareRelatedMatchConcepts(RDFResource leftConcept, RDFResource rightConcept)
+        {
+            #region SKOS Integrity Checks
+            bool SKOSIntegrityChecks()
+                => this.CheckRelatedCompatibility(leftConcept, rightConcept);
+            #endregion
+
+            if (leftConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:relatedMatch relation to the concept scheme because given \"leftConcept\" parameter is null");
+            if (rightConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:relatedMatch relation to the concept scheme because given \"rightConcept\" parameter is null");
+            if (leftConcept.Equals(rightConcept))
+                throw new OWLSemanticsException("Cannot declare skos:relatedMatch relation to the concept scheme because given \"leftConcept\" parameter refers to the same concept as the given \"rightConcept\" parameter");
+
+            //Add knowledge to the A-BOX (or raise warning if violations are detected)
+            if (SKOSIntegrityChecks())
+            {
+                //Add knowledge to the A-BOX
+                DeclareConcept(leftConcept);
+                DeclareConcept(rightConcept);
+                Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(leftConcept, RDFVocabulary.SKOS.RELATED_MATCH, rightConcept));
+
+                //Also add an automatic A-BOX inference exploiting simmetry of skos:relatedMatch relation
+                Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(rightConcept, RDFVocabulary.SKOS.RELATED_MATCH, leftConcept));
+            }
+            else
+                OWLSemanticsEvents.RaiseSemanticsWarning(string.Format("RelatedMatch relation between concept '{0}' and concept '{1}' cannot be declared to the concept scheme because it would violate SKOS integrity", leftConcept, rightConcept));
 
             return this;
         }
