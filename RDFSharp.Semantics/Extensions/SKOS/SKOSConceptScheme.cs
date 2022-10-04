@@ -1082,6 +1082,8 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             propertyModel.DeclareInverseProperties(RDFVocabulary.SKOS.BROADER, RDFVocabulary.SKOS.NARROWER);
             propertyModel.DeclareInverseProperties(RDFVocabulary.SKOS.BROADER_TRANSITIVE, RDFVocabulary.SKOS.NARROWER_TRANSITIVE);
             propertyModel.DeclareInverseProperties(RDFVocabulary.SKOS.HAS_TOP_CONCEPT, RDFVocabulary.SKOS.TOP_CONCEPT_OF);
+            propertyModel.DeclareDisjointProperties(RDFVocabulary.SKOS.RELATED, RDFVocabulary.SKOS.BROADER_TRANSITIVE);
+            propertyModel.DeclareDisjointProperties(RDFVocabulary.SKOS.RELATED, RDFVocabulary.SKOS.NARROWER_TRANSITIVE);
             propertyModel.DeclareDisjointProperties(RDFVocabulary.SKOS.EXACT_MATCH, RDFVocabulary.SKOS.BROAD_MATCH);
             propertyModel.DeclareDisjointProperties(RDFVocabulary.SKOS.EXACT_MATCH, RDFVocabulary.SKOS.NARROW_MATCH);
             propertyModel.DeclareDisjointProperties(RDFVocabulary.SKOS.EXACT_MATCH, RDFVocabulary.SKOS.RELATED_MATCH);
