@@ -451,7 +451,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         /// <summary>
         ///  Declares the existence of the given "Note(skosConcept,noteValue)" annotation to the concept scheme
         /// </summary>
-        public SKOSConceptScheme DeclareNote(RDFResource skosConcept, RDFLiteral noteValue)
+        public SKOSConceptScheme DeclareConceptNote(RDFResource skosConcept, RDFLiteral noteValue)
         {
             if (skosConcept == null)
                 throw new OWLSemanticsException("Cannot declare skos:note annotation to the concept scheme because given \"skosConcept\" parameter is null");
@@ -468,7 +468,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         /// <summary>
         ///  Declares the existence of the given "ChangeNote(skosConcept,changeNoteValue)" annotation to the concept scheme
         /// </summary>
-        public SKOSConceptScheme DeclareChangeNote(RDFResource skosConcept, RDFLiteral changeNoteValue)
+        public SKOSConceptScheme DeclareConceptChangeNote(RDFResource skosConcept, RDFLiteral changeNoteValue)
         {
             if (skosConcept == null)
                 throw new OWLSemanticsException("Cannot declare skos:changeNote annotation to the concept scheme because given \"skosConcept\" parameter is null");
@@ -485,7 +485,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         /// <summary>
         ///  Declares the existence of the given "EditorialNote(skosConcept,editorialNoteValue)" annotation to the concept scheme
         /// </summary>
-        public SKOSConceptScheme DeclareEditorialNote(RDFResource skosConcept, RDFLiteral editorialNoteValue)
+        public SKOSConceptScheme DeclareConceptEditorialNote(RDFResource skosConcept, RDFLiteral editorialNoteValue)
         {
             if (skosConcept == null)
                 throw new OWLSemanticsException("Cannot declare skos:editorialNote annotation to the concept scheme because given \"skosConcept\" parameter is null");
@@ -502,7 +502,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         /// <summary>
         ///  Declares the existence of the given "HistoryNote(skosConcept,historyNoteValue)" annotation to the concept scheme
         /// </summary>
-        public SKOSConceptScheme DeclareHistoryNote(RDFResource skosConcept, RDFLiteral historyNoteValue)
+        public SKOSConceptScheme DeclareConceptHistoryNote(RDFResource skosConcept, RDFLiteral historyNoteValue)
         {
             if (skosConcept == null)
                 throw new OWLSemanticsException("Cannot declare skos:historyNote annotation to the concept scheme because given \"skosConcept\" parameter is null");
@@ -519,7 +519,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         /// <summary>
         ///  Declares the existence of the given "ScopeNote(skosConcept,scopeNoteValue)" annotation to the concept scheme
         /// </summary>
-        public SKOSConceptScheme DeclareScopeNote(RDFResource skosConcept, RDFLiteral scopeNoteValue)
+        public SKOSConceptScheme DeclareConceptScopeNote(RDFResource skosConcept, RDFLiteral scopeNoteValue)
         {
             if (skosConcept == null)
                 throw new OWLSemanticsException("Cannot declare skos:scopeNote annotation to the concept scheme because given \"skosConcept\" parameter is null");
@@ -536,7 +536,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         /// <summary>
         ///  Declares the existence of the given "Definition(skosConcept,definitionValue)" annotation to the concept scheme
         /// </summary>
-        public SKOSConceptScheme DeclareDefinition(RDFResource skosConcept, RDFLiteral definitionValue)
+        public SKOSConceptScheme DeclareConceptDefinition(RDFResource skosConcept, RDFLiteral definitionValue)
         {
             if (skosConcept == null)
                 throw new OWLSemanticsException("Cannot declare skos:definition annotation to the concept scheme because given \"skosConcept\" parameter is null");
@@ -553,7 +553,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         /// <summary>
         ///  Declares the existence of the given "Example(skosConcept,exampleValue)" annotation to the concept scheme
         /// </summary>
-        public SKOSConceptScheme DeclareExample(RDFResource skosConcept, RDFLiteral exampleValue)
+        public SKOSConceptScheme DeclareConceptExample(RDFResource skosConcept, RDFLiteral exampleValue)
         {
             if (skosConcept == null)
                 throw new OWLSemanticsException("Cannot declare skos:example annotation to the concept scheme because given \"skosConcept\" parameter is null");
@@ -953,7 +953,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         /// <summary>
         ///  Declares the existence of the given "Notation(skosConcept,notationValue)" relation to the concept scheme
         /// </summary>
-        public SKOSConceptScheme DeclareNotation(RDFResource skosConcept, RDFLiteral notationValue)
+        public SKOSConceptScheme DeclareConceptNotation(RDFResource skosConcept, RDFLiteral notationValue)
         {
             if (skosConcept == null)
                 throw new OWLSemanticsException("Cannot declare skos:notation relation to the concept scheme because given \"skosConcept\" parameter is null");
