@@ -991,6 +991,157 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             return this;
         }
 
+        /// <summary>
+        /// Declares the existence of the given "AltLabel(skosConcept,alternativeLabelValue)" relation to the concept scheme
+        /// </summary>
+        public SKOSConceptScheme DeclareAlternativeLabel(RDFResource skosConcept, RDFPlainLiteral alternativeLabelValue)
+        {
+            #region SKOS Integrity Checks
+            bool SKOSIntegrityChecks()
+                => this.CheckAlternativeLabelCompatibility(skosConcept, alternativeLabelValue);
+            #endregion
+
+            if (skosConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:altLabel relation to the concept scheme because given \"skosConcept\" parameter is null");
+            if (alternativeLabelValue == null)
+                throw new OWLSemanticsException("Cannot declare skos:altLabel relation to the concept scheme because given \"alternativeLabelValue\" parameter is null");
+
+            //Add knowledge to the A-BOX (or raise warning if violations are detected)
+            if (SKOSIntegrityChecks())
+            {
+                //Add knowledge to the A-BOX
+                Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.ALT_LABEL, alternativeLabelValue));
+            }
+            else
+                OWLSemanticsEvents.RaiseSemanticsWarning(string.Format("AltLabel relation between concept '{0}' and value '{1}' cannot be declared to the concept scheme because it would violate SKOS integrity", skosConcept, alternativeLabelValue));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the existence of the given "AltLabel(skosConcept,skosxlLabel) ^ LiteralForm(skosxlLabel,alternativeLabelValue)" relations to the concept scheme [SKOS-XL]
+        /// </summary>
+        public SKOSConceptScheme DeclareAlternativeLabel(RDFResource skosConcept, RDFResource skosxlLabel, RDFPlainLiteral alternativeLabelValue)
+        {
+            #region SKOS Integrity Checks
+            bool SKOSIntegrityChecks()
+                => this.CheckAlternativeLabelCompatibility(skosConcept, alternativeLabelValue);
+            #endregion
+
+            if (skosConcept == null)
+                throw new OWLSemanticsException("Cannot declare skosxl:altLabel relation to the concept scheme because given \"skosConcept\" parameter is null");
+            if (skosxlLabel == null)
+                throw new OWLSemanticsException("Cannot declare skosxl:altLabel relation to the concept scheme because given \"skosxlLabel\" parameter is null");
+            if (alternativeLabelValue == null)
+                throw new OWLSemanticsException("Cannot declare skosxl:altLabel relation to the concept scheme because given \"alternativeLabelValue\" parameter is null");
+
+            //Add knowledge to the A-BOX (or raise warning if violations are detected)
+            if (SKOSIntegrityChecks())
+            {
+                //Add knowledge to the A-BOX
+                Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.SKOSXL.ALT_LABEL, skosxlLabel));
+                Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosxlLabel, RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, alternativeLabelValue));
+            }
+            else
+                OWLSemanticsEvents.RaiseSemanticsWarning(string.Format("AltLabel relation between concept '{0}' and label '{1}' with value '{2}' cannot be declared to the concept scheme because it would violate SKOS integrity", skosConcept, skosxlLabel, alternativeLabelValue));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the existence of the given "HiddenLabel(skosConcept,hiddenLabelValue)" relation to the concept scheme
+        /// </summary>
+        public SKOSConceptScheme DeclareHiddenLabel(RDFResource skosConcept, RDFPlainLiteral hiddenLabelValue)
+        {
+            #region SKOS Integrity Checks
+            bool SKOSIntegrityChecks()
+                => this.CheckHiddenLabelCompatibility(skosConcept, hiddenLabelValue);
+            #endregion
+
+            if (skosConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:hiddenLabel relation to the concept scheme because given \"skosConcept\" parameter is null");
+            if (hiddenLabelValue == null)
+                throw new OWLSemanticsException("Cannot declare skos:hiddenLabel relation to the concept scheme because given \"hiddenLabelValue\" parameter is null");
+
+            //Add knowledge to the A-BOX (or raise warning if violations are detected)
+            if (SKOSIntegrityChecks())
+            {
+                //Add knowledge to the A-BOX
+                Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.HIDDEN_LABEL, hiddenLabelValue));
+            }
+            else
+                OWLSemanticsEvents.RaiseSemanticsWarning(string.Format("HiddenLabel relation between concept '{0}' and value '{1}' cannot be declared to the concept scheme because it would violate SKOS integrity", skosConcept, hiddenLabelValue));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the existence of the given "HiddenLabel(skosConcept,skosxlLabel) ^ LiteralForm(skosxlLabel,hiddenLabelValue)" relations to the concept scheme [SKOS-XL]
+        /// </summary>
+        public SKOSConceptScheme DeclareHiddenLabel(RDFResource skosConcept, RDFResource skosxlLabel, RDFPlainLiteral hiddenLabelValue)
+        {
+            #region SKOS Integrity Checks
+            bool SKOSIntegrityChecks()
+                => this.CheckHiddenLabelCompatibility(skosConcept, hiddenLabelValue);
+            #endregion
+
+            if (skosConcept == null)
+                throw new OWLSemanticsException("Cannot declare skosxl:hiddenLabel relation to the concept scheme because given \"skosConcept\" parameter is null");
+            if (skosxlLabel == null)
+                throw new OWLSemanticsException("Cannot declare skosxl:hiddenLabel relation to the concept scheme because given \"skosxlLabel\" parameter is null");
+            if (hiddenLabelValue == null)
+                throw new OWLSemanticsException("Cannot declare skosxl:hiddenLabel relation to the concept scheme because given \"hiddenLabelValue\" parameter is null");
+
+            //Add knowledge to the A-BOX (or raise warning if violations are detected)
+            if (SKOSIntegrityChecks())
+            {
+                //Add knowledge to the A-BOX
+                Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.SKOSXL.HIDDEN_LABEL, skosxlLabel));
+                Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosxlLabel, RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, hiddenLabelValue));
+            }
+            else
+                OWLSemanticsEvents.RaiseSemanticsWarning(string.Format("HiddenLabel relation between concept '{0}' and label '{1}' with value '{2}' cannot be declared to the concept scheme because it would violate SKOS integrity", skosConcept, skosxlLabel, hiddenLabelValue));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the existence of the given "LabelRelation(leftLabel,rightLabel)" relation to the concept scheme [SKOS-XL]
+        /// </summary>
+        public SKOSConceptScheme DeclareRelatedLabels(RDFResource leftLabel, RDFResource rightLabel)
+        {
+            if (leftLabel == null)
+                throw new OWLSemanticsException("Cannot declare skosxl:labelRelation relation to the concept scheme because given \"leftLabel\" parameter is null");
+            if (rightLabel == null)
+                throw new OWLSemanticsException("Cannot declare skosxl:labelRelation relation to the concept scheme because given \"rightLabel\" parameter is null");
+            if (leftLabel.Equals(rightLabel))
+                throw new OWLSemanticsException("Cannot declare skosxl:labelRelation relation to the concept scheme because given \"leftLabel\" parameter refers to the same label as the given \"rightLabel\" parameter");
+
+            //Add knowledge to the A-BOX
+            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(leftLabel, RDFVocabulary.SKOS.SKOSXL.LABEL_RELATION, rightLabel));
+
+            //Also add an automatic A-BOX inference exploiting simmetry of skosxl:labelRelation relation
+            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(rightLabel, RDFVocabulary.SKOS.SKOSXL.LABEL_RELATION, leftLabel));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the existence of the given "LiteralForm(skosxlLabel,literalFormValue)" relation to the concept scheme [SKOS-XL]
+        /// </summary>
+        public SKOSConceptScheme DeclareLiteralForm(RDFResource skosxlLabel, RDFLiteral literalFormValue)
+        {
+            if (skosxlLabel == null)
+                throw new OWLSemanticsException("Cannot declare skosxl:literalForm relation to the concept scheme because given \"skosxlLabel\" parameter is null");
+            if (literalFormValue == null)
+                throw new OWLSemanticsException("Cannot declare skosxl:literalForm relation to the concept scheme because given \"literalFormValue\" parameter is null");
+
+            //Add knowledge to the A-BOX
+            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosxlLabel, RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, literalFormValue));
+
+            return this;
+        }
+
         //EXPORT
 
         /// <summary>
