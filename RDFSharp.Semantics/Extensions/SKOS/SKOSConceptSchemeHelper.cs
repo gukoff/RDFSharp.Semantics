@@ -516,6 +516,63 @@ namespace RDFSharp.Semantics.Extensions.SKOS
 
             return exactMatchConcepts;
         }
+
+        /// <summary>
+        /// Analyzes "MappingRelation(skosConcept, X)" relations of the concept scheme to answer the mapping related concepts of the given skos:Concept
+        /// </summary>
+        public static List<RDFResource> GetMappingRelatedConcepts(this SKOSConceptScheme conceptScheme, RDFResource skosConcept)
+        {
+            List<RDFResource> mappingRelatedConcepts = new List<RDFResource>();
+
+            if (skosConcept != null && conceptScheme != null)
+            {
+                //Get skos:mappingRelation concepts
+                foreach (RDFTriple mappingRelation in conceptScheme.Ontology.Data.ABoxGraph[skosConcept, RDFVocabulary.SKOS.MAPPING_RELATION, null, null])
+                    mappingRelatedConcepts.Add((RDFResource)mappingRelation.Object);
+            }
+
+            return mappingRelatedConcepts;
+        }
+
+        /// <summary>
+        /// Analyzes "SemanticRelation(skosConcept, X)" relations of the concept scheme to answer the semantic related concepts of the given skos:Concept
+        /// </summary>
+        public static List<RDFResource> GetSemanticRelatedConcepts(this SKOSConceptScheme conceptScheme, RDFResource skosConcept)
+        {
+            List<RDFResource> semanticRelatedConcepts = new List<RDFResource>();
+
+            if (skosConcept != null && conceptScheme != null)
+            {
+                //Get skos:semanticRelation concepts
+                foreach (RDFTriple semanticRelation in conceptScheme.Ontology.Data.ABoxGraph[skosConcept, RDFVocabulary.SKOS.SEMANTIC_RELATION, null, null])
+                    semanticRelatedConcepts.Add((RDFResource)semanticRelation.Object);
+            }
+
+            return semanticRelatedConcepts;
+        }
+
+        /// <summary>
+        /// Analyzes "Notation(skosConcept, X)" relations of the concept scheme to answer the notations of the given skos:Concept
+        /// </summary>
+        public static List<RDFLiteral> GetConceptNotations(this SKOSConceptScheme conceptScheme, RDFResource skosConcept)
+        {
+            List<RDFLiteral> notations = new List<RDFLiteral>();
+
+            if (skosConcept != null && conceptScheme != null)
+            {
+                //Get skos:notation values
+                foreach (RDFTriple notationRelation in conceptScheme.Ontology.Data.ABoxGraph[skosConcept, RDFVocabulary.SKOS.NOTATION, null, null])
+                    notations.Add((RDFLiteral)notationRelation.Object);
+            }
+
+            return notations;
+        }
+
+        /// <summary>
+        /// Checks for the existence of "HasTopConcept(skosConcept)" relations within the concept scheme
+        /// </summary>
+        public static bool CheckHasTopConcept(this SKOSConceptScheme conceptScheme, RDFResource skosConcept)
+            => skosConcept != null && conceptScheme != null && conceptScheme.Ontology.Data.ABoxGraph[conceptScheme, RDFVocabulary.SKOS.HAS_TOP_CONCEPT, skosConcept, null].TriplesCount > 0;
         #endregion
     }
 }
