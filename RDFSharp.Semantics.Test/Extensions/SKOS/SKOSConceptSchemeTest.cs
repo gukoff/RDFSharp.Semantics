@@ -18,6 +18,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RDFSharp.Model;
 using RDFSharp.Semantics.Extensions.SKOS;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace RDFSharp.Semantics.Test
 {
@@ -151,6 +152,90 @@ namespace RDFSharp.Semantics.Test
         [TestMethod]
         public void ShouldThrowExceptionOnDeclaringCollectionBecauseEmptyList()
             => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DeclareCollection(new RDFResource("ex:collection"), new List<RDFResource>()));
+
+        [TestMethod]
+        public void ShouldDeclareOrderedCollection()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareOrderedCollection(new RDFResource("ex:orderedCollection"), new List<RDFResource>()
+                { new RDFResource("ex:concept1"), new RDFResource("ex:concept2") });
+
+            //Test evolution of SKOS knowledge
+            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
+            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
+            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
+            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 4);
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasIndividual(new RDFResource("ex:orderedCollection")));
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckIsIndividualOf(conceptScheme.Ontology.Model, new RDFResource("ex:orderedCollection"), RDFVocabulary.SKOS.ORDERED_COLLECTION));
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:orderedCollection"), RDFVocabulary.SKOS.IN_SCHEME, new RDFResource("ex:conceptScheme")));
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasIndividual(new RDFResource("ex:concept1")));
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckIsIndividualOf(conceptScheme.Ontology.Model, new RDFResource("ex:concept1"), RDFVocabulary.SKOS.CONCEPT));
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasIndividual(new RDFResource("ex:concept2")));
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckIsIndividualOf(conceptScheme.Ontology.Model, new RDFResource("ex:concept2"), RDFVocabulary.SKOS.CONCEPT));
+            Assert.IsTrue(conceptScheme.Ontology.Data.ABoxGraph[new RDFResource("ex:orderedCollection"), RDFVocabulary.SKOS.MEMBER_LIST, null, null].Any());
+            Assert.IsTrue(conceptScheme.Ontology.Data.ABoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:concept1"), null].Any());
+            Assert.IsTrue(conceptScheme.Ontology.Data.ABoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:concept2"), null].Any());
+
+            //Test counters and enumerators
+            Assert.IsTrue(conceptScheme.ConceptsCount == 2);
+            int i1 = 0;
+            IEnumerator<RDFResource> conceptsEnumerator = conceptScheme.ConceptsEnumerator;
+            while (conceptsEnumerator.MoveNext()) i1++;
+            Assert.IsTrue(i1 == 2);
+
+            int i2 = 0;
+            foreach (RDFResource skosConcept in conceptScheme) i2++;
+            Assert.IsTrue(i2 == 2);
+
+            Assert.IsTrue(conceptScheme.OrderedCollectionsCount == 1);
+            int j1 = 0;
+            IEnumerator<RDFResource> orderedCollectionsEnumerator = conceptScheme.OrderedCollectionsEnumerator;
+            while (orderedCollectionsEnumerator.MoveNext()) j1++;
+            Assert.IsTrue(j1 == 1);
+        }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringOrderedCollectionBecauseNull()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DeclareOrderedCollection(null, new List<RDFResource>() { new RDFResource("ex:concept") }));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringOrderedCollectionBecauseNullList()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DeclareOrderedCollection(new RDFResource("ex:orderedCollection"), null));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringOrderedCollectionBecauseEmptyList()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DeclareOrderedCollection(new RDFResource("ex:orderedCollection"), new List<RDFResource>()));
+
+        [TestMethod]
+        public void ShouldDeclareLabel()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareLabel(new RDFResource("ex:label"));
+
+            //Test evolution of SKOS knowledge
+            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
+            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
+            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
+            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 2);
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasIndividual(new RDFResource("ex:label")));
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckIsIndividualOf(conceptScheme.Ontology.Model, new RDFResource("ex:label"), RDFVocabulary.SKOS.SKOSXL.LABEL));
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:label"), RDFVocabulary.SKOS.IN_SCHEME, new RDFResource("ex:conceptScheme")));
+
+            //Test counters and enumerators
+            Assert.IsTrue(conceptScheme.LabelsCount == 1);
+            int i1 = 0;
+            IEnumerator<RDFResource> labelsEnumerator = conceptScheme.LabelsEnumerator;
+            while (labelsEnumerator.MoveNext()) i1++;
+            Assert.IsTrue(i1 == 1);
+        }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringLabelBecauseNull()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DeclareLabel(null));
+        
+        //ANNOTATIONS
+
+
         #endregion
     }
 }
