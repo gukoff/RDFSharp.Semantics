@@ -346,6 +346,186 @@ namespace RDFSharp.Semantics.Test
         [TestMethod]
         public void ShouldThrowExceptionOnResourceAnnotatingConceptBecauseNullValue()
             => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").AnnotateConcept(new RDFResource("ex:concept"), RDFVocabulary.RDFS.COMMENT, null as RDFResource));
+
+        [TestMethod]
+        public void ShouldLiteralAnnotateCollection()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.AnnotateCollection(new RDFResource("ex:collection"), RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("This is a skos:Collection!"));
+
+            //Test evolution of SKOS knowledge
+            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
+            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
+            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
+            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasAnnotation(new RDFResource("ex:collection"), RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("This is a skos:Collection!")));
+        }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnLiteralAnnotatingCollectionBecauseNullCollection()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").AnnotateCollection(null, RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("This is a skos:Collection!")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnLiteralAnnotatingCollectionBecauseNullProperty()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").AnnotateCollection(new RDFResource("ex:collection"), null, new RDFPlainLiteral("This is a skos:Collection!")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnLiteralAnnotatingCollectionBecauseBlankProperty()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").AnnotateCollection(new RDFResource("ex:collection"), new RDFResource(), new RDFPlainLiteral("This is a skos:Collection!")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnLiteralAnnotatingCollectionBecauseNullValue()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").AnnotateCollection(new RDFResource("ex:collection"), RDFVocabulary.RDFS.COMMENT, null as RDFLiteral));
+
+        [TestMethod]
+        public void ShouldResourceAnnotateCollection()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.AnnotateCollection(new RDFResource("ex:collection"), RDFVocabulary.RDFS.SEE_ALSO, new RDFResource("ex:seeAlso"));
+
+            //Test evolution of SKOS knowledge
+            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
+            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
+            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
+            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasAnnotation(new RDFResource("ex:collection"), RDFVocabulary.RDFS.SEE_ALSO, new RDFResource("ex:seeAlso")));
+        }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnResourceAnnotatingCollectionBecauseNullCollection()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").AnnotateCollection(null, RDFVocabulary.RDFS.COMMENT, new RDFResource("ex:seeAlso")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnResourceAnnotatingCollectionBecauseNullProperty()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").AnnotateCollection(new RDFResource("ex:collection"), null, new RDFResource("ex:seeAlso")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnResourceAnnotatingCollectionBecauseBlankProperty()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").AnnotateCollection(new RDFResource("ex:collection"), new RDFResource(), new RDFResource("ex:seeAlso")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnResourceAnnotatingCollectionBecauseNullValue()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").AnnotateCollection(new RDFResource("ex:collection"), RDFVocabulary.RDFS.COMMENT, null as RDFResource));
+
+        [TestMethod]
+        public void ShouldLiteralAnnotateOrderedCollection()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.AnnotateOrderedCollection(new RDFResource("ex:orderedCollection"), RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("This is a skos:OrderedCollection!"));
+
+            //Test evolution of SKOS knowledge
+            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
+            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
+            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
+            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasAnnotation(new RDFResource("ex:orderedCollection"), RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("This is a skos:OrderedCollection!")));
+        }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnLiteralAnnotatingOrderedCollectionBecauseNullOrderedCollection()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").AnnotateOrderedCollection(null, RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("This is a skos:OrderedCollection!")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnLiteralAnnotatingOrderedCollectionBecauseNullProperty()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").AnnotateOrderedCollection(new RDFResource("ex:orderedCollection"), null, new RDFPlainLiteral("This is a skos:OrderedCollection!")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnLiteralAnnotatingOrderedCollectionBecauseBlankProperty()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").AnnotateOrderedCollection(new RDFResource("ex:orderedCollection"), new RDFResource(), new RDFPlainLiteral("This is a skos:OrderedCollection!")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnLiteralAnnotatingOrderedCollectionBecauseNullValue()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").AnnotateOrderedCollection(new RDFResource("ex:orderedCollection"), RDFVocabulary.RDFS.COMMENT, null as RDFLiteral));
+
+        [TestMethod]
+        public void ShouldResourceAnnotateOrderedCollection()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.AnnotateOrderedCollection(new RDFResource("ex:orderedCollection"), RDFVocabulary.RDFS.SEE_ALSO, new RDFResource("ex:seeAlso"));
+
+            //Test evolution of SKOS knowledge
+            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
+            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
+            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
+            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasAnnotation(new RDFResource("ex:orderedCollection"), RDFVocabulary.RDFS.SEE_ALSO, new RDFResource("ex:seeAlso")));
+        }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnResourceAnnotatingOrderedCollectionBecauseNullOrderedCollection()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").AnnotateOrderedCollection(null, RDFVocabulary.RDFS.COMMENT, new RDFResource("ex:seeAlso")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnResourceAnnotatingOrderedCollectionBecauseNullProperty()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").AnnotateOrderedCollection(new RDFResource("ex:orderedCollection"), null, new RDFResource("ex:seeAlso")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnResourceAnnotatingOrderedCollectionBecauseBlankProperty()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").AnnotateOrderedCollection(new RDFResource("ex:orderedCollection"), new RDFResource(), new RDFResource("ex:seeAlso")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnResourceAnnotatingOrderedCollectionBecauseNullValue()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").AnnotateOrderedCollection(new RDFResource("ex:orderedCollection"), RDFVocabulary.RDFS.COMMENT, null as RDFResource));
+
+        [TestMethod]
+        public void ShouldLiteralAnnotateLabel()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.AnnotateLabel(new RDFResource("ex:label"), RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("This is a skos:Label!"));
+
+            //Test evolution of SKOS knowledge
+            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
+            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
+            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
+            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasAnnotation(new RDFResource("ex:label"), RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("This is a skos:Label!")));
+        }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnLiteralAnnotatingLabelBecauseNullLabel()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").AnnotateLabel(null, RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("This is a skos:Label!")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnLiteralAnnotatingLabelBecauseNullProperty()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").AnnotateLabel(new RDFResource("ex:label"), null, new RDFPlainLiteral("This is a skos:Label!")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnLiteralAnnotatingLabelBecauseBlankProperty()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").AnnotateLabel(new RDFResource("ex:label"), new RDFResource(), new RDFPlainLiteral("This is a skos:Label!")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnLiteralAnnotatingLabelBecauseNullValue()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").AnnotateLabel(new RDFResource("ex:label"), RDFVocabulary.RDFS.COMMENT, null as RDFLiteral));
+
+        [TestMethod]
+        public void ShouldResourceAnnotateLabel()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.AnnotateLabel(new RDFResource("ex:label"), RDFVocabulary.RDFS.SEE_ALSO, new RDFResource("ex:seeAlso"));
+
+            //Test evolution of SKOS knowledge
+            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
+            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
+            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
+            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasAnnotation(new RDFResource("ex:label"), RDFVocabulary.RDFS.SEE_ALSO, new RDFResource("ex:seeAlso")));
+        }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnResourceAnnotatingLabelBecauseNullLabel()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").AnnotateLabel(null, RDFVocabulary.RDFS.COMMENT, new RDFResource("ex:seeAlso")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnResourceAnnotatingLabelBecauseNullProperty()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").AnnotateLabel(new RDFResource("ex:label"), null, new RDFResource("ex:seeAlso")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnResourceAnnotatingLabelBecauseBlankProperty()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").AnnotateLabel(new RDFResource("ex:label"), new RDFResource(), new RDFResource("ex:seeAlso")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnResourceAnnotatingLabelBecauseNullValue()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").AnnotateLabel(new RDFResource("ex:label"), RDFVocabulary.RDFS.COMMENT, null as RDFResource));
         #endregion
     }
 }
