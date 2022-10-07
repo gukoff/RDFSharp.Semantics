@@ -99,6 +99,58 @@ namespace RDFSharp.Semantics.Test
         [TestMethod]
         public void ShouldThrowExceptionOnDeclaringConceptBecauseNull()
             => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DeclareConcept(null));
+
+        [TestMethod]
+        public void ShouldDeclareCollection()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareCollection(new RDFResource("ex:collection"), new List<RDFResource>()
+                { new RDFResource("ex:concept1"), new RDFResource("ex:concept2") });
+
+            //Test evolution of SKOS knowledge
+            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
+            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
+            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
+            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 4);
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasIndividual(new RDFResource("ex:collection")));
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckIsIndividualOf(conceptScheme.Ontology.Model, new RDFResource("ex:collection"), RDFVocabulary.SKOS.COLLECTION));
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:collection"), RDFVocabulary.SKOS.IN_SCHEME, new RDFResource("ex:conceptScheme")));
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasIndividual(new RDFResource("ex:concept1")));
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckIsIndividualOf(conceptScheme.Ontology.Model, new RDFResource("ex:concept1"), RDFVocabulary.SKOS.CONCEPT));
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:collection"), RDFVocabulary.SKOS.MEMBER, new RDFResource("ex:concept1")));
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasIndividual(new RDFResource("ex:concept2")));
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckIsIndividualOf(conceptScheme.Ontology.Model, new RDFResource("ex:concept2"), RDFVocabulary.SKOS.CONCEPT));
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:collection"), RDFVocabulary.SKOS.MEMBER, new RDFResource("ex:concept2")));
+            
+            //Test counters and enumerators
+            Assert.IsTrue(conceptScheme.ConceptsCount == 2);
+            int i1 = 0;
+            IEnumerator<RDFResource> conceptsEnumerator = conceptScheme.ConceptsEnumerator;
+            while (conceptsEnumerator.MoveNext()) i1++;
+            Assert.IsTrue(i1 == 2);
+
+            int i2 = 0;
+            foreach (RDFResource skosConcept in conceptScheme) i2++;
+            Assert.IsTrue(i2 == 2);
+
+            Assert.IsTrue(conceptScheme.CollectionsCount == 1);
+            int j1 = 0;
+            IEnumerator<RDFResource> collectionsEnumerator = conceptScheme.CollectionsEnumerator;
+            while (collectionsEnumerator.MoveNext()) j1++;
+            Assert.IsTrue(j1 == 1);
+        }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringCollectionBecauseNull()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DeclareCollection(null, new List<RDFResource>() { new RDFResource("ex:concept") }));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringCollectionBecauseNullList()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DeclareCollection(new RDFResource("ex:collection"), null));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringCollectionBecauseEmptyList()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DeclareCollection(new RDFResource("ex:collection"), new List<RDFResource>()));
         #endregion
     }
 }
