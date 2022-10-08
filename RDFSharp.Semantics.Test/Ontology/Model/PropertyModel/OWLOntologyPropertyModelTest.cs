@@ -828,7 +828,7 @@ namespace RDFSharp.Semantics.Test
             propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
             propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
             propertyModel.DeclareSubProperties(new RDFResource("ex:propertyB"), new RDFResource("ex:propertyA"));
-            propertyModel.DeclareSubProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));  //OWL-DL contraddiction (enforced by policy)
+            propertyModel.DeclareSubProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));  //OWL-DL contraddiction
 
             Assert.IsNotNull(warningMsg);
             Assert.IsTrue(warningMsg.IndexOf("SubProperty relation between property 'ex:propertyA' and property 'ex:propertyB' cannot be declared to the model because it would violate OWL-DL integrity") > -1);
@@ -882,7 +882,7 @@ namespace RDFSharp.Semantics.Test
             propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
             propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
             propertyModel.DeclareSubProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));
-            propertyModel.DeclareEquivalentProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));  //OWL-DL contraddiction (enforced by policy)
+            propertyModel.DeclareEquivalentProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));  //OWL-DL contraddiction
 
             Assert.IsNotNull(warningMsg);
             Assert.IsTrue(warningMsg.IndexOf("EquivalentProperty relation between property 'ex:propertyA' and property 'ex:propertyB' cannot be declared to the model because it would violate OWL-DL integrity") > -1);
@@ -936,7 +936,7 @@ namespace RDFSharp.Semantics.Test
             propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
             propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
             propertyModel.DeclareSubProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));
-            propertyModel.DeclareDisjointProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));  //OWL-DL contraddiction (enforced by policy)
+            propertyModel.DeclareDisjointProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));  //OWL-DL contraddiction
 
             Assert.IsNotNull(warningMsg);
             Assert.IsTrue(warningMsg.IndexOf("PropertyDisjointWith relation between property 'ex:propertyA' and property 'ex:propertyB' cannot be declared to the model because it would violate OWL-DL integrity") > -1);
@@ -990,7 +990,7 @@ namespace RDFSharp.Semantics.Test
             propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyA"));
             propertyModel.DeclareObjectProperty(new RDFResource("ex:propertyB"));
             propertyModel.DeclareSubProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));
-            propertyModel.DeclareInverseProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));  //OWL-DL contraddiction (enforced by policy)
+            propertyModel.DeclareInverseProperties(new RDFResource("ex:propertyA"), new RDFResource("ex:propertyB"));  //OWL-DL contraddiction
 
             Assert.IsNotNull(warningMsg);
             Assert.IsTrue(warningMsg.IndexOf("Inverse relation between property 'ex:propertyA' and property 'ex:propertyB' cannot be declared to the model because it would violate OWL-DL integrity") > -1);

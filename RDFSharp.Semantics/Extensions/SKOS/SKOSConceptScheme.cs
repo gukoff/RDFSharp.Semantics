@@ -631,7 +631,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         }
 
         /// <summary>
-        /// Declares the existence of the given "Broader(leftConcept,rightConcept)" relation to the concept scheme
+        /// Declares the existence of the given "Broader(childConcept,motherConcept)" relation to the concept scheme
         /// </summary>
         public SKOSConceptScheme DeclareBroaderConcepts(RDFResource childConcept, RDFResource motherConcept)
         {
@@ -663,7 +663,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         }
 
         /// <summary>
-        /// Declares the existence of the given "BroaderTransitive(leftConcept,rightConcept)" relation to the concept scheme
+        /// Declares the existence of the given "BroaderTransitive(childConcept,motherConcept)" relation to the concept scheme
         /// </summary>
         public SKOSConceptScheme DeclareBroaderTransitiveConcepts(RDFResource childConcept, RDFResource motherConcept)
         {
@@ -695,7 +695,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         }
 
         /// <summary>
-        /// Declares the existence of the given "Narrower(rightConcept,leftConcept)" relation to the concept scheme
+        /// Declares the existence of the given "Narrower(motherConcept,childConcept)" relation to the concept scheme
         /// </summary>
         public SKOSConceptScheme DeclareNarrowerConcepts(RDFResource motherConcept, RDFResource childConcept)
         {
@@ -727,7 +727,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         }
 
         /// <summary>
-        /// Declares the existence of the given "NarrowerTransitive(rightConcept,leftConcept)" relation to the concept scheme
+        /// Declares the existence of the given "NarrowerTransitive(motherConcept,childConcept)" relation to the concept scheme
         /// </summary>
         public SKOSConceptScheme DeclareNarrowerTransitiveConcepts(RDFResource motherConcept, RDFResource childConcept)
         {

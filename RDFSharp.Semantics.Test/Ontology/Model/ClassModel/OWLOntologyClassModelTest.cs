@@ -967,7 +967,7 @@ namespace RDFSharp.Semantics.Test
             classModel.DeclareClass(new RDFResource("ex:classA"));
             classModel.DeclareClass(new RDFResource("ex:classB"));
             classModel.DeclareSubClasses(new RDFResource("ex:classB"), new RDFResource("ex:classA"));
-            classModel.DeclareSubClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));  //OWL-DL contraddiction (enforced by policy)
+            classModel.DeclareSubClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));  //OWL-DL contraddiction
 
             Assert.IsNotNull(warningMsg);
             Assert.IsTrue(warningMsg.IndexOf("SubClass relation between class 'ex:classA' and class 'ex:classB' cannot be declared to the model because it would violate OWL-DL integrity") > -1);
@@ -1021,7 +1021,7 @@ namespace RDFSharp.Semantics.Test
             classModel.DeclareClass(new RDFResource("ex:classA"));
             classModel.DeclareClass(new RDFResource("ex:classB"));
             classModel.DeclareSubClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
-            classModel.DeclareEquivalentClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));  //OWL-DL contraddiction (enforced by policy)
+            classModel.DeclareEquivalentClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));  //OWL-DL contraddiction
 
             Assert.IsNotNull(warningMsg);
             Assert.IsTrue(warningMsg.IndexOf("EquivalentClass relation between class 'ex:classA' and class 'ex:classB' cannot be declared to the model because it would violate OWL-DL integrity") > -1);
@@ -1075,7 +1075,7 @@ namespace RDFSharp.Semantics.Test
             classModel.DeclareClass(new RDFResource("ex:classA"));
             classModel.DeclareClass(new RDFResource("ex:classB"));
             classModel.DeclareSubClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));
-            classModel.DeclareDisjointClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));  //OWL-DL contraddiction (enforced by policy)
+            classModel.DeclareDisjointClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"));  //OWL-DL contraddiction
 
             Assert.IsNotNull(warningMsg);
             Assert.IsTrue(warningMsg.IndexOf("DisjointWith relation between class 'ex:classA' and class 'ex:classB' cannot be declared to the model because it would violate OWL-DL integrity") > -1);
