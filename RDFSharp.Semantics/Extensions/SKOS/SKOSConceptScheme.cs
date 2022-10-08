@@ -919,22 +919,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         }
 
         /// <summary>
-        ///  Declares the existence of the given "Notation(skosConcept,notationValue)" relation to the concept scheme
-        /// </summary>
-        public SKOSConceptScheme DeclareConceptNotation(RDFResource skosConcept, RDFLiteral notationValue)
-        {
-            if (skosConcept == null)
-                throw new OWLSemanticsException("Cannot declare skos:notation relation to the concept scheme because given \"skosConcept\" parameter is null");
-            if (notationValue == null)
-                throw new OWLSemanticsException("Cannot declare skos:notation relation to the concept scheme because given \"notationValue\" parameter is null");
-
-            //Add knowledge to the A-BOX
-            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.NOTATION, notationValue));
-
-            return this;
-        }
-
-        /// <summary>
         /// Declares the existence of the given "PrefLabel(skosConcept,preferredLabelValue)" relation to the concept scheme
         /// </summary>
         public SKOSConceptScheme DeclarePreferredLabel(RDFResource skosConcept, RDFPlainLiteral preferredLabelValue)
@@ -1138,6 +1122,22 @@ namespace RDFSharp.Semantics.Extensions.SKOS
 
             //Add knowledge to the A-BOX
             Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosxlLabel, RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, literalFormValue));
+
+            return this;
+        }
+
+        /// <summary>
+        ///  Declares the existence of the given "Notation(skosConcept,notationValue)" relation to the concept scheme
+        /// </summary>
+        public SKOSConceptScheme DeclareNotation(RDFResource skosConcept, RDFLiteral notationValue)
+        {
+            if (skosConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:notation relation to the concept scheme because given \"skosConcept\" parameter is null");
+            if (notationValue == null)
+                throw new OWLSemanticsException("Cannot declare skos:notation relation to the concept scheme because given \"notationValue\" parameter is null");
+
+            //Add knowledge to the A-BOX
+            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.NOTATION, notationValue));
 
             return this;
         }
