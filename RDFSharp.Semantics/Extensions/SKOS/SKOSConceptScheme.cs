@@ -1000,9 +1000,25 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         }
 
         /// <summary>
+        ///  Declares the existence of the given "Notation(skosConcept,notationValue)" relation to the concept scheme
+        /// </summary>
+        public SKOSConceptScheme DeclareNotation(RDFResource skosConcept, RDFLiteral notationValue)
+        {
+            if (skosConcept == null)
+                throw new OWLSemanticsException("Cannot declare skos:notation relation to the concept scheme because given \"skosConcept\" parameter is null");
+            if (notationValue == null)
+                throw new OWLSemanticsException("Cannot declare skos:notation relation to the concept scheme because given \"notationValue\" parameter is null");
+
+            //Add knowledge to the A-BOX
+            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.NOTATION, notationValue));
+
+            return this;
+        }
+
+        /// <summary>
         /// Declares the existence of the given "PrefLabel(skosConcept,skosxlLabel) ^ LiteralForm(skosxlLabel,preferredLabelValue)" relations to the concept scheme [SKOS-XL]
         /// </summary>
-        public SKOSConceptScheme DeclarePreferredLabel(RDFResource skosConcept, RDFResource skosxlLabel, RDFPlainLiteral preferredLabelValue)
+        public SKOSConceptScheme DeclareExtendedPreferredLabel(RDFResource skosConcept, RDFResource skosxlLabel, RDFPlainLiteral preferredLabelValue)
         {
             #region SKOS Integrity Checks
             bool SKOSIntegrityChecks()
@@ -1032,7 +1048,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         /// <summary>
         /// Declares the existence of the given "AltLabel(skosConcept,skosxlLabel) ^ LiteralForm(skosxlLabel,alternativeLabelValue)" relations to the concept scheme [SKOS-XL]
         /// </summary>
-        public SKOSConceptScheme DeclareAlternativeLabel(RDFResource skosConcept, RDFResource skosxlLabel, RDFPlainLiteral alternativeLabelValue)
+        public SKOSConceptScheme DeclarExtendedAlternativeLabel(RDFResource skosConcept, RDFResource skosxlLabel, RDFPlainLiteral alternativeLabelValue)
         {
             #region SKOS Integrity Checks
             bool SKOSIntegrityChecks()
@@ -1062,7 +1078,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         /// <summary>
         /// Declares the existence of the given "HiddenLabel(skosConcept,skosxlLabel) ^ LiteralForm(skosxlLabel,hiddenLabelValue)" relations to the concept scheme [SKOS-XL]
         /// </summary>
-        public SKOSConceptScheme DeclareHiddenLabel(RDFResource skosConcept, RDFResource skosxlLabel, RDFPlainLiteral hiddenLabelValue)
+        public SKOSConceptScheme DeclareExtendedHiddenLabel(RDFResource skosConcept, RDFResource skosxlLabel, RDFPlainLiteral hiddenLabelValue)
         {
             #region SKOS Integrity Checks
             bool SKOSIntegrityChecks()
@@ -1122,22 +1138,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS
 
             //Add knowledge to the A-BOX
             Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosxlLabel, RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, literalFormValue));
-
-            return this;
-        }
-
-        /// <summary>
-        ///  Declares the existence of the given "Notation(skosConcept,notationValue)" relation to the concept scheme
-        /// </summary>
-        public SKOSConceptScheme DeclareNotation(RDFResource skosConcept, RDFLiteral notationValue)
-        {
-            if (skosConcept == null)
-                throw new OWLSemanticsException("Cannot declare skos:notation relation to the concept scheme because given \"skosConcept\" parameter is null");
-            if (notationValue == null)
-                throw new OWLSemanticsException("Cannot declare skos:notation relation to the concept scheme because given \"notationValue\" parameter is null");
-
-            //Add knowledge to the A-BOX
-            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.NOTATION, notationValue));
 
             return this;
         }
