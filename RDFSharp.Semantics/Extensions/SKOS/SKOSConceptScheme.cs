@@ -125,14 +125,14 @@ namespace RDFSharp.Semantics.Extensions.SKOS
                             .GetEnumerator();
 
         /// <summary>
-        /// Knowledge describing the concept scheme (always initialized with SKOS ontology)
+        /// Knowledge describing the concept scheme
         /// </summary>
         internal OWLOntology Ontology { get; set; }
         #endregion
 
         #region Ctors
         /// <summary>
-        /// Builds an empty concept scheme with the given URI
+        /// Builds a concept scheme with the given URI (internal T-BOX is initialized with SKOS model)
         /// </summary>
         public SKOSConceptScheme(string conceptSchemeURI) : base(conceptSchemeURI)
         {

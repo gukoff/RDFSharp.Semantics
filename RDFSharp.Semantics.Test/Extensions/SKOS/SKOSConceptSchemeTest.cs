@@ -1127,6 +1127,396 @@ namespace RDFSharp.Semantics.Extensions.SKOS.Test
         public void ShouldThrowExceptionOnDeclaringNarrowerTransitiveConceptsBecauseSelfConcept()
             => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme")
                         .DeclareNarrowerTransitiveConcepts(new RDFResource("ex:motherConcept"), new RDFResource("ex:motherConcept")));
+
+        [TestMethod]
+        public void ShouldDeclareCloseMatchConcepts()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareCloseMatchConcepts(new RDFResource("ex:leftConcept"), new RDFResource("ex:rightConcept"));
+
+            //Test evolution of SKOS knowledge
+            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
+            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
+            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
+            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:leftConcept"), RDFVocabulary.SKOS.CLOSE_MATCH, new RDFResource("ex:rightConcept")));
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:rightConcept"), RDFVocabulary.SKOS.CLOSE_MATCH, new RDFResource("ex:leftConcept")));
+        }
+
+        [TestMethod]
+        public void ShouldEmitWarningOnDeclaringCloseMatchConceptsBecauseHierarchicallyRelatedConcepts()
+        {
+            string warningMsg = null;
+            OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareBroaderConcepts(new RDFResource("ex:leftConcept"), new RDFResource("ex:rightConcept"));
+            conceptScheme.DeclareCloseMatchConcepts(new RDFResource("ex:leftConcept"), new RDFResource("ex:rightConcept")); //SKOS violation
+
+            //Test evolution of SKOS knowledge
+            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
+            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
+            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
+            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:leftConcept"), RDFVocabulary.SKOS.BROADER, new RDFResource("ex:rightConcept")));
+            Assert.IsNotNull(warningMsg);
+            Assert.IsTrue(warningMsg.IndexOf("CloseMatch relation between concept 'ex:leftConcept' and concept 'ex:rightConcept' cannot be declared to the concept scheme because it would violate SKOS integrity") > -1);
+        }
+
+        [TestMethod]
+        public void ShouldEmitWarningOnDeclaringCloseMatchConceptsBecauseMappingRelatedConcepts()
+        {
+            string warningMsg = null;
+            OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareBroadMatchConcepts(new RDFResource("ex:leftConcept"), new RDFResource("ex:rightConcept"));
+            conceptScheme.DeclareCloseMatchConcepts(new RDFResource("ex:leftConcept"), new RDFResource("ex:rightConcept")); //SKOS violation
+
+            //Test evolution of SKOS knowledge
+            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
+            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
+            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
+            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:leftConcept"), RDFVocabulary.SKOS.BROAD_MATCH, new RDFResource("ex:rightConcept")));
+            Assert.IsNotNull(warningMsg);
+            Assert.IsTrue(warningMsg.IndexOf("CloseMatch relation between concept 'ex:leftConcept' and concept 'ex:rightConcept' cannot be declared to the concept scheme because it would violate SKOS integrity") > -1);
+        }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringCloseMatchConceptsBecauseNullLeftConcept()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme")
+                        .DeclareCloseMatchConcepts(null, new RDFResource("ex:rightConcept")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringCloseMatchConceptsBecauseNullRightConcept()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme")
+                        .DeclareCloseMatchConcepts(new RDFResource("ex:leftConcept"), null));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringCloseMatchConceptsBecauseSelfConcept()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme")
+                        .DeclareCloseMatchConcepts(new RDFResource("ex:leftConcept"), new RDFResource("ex:leftConcept")));
+
+        [TestMethod]
+        public void ShouldDeclareExactMatchConcepts()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareExactMatchConcepts(new RDFResource("ex:leftConcept"), new RDFResource("ex:rightConcept"));
+
+            //Test evolution of SKOS knowledge
+            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
+            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
+            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
+            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:leftConcept"), RDFVocabulary.SKOS.EXACT_MATCH, new RDFResource("ex:rightConcept")));
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:rightConcept"), RDFVocabulary.SKOS.EXACT_MATCH, new RDFResource("ex:leftConcept")));
+        }
+
+        [TestMethod]
+        public void ShouldEmitWarningOnDeclaringExactMatchConceptsBecauseHierarchicallyRelatedConcepts()
+        {
+            string warningMsg = null;
+            OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareNarrowerTransitiveConcepts(new RDFResource("ex:leftConcept"), new RDFResource("ex:rightConcept"));
+            conceptScheme.DeclareExactMatchConcepts(new RDFResource("ex:leftConcept"), new RDFResource("ex:rightConcept")); //SKOS violation
+
+            //Test evolution of SKOS knowledge
+            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
+            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
+            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
+            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:leftConcept"), RDFVocabulary.SKOS.NARROWER_TRANSITIVE, new RDFResource("ex:rightConcept")));
+            Assert.IsNotNull(warningMsg);
+            Assert.IsTrue(warningMsg.IndexOf("ExactMatch relation between concept 'ex:leftConcept' and concept 'ex:rightConcept' cannot be declared to the concept scheme because it would violate SKOS integrity") > -1);
+        }
+
+        [TestMethod]
+        public void ShouldEmitWarningOnDeclaringExactMatchConceptsBecauseMappingRelatedConcepts()
+        {
+            string warningMsg = null;
+            OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareRelatedMatchConcepts(new RDFResource("ex:leftConcept"), new RDFResource("ex:rightConcept"));
+            conceptScheme.DeclareExactMatchConcepts(new RDFResource("ex:leftConcept"), new RDFResource("ex:rightConcept")); //SKOS violation
+
+            //Test evolution of SKOS knowledge
+            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
+            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
+            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
+            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:leftConcept"), RDFVocabulary.SKOS.RELATED_MATCH, new RDFResource("ex:rightConcept")));
+            Assert.IsNotNull(warningMsg);
+            Assert.IsTrue(warningMsg.IndexOf("ExactMatch relation between concept 'ex:leftConcept' and concept 'ex:rightConcept' cannot be declared to the concept scheme because it would violate SKOS integrity") > -1);
+        }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringExactMatchConceptsBecauseNullLeftConcept()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme")
+                        .DeclareExactMatchConcepts(null, new RDFResource("ex:rightConcept")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringExactMatchConceptsBecauseNullRightConcept()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme")
+                        .DeclareExactMatchConcepts(new RDFResource("ex:leftConcept"), null));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringExactMatchConceptsBecauseSelfConcept()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme")
+                        .DeclareExactMatchConcepts(new RDFResource("ex:leftConcept"), new RDFResource("ex:leftConcept")));
+
+        [TestMethod]
+        public void ShouldDeclareBroadMatchConcepts()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareBroadMatchConcepts(new RDFResource("ex:childConcept"), new RDFResource("ex:motherConcept"));
+
+            //Test evolution of SKOS knowledge
+            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
+            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
+            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
+            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:childConcept"), RDFVocabulary.SKOS.BROAD_MATCH, new RDFResource("ex:motherConcept")));
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:motherConcept"), RDFVocabulary.SKOS.NARROW_MATCH, new RDFResource("ex:childConcept")));
+        }
+
+        [TestMethod]
+        public void ShouldEmitWarningOnDeclaringBroadMatchConceptsBecauseHierarchicallyRelatedConcepts()
+        {
+            string warningMsg = null;
+            OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareNarrowerConcepts(new RDFResource("ex:childConcept"), new RDFResource("ex:motherConcept"));
+            conceptScheme.DeclareBroadMatchConcepts(new RDFResource("ex:childConcept"), new RDFResource("ex:motherConcept")); //SKOS violation
+
+            //Test evolution of SKOS knowledge
+            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
+            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
+            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
+            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:childConcept"), RDFVocabulary.SKOS.NARROWER, new RDFResource("ex:motherConcept")));
+            Assert.IsNotNull(warningMsg);
+            Assert.IsTrue(warningMsg.IndexOf("BroadMatch relation between concept 'ex:childConcept' and concept 'ex:motherConcept' cannot be declared to the concept scheme because it would violate SKOS integrity") > -1);
+        }
+
+        [TestMethod]
+        public void ShouldEmitWarningOnDeclaringBroadMatchConceptsBecauseAssociativeRelatedConcepts()
+        {
+            string warningMsg = null;
+            OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareRelatedConcepts(new RDFResource("ex:childConcept"), new RDFResource("ex:motherConcept"));
+            conceptScheme.DeclareBroadMatchConcepts(new RDFResource("ex:childConcept"), new RDFResource("ex:motherConcept")); //SKOS violation
+
+            //Test evolution of SKOS knowledge
+            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
+            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
+            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
+            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:childConcept"), RDFVocabulary.SKOS.RELATED, new RDFResource("ex:motherConcept")));
+            Assert.IsNotNull(warningMsg);
+            Assert.IsTrue(warningMsg.IndexOf("BroadMatch relation between concept 'ex:childConcept' and concept 'ex:motherConcept' cannot be declared to the concept scheme because it would violate SKOS integrity") > -1);
+        }
+
+        [TestMethod]
+        public void ShouldEmitWarningOnDeclaringBroadMatchConceptsBecauseMappingRelatedConcepts()
+        {
+            string warningMsg = null;
+            OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareCloseMatchConcepts(new RDFResource("ex:childConcept"), new RDFResource("ex:motherConcept"));
+            conceptScheme.DeclareBroadMatchConcepts(new RDFResource("ex:childConcept"), new RDFResource("ex:motherConcept")); //SKOS violation
+
+            //Test evolution of SKOS knowledge
+            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
+            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
+            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
+            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:childConcept"), RDFVocabulary.SKOS.CLOSE_MATCH, new RDFResource("ex:motherConcept")));
+            Assert.IsNotNull(warningMsg);
+            Assert.IsTrue(warningMsg.IndexOf("BroadMatch relation between concept 'ex:childConcept' and concept 'ex:motherConcept' cannot be declared to the concept scheme because it would violate SKOS integrity") > -1);
+        }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringBroadMatchConceptsBecauseNullChildConcept()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme")
+                        .DeclareBroadMatchConcepts(null, new RDFResource("ex:motherConcept")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringBroadMatchConceptsBecauseNullMotherConcept()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme")
+                        .DeclareBroadMatchConcepts(new RDFResource("ex:childConcept"), null));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringBroadMatchConceptsBecauseSelfConcept()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme")
+                        .DeclareBroadMatchConcepts(new RDFResource("ex:childConcept"), new RDFResource("ex:childConcept")));
+
+        [TestMethod]
+        public void ShouldDeclareNarrowMatchConcepts()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareNarrowMatchConcepts(new RDFResource("ex:motherConcept"), new RDFResource("ex:childConcept"));
+
+            //Test evolution of SKOS knowledge
+            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
+            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
+            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
+            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:motherConcept"), RDFVocabulary.SKOS.NARROW_MATCH, new RDFResource("ex:childConcept")));
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:childConcept"), RDFVocabulary.SKOS.BROAD_MATCH, new RDFResource("ex:motherConcept")));
+        }
+
+        [TestMethod]
+        public void ShouldEmitWarningOnDeclaringNarrowMatchConceptsBecauseHierarchicallyRelatedConcepts()
+        {
+            string warningMsg = null;
+            OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareBroadMatchConcepts(new RDFResource("ex:motherConcept"), new RDFResource("ex:childConcept"));
+            conceptScheme.DeclareNarrowMatchConcepts(new RDFResource("ex:motherConcept"), new RDFResource("ex:childConcept")); //SKOS violation
+
+            //Test evolution of SKOS knowledge
+            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
+            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
+            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
+            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:motherConcept"), RDFVocabulary.SKOS.BROAD_MATCH, new RDFResource("ex:childConcept")));
+            Assert.IsNotNull(warningMsg);
+            Assert.IsTrue(warningMsg.IndexOf("NarrowMatch relation between concept 'ex:motherConcept' and concept 'ex:childConcept' cannot be declared to the concept scheme because it would violate SKOS integrity") > -1);
+        }
+
+        [TestMethod]
+        public void ShouldEmitWarningOnDeclaringNarrowMatchConceptsBecauseAssociativeRelatedConcepts()
+        {
+            string warningMsg = null;
+            OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareRelatedConcepts(new RDFResource("ex:motherConcept"), new RDFResource("ex:childConcept"));
+            conceptScheme.DeclareNarrowMatchConcepts(new RDFResource("ex:motherConcept"), new RDFResource("ex:childConcept")); //SKOS violation
+
+            //Test evolution of SKOS knowledge
+            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
+            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
+            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
+            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:motherConcept"), RDFVocabulary.SKOS.RELATED, new RDFResource("ex:childConcept")));
+            Assert.IsNotNull(warningMsg);
+            Assert.IsTrue(warningMsg.IndexOf("NarrowMatch relation between concept 'ex:motherConcept' and concept 'ex:childConcept' cannot be declared to the concept scheme because it would violate SKOS integrity") > -1);
+        }
+
+        [TestMethod]
+        public void ShouldEmitWarningOnDeclaringNarrowMatchConceptsBecauseMappingRelatedConcepts()
+        {
+            string warningMsg = null;
+            OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareCloseMatchConcepts(new RDFResource("ex:motherConcept"), new RDFResource("ex:childConcept"));
+            conceptScheme.DeclareNarrowMatchConcepts(new RDFResource("ex:motherConcept"), new RDFResource("ex:childConcept")); //SKOS violation
+
+            //Test evolution of SKOS knowledge
+            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
+            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
+            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
+            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:motherConcept"), RDFVocabulary.SKOS.CLOSE_MATCH, new RDFResource("ex:childConcept")));
+            Assert.IsNotNull(warningMsg);
+            Assert.IsTrue(warningMsg.IndexOf("NarrowMatch relation between concept 'ex:motherConcept' and concept 'ex:childConcept' cannot be declared to the concept scheme because it would violate SKOS integrity") > -1);
+        }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringNarrowMatchConceptsBecauseNullChildConcept()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme")
+                        .DeclareNarrowMatchConcepts(null, new RDFResource("ex:childConcept")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringNarrowMatchConceptsBecauseNullMotherConcept()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme")
+                        .DeclareNarrowMatchConcepts(new RDFResource("ex:motherConcept"), null));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringNarrowMatchConceptsBecauseSelfConcept()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme")
+                        .DeclareNarrowMatchConcepts(new RDFResource("ex:motherConcept"), new RDFResource("ex:motherConcept")));
+
+        [TestMethod]
+        public void ShouldDeclareRelatedMatchConcepts()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareRelatedMatchConcepts(new RDFResource("ex:leftConcept"), new RDFResource("ex:rightConcept"));
+
+            //Test evolution of SKOS knowledge
+            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
+            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
+            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
+            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:leftConcept"), RDFVocabulary.SKOS.RELATED_MATCH, new RDFResource("ex:rightConcept")));
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:rightConcept"), RDFVocabulary.SKOS.RELATED_MATCH, new RDFResource("ex:leftConcept")));
+        }
+
+        [TestMethod]
+        public void ShouldEmitWarningOnDeclaringRelatedMatchConceptsBecauseHierarchicallyRelatedConcepts()
+        {
+            string warningMsg = null;
+            OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareNarrowerTransitiveConcepts(new RDFResource("ex:leftConcept"), new RDFResource("ex:rightConcept"));
+            conceptScheme.DeclareRelatedMatchConcepts(new RDFResource("ex:leftConcept"), new RDFResource("ex:rightConcept")); //SKOS violation
+
+            //Test evolution of SKOS knowledge
+            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
+            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
+            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
+            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:leftConcept"), RDFVocabulary.SKOS.NARROWER_TRANSITIVE, new RDFResource("ex:rightConcept")));
+            Assert.IsNotNull(warningMsg);
+            Assert.IsTrue(warningMsg.IndexOf("RelatedMatch relation between concept 'ex:leftConcept' and concept 'ex:rightConcept' cannot be declared to the concept scheme because it would violate SKOS integrity") > -1);
+        }
+
+        [TestMethod]
+        public void ShouldEmitWarningOnDeclaringRelatedMatchConceptsBecauseMappingRelatedConcepts()
+        {
+            string warningMsg = null;
+            OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareExactMatchConcepts(new RDFResource("ex:leftConcept"), new RDFResource("ex:rightConcept"));
+            conceptScheme.DeclareRelatedMatchConcepts(new RDFResource("ex:leftConcept"), new RDFResource("ex:rightConcept")); //SKOS violation
+
+            //Test evolution of SKOS knowledge
+            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
+            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
+            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
+            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
+            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:leftConcept"), RDFVocabulary.SKOS.EXACT_MATCH, new RDFResource("ex:rightConcept")));
+            Assert.IsNotNull(warningMsg);
+            Assert.IsTrue(warningMsg.IndexOf("RelatedMatch relation between concept 'ex:leftConcept' and concept 'ex:rightConcept' cannot be declared to the concept scheme because it would violate SKOS integrity") > -1);
+        }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringRelatedMatchConceptsBecauseNullLeftConcept()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme")
+                        .DeclareRelatedMatchConcepts(null, new RDFResource("ex:rightConcept")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringRelatedMatchConceptsBecauseNullRightConcept()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme")
+                        .DeclareRelatedMatchConcepts(new RDFResource("ex:leftConcept"), null));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringRelatedMatchConceptsBecauseSelfConcept()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme")
+                        .DeclareRelatedMatchConcepts(new RDFResource("ex:leftConcept"), new RDFResource("ex:leftConcept")));
         #endregion
     }
 }
