@@ -206,33 +206,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS.Test
         public void ShouldThrowExceptionOnDeclaringOrderedCollectionBecauseEmptyList()
             => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DeclareOrderedCollection(new RDFResource("ex:orderedCollection"), new List<RDFResource>()));
 
-        [TestMethod]
-        public void ShouldDeclareLabel()
-        {
-            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
-            conceptScheme.DeclareLabel(new RDFResource("ex:label"));
-
-            //Test evolution of SKOS knowledge
-            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
-            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
-            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
-            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 2);
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasIndividual(new RDFResource("ex:label")));
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckIsIndividualOf(conceptScheme.Ontology.Model, new RDFResource("ex:label"), RDFVocabulary.SKOS.SKOSXL.LABEL));
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:label"), RDFVocabulary.SKOS.IN_SCHEME, new RDFResource("ex:conceptScheme")));
-
-            //Test counters and enumerators
-            Assert.IsTrue(conceptScheme.LabelsCount == 1);
-            int i1 = 0;
-            IEnumerator<RDFResource> labelsEnumerator = conceptScheme.LabelsEnumerator;
-            while (labelsEnumerator.MoveNext()) i1++;
-            Assert.IsTrue(i1 == 1);
-        }
-
-        [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringLabelBecauseNull()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DeclareLabel(null));
-
         //ANNOTATIONS
 
         [TestMethod]
@@ -466,66 +439,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS.Test
         [TestMethod]
         public void ShouldThrowExceptionOnResourceAnnotatingOrderedCollectionBecauseNullValue()
             => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").AnnotateOrderedCollection(new RDFResource("ex:orderedCollection"), RDFVocabulary.RDFS.COMMENT, null as RDFResource));
-
-        [TestMethod]
-        public void ShouldLiteralAnnotateLabel()
-        {
-            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
-            conceptScheme.AnnotateLabel(new RDFResource("ex:label"), RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("This is a skos:Label!"));
-
-            //Test evolution of SKOS knowledge
-            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
-            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
-            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
-            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasAnnotation(new RDFResource("ex:label"), RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("This is a skos:Label!")));
-        }
-
-        [TestMethod]
-        public void ShouldThrowExceptionOnLiteralAnnotatingLabelBecauseNullLabel()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").AnnotateLabel(null, RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("This is a skos:Label!")));
-
-        [TestMethod]
-        public void ShouldThrowExceptionOnLiteralAnnotatingLabelBecauseNullProperty()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").AnnotateLabel(new RDFResource("ex:label"), null, new RDFPlainLiteral("This is a skos:Label!")));
-
-        [TestMethod]
-        public void ShouldThrowExceptionOnLiteralAnnotatingLabelBecauseBlankProperty()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").AnnotateLabel(new RDFResource("ex:label"), new RDFResource(), new RDFPlainLiteral("This is a skos:Label!")));
-
-        [TestMethod]
-        public void ShouldThrowExceptionOnLiteralAnnotatingLabelBecauseNullValue()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").AnnotateLabel(new RDFResource("ex:label"), RDFVocabulary.RDFS.COMMENT, null as RDFLiteral));
-
-        [TestMethod]
-        public void ShouldResourceAnnotateLabel()
-        {
-            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
-            conceptScheme.AnnotateLabel(new RDFResource("ex:label"), RDFVocabulary.RDFS.SEE_ALSO, new RDFResource("ex:seeAlso"));
-
-            //Test evolution of SKOS knowledge
-            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
-            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
-            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
-            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasAnnotation(new RDFResource("ex:label"), RDFVocabulary.RDFS.SEE_ALSO, new RDFResource("ex:seeAlso")));
-        }
-
-        [TestMethod]
-        public void ShouldThrowExceptionOnResourceAnnotatingLabelBecauseNullLabel()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").AnnotateLabel(null, RDFVocabulary.RDFS.COMMENT, new RDFResource("ex:seeAlso")));
-
-        [TestMethod]
-        public void ShouldThrowExceptionOnResourceAnnotatingLabelBecauseNullProperty()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").AnnotateLabel(new RDFResource("ex:label"), null, new RDFResource("ex:seeAlso")));
-
-        [TestMethod]
-        public void ShouldThrowExceptionOnResourceAnnotatingLabelBecauseBlankProperty()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").AnnotateLabel(new RDFResource("ex:label"), new RDFResource(), new RDFResource("ex:seeAlso")));
-
-        [TestMethod]
-        public void ShouldThrowExceptionOnResourceAnnotatingLabelBecauseNullValue()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").AnnotateLabel(new RDFResource("ex:label"), RDFVocabulary.RDFS.COMMENT, null as RDFResource));
 
         [TestMethod]
         public void ShouldDeclareConceptNote()
@@ -1604,7 +1517,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS.Test
             OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
 
             SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
-            conceptScheme.DeclareExtendedHiddenLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), new RDFPlainLiteral("label"));
+            conceptScheme.DeclareHiddenLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), new RDFPlainLiteral("label"));
             conceptScheme.DeclarePreferredLabel(new RDFResource("ex:concept"), new RDFPlainLiteral("label")); //SKOS violation
 
             //Test evolution of SKOS knowledge
@@ -1627,121 +1540,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS.Test
         public void ShouldThrowExceptionOnDeclaringPreferredLabelBecauseNullValue()
             => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme")
                         .DeclarePreferredLabel(new RDFResource("ex:concept"), null));
-
-        [TestMethod]
-        public void ShouldDeclareExtendedPreferredLabel()
-        {
-            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
-            conceptScheme.DeclareExtendedPreferredLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), new RDFPlainLiteral("label"));
-            conceptScheme.DeclareExtendedPreferredLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), new RDFPlainLiteral("label", "en-US"));
-            conceptScheme.DeclareExtendedPreferredLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), new RDFPlainLiteral("etichetta", "it-IT"));
-
-            //Test evolution of SKOS knowledge
-            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
-            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
-            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
-            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:concept"), RDFVocabulary.SKOS.SKOSXL.PREF_LABEL, new RDFResource("ex:label")));
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasDatatypeAssertion(new RDFResource("ex:label"), RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, new RDFPlainLiteral("label")));
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasDatatypeAssertion(new RDFResource("ex:label"), RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, new RDFPlainLiteral("label", "en-US")));
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasDatatypeAssertion(new RDFResource("ex:label"), RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, new RDFPlainLiteral("etichetta", "it-IT")));
-        }
-
-        [TestMethod]
-        public void ShouldEmitWarningOnDeclaringExtendedPreferredLabelBecauseAlreadyExistingUnlanguagedLabel()
-        {
-            string warningMsg = null;
-            OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
-            conceptScheme.DeclarePreferredLabel(new RDFResource("ex:concept"), new RDFPlainLiteral("label"));
-            conceptScheme.DeclareExtendedPreferredLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), new RDFPlainLiteral("label2")); //SKOS violation
-
-            //Test evolution of SKOS knowledge
-            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
-            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
-            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
-            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasAnnotation(new RDFResource("ex:concept"), RDFVocabulary.SKOS.PREF_LABEL, new RDFPlainLiteral("label")));
-            Assert.IsNotNull(warningMsg);
-            Assert.IsTrue(warningMsg.IndexOf("PrefLabel relation between concept 'ex:concept' and label 'ex:label' with value 'label2' cannot be declared to the concept scheme because it would violate SKOS integrity") > -1);
-        }
-
-        [TestMethod]
-        public void ShouldEmitWarningOnDeclaringExtendedPreferredLabelBecauseAlreadyExistingLanguagedLabel()
-        {
-            string warningMsg = null;
-            OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
-            conceptScheme.DeclarePreferredLabel(new RDFResource("ex:concept"), new RDFPlainLiteral("label", "en-US"));
-            conceptScheme.DeclareExtendedPreferredLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), new RDFPlainLiteral("label2", "en-US")); //SKOS violation
-
-            //Test evolution of SKOS knowledge
-            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
-            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
-            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
-            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasAnnotation(new RDFResource("ex:concept"), RDFVocabulary.SKOS.PREF_LABEL, new RDFPlainLiteral("label", "en-US")));
-            Assert.IsNotNull(warningMsg);
-            Assert.IsTrue(warningMsg.IndexOf("PrefLabel relation between concept 'ex:concept' and label 'ex:label' with value 'label2@EN-US' cannot be declared to the concept scheme because it would violate SKOS integrity") > -1);
-        }
-
-        [TestMethod]
-        public void ShouldEmitWarningOnDeclaringExtendedPreferredLabelBecauseClashWithHiddenLabel()
-        {
-            string warningMsg = null;
-            OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
-            conceptScheme.DeclareHiddenLabel(new RDFResource("ex:concept"), new RDFPlainLiteral("label"));
-            conceptScheme.DeclareExtendedPreferredLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), new RDFPlainLiteral("label")); //SKOS violation
-
-            //Test evolution of SKOS knowledge
-            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
-            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
-            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
-            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasAnnotation(new RDFResource("ex:concept"), RDFVocabulary.SKOS.HIDDEN_LABEL, new RDFPlainLiteral("label")));
-            Assert.IsNotNull(warningMsg);
-            Assert.IsTrue(warningMsg.IndexOf("PrefLabel relation between concept 'ex:concept' and label 'ex:label' with value 'label' cannot be declared to the concept scheme because it would violate SKOS integrity") > -1);
-        }
-
-        [TestMethod]
-        public void ShouldEmitWarningOnDeclaringExtendedPreferredLabelBecauseClashWithExtendedHiddenLabel()
-        {
-            string warningMsg = null;
-            OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
-            conceptScheme.DeclareExtendedHiddenLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), new RDFPlainLiteral("label"));
-            conceptScheme.DeclareExtendedPreferredLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), new RDFPlainLiteral("label")); //SKOS violation
-
-            //Test evolution of SKOS knowledge
-            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
-            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
-            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
-            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:concept"), RDFVocabulary.SKOS.SKOSXL.HIDDEN_LABEL, new RDFResource("ex:label")));
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasDatatypeAssertion(new RDFResource("ex:label"), RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, new RDFPlainLiteral("label")));
-            Assert.IsNotNull(warningMsg);
-            Assert.IsTrue(warningMsg.IndexOf("PrefLabel relation between concept 'ex:concept' and label 'ex:label' with value 'label' cannot be declared to the concept scheme because it would violate SKOS integrity") > -1);
-        }
-
-        [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringExtendedPreferredLabelBecauseNullConcept()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme")
-                        .DeclareExtendedPreferredLabel(null, new RDFResource("ex:label"), new RDFPlainLiteral("label")));
-
-        [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringExtendedPreferredLabelBecauseNullLabel()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme")
-                        .DeclareExtendedPreferredLabel(new RDFResource("ex:concept"), null, new RDFPlainLiteral("label")));
-
-        [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringExtendedPreferredLabelBecauseNullValue()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme")
-                        .DeclareExtendedPreferredLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), null));
 
         [TestMethod]
         public void ShouldDeclareAlternativeLabel()
@@ -1788,7 +1586,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS.Test
             OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
 
             SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
-            conceptScheme.DeclareExtendedHiddenLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), new RDFPlainLiteral("label"));
+            conceptScheme.DeclareHiddenLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), new RDFPlainLiteral("label"));
             conceptScheme.DeclareAlternativeLabel(new RDFResource("ex:concept"), new RDFPlainLiteral("label")); //SKOS violation
 
             //Test evolution of SKOS knowledge
@@ -1829,7 +1627,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS.Test
             OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
 
             SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
-            conceptScheme.DeclareExtendedPreferredLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), new RDFPlainLiteral("label"));
+            conceptScheme.DeclarePreferredLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), new RDFPlainLiteral("label"));
             conceptScheme.DeclareAlternativeLabel(new RDFResource("ex:concept"), new RDFPlainLiteral("label")); //SKOS violation
 
             //Test evolution of SKOS knowledge
@@ -1852,122 +1650,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS.Test
         public void ShouldThrowExceptionOnDeclaringAlternativeLabelBecauseNullValue()
             => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme")
                         .DeclareAlternativeLabel(new RDFResource("ex:concept"), null));
-
-        [TestMethod]
-        public void ShouldDeclareExtendedAlternativeLabel()
-        {
-            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
-            conceptScheme.DeclarExtendedAlternativeLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), new RDFPlainLiteral("label"));
-            conceptScheme.DeclarExtendedAlternativeLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), new RDFPlainLiteral("label", "en-US"));
-            conceptScheme.DeclarExtendedAlternativeLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), new RDFPlainLiteral("etichetta", "it-IT"));
-
-            //Test evolution of SKOS knowledge
-            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
-            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
-            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
-            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:concept"), RDFVocabulary.SKOS.SKOSXL.ALT_LABEL, new RDFResource("ex:label")));
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasDatatypeAssertion(new RDFResource("ex:label"), RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, new RDFPlainLiteral("label", "en-US")));
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasDatatypeAssertion(new RDFResource("ex:label"), RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, new RDFPlainLiteral("label", "en-US")));
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasDatatypeAssertion(new RDFResource("ex:label"), RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, new RDFPlainLiteral("etichetta", "it-IT")));
-        }
-
-        [TestMethod]
-        public void ShouldEmitWarningOnDeclaringExtendedAlternativeLabelBecauseClashWithHiddenLabel()
-        {
-            string warningMsg = null;
-            OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
-            conceptScheme.DeclareHiddenLabel(new RDFResource("ex:concept"), new RDFPlainLiteral("label"));
-            conceptScheme.DeclarExtendedAlternativeLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), new RDFPlainLiteral("label")); //SKOS violation
-
-            //Test evolution of SKOS knowledge
-            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
-            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
-            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
-            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasAnnotation(new RDFResource("ex:concept"), RDFVocabulary.SKOS.HIDDEN_LABEL, new RDFPlainLiteral("label")));
-            Assert.IsNotNull(warningMsg);
-            Assert.IsTrue(warningMsg.IndexOf("AltLabel relation between concept 'ex:concept' and label 'ex:label' with value 'label' cannot be declared to the concept scheme because it would violate SKOS integrity") > -1);
-        }
-
-        [TestMethod]
-        public void ShouldEmitWarningOnDeclaringExtendedAlternativeLabelBecauseClashWithExtendedHiddenLabel()
-        {
-            string warningMsg = null;
-            OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
-            conceptScheme.DeclareExtendedHiddenLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), new RDFPlainLiteral("label"));
-            conceptScheme.DeclarExtendedAlternativeLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), new RDFPlainLiteral("label")); //SKOS violation
-
-            //Test evolution of SKOS knowledge
-            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
-            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
-            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
-            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:concept"), RDFVocabulary.SKOS.SKOSXL.HIDDEN_LABEL, new RDFResource("ex:label")));
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasDatatypeAssertion(new RDFResource("ex:label"), RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, new RDFPlainLiteral("label")));
-            Assert.IsNotNull(warningMsg);
-            Assert.IsTrue(warningMsg.IndexOf("AltLabel relation between concept 'ex:concept' and label 'ex:label' with value 'label' cannot be declared to the concept scheme because it would violate SKOS integrity") > -1);
-        }
-
-        [TestMethod]
-        public void ShouldEmitWarningOnDeclaringExtendedAlternativeLabelBecauseClashWithPreferredLabel()
-        {
-            string warningMsg = null;
-            OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
-            conceptScheme.DeclarePreferredLabel(new RDFResource("ex:concept"), new RDFPlainLiteral("label"));
-            conceptScheme.DeclarExtendedAlternativeLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), new RDFPlainLiteral("label")); //SKOS violation
-
-            //Test evolution of SKOS knowledge
-            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
-            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
-            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
-            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasAnnotation(new RDFResource("ex:concept"), RDFVocabulary.SKOS.PREF_LABEL, new RDFPlainLiteral("label")));
-            Assert.IsNotNull(warningMsg);
-            Assert.IsTrue(warningMsg.IndexOf("AltLabel relation between concept 'ex:concept' and label 'ex:label' with value 'label' cannot be declared to the concept scheme because it would violate SKOS integrity") > -1);
-        }
-
-        [TestMethod]
-        public void ShouldEmitWarningOnDeclaringExtendedAlternativeLabelBecauseClashWithExtendedPreferredLabel()
-        {
-            string warningMsg = null;
-            OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
-            conceptScheme.DeclareExtendedPreferredLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), new RDFPlainLiteral("label"));
-            conceptScheme.DeclarExtendedAlternativeLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), new RDFPlainLiteral("label")); //SKOS violation
-
-            //Test evolution of SKOS knowledge
-            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
-            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
-            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
-            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:concept"), RDFVocabulary.SKOS.SKOSXL.PREF_LABEL, new RDFResource("ex:label")));
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasDatatypeAssertion(new RDFResource("ex:label"), RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, new RDFPlainLiteral("label")));
-            Assert.IsNotNull(warningMsg);
-            Assert.IsTrue(warningMsg.IndexOf("AltLabel relation between concept 'ex:concept' and label 'ex:label' with value 'label' cannot be declared to the concept scheme because it would violate SKOS integrity") > -1);
-        }
-
-        [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringExtendedAlternativeLabelBecauseNullConcept()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme")
-                        .DeclarExtendedAlternativeLabel(null, new RDFResource("ex:label"), new RDFPlainLiteral("label")));
-
-        [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringExtendedAlternativeLabelBecauseNullLabel()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme")
-                        .DeclarExtendedAlternativeLabel(new RDFResource("ex:concept"), null, new RDFPlainLiteral("label")));
-
-        [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringExtendedAlternativeLabelBecauseNullValue()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme")
-                        .DeclarExtendedAlternativeLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), null));
 
         [TestMethod]
         public void ShouldDeclareHiddenLabel()
@@ -2014,7 +1696,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS.Test
             OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
 
             SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
-            conceptScheme.DeclareExtendedPreferredLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), new RDFPlainLiteral("label"));
+            conceptScheme.DeclarePreferredLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), new RDFPlainLiteral("label"));
             conceptScheme.DeclareHiddenLabel(new RDFResource("ex:concept"), new RDFPlainLiteral("label")); //SKOS violation
 
             //Test evolution of SKOS knowledge
@@ -2055,7 +1737,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS.Test
             OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
 
             SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
-            conceptScheme.DeclarExtendedAlternativeLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), new RDFPlainLiteral("label"));
+            conceptScheme.DeclareAlternativeLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), new RDFPlainLiteral("label"));
             conceptScheme.DeclareHiddenLabel(new RDFResource("ex:concept"), new RDFPlainLiteral("label")); //SKOS violation
 
             //Test evolution of SKOS knowledge
@@ -2078,176 +1760,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS.Test
         public void ShouldThrowExceptionOnDeclaringHiddenLabelBecauseNullValue()
             => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme")
                         .DeclareHiddenLabel(new RDFResource("ex:concept"), null));
-
-        [TestMethod]
-        public void ShouldDeclareExtendedHiddenLabel()
-        {
-            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
-            conceptScheme.DeclareExtendedHiddenLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), new RDFPlainLiteral("label"));
-            conceptScheme.DeclareExtendedHiddenLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), new RDFPlainLiteral("label", "en-US"));
-            conceptScheme.DeclareExtendedHiddenLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), new RDFPlainLiteral("etichetta", "it-IT"));
-
-            //Test evolution of SKOS knowledge
-            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
-            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
-            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
-            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:concept"), RDFVocabulary.SKOS.SKOSXL.HIDDEN_LABEL, new RDFResource("ex:label")));
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasDatatypeAssertion(new RDFResource("ex:label"), RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, new RDFPlainLiteral("label")));
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasDatatypeAssertion(new RDFResource("ex:label"), RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, new RDFPlainLiteral("label", "en-US")));
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasDatatypeAssertion(new RDFResource("ex:label"), RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, new RDFPlainLiteral("etichetta", "it-IT")));
-        }
-
-        [TestMethod]
-        public void ShouldEmitWarningOnDeclaringExtendedHiddenLabelBecauseClashWithPreferredLabel()
-        {
-            string warningMsg = null;
-            OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
-            conceptScheme.DeclarePreferredLabel(new RDFResource("ex:concept"), new RDFPlainLiteral("label"));
-            conceptScheme.DeclareExtendedHiddenLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), new RDFPlainLiteral("label")); //SKOS violation
-
-            //Test evolution of SKOS knowledge
-            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
-            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
-            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
-            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasAnnotation(new RDFResource("ex:concept"), RDFVocabulary.SKOS.PREF_LABEL, new RDFPlainLiteral("label")));
-            Assert.IsNotNull(warningMsg);
-            Assert.IsTrue(warningMsg.IndexOf("HiddenLabel relation between concept 'ex:concept' and label 'ex:label' with value 'label' cannot be declared to the concept scheme because it would violate SKOS integrity") > -1);
-        }
-
-        [TestMethod]
-        public void ShouldEmitWarningOnDeclaringExtendedHiddenLabelBecauseClashWithExtendedPreferredLabel()
-        {
-            string warningMsg = null;
-            OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
-            conceptScheme.DeclareExtendedPreferredLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), new RDFPlainLiteral("label"));
-            conceptScheme.DeclareExtendedHiddenLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), new RDFPlainLiteral("label")); //SKOS violation
-
-            //Test evolution of SKOS knowledge
-            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
-            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
-            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
-            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:concept"), RDFVocabulary.SKOS.SKOSXL.PREF_LABEL, new RDFResource("ex:label")));
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasDatatypeAssertion(new RDFResource("ex:label"), RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, new RDFPlainLiteral("label")));
-            Assert.IsNotNull(warningMsg);
-            Assert.IsTrue(warningMsg.IndexOf("HiddenLabel relation between concept 'ex:concept' and label 'ex:label' with value 'label' cannot be declared to the concept scheme because it would violate SKOS integrity") > -1);
-        }
-
-        [TestMethod]
-        public void ShouldEmitWarningOnDeclaringExtendedHiddenLabelBecauseClashWithAlternativeLabel()
-        {
-            string warningMsg = null;
-            OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
-            conceptScheme.DeclareAlternativeLabel(new RDFResource("ex:concept"), new RDFPlainLiteral("label"));
-            conceptScheme.DeclareExtendedHiddenLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), new RDFPlainLiteral("label")); //SKOS violation
-
-            //Test evolution of SKOS knowledge
-            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
-            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
-            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
-            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasAnnotation(new RDFResource("ex:concept"), RDFVocabulary.SKOS.ALT_LABEL, new RDFPlainLiteral("label")));
-            Assert.IsNotNull(warningMsg);
-            Assert.IsTrue(warningMsg.IndexOf("HiddenLabel relation between concept 'ex:concept' and label 'ex:label' with value 'label' cannot be declared to the concept scheme because it would violate SKOS integrity") > -1);
-        }
-
-        [TestMethod]
-        public void ShouldEmitWarningOnDeclaringExtendedHiddenLabelBecauseClashWithExtendedAlternativeLabel()
-        {
-            string warningMsg = null;
-            OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
-
-            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
-            conceptScheme.DeclarExtendedAlternativeLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), new RDFPlainLiteral("label"));
-            conceptScheme.DeclareExtendedHiddenLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), new RDFPlainLiteral("label")); //SKOS violation
-
-            //Test evolution of SKOS knowledge
-            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
-            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
-            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
-            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:concept"), RDFVocabulary.SKOS.SKOSXL.ALT_LABEL, new RDFResource("ex:label")));
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasDatatypeAssertion(new RDFResource("ex:label"), RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, new RDFPlainLiteral("label")));
-            Assert.IsNotNull(warningMsg);
-            Assert.IsTrue(warningMsg.IndexOf("HiddenLabel relation between concept 'ex:concept' and label 'ex:label' with value 'label' cannot be declared to the concept scheme because it would violate SKOS integrity") > -1);
-        }
-
-        [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringExtendedHiddenLabelBecauseNullConcept()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme")
-                        .DeclareExtendedHiddenLabel(null, new RDFResource("ex:label"), new RDFPlainLiteral("label")));
-
-        [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringExtendedHiddenLabelBecauseNullLabel()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme")
-                        .DeclareExtendedHiddenLabel(new RDFResource("ex:concept"), null, new RDFPlainLiteral("label")));
-
-        [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringExtendedHiddenLabelBecauseNullValue()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme")
-                        .DeclareExtendedHiddenLabel(new RDFResource("ex:concept"), new RDFResource("ex:label"), null));
-
-        [TestMethod]
-        public void ShouldDeclareRelatedLabels()
-        {
-            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
-            conceptScheme.DeclareRelatedLabels(new RDFResource("ex:label1"), new RDFResource("ex:label2"));
-
-            //Test evolution of SKOS knowledge
-            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
-            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
-            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
-            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:label1"), RDFVocabulary.SKOS.SKOSXL.LABEL_RELATION, new RDFResource("ex:label2")));
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:label2"), RDFVocabulary.SKOS.SKOSXL.LABEL_RELATION, new RDFResource("ex:label1")));
-        }
-
-        [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringRelatedLabelsBecauseNullLeftLabel()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme")
-                        .DeclareRelatedLabels(null, new RDFResource("ex:rightLabel")));
-
-        [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringRelatedLabelsBecauseNullRightLabel()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme")
-                        .DeclareRelatedLabels(new RDFResource("ex:leftLabel"), null));
-
-        [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringRelatedLabelsBecauseSelfLabel()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme")
-                        .DeclareRelatedLabels(new RDFResource("ex:leftLabel"), new RDFResource("ex:leftLabel")));
-
-        [TestMethod]
-        public void ShouldDeclareLiteralForm()
-        {
-            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
-            conceptScheme.DeclareLiteralForm(new RDFResource("ex:label"), new RDFTypedLiteral("aabbcc", RDFModelEnums.RDFDatatypes.XSD_STRING));
-
-            //Test evolution of SKOS knowledge
-            Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
-            Assert.IsTrue(conceptScheme.Ontology.Model.ClassModel.ClassesCount == 8);
-            Assert.IsTrue(conceptScheme.Ontology.Model.PropertyModel.PropertiesCount == 33);
-            Assert.IsTrue(conceptScheme.Ontology.Data.IndividualsCount == 1);
-            Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasDatatypeAssertion(new RDFResource("ex:label"), RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, new RDFTypedLiteral("aabbcc", RDFModelEnums.RDFDatatypes.XSD_STRING)));
-        }
-
-        [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringLiteralFormBecauseNullLabel()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme")
-                        .DeclareLiteralForm(null, new RDFTypedLiteral("aabbcc", RDFModelEnums.RDFDatatypes.XSD_STRING)));
-
-        [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringLiteralFormBecauseNullValue()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme")
-                        .DeclareRelatedLabels(new RDFResource("ex:label"), null));
 
         [TestMethod]
         public void ShouldDeclareNotation()
