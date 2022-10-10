@@ -27,7 +27,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
     {
         #region Declarer
         /// <summary>
-        /// Checks for the existence of the given skosxl:Label declaration within the concept scheme
+        /// Checks for the existence of the given skosxl:Label declaration within the concept scheme [SKOS-XL]
         /// </summary>
         public static bool CheckHasLabel(this SKOSConceptScheme conceptScheme, RDFResource skosxlLabel)
         {
@@ -40,6 +40,13 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             }
             return labelFound;
         }
+
+        /// <summary>
+        /// Checks for the existence of the given skosxl:Label having the given skosxl:literalForm within the concept scheme [SKOS-XL]
+        /// </summary>
+        public static bool CheckHasLabelWithLiteralForm(this SKOSConceptScheme conceptScheme, RDFResource skosxlLabel, RDFLiteral skosxlLiteralFormValue)
+            => CheckHasLabel(conceptScheme, skosxlLabel)
+                && conceptScheme.Ontology.Data.ABoxGraph[skosxlLabel, RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, null, skosxlLiteralFormValue].TriplesCount > 0;
 
         /// <summary>
         /// Declares the given skosxl:Label instance to the concept scheme [SKOS-XL]

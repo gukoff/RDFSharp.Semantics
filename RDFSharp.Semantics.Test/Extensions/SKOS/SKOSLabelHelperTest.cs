@@ -53,6 +53,37 @@ namespace RDFSharp.Semantics.Extensions.SKOS.Test
         }
 
         [TestMethod]
+        public void ShouldCheckHasLabelWithLiteralForm()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareLabel(new RDFResource("ex:label1"));
+            conceptScheme.DeclareLabel(new RDFResource("ex:label2"));
+            conceptScheme.DeclareLiteralFormOfLabel(new RDFResource("ex:label1"), new RDFPlainLiteral("aabb"));
+            conceptScheme.DeclareLiteralFormOfLabel(new RDFResource("ex:label2"), new RDFPlainLiteral("bbaa"));
+
+            Assert.IsTrue(conceptScheme.CheckHasLabelWithLiteralForm(new RDFResource("ex:label1"), new RDFPlainLiteral("aabb")));
+            Assert.IsTrue(conceptScheme.CheckHasLabelWithLiteralForm(new RDFResource("ex:label2"), new RDFPlainLiteral("bbaa")));
+            Assert.IsTrue(conceptScheme.CheckHasLabelWithLiteralForm(new RDFResource("ex:label1"), null));
+        }
+
+        [TestMethod]
+        public void ShouldCheckHasNotLabelWithLiteralForm()
+        {
+            SKOSConceptScheme conceptSchemeNULL = null;
+            SKOSConceptScheme conceptSchemeEMPTY = new SKOSConceptScheme("ex:conceptSchemeEmpty");
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareLabel(new RDFResource("ex:label1"));
+            conceptScheme.DeclareLabel(new RDFResource("ex:label2"));
+            conceptScheme.DeclareLiteralFormOfLabel(new RDFResource("ex:label1"), new RDFPlainLiteral("aabb"));
+            conceptScheme.DeclareLiteralFormOfLabel(new RDFResource("ex:label2"), new RDFPlainLiteral("bbaa"));
+
+            Assert.IsFalse(conceptScheme.CheckHasLabelWithLiteralForm(new RDFResource("ex:label1"), new RDFPlainLiteral("sscc")));
+            Assert.IsFalse(conceptScheme.CheckHasLabelWithLiteralForm(null, new RDFPlainLiteral("aabb")));
+            Assert.IsFalse(conceptSchemeNULL.CheckHasLabelWithLiteralForm(new RDFResource("ex:label1"), new RDFPlainLiteral("aabb")));
+            Assert.IsFalse(conceptSchemeEMPTY.CheckHasLabelWithLiteralForm(new RDFResource("ex:label1"), new RDFPlainLiteral("aabb")));
+        }
+
+        [TestMethod]
         public void ShouldDeclareLabel()
         {
             SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
