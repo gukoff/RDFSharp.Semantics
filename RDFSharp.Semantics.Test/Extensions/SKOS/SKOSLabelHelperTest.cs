@@ -498,7 +498,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS.Test
         public void ShouldDeclareLiteralForm()
         {
             SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
-            conceptScheme.DeclareLiteralForm(new RDFResource("ex:label"), new RDFTypedLiteral("aabbcc", RDFModelEnums.RDFDatatypes.XSD_STRING));
+            conceptScheme.DeclareLiteralFormOfLabel(new RDFResource("ex:label"), new RDFTypedLiteral("aabbcc", RDFModelEnums.RDFDatatypes.XSD_STRING));
 
             //Test evolution of SKOS knowledge
             Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
@@ -511,7 +511,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS.Test
         [TestMethod]
         public void ShouldThrowExceptionOnDeclaringLiteralFormBecauseNullLabel()
             => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme")
-                        .DeclareLiteralForm(null, new RDFTypedLiteral("aabbcc", RDFModelEnums.RDFDatatypes.XSD_STRING)));
+                        .DeclareLiteralFormOfLabel(null, new RDFTypedLiteral("aabbcc", RDFModelEnums.RDFDatatypes.XSD_STRING)));
 
         [TestMethod]
         public void ShouldThrowExceptionOnDeclaringLiteralFormBecauseNullValue()

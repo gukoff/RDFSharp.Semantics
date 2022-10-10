@@ -216,7 +216,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         /// <summary>
         /// Declares the existence of the given "LiteralForm(skosxlLabel,literalFormValue)" relation to the concept scheme [SKOS-XL]
         /// </summary>
-        public static SKOSConceptScheme DeclareLiteralForm(this SKOSConceptScheme conceptScheme, RDFResource skosxlLabel, RDFLiteral literalFormValue)
+        public static SKOSConceptScheme DeclareLiteralFormOfLabel(this SKOSConceptScheme conceptScheme, RDFResource skosxlLabel, RDFLiteral literalFormValue)
         {
             if (conceptScheme == null)
                 throw new OWLSemanticsException("Cannot declare skosxl:literalForm relation to the concept scheme because given \"conceptScheme\" parameter is null");

@@ -15,6 +15,8 @@
 */
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using RDFSharp.Model;
+using RDFSharp.Semantics.Extensions.SKOS;
 
 namespace RDFSharp.Semantics.Test
 {
@@ -22,7 +24,31 @@ namespace RDFSharp.Semantics.Test
     public class SKOSConceptSchemeHelperTest
     {
         #region Tests
+        [TestMethod]
+        public void ShouldCheckHasConcept()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareConcept(new RDFResource("ex:concept1"));
+            conceptScheme.DeclareConcept(new RDFResource("ex:concept2"));
 
+            Assert.IsTrue(conceptScheme.CheckHasConcept(new RDFResource("ex:concept1")));
+            Assert.IsTrue(conceptScheme.CheckHasConcept(new RDFResource("ex:concept2")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckHasNotConcept()
+        {
+            SKOSConceptScheme conceptSchemeNULL = null;
+            SKOSConceptScheme conceptSchemeEMPTY = new SKOSConceptScheme("ex:conceptSchemeEmpty");
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareConcept(new RDFResource("ex:concept1"));
+            conceptScheme.DeclareConcept(new RDFResource("ex:concept2"));
+
+            Assert.IsFalse(conceptScheme.CheckHasConcept(new RDFResource("ex:concept3")));
+            Assert.IsFalse(conceptScheme.CheckHasConcept(null));            
+            Assert.IsFalse(conceptSchemeNULL.CheckHasConcept(new RDFResource("ex:concept1")));
+            Assert.IsFalse(conceptSchemeEMPTY.CheckHasConcept(new RDFResource("ex:concept1")));
+        }
         #endregion
     }
 }

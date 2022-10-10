@@ -28,223 +28,28 @@ namespace RDFSharp.Semantics.Extensions.SKOS
     {
         #region Declarer
         /// <summary>
-        /// Checks if the given leftConcept can be skos:[broader|broaderTransitive|broadMatch] than the given rightConcept without tampering SKOS integrity
+        /// Checks for the existence of the given skos:Concept declaration within the concept scheme
         /// </summary>
-        internal static bool CheckBroaderCompatibility(this SKOSConceptScheme conceptScheme, RDFResource childConcept, RDFResource motherConcept)
+        public static bool CheckHasConcept(this SKOSConceptScheme conceptScheme, RDFResource skosConcept)
         {
-            //Avoid clash with hierarchical relations
-            bool canAddBroaderRelation = !conceptScheme.CheckHasNarrowerConcept(childConcept, motherConcept);
-
-            //Avoid clash with associative relations
-            if (canAddBroaderRelation)
-                canAddBroaderRelation = !conceptScheme.CheckHasRelatedConcept(childConcept, motherConcept);
-
-            //Avoid clash with mapping relations
-            if (canAddBroaderRelation)
-                canAddBroaderRelation = !conceptScheme.CheckHasNarrowMatchConcept(childConcept, motherConcept) 
-                                          && !conceptScheme.CheckHasCloseMatchConcept(childConcept, motherConcept) 
-                                            && !conceptScheme.CheckHasExactMatchConcept(childConcept, motherConcept) 
-                                              && !conceptScheme.CheckHasRelatedMatchConcept(childConcept, motherConcept);
-
-            return canAddBroaderRelation;
-        }
-
-        /// <summary>
-        /// Checks if the given leftConcept can be skos:[narrower|narrowerTransitive|narrowMatch] than the given rightConcept without tampering SKOS integrity
-        /// </summary>
-        internal static bool CheckNarrowerCompatibility(this SKOSConceptScheme conceptScheme, RDFResource motherConcept, RDFResource childConcept)
-        {
-            //Avoid clash with hierarchical relations
-            bool canAddNarrowerRelation = !conceptScheme.CheckHasBroaderConcept(motherConcept, childConcept);
-
-            //Avoid clash with associative relations
-            if (canAddNarrowerRelation)
-                canAddNarrowerRelation = !conceptScheme.CheckHasRelatedConcept(motherConcept, childConcept);
-            
-            //Avoid clash with mapping relations
-            if (canAddNarrowerRelation)
-                canAddNarrowerRelation = !conceptScheme.CheckHasBroadMatchConcept(motherConcept, childConcept) 
-                                           && !conceptScheme.CheckHasCloseMatchConcept(motherConcept, childConcept) 
-                                             && !conceptScheme.CheckHasExactMatchConcept(motherConcept, childConcept) 
-                                               && !conceptScheme.CheckHasRelatedMatchConcept(motherConcept, childConcept);
-
-            return canAddNarrowerRelation;
-        }
-
-        /// <summary>
-        /// Checks if the given leftConcept can be skos:[related|relatedMatch] than the given rightConcept without tampering SKOS integrity
-        /// </summary>
-        internal static bool CheckRelatedCompatibility(this SKOSConceptScheme conceptScheme, RDFResource leftConcept, RDFResource rightConcept)
-        {
-            //Avoid clash with hierarchical relations
-            bool canAddRelatedRelation = !conceptScheme.CheckHasBroaderConcept(leftConcept, rightConcept)
-                                           && !conceptScheme.CheckHasNarrowerConcept(leftConcept, rightConcept);
-
-            //Avoid clash with mapping relations
-            if (canAddRelatedRelation)
-                canAddRelatedRelation = !conceptScheme.CheckHasBroadMatchConcept(leftConcept, rightConcept)
-                                          && !conceptScheme.CheckHasNarrowMatchConcept(leftConcept, rightConcept)
-                                            && !conceptScheme.CheckHasCloseMatchConcept(leftConcept, rightConcept) 
-                                              && !conceptScheme.CheckHasExactMatchConcept(leftConcept, rightConcept);
-
-            return canAddRelatedRelation;
-        }
-
-        /// <summary>
-        /// Checks if the given leftConcept can be skos:[closeMatch|exactMatch] than the given rightConcept without tampering SKOS integrity
-        /// </summary>
-        internal static bool CheckCloseOrExactMatchCompatibility(this SKOSConceptScheme conceptScheme, RDFResource leftConcept, RDFResource rightConcept)
-        {
-            //Avoid clash with hierarchical relations
-            bool canAddCloseOrExactMatchRelation = !conceptScheme.CheckHasBroaderConcept(leftConcept, rightConcept) 
-                                                     && !conceptScheme.CheckHasNarrowerConcept(leftConcept, rightConcept);
-
-            //Avoid clash with mapping relations
-            if (canAddCloseOrExactMatchRelation)
-                canAddCloseOrExactMatchRelation = !conceptScheme.CheckHasBroadMatchConcept(leftConcept, rightConcept)
-                                                    && !conceptScheme.CheckHasNarrowMatchConcept(leftConcept, rightConcept) 
-                                                      && !conceptScheme.CheckHasRelatedMatchConcept(leftConcept, rightConcept);
-
-            return canAddCloseOrExactMatchRelation;
-        }
-
-        /// <summary>
-        /// Checks if the given skosConcept can be assigned the given [skos|skosxl]:prefLabel attribution without tampering SKOS integrity
-        /// </summary>
-        internal static bool CheckPreferredLabelCompatibility(this SKOSConceptScheme conceptScheme, RDFResource skosConcept, RDFPlainLiteral preferredLabelValue)
-        {
-            //Check skos:prefLabel annotation => no occurrences of the given value's language must be found (in order to accept the annotation)
-            RDFSelectQuery skosPrefLabelQuery = new RDFSelectQuery()
-                .AddPatternGroup(new RDFPatternGroup()
-                    .AddPattern(new RDFPattern(skosConcept, RDFVocabulary.SKOS.PREF_LABEL, new RDFVariable("?PREFLABEL")))
-                    .AddFilter(new RDFIsLiteralFilter(new RDFVariable("?PREFLABEL")))
-                    .AddFilter(new RDFLangMatchesFilter(new RDFVariable("?PREFLABEL"), preferredLabelValue.Language)));
-            RDFSelectQueryResult skosPrefLabelQueryResult = skosPrefLabelQuery.ApplyToGraph(conceptScheme.Ontology.Data.ABoxGraph);
-            bool canAddPreferredLabel = skosPrefLabelQueryResult.SelectResultsCount == 0;
-
-            //Check skosxl:prefLabel relation => no occurrences of the given value's language must be found (in order to accept the relation)
-            if (canAddPreferredLabel)
+            bool conceptFound = false;
+            if (skosConcept != null && conceptScheme != null)
             {
-                RDFSelectQuery skosxlPrefLabelQuery = new RDFSelectQuery()
-                    .AddPatternGroup(new RDFPatternGroup()
-                        .AddPattern(new RDFPattern(skosConcept, RDFVocabulary.SKOS.SKOSXL.PREF_LABEL, new RDFVariable("?PREFLABEL")))
-                        .AddPattern(new RDFPattern(new RDFVariable("?PREFLABEL"), RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, new RDFVariable("?LITERALFORM")))
-                        .AddFilter(new RDFIsUriFilter(new RDFVariable("?PREFLABEL")))
-                        .AddFilter(new RDFIsLiteralFilter(new RDFVariable("?LITERALFORM")))
-                        .AddFilter(new RDFLangMatchesFilter(new RDFVariable("?LITERALFORM"), preferredLabelValue.Language)));
-                RDFSelectQueryResult skosxlPrefLabelQueryResult = skosxlPrefLabelQuery.ApplyToGraph(conceptScheme.Ontology.Data.ABoxGraph);
-                canAddPreferredLabel = skosxlPrefLabelQueryResult.SelectResultsCount == 0;
+                IEnumerator<RDFResource> conceptsEnumerator = conceptScheme.ConceptsEnumerator;
+                while (!conceptFound && conceptsEnumerator.MoveNext())
+                    conceptFound = conceptsEnumerator.Current.Equals(skosConcept);
             }
-
-            //Check pairwise disjointness with skos:hiddenLabel annotation => no occurrences of the given value must be found (in order to accept the annotation)
-            if (canAddPreferredLabel)
-                canAddPreferredLabel = conceptScheme.Ontology.Data.ABoxGraph[skosConcept, RDFVocabulary.SKOS.HIDDEN_LABEL, null, preferredLabelValue].TriplesCount == 0;
-
-            //Check pairwise disjointness with skosxl:hiddenLabel relation => no occurrences of the given value must be found (in order to accept the relation)
-            if (canAddPreferredLabel)
-            {
-                RDFSelectQuery skosxlHiddenLabelQuery = new RDFSelectQuery()
-                    .AddPatternGroup(new RDFPatternGroup()
-                        .AddPattern(new RDFPattern(skosConcept, RDFVocabulary.SKOS.SKOSXL.HIDDEN_LABEL, new RDFVariable("?HIDDENLABEL")))
-                        .AddPattern(new RDFPattern(new RDFVariable("?HIDDENLABEL"), RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, new RDFVariable("?LITERALFORM")))
-                        .AddFilter(new RDFIsUriFilter(new RDFVariable("?HIDDENLABEL")))
-                        .AddFilter(new RDFIsLiteralFilter(new RDFVariable("?LITERALFORM")))
-                        .AddFilter(new RDFSameTermFilter(new RDFVariable("?LITERALFORM"), preferredLabelValue)));
-                RDFSelectQueryResult skosxlHiddenLabelQueryResult = skosxlHiddenLabelQuery.ApplyToGraph(conceptScheme.Ontology.Data.ABoxGraph);
-                canAddPreferredLabel = skosxlHiddenLabelQueryResult.SelectResultsCount == 0;
-            }
-
-            return canAddPreferredLabel;
-        }
-
-        /// <summary>
-        /// Checks if the given skosConcept can be assigned the given [skos|skosxl]:altLabel attribution without tampering SKOS integrity
-        /// </summary>
-        internal static bool CheckAlternativeLabelCompatibility(this SKOSConceptScheme conceptScheme, RDFResource skosConcept, RDFPlainLiteral alternativeLabelValue)
-        {
-            //Check pairwise disjointness with skos:prefLabel annotation => no occurrences of the given value must be found (in order to accept the annotation)
-            bool canAddAlternativeLabel = conceptScheme.Ontology.Data.ABoxGraph[skosConcept, RDFVocabulary.SKOS.PREF_LABEL, null, alternativeLabelValue].TriplesCount == 0;
-
-            //Check pairwise disjointness with skosxl:prefLabel relation => no occurrences of the given value must be found (in order to accept the relation)
-            if (canAddAlternativeLabel)
-            {
-                RDFSelectQuery skosxlPrefLabelQuery = new RDFSelectQuery()
-                    .AddPatternGroup(new RDFPatternGroup()
-                        .AddPattern(new RDFPattern(skosConcept, RDFVocabulary.SKOS.SKOSXL.PREF_LABEL, new RDFVariable("?PREFLABEL")))
-                        .AddPattern(new RDFPattern(new RDFVariable("?PREFLABEL"), RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, new RDFVariable("?LITERALFORM")))
-                        .AddFilter(new RDFIsUriFilter(new RDFVariable("?PREFLABEL")))
-                        .AddFilter(new RDFIsLiteralFilter(new RDFVariable("?LITERALFORM")))
-                        .AddFilter(new RDFSameTermFilter(new RDFVariable("?LITERALFORM"), alternativeLabelValue)));
-                RDFSelectQueryResult skosxlPrefLabelQueryResult = skosxlPrefLabelQuery.ApplyToGraph(conceptScheme.Ontology.Data.ABoxGraph);
-                canAddAlternativeLabel = skosxlPrefLabelQueryResult.SelectResultsCount == 0;
-            }
-
-            //Check pairwise disjointness with skos:hiddenLabel annotation => no occurrences of the given value must be found (in order to accept the annotation)
-            if (canAddAlternativeLabel)
-                canAddAlternativeLabel = conceptScheme.Ontology.Data.ABoxGraph[skosConcept, RDFVocabulary.SKOS.HIDDEN_LABEL, null, alternativeLabelValue].TriplesCount == 0;
-
-            //Check pairwise disjointness with skosxl:hiddenLabel relation => no occurrences of the given value must be found (in order to accept the relation)
-            if (canAddAlternativeLabel)
-            {
-                RDFSelectQuery skosxlHiddenLabelQuery = new RDFSelectQuery()
-                    .AddPatternGroup(new RDFPatternGroup()
-                        .AddPattern(new RDFPattern(skosConcept, RDFVocabulary.SKOS.SKOSXL.HIDDEN_LABEL, new RDFVariable("?HIDDENLABEL")))
-                        .AddPattern(new RDFPattern(new RDFVariable("?HIDDENLABEL"), RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, new RDFVariable("?LITERALFORM")))
-                        .AddFilter(new RDFIsUriFilter(new RDFVariable("?HIDDENLABEL")))
-                        .AddFilter(new RDFIsLiteralFilter(new RDFVariable("?LITERALFORM")))
-                        .AddFilter(new RDFSameTermFilter(new RDFVariable("?LITERALFORM"), alternativeLabelValue)));
-                RDFSelectQueryResult skosxlHiddenLabelQueryResult = skosxlHiddenLabelQuery.ApplyToGraph(conceptScheme.Ontology.Data.ABoxGraph);
-                canAddAlternativeLabel = skosxlHiddenLabelQueryResult.SelectResultsCount == 0;
-            }
-
-            return canAddAlternativeLabel;
-        }
-
-        /// <summary>
-        /// Checks if the given skosConcept can be assigned the given [skos|skosxl]:hiddenLabel attribution without tampering SKOS integrity
-        /// </summary>
-        internal static bool CheckHiddenLabelCompatibility(this SKOSConceptScheme conceptScheme, RDFResource skosConcept, RDFPlainLiteral hiddenLabelValue)
-        {
-            //Check pairwise disjointness with skos:prefLabel annotation => no occurrences of the given value must be found (in order to accept the annotation)
-            bool canAddAlternativeLabel = conceptScheme.Ontology.Data.ABoxGraph[skosConcept, RDFVocabulary.SKOS.PREF_LABEL, null, hiddenLabelValue].TriplesCount == 0;
-
-            //Check pairwise disjointness with skosxl:prefLabel relation => no occurrences of the given value must be found (in order to accept the relation)
-            if (canAddAlternativeLabel)
-            {
-                RDFSelectQuery skosxlPrefLabelQuery = new RDFSelectQuery()
-                    .AddPatternGroup(new RDFPatternGroup()
-                        .AddPattern(new RDFPattern(skosConcept, RDFVocabulary.SKOS.SKOSXL.PREF_LABEL, new RDFVariable("?PREFLABEL")))
-                        .AddPattern(new RDFPattern(new RDFVariable("?PREFLABEL"), RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, new RDFVariable("?LITERALFORM")))
-                        .AddFilter(new RDFIsUriFilter(new RDFVariable("?PREFLABEL")))
-                        .AddFilter(new RDFIsLiteralFilter(new RDFVariable("?LITERALFORM")))
-                        .AddFilter(new RDFSameTermFilter(new RDFVariable("?LITERALFORM"), hiddenLabelValue)));
-                RDFSelectQueryResult skosxlPrefLabelQueryResult = skosxlPrefLabelQuery.ApplyToGraph(conceptScheme.Ontology.Data.ABoxGraph);
-                canAddAlternativeLabel = skosxlPrefLabelQueryResult.SelectResultsCount == 0;
-            }
-
-            //Check pairwise disjointness with skos:altLabel annotation => no occurrences of the given value must be found (in order to accept the annotation)
-            if (canAddAlternativeLabel)
-                canAddAlternativeLabel = conceptScheme.Ontology.Data.ABoxGraph[skosConcept, RDFVocabulary.SKOS.ALT_LABEL, null, hiddenLabelValue].TriplesCount == 0;
-
-            //Check pairwise disjointness with skosxl:altLabel relation => no occurrences of the given value must be found (in order to accept the relation)
-            if (canAddAlternativeLabel)
-            {
-                RDFSelectQuery skosxlAltLabelQuery = new RDFSelectQuery()
-                    .AddPatternGroup(new RDFPatternGroup()
-                        .AddPattern(new RDFPattern(skosConcept, RDFVocabulary.SKOS.SKOSXL.ALT_LABEL, new RDFVariable("?ALTLABEL")))
-                        .AddPattern(new RDFPattern(new RDFVariable("?ALTLABEL"), RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, new RDFVariable("?LITERALFORM")))
-                        .AddFilter(new RDFIsUriFilter(new RDFVariable("?ALTLABEL")))
-                        .AddFilter(new RDFIsLiteralFilter(new RDFVariable("?LITERALFORM")))
-                        .AddFilter(new RDFSameTermFilter(new RDFVariable("?LITERALFORM"), hiddenLabelValue)));
-                RDFSelectQueryResult skosxlAltLabelQueryResult = skosxlAltLabelQuery.ApplyToGraph(conceptScheme.Ontology.Data.ABoxGraph);
-                canAddAlternativeLabel = skosxlAltLabelQueryResult.SelectResultsCount == 0;
-            }
-
-            return canAddAlternativeLabel;
+            return conceptFound;
         }
         #endregion
 
         #region Analyzer
+        /// <summary>
+        /// Checks for the existence of "HasTopConcept(skosConcept)" relations within the concept scheme
+        /// </summary>
+        public static bool CheckHasTopConcept(this SKOSConceptScheme conceptScheme, RDFResource skosConcept)
+            => skosConcept != null && conceptScheme != null && conceptScheme.Ontology.Data.ABoxGraph[conceptScheme, RDFVocabulary.SKOS.HAS_TOP_CONCEPT, skosConcept, null].TriplesCount > 0;
+
         /// <summary>
         /// Checks for the existence of "Broader(childConcept,motherConcept)" relations within the concept scheme
         /// </summary>
@@ -567,12 +372,224 @@ namespace RDFSharp.Semantics.Extensions.SKOS
 
             return notations;
         }
+        #endregion
+
+        #region Checker
+        /// <summary>
+        /// Checks if the given leftConcept can be skos:[broader|broaderTransitive|broadMatch] than the given rightConcept without tampering SKOS integrity
+        /// </summary>
+        internal static bool CheckBroaderCompatibility(this SKOSConceptScheme conceptScheme, RDFResource childConcept, RDFResource motherConcept)
+        {
+            //Avoid clash with hierarchical relations
+            bool canAddBroaderRelation = !conceptScheme.CheckHasNarrowerConcept(childConcept, motherConcept);
+
+            //Avoid clash with associative relations
+            if (canAddBroaderRelation)
+                canAddBroaderRelation = !conceptScheme.CheckHasRelatedConcept(childConcept, motherConcept);
+
+            //Avoid clash with mapping relations
+            if (canAddBroaderRelation)
+                canAddBroaderRelation = !conceptScheme.CheckHasNarrowMatchConcept(childConcept, motherConcept)
+                                          && !conceptScheme.CheckHasCloseMatchConcept(childConcept, motherConcept)
+                                            && !conceptScheme.CheckHasExactMatchConcept(childConcept, motherConcept)
+                                              && !conceptScheme.CheckHasRelatedMatchConcept(childConcept, motherConcept);
+
+            return canAddBroaderRelation;
+        }
 
         /// <summary>
-        /// Checks for the existence of "HasTopConcept(skosConcept)" relations within the concept scheme
+        /// Checks if the given leftConcept can be skos:[narrower|narrowerTransitive|narrowMatch] than the given rightConcept without tampering SKOS integrity
         /// </summary>
-        public static bool CheckHasTopConcept(this SKOSConceptScheme conceptScheme, RDFResource skosConcept)
-            => skosConcept != null && conceptScheme != null && conceptScheme.Ontology.Data.ABoxGraph[conceptScheme, RDFVocabulary.SKOS.HAS_TOP_CONCEPT, skosConcept, null].TriplesCount > 0;
+        internal static bool CheckNarrowerCompatibility(this SKOSConceptScheme conceptScheme, RDFResource motherConcept, RDFResource childConcept)
+        {
+            //Avoid clash with hierarchical relations
+            bool canAddNarrowerRelation = !conceptScheme.CheckHasBroaderConcept(motherConcept, childConcept);
+
+            //Avoid clash with associative relations
+            if (canAddNarrowerRelation)
+                canAddNarrowerRelation = !conceptScheme.CheckHasRelatedConcept(motherConcept, childConcept);
+
+            //Avoid clash with mapping relations
+            if (canAddNarrowerRelation)
+                canAddNarrowerRelation = !conceptScheme.CheckHasBroadMatchConcept(motherConcept, childConcept)
+                                           && !conceptScheme.CheckHasCloseMatchConcept(motherConcept, childConcept)
+                                             && !conceptScheme.CheckHasExactMatchConcept(motherConcept, childConcept)
+                                               && !conceptScheme.CheckHasRelatedMatchConcept(motherConcept, childConcept);
+
+            return canAddNarrowerRelation;
+        }
+
+        /// <summary>
+        /// Checks if the given leftConcept can be skos:[related|relatedMatch] than the given rightConcept without tampering SKOS integrity
+        /// </summary>
+        internal static bool CheckRelatedCompatibility(this SKOSConceptScheme conceptScheme, RDFResource leftConcept, RDFResource rightConcept)
+        {
+            //Avoid clash with hierarchical relations
+            bool canAddRelatedRelation = !conceptScheme.CheckHasBroaderConcept(leftConcept, rightConcept)
+                                           && !conceptScheme.CheckHasNarrowerConcept(leftConcept, rightConcept);
+
+            //Avoid clash with mapping relations
+            if (canAddRelatedRelation)
+                canAddRelatedRelation = !conceptScheme.CheckHasBroadMatchConcept(leftConcept, rightConcept)
+                                          && !conceptScheme.CheckHasNarrowMatchConcept(leftConcept, rightConcept)
+                                            && !conceptScheme.CheckHasCloseMatchConcept(leftConcept, rightConcept)
+                                              && !conceptScheme.CheckHasExactMatchConcept(leftConcept, rightConcept);
+
+            return canAddRelatedRelation;
+        }
+
+        /// <summary>
+        /// Checks if the given leftConcept can be skos:[closeMatch|exactMatch] than the given rightConcept without tampering SKOS integrity
+        /// </summary>
+        internal static bool CheckCloseOrExactMatchCompatibility(this SKOSConceptScheme conceptScheme, RDFResource leftConcept, RDFResource rightConcept)
+        {
+            //Avoid clash with hierarchical relations
+            bool canAddCloseOrExactMatchRelation = !conceptScheme.CheckHasBroaderConcept(leftConcept, rightConcept)
+                                                     && !conceptScheme.CheckHasNarrowerConcept(leftConcept, rightConcept);
+
+            //Avoid clash with mapping relations
+            if (canAddCloseOrExactMatchRelation)
+                canAddCloseOrExactMatchRelation = !conceptScheme.CheckHasBroadMatchConcept(leftConcept, rightConcept)
+                                                    && !conceptScheme.CheckHasNarrowMatchConcept(leftConcept, rightConcept)
+                                                      && !conceptScheme.CheckHasRelatedMatchConcept(leftConcept, rightConcept);
+
+            return canAddCloseOrExactMatchRelation;
+        }
+
+        /// <summary>
+        /// Checks if the given skosConcept can be assigned the given [skos|skosxl]:prefLabel attribution without tampering SKOS integrity
+        /// </summary>
+        internal static bool CheckPreferredLabelCompatibility(this SKOSConceptScheme conceptScheme, RDFResource skosConcept, RDFPlainLiteral preferredLabelValue)
+        {
+            //Check skos:prefLabel annotation => no occurrences of the given value's language must be found (in order to accept the annotation)
+            RDFSelectQuery skosPrefLabelQuery = new RDFSelectQuery()
+                .AddPatternGroup(new RDFPatternGroup()
+                    .AddPattern(new RDFPattern(skosConcept, RDFVocabulary.SKOS.PREF_LABEL, new RDFVariable("?PREFLABEL")))
+                    .AddFilter(new RDFIsLiteralFilter(new RDFVariable("?PREFLABEL")))
+                    .AddFilter(new RDFLangMatchesFilter(new RDFVariable("?PREFLABEL"), preferredLabelValue.Language)));
+            RDFSelectQueryResult skosPrefLabelQueryResult = skosPrefLabelQuery.ApplyToGraph(conceptScheme.Ontology.Data.ABoxGraph);
+            bool canAddPreferredLabel = skosPrefLabelQueryResult.SelectResultsCount == 0;
+
+            //Check skosxl:prefLabel relation => no occurrences of the given value's language must be found (in order to accept the relation)
+            if (canAddPreferredLabel)
+            {
+                RDFSelectQuery skosxlPrefLabelQuery = new RDFSelectQuery()
+                    .AddPatternGroup(new RDFPatternGroup()
+                        .AddPattern(new RDFPattern(skosConcept, RDFVocabulary.SKOS.SKOSXL.PREF_LABEL, new RDFVariable("?PREFLABEL")))
+                        .AddPattern(new RDFPattern(new RDFVariable("?PREFLABEL"), RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, new RDFVariable("?LITERALFORM")))
+                        .AddFilter(new RDFIsUriFilter(new RDFVariable("?PREFLABEL")))
+                        .AddFilter(new RDFIsLiteralFilter(new RDFVariable("?LITERALFORM")))
+                        .AddFilter(new RDFLangMatchesFilter(new RDFVariable("?LITERALFORM"), preferredLabelValue.Language)));
+                RDFSelectQueryResult skosxlPrefLabelQueryResult = skosxlPrefLabelQuery.ApplyToGraph(conceptScheme.Ontology.Data.ABoxGraph);
+                canAddPreferredLabel = skosxlPrefLabelQueryResult.SelectResultsCount == 0;
+            }
+
+            //Check pairwise disjointness with skos:hiddenLabel annotation => no occurrences of the given value must be found (in order to accept the annotation)
+            if (canAddPreferredLabel)
+                canAddPreferredLabel = conceptScheme.Ontology.Data.ABoxGraph[skosConcept, RDFVocabulary.SKOS.HIDDEN_LABEL, null, preferredLabelValue].TriplesCount == 0;
+
+            //Check pairwise disjointness with skosxl:hiddenLabel relation => no occurrences of the given value must be found (in order to accept the relation)
+            if (canAddPreferredLabel)
+            {
+                RDFSelectQuery skosxlHiddenLabelQuery = new RDFSelectQuery()
+                    .AddPatternGroup(new RDFPatternGroup()
+                        .AddPattern(new RDFPattern(skosConcept, RDFVocabulary.SKOS.SKOSXL.HIDDEN_LABEL, new RDFVariable("?HIDDENLABEL")))
+                        .AddPattern(new RDFPattern(new RDFVariable("?HIDDENLABEL"), RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, new RDFVariable("?LITERALFORM")))
+                        .AddFilter(new RDFIsUriFilter(new RDFVariable("?HIDDENLABEL")))
+                        .AddFilter(new RDFIsLiteralFilter(new RDFVariable("?LITERALFORM")))
+                        .AddFilter(new RDFSameTermFilter(new RDFVariable("?LITERALFORM"), preferredLabelValue)));
+                RDFSelectQueryResult skosxlHiddenLabelQueryResult = skosxlHiddenLabelQuery.ApplyToGraph(conceptScheme.Ontology.Data.ABoxGraph);
+                canAddPreferredLabel = skosxlHiddenLabelQueryResult.SelectResultsCount == 0;
+            }
+
+            return canAddPreferredLabel;
+        }
+
+        /// <summary>
+        /// Checks if the given skosConcept can be assigned the given [skos|skosxl]:altLabel attribution without tampering SKOS integrity
+        /// </summary>
+        internal static bool CheckAlternativeLabelCompatibility(this SKOSConceptScheme conceptScheme, RDFResource skosConcept, RDFPlainLiteral alternativeLabelValue)
+        {
+            //Check pairwise disjointness with skos:prefLabel annotation => no occurrences of the given value must be found (in order to accept the annotation)
+            bool canAddAlternativeLabel = conceptScheme.Ontology.Data.ABoxGraph[skosConcept, RDFVocabulary.SKOS.PREF_LABEL, null, alternativeLabelValue].TriplesCount == 0;
+
+            //Check pairwise disjointness with skosxl:prefLabel relation => no occurrences of the given value must be found (in order to accept the relation)
+            if (canAddAlternativeLabel)
+            {
+                RDFSelectQuery skosxlPrefLabelQuery = new RDFSelectQuery()
+                    .AddPatternGroup(new RDFPatternGroup()
+                        .AddPattern(new RDFPattern(skosConcept, RDFVocabulary.SKOS.SKOSXL.PREF_LABEL, new RDFVariable("?PREFLABEL")))
+                        .AddPattern(new RDFPattern(new RDFVariable("?PREFLABEL"), RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, new RDFVariable("?LITERALFORM")))
+                        .AddFilter(new RDFIsUriFilter(new RDFVariable("?PREFLABEL")))
+                        .AddFilter(new RDFIsLiteralFilter(new RDFVariable("?LITERALFORM")))
+                        .AddFilter(new RDFSameTermFilter(new RDFVariable("?LITERALFORM"), alternativeLabelValue)));
+                RDFSelectQueryResult skosxlPrefLabelQueryResult = skosxlPrefLabelQuery.ApplyToGraph(conceptScheme.Ontology.Data.ABoxGraph);
+                canAddAlternativeLabel = skosxlPrefLabelQueryResult.SelectResultsCount == 0;
+            }
+
+            //Check pairwise disjointness with skos:hiddenLabel annotation => no occurrences of the given value must be found (in order to accept the annotation)
+            if (canAddAlternativeLabel)
+                canAddAlternativeLabel = conceptScheme.Ontology.Data.ABoxGraph[skosConcept, RDFVocabulary.SKOS.HIDDEN_LABEL, null, alternativeLabelValue].TriplesCount == 0;
+
+            //Check pairwise disjointness with skosxl:hiddenLabel relation => no occurrences of the given value must be found (in order to accept the relation)
+            if (canAddAlternativeLabel)
+            {
+                RDFSelectQuery skosxlHiddenLabelQuery = new RDFSelectQuery()
+                    .AddPatternGroup(new RDFPatternGroup()
+                        .AddPattern(new RDFPattern(skosConcept, RDFVocabulary.SKOS.SKOSXL.HIDDEN_LABEL, new RDFVariable("?HIDDENLABEL")))
+                        .AddPattern(new RDFPattern(new RDFVariable("?HIDDENLABEL"), RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, new RDFVariable("?LITERALFORM")))
+                        .AddFilter(new RDFIsUriFilter(new RDFVariable("?HIDDENLABEL")))
+                        .AddFilter(new RDFIsLiteralFilter(new RDFVariable("?LITERALFORM")))
+                        .AddFilter(new RDFSameTermFilter(new RDFVariable("?LITERALFORM"), alternativeLabelValue)));
+                RDFSelectQueryResult skosxlHiddenLabelQueryResult = skosxlHiddenLabelQuery.ApplyToGraph(conceptScheme.Ontology.Data.ABoxGraph);
+                canAddAlternativeLabel = skosxlHiddenLabelQueryResult.SelectResultsCount == 0;
+            }
+
+            return canAddAlternativeLabel;
+        }
+
+        /// <summary>
+        /// Checks if the given skosConcept can be assigned the given [skos|skosxl]:hiddenLabel attribution without tampering SKOS integrity
+        /// </summary>
+        internal static bool CheckHiddenLabelCompatibility(this SKOSConceptScheme conceptScheme, RDFResource skosConcept, RDFPlainLiteral hiddenLabelValue)
+        {
+            //Check pairwise disjointness with skos:prefLabel annotation => no occurrences of the given value must be found (in order to accept the annotation)
+            bool canAddAlternativeLabel = conceptScheme.Ontology.Data.ABoxGraph[skosConcept, RDFVocabulary.SKOS.PREF_LABEL, null, hiddenLabelValue].TriplesCount == 0;
+
+            //Check pairwise disjointness with skosxl:prefLabel relation => no occurrences of the given value must be found (in order to accept the relation)
+            if (canAddAlternativeLabel)
+            {
+                RDFSelectQuery skosxlPrefLabelQuery = new RDFSelectQuery()
+                    .AddPatternGroup(new RDFPatternGroup()
+                        .AddPattern(new RDFPattern(skosConcept, RDFVocabulary.SKOS.SKOSXL.PREF_LABEL, new RDFVariable("?PREFLABEL")))
+                        .AddPattern(new RDFPattern(new RDFVariable("?PREFLABEL"), RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, new RDFVariable("?LITERALFORM")))
+                        .AddFilter(new RDFIsUriFilter(new RDFVariable("?PREFLABEL")))
+                        .AddFilter(new RDFIsLiteralFilter(new RDFVariable("?LITERALFORM")))
+                        .AddFilter(new RDFSameTermFilter(new RDFVariable("?LITERALFORM"), hiddenLabelValue)));
+                RDFSelectQueryResult skosxlPrefLabelQueryResult = skosxlPrefLabelQuery.ApplyToGraph(conceptScheme.Ontology.Data.ABoxGraph);
+                canAddAlternativeLabel = skosxlPrefLabelQueryResult.SelectResultsCount == 0;
+            }
+
+            //Check pairwise disjointness with skos:altLabel annotation => no occurrences of the given value must be found (in order to accept the annotation)
+            if (canAddAlternativeLabel)
+                canAddAlternativeLabel = conceptScheme.Ontology.Data.ABoxGraph[skosConcept, RDFVocabulary.SKOS.ALT_LABEL, null, hiddenLabelValue].TriplesCount == 0;
+
+            //Check pairwise disjointness with skosxl:altLabel relation => no occurrences of the given value must be found (in order to accept the relation)
+            if (canAddAlternativeLabel)
+            {
+                RDFSelectQuery skosxlAltLabelQuery = new RDFSelectQuery()
+                    .AddPatternGroup(new RDFPatternGroup()
+                        .AddPattern(new RDFPattern(skosConcept, RDFVocabulary.SKOS.SKOSXL.ALT_LABEL, new RDFVariable("?ALTLABEL")))
+                        .AddPattern(new RDFPattern(new RDFVariable("?ALTLABEL"), RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, new RDFVariable("?LITERALFORM")))
+                        .AddFilter(new RDFIsUriFilter(new RDFVariable("?ALTLABEL")))
+                        .AddFilter(new RDFIsLiteralFilter(new RDFVariable("?LITERALFORM")))
+                        .AddFilter(new RDFSameTermFilter(new RDFVariable("?LITERALFORM"), hiddenLabelValue)));
+                RDFSelectQueryResult skosxlAltLabelQueryResult = skosxlAltLabelQuery.ApplyToGraph(conceptScheme.Ontology.Data.ABoxGraph);
+                canAddAlternativeLabel = skosxlAltLabelQueryResult.SelectResultsCount == 0;
+            }
+
+            return canAddAlternativeLabel;
+        }
         #endregion
     }
 }
