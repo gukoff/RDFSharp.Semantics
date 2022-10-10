@@ -386,9 +386,15 @@ namespace RDFSharp.Semantics.Extensions.SKOS
                 //Get skos:mappingRelation concepts
                 foreach (RDFTriple mappingRelation in conceptScheme.Ontology.Data.ABoxGraph[skosConcept, RDFVocabulary.SKOS.MAPPING_RELATION, null, null])
                     mappingRelatedConcepts.Add((RDFResource)mappingRelation.Object);
+
+                //Get indirectly mapped concepts (rdfs:subPropertyOf skos:mappingRelation)
+                foreach (RDFResource subMappingRelation in conceptScheme.Ontology.Model.PropertyModel.GetSubPropertiesOf(RDFVocabulary.SKOS.MAPPING_RELATION))
+                    mappingRelatedConcepts.AddRange(conceptScheme.Ontology.Data.ABoxGraph[skosConcept, subMappingRelation, null, null]
+                                                      .Select(t => t.Object)
+                                                      .OfType<RDFResource>());
             }
 
-            return mappingRelatedConcepts;
+            return RDFQueryUtilities.RemoveDuplicates(mappingRelatedConcepts);
         }
 
         /// <summary>
@@ -403,6 +409,12 @@ namespace RDFSharp.Semantics.Extensions.SKOS
                 //Get skos:semanticRelation concepts
                 foreach (RDFTriple semanticRelation in conceptScheme.Ontology.Data.ABoxGraph[skosConcept, RDFVocabulary.SKOS.SEMANTIC_RELATION, null, null])
                     semanticRelatedConcepts.Add((RDFResource)semanticRelation.Object);
+
+                //Get indirectly semantic concepts (rdfs:subPropertyOf skos:semanticRelation)
+                foreach (RDFResource subSemanticRelation in conceptScheme.Ontology.Model.PropertyModel.GetSubPropertiesOf(RDFVocabulary.SKOS.SEMANTIC_RELATION))
+                    semanticRelatedConcepts.AddRange(conceptScheme.Ontology.Data.ABoxGraph[skosConcept, subSemanticRelation, null, null]
+                                                       .Select(t => t.Object)
+                                                       .OfType<RDFResource>());
             }
 
             return semanticRelatedConcepts;
