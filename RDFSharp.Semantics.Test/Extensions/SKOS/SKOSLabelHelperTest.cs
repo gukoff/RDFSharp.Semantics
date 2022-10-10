@@ -27,6 +27,32 @@ namespace RDFSharp.Semantics.Extensions.SKOS.Test
     {
         #region Tests
         [TestMethod]
+        public void ShouldCheckHasLabel()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareLabel(new RDFResource("ex:label1"));
+            conceptScheme.DeclareLabel(new RDFResource("ex:label2"));
+
+            Assert.IsTrue(conceptScheme.CheckHasLabel(new RDFResource("ex:label1")));
+            Assert.IsTrue(conceptScheme.CheckHasLabel(new RDFResource("ex:label2")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckHasNotLabel()
+        {
+            SKOSConceptScheme conceptSchemeNULL = null;
+            SKOSConceptScheme conceptSchemeEMPTY = new SKOSConceptScheme("ex:conceptSchemeEmpty");
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareLabel(new RDFResource("ex:label1"));
+            conceptScheme.DeclareLabel(new RDFResource("ex:label2"));
+
+            Assert.IsFalse(conceptScheme.CheckHasLabel(new RDFResource("ex:label3")));
+            Assert.IsFalse(conceptScheme.CheckHasLabel(null));
+            Assert.IsFalse(conceptSchemeNULL.CheckHasLabel(new RDFResource("ex:label1")));
+            Assert.IsFalse(conceptSchemeEMPTY.CheckHasLabel(new RDFResource("ex:label1")));
+        }
+
+        [TestMethod]
         public void ShouldDeclareLabel()
         {
             SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
@@ -495,7 +521,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS.Test
                         .DeclareRelatedLabels(new RDFResource("ex:leftLabel"), new RDFResource("ex:leftLabel")));
 
         [TestMethod]
-        public void ShouldDeclareLiteralForm()
+        public void ShouldDeclareLiteralFormOfLabel()
         {
             SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
             conceptScheme.DeclareLiteralFormOfLabel(new RDFResource("ex:label"), new RDFTypedLiteral("aabbcc", RDFModelEnums.RDFDatatypes.XSD_STRING));
@@ -509,12 +535,12 @@ namespace RDFSharp.Semantics.Extensions.SKOS.Test
         }
 
         [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringLiteralFormBecauseNullLabel()
+        public void ShouldThrowExceptionOnDeclaringLiteralFormOfLabelBecauseNullLabel()
             => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme")
                         .DeclareLiteralFormOfLabel(null, new RDFTypedLiteral("aabbcc", RDFModelEnums.RDFDatatypes.XSD_STRING)));
 
         [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringLiteralFormBecauseNullValue()
+        public void ShouldThrowExceptionOnDeclaringLiteralFormOfLabelBecauseNullValue()
             => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme")
                         .DeclareRelatedLabels(new RDFResource("ex:label"), null));
         #endregion
