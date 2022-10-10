@@ -132,11 +132,11 @@ namespace RDFSharp.Semantics.Extensions.SKOS
 
         #region Ctors
         /// <summary>
-        /// Builds a concept scheme with the given URI (internal T-BOX is initialized with SKOS model)
+        /// Builds a concept scheme with the given URI (internal T-BOX is initialized with SKOS ontology)
         /// </summary>
         public SKOSConceptScheme(string conceptSchemeURI) : base(conceptSchemeURI)
         {
-            Ontology = new OWLOntology(conceptSchemeURI) { Model = BuildSKOSModel() };
+            Ontology = new OWLOntology(conceptSchemeURI) { Model = SKOSConceptSchemeLoader.BuildSKOSModel() };
 
             //Declare concept scheme to the data
             Ontology.Data.DeclareIndividual(this);
@@ -986,109 +986,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         /// </summary>
         public static Task<SKOSConceptScheme> FromRDFGraphAsync(RDFGraph graph)
             => Task.Run(() => FromRDFGraph(graph));
-        #endregion
-
-        #region Utilities
-        /// <summary>
-        /// Builds a reference SKOS model
-        /// </summary>
-        internal static OWLOntologyModel BuildSKOSModel()
-            => new OWLOntologyModel() { ClassModel = BuildSKOSClassModel(), PropertyModel = BuildSKOSPropertyModel() };
-
-        /// <summary>
-        /// Builds a reference SKOS class model
-        /// </summary>
-        internal static OWLOntologyClassModel BuildSKOSClassModel()
-        {
-            OWLOntologyClassModel classModel = new OWLOntologyClassModel();
-
-            //SKOS
-            classModel.DeclareClass(RDFVocabulary.SKOS.COLLECTION);
-            classModel.DeclareClass(RDFVocabulary.SKOS.CONCEPT);
-            classModel.DeclareClass(RDFVocabulary.SKOS.CONCEPT_SCHEME);
-            classModel.DeclareClass(RDFVocabulary.SKOS.ORDERED_COLLECTION);
-            classModel.DeclareUnionClass(new RDFResource("bnode:ConceptCollection"), new List<RDFResource>() { RDFVocabulary.SKOS.CONCEPT, RDFVocabulary.SKOS.COLLECTION });
-            classModel.DeclareCardinalityRestriction(new RDFResource("bnode:ExactlyOneLiteralForm"), RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, 1);
-            classModel.DeclareAllDisjointClasses(new RDFResource("bnode:AllDisjointSKOSClasses"), new List<RDFResource>() { RDFVocabulary.SKOS.COLLECTION, RDFVocabulary.SKOS.CONCEPT, RDFVocabulary.SKOS.CONCEPT_SCHEME, RDFVocabulary.SKOS.SKOSXL.LABEL });
-            classModel.DeclareSubClasses(RDFVocabulary.SKOS.ORDERED_COLLECTION, RDFVocabulary.SKOS.COLLECTION);
-
-            //SKOS-XL
-            classModel.DeclareClass(RDFVocabulary.SKOS.SKOSXL.LABEL);
-            classModel.DeclareSubClasses(RDFVocabulary.SKOS.SKOSXL.LABEL, new RDFResource("bnode:ExactlyOneLiteralForm"));
-
-            return classModel;
-        }
-
-        /// <summary>
-        /// Builds a reference SKOS property model
-        /// </summary>
-        internal static OWLOntologyPropertyModel BuildSKOSPropertyModel()
-        {
-            OWLOntologyPropertyModel propertyModel = new OWLOntologyPropertyModel();
-
-            //SKOS
-            propertyModel.DeclareAnnotationProperty(RDFVocabulary.SKOS.ALT_LABEL);
-            propertyModel.DeclareObjectProperty(RDFVocabulary.SKOS.BROAD_MATCH);
-            propertyModel.DeclareObjectProperty(RDFVocabulary.SKOS.BROADER);
-            propertyModel.DeclareObjectProperty(RDFVocabulary.SKOS.BROADER_TRANSITIVE, new OWLOntologyObjectPropertyBehavior() { Transitive = true });
-            propertyModel.DeclareAnnotationProperty(RDFVocabulary.SKOS.CHANGE_NOTE);
-            propertyModel.DeclareObjectProperty(RDFVocabulary.SKOS.CLOSE_MATCH, new OWLOntologyObjectPropertyBehavior() { Symmetric = true });
-            propertyModel.DeclareAnnotationProperty(RDFVocabulary.SKOS.DEFINITION);
-            propertyModel.DeclareAnnotationProperty(RDFVocabulary.SKOS.EDITORIAL_NOTE);
-            propertyModel.DeclareObjectProperty(RDFVocabulary.SKOS.EXACT_MATCH, new OWLOntologyObjectPropertyBehavior() { Symmetric = true, Transitive = true });
-            propertyModel.DeclareAnnotationProperty(RDFVocabulary.SKOS.EXAMPLE);
-            propertyModel.DeclareObjectProperty(RDFVocabulary.SKOS.HAS_TOP_CONCEPT, new OWLOntologyObjectPropertyBehavior() { Domain = RDFVocabulary.SKOS.CONCEPT_SCHEME, Range = RDFVocabulary.SKOS.CONCEPT });
-            propertyModel.DeclareAnnotationProperty(RDFVocabulary.SKOS.HIDDEN_LABEL);
-            propertyModel.DeclareAnnotationProperty(RDFVocabulary.SKOS.HISTORY_NOTE);
-            propertyModel.DeclareObjectProperty(RDFVocabulary.SKOS.NARROW_MATCH);
-            propertyModel.DeclareObjectProperty(RDFVocabulary.SKOS.NARROWER);
-            propertyModel.DeclareObjectProperty(RDFVocabulary.SKOS.NARROWER_TRANSITIVE, new OWLOntologyObjectPropertyBehavior() { Transitive = true });
-            propertyModel.DeclareObjectProperty(RDFVocabulary.SKOS.IN_SCHEME, new OWLOntologyObjectPropertyBehavior() { Range = RDFVocabulary.SKOS.CONCEPT_SCHEME });
-            propertyModel.DeclareObjectProperty(RDFVocabulary.SKOS.MAPPING_RELATION);
-            propertyModel.DeclareObjectProperty(RDFVocabulary.SKOS.MEMBER, new OWLOntologyObjectPropertyBehavior() { Domain = RDFVocabulary.SKOS.COLLECTION, Range = new RDFResource("bnode:ConceptCollection") });
-            propertyModel.DeclareObjectProperty(RDFVocabulary.SKOS.MEMBER_LIST, new OWLOntologyObjectPropertyBehavior() { Functional = true, Domain = RDFVocabulary.SKOS.ORDERED_COLLECTION });
-            propertyModel.DeclareDatatypeProperty(RDFVocabulary.SKOS.NOTATION);
-            propertyModel.DeclareAnnotationProperty(RDFVocabulary.SKOS.NOTE);
-            propertyModel.DeclareAnnotationProperty(RDFVocabulary.SKOS.PREF_LABEL);
-            propertyModel.DeclareObjectProperty(RDFVocabulary.SKOS.RELATED_MATCH, new OWLOntologyObjectPropertyBehavior() { Symmetric = true });
-            propertyModel.DeclareObjectProperty(RDFVocabulary.SKOS.RELATED, new OWLOntologyObjectPropertyBehavior() { Symmetric = true });
-            propertyModel.DeclareAnnotationProperty(RDFVocabulary.SKOS.SCOPE_NOTE);
-            propertyModel.DeclareObjectProperty(RDFVocabulary.SKOS.SEMANTIC_RELATION, new OWLOntologyObjectPropertyBehavior() { Domain = RDFVocabulary.SKOS.CONCEPT, Range = RDFVocabulary.SKOS.CONCEPT });
-            propertyModel.DeclareObjectProperty(RDFVocabulary.SKOS.TOP_CONCEPT_OF, new OWLOntologyObjectPropertyBehavior() { Domain = RDFVocabulary.SKOS.CONCEPT, Range = RDFVocabulary.SKOS.CONCEPT_SCHEME });
-            propertyModel.DeclareSubProperties(RDFVocabulary.SKOS.BROAD_MATCH, RDFVocabulary.SKOS.BROADER);
-            propertyModel.DeclareSubProperties(RDFVocabulary.SKOS.BROAD_MATCH, RDFVocabulary.SKOS.MAPPING_RELATION);
-            propertyModel.DeclareSubProperties(RDFVocabulary.SKOS.BROADER, RDFVocabulary.SKOS.BROADER_TRANSITIVE);
-            propertyModel.DeclareSubProperties(RDFVocabulary.SKOS.BROADER_TRANSITIVE, RDFVocabulary.SKOS.SEMANTIC_RELATION);
-            propertyModel.DeclareSubProperties(RDFVocabulary.SKOS.CLOSE_MATCH, RDFVocabulary.SKOS.MAPPING_RELATION);
-            propertyModel.DeclareSubProperties(RDFVocabulary.SKOS.EXACT_MATCH, RDFVocabulary.SKOS.CLOSE_MATCH);
-            propertyModel.DeclareSubProperties(RDFVocabulary.SKOS.MAPPING_RELATION, RDFVocabulary.SKOS.SEMANTIC_RELATION);
-            propertyModel.DeclareSubProperties(RDFVocabulary.SKOS.NARROW_MATCH, RDFVocabulary.SKOS.NARROWER);
-            propertyModel.DeclareSubProperties(RDFVocabulary.SKOS.NARROW_MATCH, RDFVocabulary.SKOS.MAPPING_RELATION);
-            propertyModel.DeclareSubProperties(RDFVocabulary.SKOS.NARROWER, RDFVocabulary.SKOS.NARROWER_TRANSITIVE);
-            propertyModel.DeclareSubProperties(RDFVocabulary.SKOS.NARROWER_TRANSITIVE, RDFVocabulary.SKOS.SEMANTIC_RELATION);
-            propertyModel.DeclareSubProperties(RDFVocabulary.SKOS.TOP_CONCEPT_OF, RDFVocabulary.SKOS.IN_SCHEME);
-            propertyModel.DeclareSubProperties(RDFVocabulary.SKOS.RELATED_MATCH, RDFVocabulary.SKOS.RELATED);
-            propertyModel.DeclareSubProperties(RDFVocabulary.SKOS.RELATED_MATCH, RDFVocabulary.SKOS.MAPPING_RELATION);
-            propertyModel.DeclareSubProperties(RDFVocabulary.SKOS.RELATED, RDFVocabulary.SKOS.SEMANTIC_RELATION);
-            propertyModel.DeclareInverseProperties(RDFVocabulary.SKOS.BROAD_MATCH, RDFVocabulary.SKOS.NARROW_MATCH);
-            propertyModel.DeclareInverseProperties(RDFVocabulary.SKOS.BROADER, RDFVocabulary.SKOS.NARROWER);
-            propertyModel.DeclareInverseProperties(RDFVocabulary.SKOS.BROADER_TRANSITIVE, RDFVocabulary.SKOS.NARROWER_TRANSITIVE);
-            propertyModel.DeclareInverseProperties(RDFVocabulary.SKOS.HAS_TOP_CONCEPT, RDFVocabulary.SKOS.TOP_CONCEPT_OF);
-            propertyModel.DeclareDisjointProperties(RDFVocabulary.SKOS.RELATED, RDFVocabulary.SKOS.BROADER_TRANSITIVE);
-            propertyModel.DeclareDisjointProperties(RDFVocabulary.SKOS.RELATED, RDFVocabulary.SKOS.NARROWER_TRANSITIVE);
-            propertyModel.DeclareDisjointProperties(RDFVocabulary.SKOS.EXACT_MATCH, RDFVocabulary.SKOS.BROAD_MATCH);
-            propertyModel.DeclareDisjointProperties(RDFVocabulary.SKOS.EXACT_MATCH, RDFVocabulary.SKOS.NARROW_MATCH);
-            propertyModel.DeclareDisjointProperties(RDFVocabulary.SKOS.EXACT_MATCH, RDFVocabulary.SKOS.RELATED_MATCH);
-
-            //SKOS-XL
-            propertyModel.DeclareDatatypeProperty(RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, new OWLOntologyDatatypePropertyBehavior() { Domain = RDFVocabulary.SKOS.SKOSXL.LABEL });
-            propertyModel.DeclareObjectProperty(RDFVocabulary.SKOS.SKOSXL.PREF_LABEL, new OWLOntologyObjectPropertyBehavior() { Range = RDFVocabulary.SKOS.SKOSXL.LABEL });
-            propertyModel.DeclareObjectProperty(RDFVocabulary.SKOS.SKOSXL.ALT_LABEL, new OWLOntologyObjectPropertyBehavior() { Range = RDFVocabulary.SKOS.SKOSXL.LABEL });
-            propertyModel.DeclareObjectProperty(RDFVocabulary.SKOS.SKOSXL.HIDDEN_LABEL, new OWLOntologyObjectPropertyBehavior() { Range = RDFVocabulary.SKOS.SKOSXL.LABEL });
-            propertyModel.DeclareObjectProperty(RDFVocabulary.SKOS.SKOSXL.LABEL_RELATION, new OWLOntologyObjectPropertyBehavior() { Symmetric = true, Domain = RDFVocabulary.SKOS.SKOSXL.LABEL, Range = RDFVocabulary.SKOS.SKOSXL.LABEL });
-
-            return propertyModel;
-        }
         #endregion
     }
 }
