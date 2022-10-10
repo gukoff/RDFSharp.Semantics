@@ -128,6 +128,34 @@ namespace RDFSharp.Semantics.Test
             Assert.IsFalse(conceptSchemeNULL.CheckHasOrderedCollection(new RDFResource("ex:orderedCollection")));
             Assert.IsFalse(conceptSchemeEMPTY.CheckHasOrderedCollection(new RDFResource("ex:orderedCollection")));
         }
+
+        [TestMethod]
+        public void ShouldCheckHasOrderedCollectionWithConcept()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareOrderedCollection(new RDFResource("ex:orderedCollection"), new List<RDFResource>() {
+                new RDFResource("ex:concept1"), new RDFResource("ex:concept2") });
+
+            Assert.IsTrue(conceptScheme.CheckHasOrderedCollectionWithConcept(new RDFResource("ex:orderedCollection"), new RDFResource("ex:concept1")));
+            Assert.IsTrue(conceptScheme.CheckHasOrderedCollectionWithConcept(new RDFResource("ex:orderedCollection"), new RDFResource("ex:concept2")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckHasNotOrderedCollectionWithConcept()
+        {
+            SKOSConceptScheme conceptSchemeNULL = null;
+            SKOSConceptScheme conceptSchemeEMPTY = new SKOSConceptScheme("ex:conceptSchemeEmpty");
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareOrderedCollection(new RDFResource("ex:orderedCollection"), new List<RDFResource>() {
+                new RDFResource("ex:concept1"), new RDFResource("ex:concept2") });
+
+            Assert.IsFalse(conceptScheme.CheckHasOrderedCollectionWithConcept(new RDFResource("ex:orderedCollection"), new RDFResource("ex:concept3")));
+            Assert.IsFalse(conceptScheme.CheckHasOrderedCollectionWithConcept(new RDFResource("ex:orderedCollection2"), new RDFResource("ex:concept1")));
+            Assert.IsFalse(conceptScheme.CheckHasOrderedCollectionWithConcept(null, new RDFResource("ex:concept1")));
+            Assert.IsFalse(conceptScheme.CheckHasOrderedCollectionWithConcept(new RDFResource("ex:orderedCollection"), null));
+            Assert.IsFalse(conceptSchemeNULL.CheckHasOrderedCollectionWithConcept(new RDFResource("ex:orderedCollection"), new RDFResource("ex:concept1")));
+            Assert.IsFalse(conceptSchemeEMPTY.CheckHasOrderedCollectionWithConcept(new RDFResource("ex:orderedCollection"), new RDFResource("ex:concept1")));
+        }
         #endregion
     }
 }

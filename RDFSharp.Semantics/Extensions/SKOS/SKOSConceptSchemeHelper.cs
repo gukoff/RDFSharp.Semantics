@@ -78,6 +78,21 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             }
             return orderedCollectionFound;
         }
+
+        /// <summary>
+        /// Checks for the existence of the given skos:OrderedCollection having the given skos:Concept within the concept scheme
+        /// </summary>
+        public static bool CheckHasOrderedCollectionWithConcept(this SKOSConceptScheme conceptScheme, RDFResource skosOrderedCollection, RDFResource skosConcept)
+        {
+            if (CheckHasOrderedCollection(conceptScheme, skosOrderedCollection))
+            {
+                RDFResource orderedCollectionRepresentative = conceptScheme.Ontology.Data.ABoxGraph[skosOrderedCollection, RDFVocabulary.SKOS.MEMBER_LIST, null, null]
+                                                                .FirstOrDefault().Object as RDFResource;
+                RDFCollection skosOrderedCollectionItems = RDFModelUtilities.DeserializeCollectionFromGraph(conceptScheme.Ontology.Data.ABoxGraph, orderedCollectionRepresentative, RDFModelEnums.RDFTripleFlavors.SPO);
+                return skosOrderedCollectionItems.Items.Any(item => item.Equals(skosConcept));
+            }
+            return false;
+        }
         #endregion
 
         #region Analyzer
