@@ -25,7 +25,22 @@ namespace RDFSharp.Semantics.Extensions.SKOS
     /// </summary>
     public static class SKOSLabelHelper
     {
-        #region Extensions
+        #region Declarer
+        /// <summary>
+        /// Checks for the existence of the given skosxl:Label declaration within the concept scheme
+        /// </summary>
+        public static bool CheckHasLabel(this SKOSConceptScheme conceptScheme, RDFResource skosxlLabel)
+        {
+            bool labelFound = false;
+            if (skosxlLabel != null && conceptScheme != null)
+            {
+                IEnumerator<RDFResource> labelsEnumerator = conceptScheme.LabelsEnumerator;
+                while (!labelFound && labelsEnumerator.MoveNext())
+                    labelFound = labelsEnumerator.Current.Equals(skosxlLabel);
+            }
+            return labelFound;
+        }
+
         /// <summary>
         /// Declares the given skosxl:Label instance to the concept scheme [SKOS-XL]
         /// </summary>
@@ -227,23 +242,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             conceptScheme.Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosxlLabel, RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, literalFormValue));
 
             return conceptScheme;
-        }
-        #endregion
-
-        #region Declarer
-        /// <summary>
-        /// Checks for the existence of the given skosxl:Label declaration within the concept scheme
-        /// </summary>
-        public static bool CheckHasLabel(this SKOSConceptScheme conceptScheme, RDFResource skosxlLabel)
-        {
-            bool labelFound = false;
-            if (skosxlLabel != null && conceptScheme != null)
-            {
-                IEnumerator<RDFResource> labelsEnumerator = conceptScheme.LabelsEnumerator;
-                while (!labelFound && labelsEnumerator.MoveNext())
-                    labelFound = labelsEnumerator.Current.Equals(skosxlLabel);
-            }
-            return labelFound;
         }
         #endregion
 
