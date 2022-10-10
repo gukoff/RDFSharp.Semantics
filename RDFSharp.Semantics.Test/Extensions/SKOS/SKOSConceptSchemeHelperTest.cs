@@ -18,6 +18,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RDFSharp.Model;
 using RDFSharp.Semantics.Extensions.SKOS;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace RDFSharp.Semantics.Test
 {
@@ -155,6 +156,107 @@ namespace RDFSharp.Semantics.Test
             Assert.IsFalse(conceptScheme.CheckHasOrderedCollectionWithConcept(new RDFResource("ex:orderedCollection"), null));
             Assert.IsFalse(conceptSchemeNULL.CheckHasOrderedCollectionWithConcept(new RDFResource("ex:orderedCollection"), new RDFResource("ex:concept1")));
             Assert.IsFalse(conceptSchemeEMPTY.CheckHasOrderedCollectionWithConcept(new RDFResource("ex:orderedCollection"), new RDFResource("ex:concept1")));
+        }
+
+        //ANALYZER
+
+        [TestMethod]
+        public void ShouldCheckHasTopConcept()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareTopConcept(new RDFResource("ex:concept1"));
+
+            Assert.IsTrue(conceptScheme.CheckHasTopConcept(new RDFResource("ex:concept1")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckHasNotTopConcept()
+        {
+            SKOSConceptScheme conceptSchemeNULL = null;
+            SKOSConceptScheme conceptSchemeEMPTY = new SKOSConceptScheme("ex:conceptSchemeEmpty");
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareTopConcept(new RDFResource("ex:concept1"));
+
+            Assert.IsFalse(conceptScheme.CheckHasTopConcept(new RDFResource("ex:concept2")));
+            Assert.IsFalse(conceptScheme.CheckHasTopConcept(null));
+            Assert.IsFalse(conceptSchemeNULL.CheckHasTopConcept(new RDFResource("ex:concept1")));
+            Assert.IsFalse(conceptSchemeEMPTY.CheckHasTopConcept(new RDFResource("ex:concept1")));
+        }
+
+        [TestMethod]
+        public void ShouldGetBroaderConcept()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareBroaderConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept2"));
+            conceptScheme.DeclareBroaderTransitiveConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept3"));
+            conceptScheme.DeclareBroaderTransitiveConcepts(new RDFResource("ex:concept3"), new RDFResource("ex:concept4"));
+
+            Assert.IsTrue(conceptScheme.GetBroaderConcepts(new RDFResource("ex:concept1")).Any(c => c.Equals(new RDFResource("ex:concept2"))));
+            Assert.IsTrue(conceptScheme.GetBroaderConcepts(new RDFResource("ex:concept1")).Any(c => c.Equals(new RDFResource("ex:concept3"))));
+            Assert.IsTrue(conceptScheme.GetBroaderConcepts(new RDFResource("ex:concept1")).Any(c => c.Equals(new RDFResource("ex:concept4")))); //Inference
+        }
+
+        [TestMethod]
+        public void ShouldCheckHasBroaderConcept()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareBroaderConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept2"));
+            conceptScheme.DeclareBroaderTransitiveConcepts(new RDFResource("ex:concept2"), new RDFResource("ex:concept3"));
+            conceptScheme.DeclareBroaderTransitiveConcepts(new RDFResource("ex:concept3"), new RDFResource("ex:concept4"));
+
+            Assert.IsTrue(conceptScheme.CheckHasBroaderConcept(new RDFResource("ex:concept1"), new RDFResource("ex:concept2")));
+            Assert.IsTrue(conceptScheme.CheckHasBroaderConcept(new RDFResource("ex:concept2"), new RDFResource("ex:concept3")));
+            Assert.IsTrue(conceptScheme.CheckHasBroaderConcept(new RDFResource("ex:concept2"), new RDFResource("ex:concept4"))); //Inference
+        }
+
+        [TestMethod]
+        public void ShouldCheckHasNotBroaderConcept()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareBroaderConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept2"));
+            conceptScheme.DeclareBroaderTransitiveConcepts(new RDFResource("ex:concept2"), new RDFResource("ex:concept3"));
+            conceptScheme.DeclareBroaderTransitiveConcepts(new RDFResource("ex:concept3"), new RDFResource("ex:concept4"));
+
+            Assert.IsFalse(conceptScheme.CheckHasBroaderConcept(new RDFResource("ex:concept1"), new RDFResource("ex:concept3")));
+            Assert.IsFalse(conceptScheme.CheckHasBroaderConcept(new RDFResource("ex:concept1"), new RDFResource("ex:concept4")));
+        }
+
+        [TestMethod]
+        public void ShouldGetNarrowerConcept()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareNarrowerConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept2"));
+            conceptScheme.DeclareNarrowerTransitiveConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept3"));
+            conceptScheme.DeclareNarrowerTransitiveConcepts(new RDFResource("ex:concept3"), new RDFResource("ex:concept4"));
+
+            Assert.IsTrue(conceptScheme.GetNarrowerConcepts(new RDFResource("ex:concept1")).Any(c => c.Equals(new RDFResource("ex:concept2"))));
+            Assert.IsTrue(conceptScheme.GetNarrowerConcepts(new RDFResource("ex:concept1")).Any(c => c.Equals(new RDFResource("ex:concept3"))));
+            Assert.IsTrue(conceptScheme.GetNarrowerConcepts(new RDFResource("ex:concept1")).Any(c => c.Equals(new RDFResource("ex:concept4")))); //Inference
+        }
+
+        [TestMethod]
+        public void ShouldCheckHasNarrowerConcept()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareNarrowerConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept2"));
+            conceptScheme.DeclareNarrowerTransitiveConcepts(new RDFResource("ex:concept2"), new RDFResource("ex:concept3"));
+            conceptScheme.DeclareNarrowerTransitiveConcepts(new RDFResource("ex:concept3"), new RDFResource("ex:concept4"));
+
+            Assert.IsTrue(conceptScheme.CheckHasNarrowerConcept(new RDFResource("ex:concept1"), new RDFResource("ex:concept2")));
+            Assert.IsTrue(conceptScheme.CheckHasNarrowerConcept(new RDFResource("ex:concept2"), new RDFResource("ex:concept3")));
+            Assert.IsTrue(conceptScheme.CheckHasNarrowerConcept(new RDFResource("ex:concept2"), new RDFResource("ex:concept4"))); //Inference
+        }
+
+        [TestMethod]
+        public void ShouldCheckHasNotNarrowerConcept()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareNarrowerConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept2"));
+            conceptScheme.DeclareNarrowerTransitiveConcepts(new RDFResource("ex:concept2"), new RDFResource("ex:concept3"));
+            conceptScheme.DeclareNarrowerTransitiveConcepts(new RDFResource("ex:concept3"), new RDFResource("ex:concept4"));
+
+            Assert.IsFalse(conceptScheme.CheckHasNarrowerConcept(new RDFResource("ex:concept1"), new RDFResource("ex:concept3")));
+            Assert.IsFalse(conceptScheme.CheckHasNarrowerConcept(new RDFResource("ex:concept1"), new RDFResource("ex:concept4")));
         }
         #endregion
     }
