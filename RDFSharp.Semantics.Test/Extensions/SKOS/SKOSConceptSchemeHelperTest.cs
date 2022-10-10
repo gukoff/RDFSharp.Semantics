@@ -72,8 +72,33 @@ namespace RDFSharp.Semantics.Test
 
             Assert.IsFalse(conceptScheme.CheckHasCollection(new RDFResource("ex:collection2")));
             Assert.IsFalse(conceptScheme.CheckHasCollection(null));
-            Assert.IsFalse(conceptSchemeNULL.CheckHasCollection(new RDFResource("ex:concept1")));
-            Assert.IsFalse(conceptSchemeEMPTY.CheckHasCollection(new RDFResource("ex:concept1")));
+            Assert.IsFalse(conceptSchemeNULL.CheckHasCollection(new RDFResource("ex:collection")));
+            Assert.IsFalse(conceptSchemeEMPTY.CheckHasCollection(new RDFResource("ex:collection")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckHasOrderedCollection()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareOrderedCollection(new RDFResource("ex:orderedCollection"), new List<RDFResource>() {
+                new RDFResource("ex:concept1"), new RDFResource("ex:concept2") });
+
+            Assert.IsTrue(conceptScheme.CheckHasOrderedCollection(new RDFResource("ex:orderedCollection")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckHasNotOrderedCollection()
+        {
+            SKOSConceptScheme conceptSchemeNULL = null;
+            SKOSConceptScheme conceptSchemeEMPTY = new SKOSConceptScheme("ex:conceptSchemeEmpty");
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareOrderedCollection(new RDFResource("ex:orderedCollection"), new List<RDFResource>() {
+                new RDFResource("ex:concept1"), new RDFResource("ex:concept2") });
+
+            Assert.IsFalse(conceptScheme.CheckHasOrderedCollection(new RDFResource("ex:orderedCollection2")));
+            Assert.IsFalse(conceptScheme.CheckHasOrderedCollection(null));
+            Assert.IsFalse(conceptSchemeNULL.CheckHasOrderedCollection(new RDFResource("ex:orderedCollection")));
+            Assert.IsFalse(conceptSchemeEMPTY.CheckHasOrderedCollection(new RDFResource("ex:orderedCollection")));
         }
         #endregion
     }
