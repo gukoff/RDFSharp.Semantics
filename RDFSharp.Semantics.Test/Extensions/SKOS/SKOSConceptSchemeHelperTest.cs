@@ -77,6 +77,34 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
+        public void ShouldCheckHasCollectionWithConcept()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareCollection(new RDFResource("ex:collection"), new List<RDFResource>() {
+                new RDFResource("ex:concept1"), new RDFResource("ex:concept2") });
+
+            Assert.IsTrue(conceptScheme.CheckHasCollectionWithConcept(new RDFResource("ex:collection"), new RDFResource("ex:concept1")));
+            Assert.IsTrue(conceptScheme.CheckHasCollectionWithConcept(new RDFResource("ex:collection"), new RDFResource("ex:concept2")));
+            Assert.IsTrue(conceptScheme.CheckHasCollectionWithConcept(new RDFResource("ex:collection"), null));
+        }
+
+        [TestMethod]
+        public void ShouldCheckHasNotCollectionWithConcept()
+        {
+            SKOSConceptScheme conceptSchemeNULL = null;
+            SKOSConceptScheme conceptSchemeEMPTY = new SKOSConceptScheme("ex:conceptSchemeEmpty");
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareCollection(new RDFResource("ex:collection"), new List<RDFResource>() {
+                new RDFResource("ex:concept1"), new RDFResource("ex:concept2") });
+
+            Assert.IsFalse(conceptScheme.CheckHasCollectionWithConcept(new RDFResource("ex:collection"), new RDFResource("ex:concept3")));
+            Assert.IsFalse(conceptScheme.CheckHasCollectionWithConcept(new RDFResource("ex:collection2"), new RDFResource("ex:concept1")));
+            Assert.IsFalse(conceptScheme.CheckHasCollectionWithConcept(null, new RDFResource("ex:concept1")));
+            Assert.IsFalse(conceptSchemeNULL.CheckHasCollectionWithConcept(new RDFResource("ex:collection"), new RDFResource("ex:concept1")));
+            Assert.IsFalse(conceptSchemeEMPTY.CheckHasCollectionWithConcept(new RDFResource("ex:collection"), new RDFResource("ex:concept1")));
+        }
+
+        [TestMethod]
         public void ShouldCheckHasOrderedCollection()
         {
             SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");

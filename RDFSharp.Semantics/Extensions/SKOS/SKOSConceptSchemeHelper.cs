@@ -58,6 +58,13 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         }
 
         /// <summary>
+        /// Checks for the existence of the given skos:Collection having the given skos:Concept within the concept scheme
+        /// </summary>
+        public static bool CheckHasCollectionWithConcept(this SKOSConceptScheme conceptScheme, RDFResource skosCollection, RDFResource skosConcept)
+            => CheckHasCollection(conceptScheme, skosCollection)
+                && conceptScheme.Ontology.Data.ABoxGraph[skosCollection, RDFVocabulary.SKOS.MEMBER, skosConcept, null].TriplesCount > 0;
+
+        /// <summary>
         /// Checks for the existence of the given skos:OrderedCollection declaration within the concept scheme
         /// </summary>
         public static bool CheckHasOrderedCollection(this SKOSConceptScheme conceptScheme, RDFResource skosOrderedCollection)
