@@ -527,6 +527,15 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(conceptScheme.GetSemanticRelatedConcepts(new RDFResource("ex:concept1")).Any(c => c.Equals(new RDFResource("ex:concept4")))); //Inference
             Assert.IsTrue(conceptScheme.GetSemanticRelatedConcepts(new RDFResource("ex:concept1")).Any(c => c.Equals(new RDFResource("ex:concept5")))); //Inference
         }
+
+        [TestMethod]
+        public void ShouldGetNotations()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareNotation(new RDFResource("ex:concept"), new RDFPlainLiteral("notation"));
+
+            Assert.IsTrue(conceptScheme.GetConceptNotations(new RDFResource("ex:concept")).Any(c => c.Equals(new RDFPlainLiteral("notation"))));
+        }
         #endregion
     }
 }
