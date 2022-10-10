@@ -184,7 +184,7 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
-        public void ShouldGetBroaderConcept()
+        public void ShouldGetBroaderConcepts()
         {
             SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
             conceptScheme.DeclareBroaderConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept2"));
@@ -222,7 +222,7 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
-        public void ShouldGetNarrowerConcept()
+        public void ShouldGetNarrowerConcepts()
         {
             SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
             conceptScheme.DeclareNarrowerConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept2"));
@@ -257,6 +257,247 @@ namespace RDFSharp.Semantics.Test
 
             Assert.IsFalse(conceptScheme.CheckHasNarrowerConcept(new RDFResource("ex:concept1"), new RDFResource("ex:concept3")));
             Assert.IsFalse(conceptScheme.CheckHasNarrowerConcept(new RDFResource("ex:concept1"), new RDFResource("ex:concept4")));
+        }
+
+        [TestMethod]
+        public void ShouldGetRelatedConcepts()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareRelatedConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept2"));
+
+            Assert.IsTrue(conceptScheme.GetRelatedConcepts(new RDFResource("ex:concept1")).Any(c => c.Equals(new RDFResource("ex:concept2"))));
+            Assert.IsTrue(conceptScheme.GetRelatedConcepts(new RDFResource("ex:concept2")).Any(c => c.Equals(new RDFResource("ex:concept1")))); //Inference
+        }
+
+        [TestMethod]
+        public void ShouldCheckHasRelatedConcept()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareRelatedConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept2"));
+            conceptScheme.DeclareRelatedConcepts(new RDFResource("ex:concept2"), new RDFResource("ex:concept3"));
+
+            Assert.IsTrue(conceptScheme.CheckHasRelatedConcept(new RDFResource("ex:concept1"), new RDFResource("ex:concept2")));
+            Assert.IsTrue(conceptScheme.CheckHasRelatedConcept(new RDFResource("ex:concept2"), new RDFResource("ex:concept1")));
+            Assert.IsTrue(conceptScheme.CheckHasRelatedConcept(new RDFResource("ex:concept2"), new RDFResource("ex:concept3")));
+            Assert.IsTrue(conceptScheme.CheckHasRelatedConcept(new RDFResource("ex:concept3"), new RDFResource("ex:concept2"))); //Inference
+        }
+
+        [TestMethod]
+        public void ShouldCheckHasNotRelatedConcept()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareRelatedConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept2"));
+            conceptScheme.DeclareRelatedConcepts(new RDFResource("ex:concept2"), new RDFResource("ex:concept3"));
+
+            Assert.IsFalse(conceptScheme.CheckHasRelatedConcept(new RDFResource("ex:concept1"), new RDFResource("ex:concept3")));
+            Assert.IsFalse(conceptScheme.CheckHasRelatedConcept(new RDFResource("ex:concept3"), new RDFResource("ex:concept1")));
+        }
+
+        [TestMethod]
+        public void ShouldGetBroadMatchConcepts()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareBroadMatchConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept2"));
+            conceptScheme.DeclareBroadMatchConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept3"));
+            conceptScheme.DeclareBroadMatchConcepts(new RDFResource("ex:concept3"), new RDFResource("ex:concept4"));
+
+            Assert.IsTrue(conceptScheme.GetBroadMatchConcepts(new RDFResource("ex:concept1")).Any(c => c.Equals(new RDFResource("ex:concept2"))));
+            Assert.IsTrue(conceptScheme.GetBroadMatchConcepts(new RDFResource("ex:concept1")).Any(c => c.Equals(new RDFResource("ex:concept3"))));
+            Assert.IsTrue(conceptScheme.GetBroadMatchConcepts(new RDFResource("ex:concept3")).Any(c => c.Equals(new RDFResource("ex:concept4"))));
+        }
+
+        [TestMethod]
+        public void ShouldCheckHasBroadMatchConcept()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareBroadMatchConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept2"));
+            conceptScheme.DeclareBroadMatchConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept3"));
+            conceptScheme.DeclareBroadMatchConcepts(new RDFResource("ex:concept3"), new RDFResource("ex:concept4"));
+
+            Assert.IsTrue(conceptScheme.CheckHasBroadMatchConcept(new RDFResource("ex:concept1"), new RDFResource("ex:concept2")));
+            Assert.IsTrue(conceptScheme.CheckHasBroadMatchConcept(new RDFResource("ex:concept1"), new RDFResource("ex:concept3")));
+            Assert.IsTrue(conceptScheme.CheckHasBroadMatchConcept(new RDFResource("ex:concept3"), new RDFResource("ex:concept4")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckHasNotBroadMatchConcept()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareBroadMatchConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept2"));
+            conceptScheme.DeclareBroadMatchConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept3"));
+            conceptScheme.DeclareBroadMatchConcepts(new RDFResource("ex:concept3"), new RDFResource("ex:concept4"));
+
+            Assert.IsFalse(conceptScheme.CheckHasBroadMatchConcept(new RDFResource("ex:concept1"), new RDFResource("ex:concept4")));
+        }
+
+        [TestMethod]
+        public void ShouldGetNarrowMatchConcepts()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareNarrowMatchConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept2"));
+            conceptScheme.DeclareNarrowMatchConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept3"));
+            conceptScheme.DeclareNarrowMatchConcepts(new RDFResource("ex:concept3"), new RDFResource("ex:concept4"));
+
+            Assert.IsTrue(conceptScheme.GetNarrowMatchConcepts(new RDFResource("ex:concept1")).Any(c => c.Equals(new RDFResource("ex:concept2"))));
+            Assert.IsTrue(conceptScheme.GetNarrowMatchConcepts(new RDFResource("ex:concept1")).Any(c => c.Equals(new RDFResource("ex:concept3"))));
+            Assert.IsTrue(conceptScheme.GetNarrowMatchConcepts(new RDFResource("ex:concept3")).Any(c => c.Equals(new RDFResource("ex:concept4"))));
+        }
+
+        [TestMethod]
+        public void ShouldCheckHasNarrowMatchConcept()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareNarrowMatchConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept2"));
+            conceptScheme.DeclareNarrowMatchConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept3"));
+            conceptScheme.DeclareNarrowMatchConcepts(new RDFResource("ex:concept3"), new RDFResource("ex:concept4"));
+
+            Assert.IsTrue(conceptScheme.CheckHasNarrowMatchConcept(new RDFResource("ex:concept1"), new RDFResource("ex:concept2")));
+            Assert.IsTrue(conceptScheme.CheckHasNarrowMatchConcept(new RDFResource("ex:concept1"), new RDFResource("ex:concept3")));
+            Assert.IsTrue(conceptScheme.CheckHasNarrowMatchConcept(new RDFResource("ex:concept3"), new RDFResource("ex:concept4")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckHasNotNarrowMatchConcept()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareNarrowMatchConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept2"));
+            conceptScheme.DeclareNarrowMatchConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept3"));
+            conceptScheme.DeclareNarrowMatchConcepts(new RDFResource("ex:concept3"), new RDFResource("ex:concept4"));
+
+            Assert.IsFalse(conceptScheme.CheckHasNarrowMatchConcept(new RDFResource("ex:concept1"), new RDFResource("ex:concept4")));
+        }
+
+        [TestMethod]
+        public void ShouldGetRelatedMatchConcepts()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareRelatedMatchConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept2"));
+            conceptScheme.DeclareRelatedMatchConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept3"));
+            conceptScheme.DeclareRelatedMatchConcepts(new RDFResource("ex:concept3"), new RDFResource("ex:concept4"));
+
+            Assert.IsTrue(conceptScheme.GetRelatedMatchConcepts(new RDFResource("ex:concept1")).Any(c => c.Equals(new RDFResource("ex:concept2"))));
+            Assert.IsTrue(conceptScheme.GetRelatedMatchConcepts(new RDFResource("ex:concept2")).Any(c => c.Equals(new RDFResource("ex:concept1")))); //Inference
+            Assert.IsTrue(conceptScheme.GetRelatedMatchConcepts(new RDFResource("ex:concept1")).Any(c => c.Equals(new RDFResource("ex:concept3"))));
+            Assert.IsTrue(conceptScheme.GetRelatedMatchConcepts(new RDFResource("ex:concept3")).Any(c => c.Equals(new RDFResource("ex:concept1")))); //Inference
+            Assert.IsTrue(conceptScheme.GetRelatedMatchConcepts(new RDFResource("ex:concept3")).Any(c => c.Equals(new RDFResource("ex:concept4"))));
+            Assert.IsTrue(conceptScheme.GetRelatedMatchConcepts(new RDFResource("ex:concept4")).Any(c => c.Equals(new RDFResource("ex:concept3")))); //Inference
+        }
+
+        [TestMethod]
+        public void ShouldCheckHasRelatedMatchConcept()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareRelatedMatchConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept2"));
+            conceptScheme.DeclareRelatedMatchConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept3"));
+            conceptScheme.DeclareRelatedMatchConcepts(new RDFResource("ex:concept3"), new RDFResource("ex:concept4"));
+
+            Assert.IsTrue(conceptScheme.CheckHasRelatedMatchConcept(new RDFResource("ex:concept1"), new RDFResource("ex:concept2")));
+            Assert.IsTrue(conceptScheme.CheckHasRelatedMatchConcept(new RDFResource("ex:concept2"), new RDFResource("ex:concept1"))); //Inference
+            Assert.IsTrue(conceptScheme.CheckHasRelatedMatchConcept(new RDFResource("ex:concept1"), new RDFResource("ex:concept3")));
+            Assert.IsTrue(conceptScheme.CheckHasRelatedMatchConcept(new RDFResource("ex:concept3"), new RDFResource("ex:concept1"))); //Inference
+            Assert.IsTrue(conceptScheme.CheckHasRelatedMatchConcept(new RDFResource("ex:concept3"), new RDFResource("ex:concept4")));
+            Assert.IsTrue(conceptScheme.CheckHasRelatedMatchConcept(new RDFResource("ex:concept4"), new RDFResource("ex:concept3"))); //Inference
+        }
+
+        [TestMethod]
+        public void ShouldCheckHasNotRelatedMatchConcept()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareRelatedMatchConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept2"));
+            conceptScheme.DeclareRelatedMatchConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept3"));
+            conceptScheme.DeclareRelatedMatchConcepts(new RDFResource("ex:concept3"), new RDFResource("ex:concept4"));
+
+            Assert.IsFalse(conceptScheme.CheckHasRelatedMatchConcept(new RDFResource("ex:concept1"), new RDFResource("ex:concept4")));
+        }
+
+        [TestMethod]
+        public void ShouldGetCloseMatchConcepts()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareCloseMatchConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept2"));
+            conceptScheme.DeclareCloseMatchConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept3"));
+            conceptScheme.DeclareCloseMatchConcepts(new RDFResource("ex:concept3"), new RDFResource("ex:concept4"));
+
+            Assert.IsTrue(conceptScheme.GetCloseMatchConcepts(new RDFResource("ex:concept1")).Any(c => c.Equals(new RDFResource("ex:concept2"))));
+            Assert.IsTrue(conceptScheme.GetCloseMatchConcepts(new RDFResource("ex:concept2")).Any(c => c.Equals(new RDFResource("ex:concept1")))); //Inference
+            Assert.IsTrue(conceptScheme.GetCloseMatchConcepts(new RDFResource("ex:concept1")).Any(c => c.Equals(new RDFResource("ex:concept3"))));
+            Assert.IsTrue(conceptScheme.GetCloseMatchConcepts(new RDFResource("ex:concept3")).Any(c => c.Equals(new RDFResource("ex:concept1")))); //Inference
+            Assert.IsTrue(conceptScheme.GetCloseMatchConcepts(new RDFResource("ex:concept3")).Any(c => c.Equals(new RDFResource("ex:concept4"))));
+            Assert.IsTrue(conceptScheme.GetCloseMatchConcepts(new RDFResource("ex:concept4")).Any(c => c.Equals(new RDFResource("ex:concept3")))); //Inference
+        }
+
+        [TestMethod]
+        public void ShouldCheckHasCloseMatchConcept()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareCloseMatchConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept2"));
+            conceptScheme.DeclareCloseMatchConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept3"));
+            conceptScheme.DeclareCloseMatchConcepts(new RDFResource("ex:concept3"), new RDFResource("ex:concept4"));
+
+            Assert.IsTrue(conceptScheme.CheckHasCloseMatchConcept(new RDFResource("ex:concept1"), new RDFResource("ex:concept2")));
+            Assert.IsTrue(conceptScheme.CheckHasCloseMatchConcept(new RDFResource("ex:concept2"), new RDFResource("ex:concept1"))); //Inference
+            Assert.IsTrue(conceptScheme.CheckHasCloseMatchConcept(new RDFResource("ex:concept1"), new RDFResource("ex:concept3")));
+            Assert.IsTrue(conceptScheme.CheckHasCloseMatchConcept(new RDFResource("ex:concept3"), new RDFResource("ex:concept1"))); //Inference
+            Assert.IsTrue(conceptScheme.CheckHasCloseMatchConcept(new RDFResource("ex:concept3"), new RDFResource("ex:concept4")));
+            Assert.IsTrue(conceptScheme.CheckHasCloseMatchConcept(new RDFResource("ex:concept4"), new RDFResource("ex:concept3"))); //Inference
+        }
+
+        [TestMethod]
+        public void ShouldCheckHasNotCloseMatchConcept()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareCloseMatchConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept2"));
+            conceptScheme.DeclareCloseMatchConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept3"));
+            conceptScheme.DeclareCloseMatchConcepts(new RDFResource("ex:concept3"), new RDFResource("ex:concept4"));
+
+            Assert.IsFalse(conceptScheme.CheckHasCloseMatchConcept(new RDFResource("ex:concept1"), new RDFResource("ex:concept4")));
+        }
+
+        [TestMethod]
+        public void ShouldGetExactMatchConcepts()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareExactMatchConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept2"));
+            conceptScheme.DeclareExactMatchConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept3"));
+            conceptScheme.DeclareExactMatchConcepts(new RDFResource("ex:concept3"), new RDFResource("ex:concept4"));
+
+            Assert.IsTrue(conceptScheme.GetExactMatchConcepts(new RDFResource("ex:concept1")).Any(c => c.Equals(new RDFResource("ex:concept2"))));
+            Assert.IsTrue(conceptScheme.GetExactMatchConcepts(new RDFResource("ex:concept2")).Any(c => c.Equals(new RDFResource("ex:concept1")))); //Inference
+            Assert.IsTrue(conceptScheme.GetExactMatchConcepts(new RDFResource("ex:concept1")).Any(c => c.Equals(new RDFResource("ex:concept3"))));
+            Assert.IsTrue(conceptScheme.GetExactMatchConcepts(new RDFResource("ex:concept3")).Any(c => c.Equals(new RDFResource("ex:concept1")))); //Inference
+            Assert.IsTrue(conceptScheme.GetExactMatchConcepts(new RDFResource("ex:concept3")).Any(c => c.Equals(new RDFResource("ex:concept4"))));
+            Assert.IsTrue(conceptScheme.GetExactMatchConcepts(new RDFResource("ex:concept4")).Any(c => c.Equals(new RDFResource("ex:concept3")))); //Inference
+            Assert.IsTrue(conceptScheme.GetExactMatchConcepts(new RDFResource("ex:concept1")).Any(c => c.Equals(new RDFResource("ex:concept4")))); //Inference
+            Assert.IsTrue(conceptScheme.GetExactMatchConcepts(new RDFResource("ex:concept4")).Any(c => c.Equals(new RDFResource("ex:concept1")))); //Inference
+        }
+
+        [TestMethod]
+        public void ShouldCheckHasExactMatchConcept()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareExactMatchConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept2"));
+            conceptScheme.DeclareExactMatchConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept3"));
+            conceptScheme.DeclareExactMatchConcepts(new RDFResource("ex:concept3"), new RDFResource("ex:concept4"));
+
+            Assert.IsTrue(conceptScheme.CheckHasExactMatchConcept(new RDFResource("ex:concept1"), new RDFResource("ex:concept2")));
+            Assert.IsTrue(conceptScheme.CheckHasExactMatchConcept(new RDFResource("ex:concept2"), new RDFResource("ex:concept1"))); //Inference
+            Assert.IsTrue(conceptScheme.CheckHasExactMatchConcept(new RDFResource("ex:concept1"), new RDFResource("ex:concept3")));
+            Assert.IsTrue(conceptScheme.CheckHasExactMatchConcept(new RDFResource("ex:concept3"), new RDFResource("ex:concept1"))); //Inference
+            Assert.IsTrue(conceptScheme.CheckHasExactMatchConcept(new RDFResource("ex:concept3"), new RDFResource("ex:concept4")));
+            Assert.IsTrue(conceptScheme.CheckHasExactMatchConcept(new RDFResource("ex:concept4"), new RDFResource("ex:concept3"))); //Inference
+            Assert.IsTrue(conceptScheme.CheckHasExactMatchConcept(new RDFResource("ex:concept1"), new RDFResource("ex:concept4"))); //Inference
+            Assert.IsTrue(conceptScheme.CheckHasExactMatchConcept(new RDFResource("ex:concept4"), new RDFResource("ex:concept1"))); //Inference
+        }
+
+        [TestMethod]
+        public void ShouldCheckHasNotExactMatchConcept()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareExactMatchConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept2"));
+            conceptScheme.DeclareExactMatchConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept3"));
+            conceptScheme.DeclareCloseMatchConcepts(new RDFResource("ex:concept3"), new RDFResource("ex:concept4"));
+
+            Assert.IsFalse(conceptScheme.CheckHasExactMatchConcept(new RDFResource("ex:concept1"), new RDFResource("ex:concept4")));
         }
         #endregion
     }
