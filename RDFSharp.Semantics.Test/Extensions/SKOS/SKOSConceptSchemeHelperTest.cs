@@ -17,6 +17,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RDFSharp.Model;
 using RDFSharp.Semantics.Extensions.SKOS;
+using System.Collections.Generic;
 
 namespace RDFSharp.Semantics.Test
 {
@@ -48,6 +49,31 @@ namespace RDFSharp.Semantics.Test
             Assert.IsFalse(conceptScheme.CheckHasConcept(null));            
             Assert.IsFalse(conceptSchemeNULL.CheckHasConcept(new RDFResource("ex:concept1")));
             Assert.IsFalse(conceptSchemeEMPTY.CheckHasConcept(new RDFResource("ex:concept1")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckHasCollection()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareCollection(new RDFResource("ex:collection"), new List<RDFResource>() { 
+                new RDFResource("ex:concept1"), new RDFResource("ex:concept2") });
+
+            Assert.IsTrue(conceptScheme.CheckHasCollection(new RDFResource("ex:collection")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckHasNotCollection()
+        {
+            SKOSConceptScheme conceptSchemeNULL = null;
+            SKOSConceptScheme conceptSchemeEMPTY = new SKOSConceptScheme("ex:conceptSchemeEmpty");
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareCollection(new RDFResource("ex:collection"), new List<RDFResource>() {
+                new RDFResource("ex:concept1"), new RDFResource("ex:concept2") });
+
+            Assert.IsFalse(conceptScheme.CheckHasCollection(new RDFResource("ex:collection2")));
+            Assert.IsFalse(conceptScheme.CheckHasCollection(null));
+            Assert.IsFalse(conceptSchemeNULL.CheckHasCollection(new RDFResource("ex:concept1")));
+            Assert.IsFalse(conceptSchemeEMPTY.CheckHasCollection(new RDFResource("ex:concept1")));
         }
         #endregion
     }

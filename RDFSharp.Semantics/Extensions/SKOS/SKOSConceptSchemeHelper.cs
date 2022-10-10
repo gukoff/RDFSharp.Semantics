@@ -41,11 +41,26 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             }
             return conceptFound;
         }
+
+        /// <summary>
+        /// Checks for the existence of the given skos:Collection declaration within the concept scheme
+        /// </summary>
+        public static bool CheckHasCollection(this SKOSConceptScheme conceptScheme, RDFResource skosCollection)
+        {
+            bool collectionFound = false;
+            if (skosCollection != null && conceptScheme != null)
+            {
+                IEnumerator<RDFResource> collectionsEnumerator = conceptScheme.CollectionsEnumerator;
+                while (!collectionFound && collectionsEnumerator.MoveNext())
+                    collectionFound = collectionsEnumerator.Current.Equals(skosCollection);
+            }
+            return collectionFound;
+        }
         #endregion
 
         #region Analyzer
         /// <summary>
-        /// Checks for the existence of "HasTopConcept(skosConcept)" relations within the concept scheme
+        /// Checks for the existence of "HasTopConcept(skosCollection)" relations within the concept scheme
         /// </summary>
         public static bool CheckHasTopConcept(this SKOSConceptScheme conceptScheme, RDFResource skosConcept)
             => skosConcept != null && conceptScheme != null && conceptScheme.Ontology.Data.ABoxGraph[conceptScheme, RDFVocabulary.SKOS.HAS_TOP_CONCEPT, skosConcept, null].TriplesCount > 0;
@@ -57,7 +72,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             => childConcept != null && motherConcept != null && conceptScheme != null && conceptScheme.GetBroaderConcepts(childConcept).Any(concept => concept.Equals(motherConcept));
 
         /// <summary>
-        /// Analyzes "Broader(skosConcept, X)" relations of the concept scheme to answer the broader concepts of the given skos:Concept
+        /// Analyzes "Broader(skosCollection, X)" relations of the concept scheme to answer the broader concepts of the given skos:Concept
         /// </summary>
         public static List<RDFResource> GetBroaderConcepts(this SKOSConceptScheme conceptScheme, RDFResource skosConcept)
         {
@@ -110,7 +125,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             => childConcept != null && motherConcept != null && conceptScheme != null && conceptScheme.GetNarrowerConcepts(motherConcept).Any(concept => concept.Equals(childConcept));
 
         /// <summary>
-        /// Analyzes "Narrower(skosConcept, X)" relations of the concept scheme to answer the narrower concepts of the given skos:Concept
+        /// Analyzes "Narrower(skosCollection, X)" relations of the concept scheme to answer the narrower concepts of the given skos:Concept
         /// </summary>
         public static List<RDFResource> GetNarrowerConcepts(this SKOSConceptScheme conceptScheme, RDFResource skosConcept)
         {
@@ -163,7 +178,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             => rightConcept != null && leftConcept != null && conceptScheme != null && conceptScheme.GetRelatedConcepts(leftConcept).Any(concept => concept.Equals(rightConcept));
 
         /// <summary>
-        /// Analyzes "Related(skosConcept, X)" relations of the concept scheme to answer the related concepts of the given skos:Concept
+        /// Analyzes "Related(skosCollection, X)" relations of the concept scheme to answer the related concepts of the given skos:Concept
         /// </summary>
         public static List<RDFResource> GetRelatedConcepts(this SKOSConceptScheme conceptScheme, RDFResource skosConcept)
         {
@@ -186,7 +201,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             => childConcept != null && motherConcept != null && conceptScheme != null && conceptScheme.GetBroadMatchConcepts(childConcept).Any(concept => concept.Equals(motherConcept));
 
         /// <summary>
-        /// Analyzes "BroadMatch(skosConcept, X)" relations of the concept scheme to answer the broad match concepts of the given skos:Concept
+        /// Analyzes "BroadMatch(skosCollection, X)" relations of the concept scheme to answer the broad match concepts of the given skos:Concept
         /// </summary>
         public static List<RDFResource> GetBroadMatchConcepts(this SKOSConceptScheme conceptScheme, RDFResource skosConcept)
         {
@@ -209,7 +224,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             => childConcept != null && motherConcept != null && conceptScheme != null && conceptScheme.GetNarrowMatchConcepts(motherConcept).Any(concept => concept.Equals(childConcept));
 
         /// <summary>
-        /// Analyzes "NarrowMatch(skosConcept, X)" relations of the concept scheme to answer the narrow match concepts of the given skos:Concept
+        /// Analyzes "NarrowMatch(skosCollection, X)" relations of the concept scheme to answer the narrow match concepts of the given skos:Concept
         /// </summary>
         public static List<RDFResource> GetNarrowMatchConcepts(this SKOSConceptScheme conceptScheme, RDFResource skosConcept)
         {
@@ -232,7 +247,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             => rightConcept != null && leftConcept != null && conceptScheme != null && conceptScheme.GetRelatedMatchConcepts(leftConcept).Any(concept => concept.Equals(rightConcept));
 
         /// <summary>
-        /// Analyzes "RelatedMatch(skosConcept, X)" relations of the concept scheme to answer the related match concepts of the given skos:Concept
+        /// Analyzes "RelatedMatch(skosCollection, X)" relations of the concept scheme to answer the related match concepts of the given skos:Concept
         /// </summary>
         public static List<RDFResource> GetRelatedMatchConcepts(this SKOSConceptScheme conceptScheme, RDFResource skosConcept)
         {
@@ -255,7 +270,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             => rightConcept != null && leftConcept != null && conceptScheme != null && conceptScheme.GetCloseMatchConcepts(leftConcept).Any(concept => concept.Equals(rightConcept));
 
         /// <summary>
-        /// Analyzes "CloseMatch(skosConcept, X)" relations of the concept scheme to answer the close match concepts of the given skos:Concept
+        /// Analyzes "CloseMatch(skosCollection, X)" relations of the concept scheme to answer the close match concepts of the given skos:Concept
         /// </summary>
         public static List<RDFResource> GetCloseMatchConcepts(this SKOSConceptScheme conceptScheme, RDFResource skosConcept)
         {
@@ -278,7 +293,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             => leftConcept != null && rightConcept != null && conceptScheme != null && conceptScheme.GetExactMatchConcepts(leftConcept).Any(concept => concept.Equals(rightConcept));
 
         /// <summary>
-        /// Analyzes "ExactMatch(skosConcept, X)" relations of the concept scheme to answer the exact match concepts of the given skos:Concept
+        /// Analyzes "ExactMatch(skosCollection, X)" relations of the concept scheme to answer the exact match concepts of the given skos:Concept
         /// </summary>
         public static List<RDFResource> GetExactMatchConcepts(this SKOSConceptScheme conceptScheme, RDFResource skosConcept)
         {
@@ -296,7 +311,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         }
 
         /// <summary>
-        /// Finds "ExactMatch(skosConcept, X)" relations to enlist the exact match concepts of the given skos:Concept
+        /// Finds "ExactMatch(skosCollection, X)" relations to enlist the exact match concepts of the given skos:Concept
         /// </summary>
         internal static List<RDFResource> FindExactMatchConcepts(this SKOSConceptScheme conceptScheme, RDFResource skosConcept, Dictionary<long, RDFResource> visitContext)
         {
@@ -323,7 +338,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         }
 
         /// <summary>
-        /// Analyzes "MappingRelation(skosConcept, X)" relations of the concept scheme to answer the mapping related concepts of the given skos:Concept
+        /// Analyzes "MappingRelation(skosCollection, X)" relations of the concept scheme to answer the mapping related concepts of the given skos:Concept
         /// </summary>
         public static List<RDFResource> GetMappingRelatedConcepts(this SKOSConceptScheme conceptScheme, RDFResource skosConcept)
         {
@@ -340,7 +355,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         }
 
         /// <summary>
-        /// Analyzes "SemanticRelation(skosConcept, X)" relations of the concept scheme to answer the semantic related concepts of the given skos:Concept
+        /// Analyzes "SemanticRelation(skosCollection, X)" relations of the concept scheme to answer the semantic related concepts of the given skos:Concept
         /// </summary>
         public static List<RDFResource> GetSemanticRelatedConcepts(this SKOSConceptScheme conceptScheme, RDFResource skosConcept)
         {
@@ -357,7 +372,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         }
 
         /// <summary>
-        /// Analyzes "Notation(skosConcept, X)" relations of the concept scheme to answer the notations of the given skos:Concept
+        /// Analyzes "Notation(skosCollection, X)" relations of the concept scheme to answer the notations of the given skos:Concept
         /// </summary>
         public static List<RDFLiteral> GetConceptNotations(this SKOSConceptScheme conceptScheme, RDFResource skosConcept)
         {
