@@ -499,6 +499,32 @@ namespace RDFSharp.Semantics.Test
 
             Assert.IsFalse(conceptScheme.CheckHasExactMatchConcept(new RDFResource("ex:concept1"), new RDFResource("ex:concept4")));
         }
+
+        [TestMethod]
+        public void ShouldGetMappingRelatedConcepts()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareMappingRelatedConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept2"));
+            conceptScheme.DeclareMappingRelatedConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept3"));
+            conceptScheme.DeclareMappingRelatedConcepts(new RDFResource("ex:concept3"), new RDFResource("ex:concept4"));
+
+            Assert.IsTrue(conceptScheme.GetMappingRelatedConcepts(new RDFResource("ex:concept1")).Any(c => c.Equals(new RDFResource("ex:concept2"))));
+            Assert.IsTrue(conceptScheme.GetMappingRelatedConcepts(new RDFResource("ex:concept1")).Any(c => c.Equals(new RDFResource("ex:concept3"))));
+            Assert.IsTrue(conceptScheme.GetMappingRelatedConcepts(new RDFResource("ex:concept3")).Any(c => c.Equals(new RDFResource("ex:concept4"))));
+        }
+
+        [TestMethod]
+        public void ShouldGetSemanticRelatedConcepts()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareSemanticRelatedConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept2"));
+            conceptScheme.DeclareSemanticRelatedConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept3"));
+            conceptScheme.DeclareSemanticRelatedConcepts(new RDFResource("ex:concept3"), new RDFResource("ex:concept4"));
+
+            Assert.IsTrue(conceptScheme.GetSemanticRelatedConcepts(new RDFResource("ex:concept1")).Any(c => c.Equals(new RDFResource("ex:concept2"))));
+            Assert.IsTrue(conceptScheme.GetSemanticRelatedConcepts(new RDFResource("ex:concept1")).Any(c => c.Equals(new RDFResource("ex:concept3"))));
+            Assert.IsTrue(conceptScheme.GetSemanticRelatedConcepts(new RDFResource("ex:concept3")).Any(c => c.Equals(new RDFResource("ex:concept4"))));
+        }
         #endregion
     }
 }
