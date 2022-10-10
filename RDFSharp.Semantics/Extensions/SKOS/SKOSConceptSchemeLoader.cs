@@ -73,12 +73,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             //skos:Collection
             foreach (RDFTriple typeCollection in graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.SKOS.COLLECTION, null])
                 foreach (RDFTriple memberRelation in graph[(RDFResource)typeCollection.Subject, RDFVocabulary.SKOS.MEMBER, null, null])
-                {
-                    //Also declare concepts of the collection
-                    ontology.Data.DeclareIndividual((RDFResource)memberRelation.Object);
-                    ontology.Data.DeclareIndividualType((RDFResource)memberRelation.Object, RDFVocabulary.SKOS.CONCEPT);
                     ontology.Data.DeclareObjectAssertion((RDFResource)typeCollection.Subject, RDFVocabulary.SKOS.MEMBER, (RDFResource)memberRelation.Object);
-                }
 
             //skos:OrderedCollection
             foreach (RDFTriple typeOrderedCollection in graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.SKOS.ORDERED_COLLECTION, null])
@@ -87,12 +82,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS
                     RDFCollection skosOrderedCollection = RDFModelUtilities.DeserializeCollectionFromGraph(graph, (RDFResource)memberListRelation.Object, RDFModelEnums.RDFTripleFlavors.SPO);
                     if (skosOrderedCollection.ItemsCount > 0)
                     {
-                        //Also declare concepts of the ordered collection
-                        foreach (RDFPatternMember skosConcept in skosOrderedCollection)
-                        {
-                            ontology.Data.DeclareIndividual((RDFResource)skosConcept);
-                            ontology.Data.DeclareIndividualType((RDFResource)skosConcept, RDFVocabulary.SKOS.CONCEPT);
-                        }
                         ontology.Data.ABoxGraph.AddCollection(skosOrderedCollection);
                         ontology.Data.DeclareObjectAssertion((RDFResource)typeOrderedCollection.Subject, RDFVocabulary.SKOS.MEMBER_LIST, skosOrderedCollection.ReificationSubject);
                     }

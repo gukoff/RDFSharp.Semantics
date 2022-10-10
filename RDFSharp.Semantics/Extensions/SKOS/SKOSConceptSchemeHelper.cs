@@ -58,11 +58,54 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         }
 
         /// <summary>
-        /// Checks for the existence of the given skos:Collection having the given skos:Concept within the concept scheme
+        /// Gets the direct and indirect skos:Concept instances which are members of the given skos:Collection within the concept scheme
         /// </summary>
-        public static bool CheckHasCollectionWithConcept(this SKOSConceptScheme conceptScheme, RDFResource skosCollection, RDFResource skosConcept)
-            => CheckHasCollection(conceptScheme, skosCollection)
-                && conceptScheme.Ontology.Data.ABoxGraph[skosCollection, RDFVocabulary.SKOS.MEMBER, skosConcept, null].TriplesCount > 0;
+        public static List<RDFResource> GetCollectionMembers(this SKOSConceptScheme conceptScheme, RDFResource skosCollection)
+        {
+            List<RDFResource> collectionMembers = new List<RDFResource>();
+
+            if (skosCollection != null && conceptScheme != null)
+            {
+                foreach (RDFResource collectionMember in conceptScheme.Ontology.Data.ABoxGraph[skosCollection, RDFVocabulary.SKOS.MEMBER, null, null]
+                                                           .Select(t => t.Object)
+                                                           .OfType<RDFResource>())
+                {
+                    //skos:Collection
+                    if (conceptScheme.Ontology.Data.ABoxGraph[collectionMember, RDFVocabulary.RDF.TYPE, RDFVocabulary.SKOS.COLLECTION, null].TriplesCount > 0)
+                        collectionMembers.AddRange(GetCollectionMembers(conceptScheme, collectionMember));
+
+                    //skos:OrderedCollection
+                    else if (conceptScheme.Ontology.Data.ABoxGraph[collectionMember, RDFVocabulary.RDF.TYPE, RDFVocabulary.SKOS.ORDERED_COLLECTION, null].TriplesCount > 0)
+                        collectionMembers.AddRange(GetOrderedCollectionMembers(conceptScheme, collectionMember));
+
+                    //skos:Concept
+                    else
+                        collectionMembers.Add(collectionMember);
+                }
+            }
+
+            return RDFQueryUtilities.RemoveDuplicates(collectionMembers);
+        }
+
+        /// <summary>
+        /// Gets the skos:Concept instances which are members of the given skos:OrderedCollection within the concept scheme
+        /// </summary>
+        public static List<RDFResource> GetOrderedCollectionMembers(this SKOSConceptScheme conceptScheme, RDFResource skosOrderedCollection)
+        {
+            List<RDFResource> orderedCollectionMembers = new List<RDFResource>();
+
+            if (skosOrderedCollection != null && conceptScheme != null)
+            {
+                foreach (RDFTriple memberListRelation in conceptScheme.Ontology.Data.ABoxGraph[skosOrderedCollection, RDFVocabulary.SKOS.MEMBER_LIST, null, null])
+                {
+                    RDFCollection skosOrderedCollectionMembers = RDFModelUtilities.DeserializeCollectionFromGraph(conceptScheme.Ontology.Data.ABoxGraph, (RDFResource)memberListRelation.Object, RDFModelEnums.RDFTripleFlavors.SPO);
+                    if (skosOrderedCollectionMembers.ItemsCount > 0)
+                        skosOrderedCollectionMembers.Items.ForEach(item => orderedCollectionMembers.Add((RDFResource)item));
+                }
+            }
+
+            return orderedCollectionMembers;
+        }
 
         /// <summary>
         /// Checks for the existence of the given skos:OrderedCollection declaration within the concept scheme

@@ -16,11 +16,10 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RDFSharp.Model;
-using RDFSharp.Semantics.Extensions.SKOS;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace RDFSharp.Semantics.Test
+namespace RDFSharp.Semantics.Extensions.SKOS.Test
 {
     [TestClass]
     public class SKOSConceptSchemeHelperTest
@@ -78,31 +77,71 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
-        public void ShouldCheckHasCollectionWithConcept()
+        public void ShouldGetCollectionMembers()
         {
             SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
             conceptScheme.DeclareCollection(new RDFResource("ex:collection"), new List<RDFResource>() {
                 new RDFResource("ex:concept1"), new RDFResource("ex:concept2") });
+            List<RDFResource> collectionMembers = conceptScheme.GetCollectionMembers(new RDFResource("ex:collection"));
 
-            Assert.IsTrue(conceptScheme.CheckHasCollectionWithConcept(new RDFResource("ex:collection"), new RDFResource("ex:concept1")));
-            Assert.IsTrue(conceptScheme.CheckHasCollectionWithConcept(new RDFResource("ex:collection"), new RDFResource("ex:concept2")));
-            Assert.IsTrue(conceptScheme.CheckHasCollectionWithConcept(new RDFResource("ex:collection"), null));
+            Assert.IsNotNull(collectionMembers);
+            Assert.IsTrue(collectionMembers.Count == 2);
+            Assert.IsTrue(collectionMembers[0].Equals(new RDFResource("ex:concept1")));
+            Assert.IsTrue(collectionMembers[1].Equals(new RDFResource("ex:concept2")));
         }
 
         [TestMethod]
-        public void ShouldCheckHasNotCollectionWithConcept()
+        public void ShouldGetCollectionMembersWithSubCollection()
         {
-            SKOSConceptScheme conceptSchemeNULL = null;
-            SKOSConceptScheme conceptSchemeEMPTY = new SKOSConceptScheme("ex:conceptSchemeEmpty");
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareCollection(new RDFResource("ex:collection1"), new List<RDFResource>() {
+                new RDFResource("ex:concept1"), new RDFResource("ex:collection2") });
+            conceptScheme.DeclareCollection(new RDFResource("ex:collection2"), new List<RDFResource>() {
+                new RDFResource("ex:concept2"), new RDFResource("ex:concept3") });
+            List<RDFResource> collectionMembers = conceptScheme.GetCollectionMembers(new RDFResource("ex:collection1"));
+
+            Assert.IsNotNull(collectionMembers);
+            Assert.IsTrue(collectionMembers.Count == 3);
+            Assert.IsTrue(collectionMembers[0].Equals(new RDFResource("ex:concept1")));
+            Assert.IsTrue(collectionMembers[1].Equals(new RDFResource("ex:concept2")));
+            Assert.IsTrue(collectionMembers[2].Equals(new RDFResource("ex:concept3")));
+        }
+
+        [TestMethod]
+        public void ShouldGetCollectionMembersWithSubOrderedCollection()
+        {
             SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
             conceptScheme.DeclareCollection(new RDFResource("ex:collection"), new List<RDFResource>() {
-                new RDFResource("ex:concept1"), new RDFResource("ex:concept2") });
+                new RDFResource("ex:concept1"), new RDFResource("ex:orderedCollection") });
+            conceptScheme.DeclareOrderedCollection(new RDFResource("ex:orderedCollection"), new List<RDFResource>() {
+                new RDFResource("ex:concept2"), new RDFResource("ex:concept3") });
+            List<RDFResource> collectionMembers = conceptScheme.GetCollectionMembers(new RDFResource("ex:collection"));
 
-            Assert.IsFalse(conceptScheme.CheckHasCollectionWithConcept(new RDFResource("ex:collection"), new RDFResource("ex:concept3")));
-            Assert.IsFalse(conceptScheme.CheckHasCollectionWithConcept(new RDFResource("ex:collection2"), new RDFResource("ex:concept1")));
-            Assert.IsFalse(conceptScheme.CheckHasCollectionWithConcept(null, new RDFResource("ex:concept1")));
-            Assert.IsFalse(conceptSchemeNULL.CheckHasCollectionWithConcept(new RDFResource("ex:collection"), new RDFResource("ex:concept1")));
-            Assert.IsFalse(conceptSchemeEMPTY.CheckHasCollectionWithConcept(new RDFResource("ex:collection"), new RDFResource("ex:concept1")));
+            Assert.IsNotNull(collectionMembers);
+            Assert.IsTrue(collectionMembers.Count == 3);
+            Assert.IsTrue(collectionMembers[0].Equals(new RDFResource("ex:concept1")));
+            Assert.IsTrue(collectionMembers[1].Equals(new RDFResource("ex:concept2")));
+            Assert.IsTrue(collectionMembers[2].Equals(new RDFResource("ex:concept3")));
+        }
+
+        [TestMethod]
+        public void ShouldGetCollectionMembersWithNestedSubCollections()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareCollection(new RDFResource("ex:collection1"), new List<RDFResource>() {
+                new RDFResource("ex:concept1"), new RDFResource("ex:collection2") });
+            conceptScheme.DeclareCollection(new RDFResource("ex:collection2"), new List<RDFResource>() {
+                new RDFResource("ex:concept2"), new RDFResource("ex:orderedCollection") });
+            conceptScheme.DeclareOrderedCollection(new RDFResource("ex:orderedCollection"), new List<RDFResource>() {
+                new RDFResource("ex:concept3"), new RDFResource("ex:concept4") });
+            List<RDFResource> collectionMembers = conceptScheme.GetCollectionMembers(new RDFResource("ex:collection1"));
+
+            Assert.IsNotNull(collectionMembers);
+            Assert.IsTrue(collectionMembers.Count == 4);
+            Assert.IsTrue(collectionMembers[0].Equals(new RDFResource("ex:concept1")));
+            Assert.IsTrue(collectionMembers[1].Equals(new RDFResource("ex:concept2")));
+            Assert.IsTrue(collectionMembers[2].Equals(new RDFResource("ex:concept3")));
+            Assert.IsTrue(collectionMembers[3].Equals(new RDFResource("ex:concept4")));
         }
 
         [TestMethod]
@@ -131,31 +170,17 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
-        public void ShouldCheckHasOrderedCollectionWithConcept()
+        public void ShouldGetOrderedCollectionMembers()
         {
             SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
             conceptScheme.DeclareOrderedCollection(new RDFResource("ex:orderedCollection"), new List<RDFResource>() {
                 new RDFResource("ex:concept1"), new RDFResource("ex:concept2") });
+            List<RDFResource> orderedCollectionMembers = conceptScheme.GetOrderedCollectionMembers(new RDFResource("ex:orderedCollection"));
 
-            Assert.IsTrue(conceptScheme.CheckHasOrderedCollectionWithConcept(new RDFResource("ex:orderedCollection"), new RDFResource("ex:concept1")));
-            Assert.IsTrue(conceptScheme.CheckHasOrderedCollectionWithConcept(new RDFResource("ex:orderedCollection"), new RDFResource("ex:concept2")));
-        }
-
-        [TestMethod]
-        public void ShouldCheckHasNotOrderedCollectionWithConcept()
-        {
-            SKOSConceptScheme conceptSchemeNULL = null;
-            SKOSConceptScheme conceptSchemeEMPTY = new SKOSConceptScheme("ex:conceptSchemeEmpty");
-            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
-            conceptScheme.DeclareOrderedCollection(new RDFResource("ex:orderedCollection"), new List<RDFResource>() {
-                new RDFResource("ex:concept1"), new RDFResource("ex:concept2") });
-
-            Assert.IsFalse(conceptScheme.CheckHasOrderedCollectionWithConcept(new RDFResource("ex:orderedCollection"), new RDFResource("ex:concept3")));
-            Assert.IsFalse(conceptScheme.CheckHasOrderedCollectionWithConcept(new RDFResource("ex:orderedCollection2"), new RDFResource("ex:concept1")));
-            Assert.IsFalse(conceptScheme.CheckHasOrderedCollectionWithConcept(null, new RDFResource("ex:concept1")));
-            Assert.IsFalse(conceptScheme.CheckHasOrderedCollectionWithConcept(new RDFResource("ex:orderedCollection"), null));
-            Assert.IsFalse(conceptSchemeNULL.CheckHasOrderedCollectionWithConcept(new RDFResource("ex:orderedCollection"), new RDFResource("ex:concept1")));
-            Assert.IsFalse(conceptSchemeEMPTY.CheckHasOrderedCollectionWithConcept(new RDFResource("ex:orderedCollection"), new RDFResource("ex:concept1")));
+            Assert.IsNotNull(orderedCollectionMembers);
+            Assert.IsTrue(orderedCollectionMembers.Count == 2);
+            Assert.IsTrue(orderedCollectionMembers[0].Equals(new RDFResource("ex:concept1")));
+            Assert.IsTrue(orderedCollectionMembers[1].Equals(new RDFResource("ex:concept2")));
         }
 
         //ANALYZER

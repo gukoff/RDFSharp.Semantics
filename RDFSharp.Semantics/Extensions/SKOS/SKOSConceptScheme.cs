@@ -176,7 +176,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         }
 
         /// <summary>
-        /// Declares the given skos:Collection instance to the concept scheme
+        /// Declares the given skos:Collection instance to the concept scheme (but not its concepts or subcollections, which must be declared apart)
         /// </summary>
         public SKOSConceptScheme DeclareCollection(RDFResource skosCollection, List<RDFResource> skosConcepts)
         {
@@ -187,24 +187,18 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (skosConcepts.Count == 0)
                 throw new OWLSemanticsException("Cannot declare skos:Collection instance to the concept scheme because given \"skosConcepts\" parameter is an empty list");
 
-            //Add knowledge to the A-BOX (collection)
+            //Add knowledge to the A-BOX
             Ontology.Data.DeclareIndividual(skosCollection);
             Ontology.Data.DeclareIndividualType(skosCollection, RDFVocabulary.SKOS.COLLECTION);
             Ontology.Data.DeclareObjectAssertion(skosCollection, RDFVocabulary.SKOS.IN_SCHEME, this);
-
-            //Add knowledge to the A-BOX (concepts)
             foreach (RDFResource skosConcept in skosConcepts)
-            {
-                Ontology.Data.DeclareIndividual(skosConcept);
-                Ontology.Data.DeclareIndividualType(skosConcept, RDFVocabulary.SKOS.CONCEPT);
                 Ontology.Data.DeclareObjectAssertion(skosCollection, RDFVocabulary.SKOS.MEMBER, skosConcept);
-            }
 
             return this;
         }
 
         /// <summary>
-        /// Declares the given skos:OrderedCollection instance to the concept scheme
+        /// Declares the given skos:OrderedCollection instance to the concept scheme (but not its concepts, which must be declared apart)
         /// </summary>
         public SKOSConceptScheme DeclareOrderedCollection(RDFResource skosOrderedCollection, List<RDFResource> skosConcepts)
         {
@@ -215,19 +209,13 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (skosConcepts.Count == 0)
                 throw new OWLSemanticsException("Cannot declare skos:OrderedCollection instance to the concept scheme because given \"skosConcepts\" parameter is an empty list");
 
-            //Add knowledge to the A-BOX (ordered collection)
+            //Add knowledge to the A-BOX
             Ontology.Data.DeclareIndividual(skosOrderedCollection);
             Ontology.Data.DeclareIndividualType(skosOrderedCollection, RDFVocabulary.SKOS.ORDERED_COLLECTION);
             Ontology.Data.DeclareObjectAssertion(skosOrderedCollection, RDFVocabulary.SKOS.IN_SCHEME, this);
-
-            //Add knowledge to the A-BOX (concepts)
             RDFCollection rdfCollection = new RDFCollection(RDFModelEnums.RDFItemTypes.Resource);
             foreach (RDFResource skosConcept in skosConcepts)
-            {
-                Ontology.Data.DeclareIndividual(skosConcept);
-                Ontology.Data.DeclareIndividualType(skosConcept, RDFVocabulary.SKOS.CONCEPT);
                 rdfCollection.AddItem(skosConcept);
-            }
             Ontology.Data.ABoxGraph.AddCollection(rdfCollection);
             Ontology.Data.DeclareObjectAssertion(skosOrderedCollection, RDFVocabulary.SKOS.MEMBER_LIST, rdfCollection.ReificationSubject);
 
