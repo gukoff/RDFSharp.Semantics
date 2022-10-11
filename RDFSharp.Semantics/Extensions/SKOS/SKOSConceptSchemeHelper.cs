@@ -62,6 +62,10 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         /// </summary>
         public static List<RDFResource> GetCollectionMembers(this SKOSConceptScheme conceptScheme, RDFResource skosCollection)
             => GetCollectionMembers(conceptScheme, skosCollection, new Dictionary<long, RDFResource>());
+
+        /// <summary>
+        /// Gets the direct and indirect skos:Concept instances which are members of the given skos:Collection within the concept scheme (internal recursive version)
+        /// </summary>
         internal static List<RDFResource> GetCollectionMembers(this SKOSConceptScheme conceptScheme, RDFResource skosCollection, Dictionary<long, RDFResource> visitContext)
         {
             List<RDFResource> collectionMembers = new List<RDFResource>();
@@ -97,6 +101,21 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         }
 
         /// <summary>
+        /// Checks for the existence of the given skos:OrderedCollection declaration within the concept scheme
+        /// </summary>
+        public static bool CheckHasOrderedCollection(this SKOSConceptScheme conceptScheme, RDFResource skosOrderedCollection)
+        {
+            bool orderedCollectionFound = false;
+            if (skosOrderedCollection != null && conceptScheme != null)
+            {
+                IEnumerator<RDFResource> orderedCollectionsEnumerator = conceptScheme.OrderedCollectionsEnumerator;
+                while (!orderedCollectionFound && orderedCollectionsEnumerator.MoveNext())
+                    orderedCollectionFound = orderedCollectionsEnumerator.Current.Equals(skosOrderedCollection);
+            }
+            return orderedCollectionFound;
+        }
+
+        /// <summary>
         /// Gets the skos:Concept instances which are members of the given skos:OrderedCollection within the concept scheme
         /// </summary>
         public static List<RDFResource> GetOrderedCollectionMembers(this SKOSConceptScheme conceptScheme, RDFResource skosOrderedCollection)
@@ -114,36 +133,6 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             }
 
             return orderedCollectionMembers;
-        }
-
-        /// <summary>
-        /// Checks for the existence of the given skos:OrderedCollection declaration within the concept scheme
-        /// </summary>
-        public static bool CheckHasOrderedCollection(this SKOSConceptScheme conceptScheme, RDFResource skosOrderedCollection)
-        {
-            bool orderedCollectionFound = false;
-            if (skosOrderedCollection != null && conceptScheme != null)
-            {
-                IEnumerator<RDFResource> orderedCollectionsEnumerator = conceptScheme.OrderedCollectionsEnumerator;
-                while (!orderedCollectionFound && orderedCollectionsEnumerator.MoveNext())
-                    orderedCollectionFound = orderedCollectionsEnumerator.Current.Equals(skosOrderedCollection);
-            }
-            return orderedCollectionFound;
-        }
-
-        /// <summary>
-        /// Checks for the existence of the given skos:OrderedCollection having the given skos:Concept within the concept scheme
-        /// </summary>
-        public static bool CheckHasOrderedCollectionWithConcept(this SKOSConceptScheme conceptScheme, RDFResource skosOrderedCollection, RDFResource skosConcept)
-        {
-            if (CheckHasOrderedCollection(conceptScheme, skosOrderedCollection))
-            {
-                RDFResource orderedCollectionRepresentative = conceptScheme.Ontology.Data.ABoxGraph[skosOrderedCollection, RDFVocabulary.SKOS.MEMBER_LIST, null, null]
-                                                                .FirstOrDefault().Object as RDFResource;
-                RDFCollection skosOrderedCollectionItems = RDFModelUtilities.DeserializeCollectionFromGraph(conceptScheme.Ontology.Data.ABoxGraph, orderedCollectionRepresentative, RDFModelEnums.RDFTripleFlavors.SPO);
-                return skosOrderedCollectionItems.Items.Any(item => item.Equals(skosConcept));
-            }
-            return false;
         }
         #endregion
 
