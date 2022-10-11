@@ -61,18 +61,27 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         /// Gets the direct and indirect skos:Concept instances which are members of the given skos:Collection within the concept scheme
         /// </summary>
         public static List<RDFResource> GetCollectionMembers(this SKOSConceptScheme conceptScheme, RDFResource skosCollection)
+            => GetCollectionMembers(conceptScheme, skosCollection, new Dictionary<long, RDFResource>());
+        internal static List<RDFResource> GetCollectionMembers(this SKOSConceptScheme conceptScheme, RDFResource skosCollection, Dictionary<long, RDFResource> visitContext)
         {
             List<RDFResource> collectionMembers = new List<RDFResource>();
 
             if (skosCollection != null && conceptScheme != null)
             {
+                #region visitContext
+                if (!visitContext.ContainsKey(skosCollection.PatternMemberID))
+                    visitContext.Add(skosCollection.PatternMemberID, skosCollection);
+                else
+                    return collectionMembers;
+                #endregion
+
                 foreach (RDFResource collectionMember in conceptScheme.Ontology.Data.ABoxGraph[skosCollection, RDFVocabulary.SKOS.MEMBER, null, null]
                                                            .Select(t => t.Object)
                                                            .OfType<RDFResource>())
                 {
                     //skos:Collection
                     if (conceptScheme.Ontology.Data.ABoxGraph[collectionMember, RDFVocabulary.RDF.TYPE, RDFVocabulary.SKOS.COLLECTION, null].TriplesCount > 0)
-                        collectionMembers.AddRange(GetCollectionMembers(conceptScheme, collectionMember));
+                        collectionMembers.AddRange(GetCollectionMembers(conceptScheme, collectionMember, visitContext));
 
                     //skos:OrderedCollection
                     else if (conceptScheme.Ontology.Data.ABoxGraph[collectionMember, RDFVocabulary.RDF.TYPE, RDFVocabulary.SKOS.ORDERED_COLLECTION, null].TriplesCount > 0)

@@ -183,6 +183,42 @@ namespace RDFSharp.Semantics.Extensions.SKOS.Test
             Assert.IsTrue(orderedCollectionMembers[1].Equals(new RDFResource("ex:concept2")));
         }
 
+        [TestMethod]
+        public void ShouldNotInfiniteLoopInGettingRecursiveCollectionMembers()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareCollection(new RDFResource("ex:collection1"), new List<RDFResource>() {
+                new RDFResource("ex:concept1"), new RDFResource("ex:collection2") });
+            conceptScheme.DeclareCollection(new RDFResource("ex:collection2"), new List<RDFResource>() {
+                new RDFResource("ex:concept2"), new RDFResource("ex:collection1") });
+            List<RDFResource> collectionMembers = conceptScheme.GetCollectionMembers(new RDFResource("ex:collection1"));
+
+            Assert.IsNotNull(collectionMembers);
+            Assert.IsTrue(collectionMembers.Count == 2);
+            Assert.IsTrue(collectionMembers[0].Equals(new RDFResource("ex:concept1")));
+            Assert.IsTrue(collectionMembers[1].Equals(new RDFResource("ex:concept2")));
+
+            List<RDFResource> collectionMembers2 = conceptScheme.GetCollectionMembers(new RDFResource("ex:collection2"));
+
+            Assert.IsNotNull(collectionMembers2);
+            Assert.IsTrue(collectionMembers2.Count == 2);
+            Assert.IsTrue(collectionMembers2[0].Equals(new RDFResource("ex:concept2")));
+            Assert.IsTrue(collectionMembers2[1].Equals(new RDFResource("ex:concept1")));
+        }
+
+        [TestMethod]
+        public void ShouldNotInfiniteLoopInGettingSelfRecursiveCollectionMembers()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareCollection(new RDFResource("ex:collection1"), new List<RDFResource>() {
+                new RDFResource("ex:concept1"), new RDFResource("ex:collection1") });
+            List<RDFResource> collectionMembers = conceptScheme.GetCollectionMembers(new RDFResource("ex:collection1"));
+
+            Assert.IsNotNull(collectionMembers);
+            Assert.IsTrue(collectionMembers.Count == 1);
+            Assert.IsTrue(collectionMembers[0].Equals(new RDFResource("ex:concept1")));
+        }
+
         //ANALYZER
 
         [TestMethod]
