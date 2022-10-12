@@ -2058,6 +2058,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS.Test
             Assert.IsTrue(conceptScheme.ConceptsCount == 2);
             Assert.IsTrue(conceptScheme.CollectionsCount == 2);
             Assert.IsTrue(conceptScheme.OrderedCollectionsCount == 1);
+            Assert.IsTrue(conceptScheme.LabelsCount == 0);
             Assert.IsTrue(conceptScheme.CheckHasExactMatchConcept(new RDFResource("ex:concept1"), new RDFResource("ex:concept2")));
             Assert.IsTrue(conceptScheme.CheckHasExactMatchConcept(new RDFResource("ex:concept2"), new RDFResource("ex:concept1")));
             Assert.IsTrue(conceptScheme.Ontology.Data.CheckHasObjectAssertion(new RDFResource("ex:concept1"), RDFVocabulary.SKOS.IN_SCHEME, new RDFResource("ex:conceptScheme")));

@@ -15,7 +15,6 @@
 */
 
 using RDFSharp.Model;
-using RDFSharp.Query;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -57,13 +56,13 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         /// Extends OWL class model loading with support for SKOS artifacts
         /// </summary>
         internal static void SKOSClassModelExtensionPoint(OWLOntology ontology, RDFGraph graph)
-            => ontology.Model.ClassModel = BuildSKOSClassModel();
+            => ontology.Model.ClassModel = BuildSKOSClassModel(ontology.Model.ClassModel);
 
         /// <summary>
         /// Extends OWL property model loading with support for SKOS artifacts
         /// </summary>
         internal static void SKOSPropertyModelExtensionPoint(OWLOntology ontology, RDFGraph graph)
-            => ontology.Model.PropertyModel = BuildSKOSPropertyModel();
+            => ontology.Model.PropertyModel = BuildSKOSPropertyModel(ontology.Model.PropertyModel);
 
         /// <summary>
         /// Extends OWL data loading with support for SKOS artifacts
@@ -97,9 +96,9 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         /// <summary>
         /// Builds a reference SKOS class model
         /// </summary>
-        internal static OWLOntologyClassModel BuildSKOSClassModel()
+        internal static OWLOntologyClassModel BuildSKOSClassModel(OWLOntologyClassModel existingClassModel=null)
         {
-            OWLOntologyClassModel classModel = new OWLOntologyClassModel();
+            OWLOntologyClassModel classModel = existingClassModel ?? new OWLOntologyClassModel();
 
             //SKOS
             classModel.DeclareClass(RDFVocabulary.SKOS.COLLECTION);
@@ -121,9 +120,9 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         /// <summary>
         /// Builds a reference SKOS property model
         /// </summary>
-        internal static OWLOntologyPropertyModel BuildSKOSPropertyModel()
+        internal static OWLOntologyPropertyModel BuildSKOSPropertyModel(OWLOntologyPropertyModel existingPropertyModel=null)
         {
-            OWLOntologyPropertyModel propertyModel = new OWLOntologyPropertyModel();
+            OWLOntologyPropertyModel propertyModel = existingPropertyModel ?? new OWLOntologyPropertyModel();
 
             //SKOS
             propertyModel.DeclareAnnotationProperty(RDFVocabulary.SKOS.ALT_LABEL);
