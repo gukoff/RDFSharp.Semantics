@@ -115,7 +115,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         //RELATIONS
 
         /// <summary>
-        /// Declares the existence of the given "PrefLabel(skosxlLabel,skosxlLabel) ^ LiteralForm(skosxlLabel,preferredLabelValue)" relations to the concept scheme [SKOS-XL]
+        /// Declares the existence of the given "PrefLabel(skosConcept,skosxlLabel) ^ LiteralForm(skosxlLabel,preferredLabelValue)" relations to the concept scheme [SKOS-XL]
         /// </summary>
         public static SKOSConceptScheme DeclarePreferredLabel(this SKOSConceptScheme conceptScheme, RDFResource skosConcept, RDFResource skosxlLabel, RDFPlainLiteral preferredLabelValue)
         {
@@ -147,7 +147,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         }
 
         /// <summary>
-        /// Declares the existence of the given "AltLabel(skosxlLabel,skosxlLabel) ^ LiteralForm(skosxlLabel,alternativeLabelValue)" relations to the concept scheme [SKOS-XL]
+        /// Declares the existence of the given "AltLabel(skosConcept,skosxlLabel) ^ LiteralForm(skosxlLabel,alternativeLabelValue)" relations to the concept scheme [SKOS-XL]
         /// </summary>
         public static SKOSConceptScheme DeclareAlternativeLabel(this SKOSConceptScheme conceptScheme, RDFResource skosConcept, RDFResource skosxlLabel, RDFPlainLiteral alternativeLabelValue)
         {
@@ -179,7 +179,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         }
 
         /// <summary>
-        /// Declares the existence of the given "HiddenLabel(skosxlLabel,skosxlLabel) ^ LiteralForm(skosxlLabel,hiddenLabelValue)" relations to the concept scheme [SKOS-XL]
+        /// Declares the existence of the given "HiddenLabel(skosConcept,skosxlLabel) ^ LiteralForm(skosxlLabel,hiddenLabelValue)" relations to the concept scheme [SKOS-XL]
         /// </summary>
         public static SKOSConceptScheme DeclareHiddenLabel(this SKOSConceptScheme conceptScheme, RDFResource skosConcept, RDFResource skosxlLabel, RDFPlainLiteral hiddenLabelValue)
         {
@@ -254,7 +254,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
 
         #region Ckecker
         /// <summary>
-        /// Checks if the given skosxlLabel can be assigned the given [skos|skosxl]:prefLabel attribution without tampering SKOS integrity
+        /// Checks if the given skos:Concept can be assigned the given [skos|skosxl]:prefLabel attribution without tampering SKOS integrity
         /// </summary>
         internal static bool CheckPreferredLabelCompatibility(this SKOSConceptScheme conceptScheme, RDFResource skosConcept, RDFPlainLiteral preferredLabelValue)
         {
@@ -303,7 +303,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         }
 
         /// <summary>
-        /// Checks if the given skosxlLabel can be assigned the given [skos|skosxl]:altLabel attribution without tampering SKOS integrity
+        /// Checks if the given skos:Concept can be assigned the given [skos|skosxl]:altLabel attribution without tampering SKOS integrity
         /// </summary>
         internal static bool CheckAlternativeLabelCompatibility(this SKOSConceptScheme conceptScheme, RDFResource skosConcept, RDFPlainLiteral alternativeLabelValue)
         {
@@ -346,7 +346,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         }
 
         /// <summary>
-        /// Checks if the given skosxlLabel can be assigned the given [skos|skosxl]:hiddenLabel attribution without tampering SKOS integrity
+        /// Checks if the given skos:Concept can be assigned the given [skos|skosxl]:hiddenLabel attribution without tampering SKOS integrity
         /// </summary>
         internal static bool CheckHiddenLabelCompatibility(this SKOSConceptScheme conceptScheme, RDFResource skosConcept, RDFPlainLiteral hiddenLabelValue)
         {
