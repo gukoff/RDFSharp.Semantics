@@ -458,7 +458,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
                                                        .OfType<RDFResource>());
             }
 
-            return semanticRelatedConcepts;
+            return RDFQueryUtilities.RemoveDuplicates(semanticRelatedConcepts);
         }
 
         /// <summary>

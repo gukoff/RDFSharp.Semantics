@@ -35,34 +35,41 @@ namespace RDFSharp.Semantics.Extensions.SKOS.Test
             ConceptScheme = new SKOSConceptScheme("ex:conceptScheme")
                 .Annotate(RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("This is a test concept scheme"))
                 .DeclareConcept(new RDFResource("ex:concept1"))
+                .DeclareConcept(new RDFResource("ex:concept2"))
+                .DeclareConcept(new RDFResource("ex:concept3"))
+                .DeclareConcept(new RDFResource("ex:concept4"))
+                .DeclareConcept(new RDFResource("ex:concept5"))
+                .DeclareConcept(new RDFResource("ex:concept6"))
+                .DeclareConcept(new RDFResource("ex:concept7"))
+                .DeclareConcept(new RDFResource("ex:concept8"))
+                .DeclareConcept(new RDFResource("ex:concept9"))
+                .DeclareConcept(new RDFResource("ex:concept10"))
+                .DeclareConcept(new RDFResource("ex:concept11"))
+                .DeclareConcept(new RDFResource("ex:concept12"))
+                .DeclareConcept(new RDFResource("ex:concept13"))
+                .DeclareConcept(new RDFResource("ex:concept14"))
                 .AnnotateConcept(new RDFResource("ex:concept1"), RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("This is a test concept"))
                 .DeclarePreferredLabel(new RDFResource("ex:concept1"), new RDFResource("ex:label1"), new RDFPlainLiteral("concept1", "en-US"))
-                .DeclareConcept(new RDFResource("ex:concept2"))
+                .DeclareAlternativeLabel(new RDFResource("ex:concept1"), new RDFResource("ex:label2"), new RDFPlainLiteral("konzept1", "de-DE"))
+                .DeclareHiddenLabel(new RDFResource("ex:concept1"), new RDFResource("ex:label3"), new RDFPlainLiteral("concetto1", "it-IT"))
+                .DeclareNotation(new RDFResource("ex:concept1"), new RDFTypedLiteral("this is concept 1", RDFModelEnums.RDFDatatypes.RDFS_LITERAL))
                 .DeclareConceptDefinition(new RDFResource("ex:concept2"), new RDFTypedLiteral("this is concept 2", RDFModelEnums.RDFDatatypes.RDFS_LITERAL))
                 .DeclareNarrowMatchConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept2"))
                 .DeclareCollection(new RDFResource("ex:collection1"), new List<RDFResource>() { new RDFResource("ex:concept1"), new RDFResource("ex:collection2") })
                 .AnnotateCollection(new RDFResource("ex:collection1"), RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("This is a test collection"))
-                .DeclareCollection(new RDFResource("ex:collection2"), new List<RDFResource>() { new RDFResource("ex:concept2"), new RDFResource("ex:collection1") })
-                .DeclareConcept(new RDFResource("ex:concept3"))
+                .DeclareCollection(new RDFResource("ex:collection2"), new List<RDFResource>() { new RDFResource("ex:concept2"), new RDFResource("ex:collection1") })    
                 .DeclareBroaderConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept3"))
-                .DeclareConcept(new RDFResource("ex:concept4"))
-                .DeclareConcept(new RDFResource("ex:concept5"))
                 .DeclareBroaderTransitiveConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept4"))
                 .DeclareBroaderTransitiveConcepts(new RDFResource("ex:concept4"), new RDFResource("ex:concept5"))
-                .DeclareConcept(new RDFResource("ex:concept6"))
                 .DeclareNarrowerConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept6"))
-                .DeclareConcept(new RDFResource("ex:concept7"))
-                .DeclareConcept(new RDFResource("ex:concept8"))
                 .DeclareNarrowerTransitiveConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept7"))
                 .DeclareNarrowerTransitiveConcepts(new RDFResource("ex:concept7"), new RDFResource("ex:concept8"))
-                .DeclareConcept(new RDFResource("ex:concept9"))
                 .DeclareBroadMatchConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept9"))
-                .DeclareConcept(new RDFResource("ex:concept10"))
                 .DeclareCloseMatchConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept10"))
-                .DeclareConcept(new RDFResource("ex:concept11"))
-                .DeclareConcept(new RDFResource("ex:concept12"))
                 .DeclareExactMatchConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept11"))
                 .DeclareExactMatchConcepts(new RDFResource("ex:concept11"), new RDFResource("ex:concept12"))
+                .DeclareRelatedConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept13"))
+                .DeclareRelatedMatchConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept14"))
                 .DeclareTopConcept(new RDFResource("ex:concept1"));
 
             ConceptSchemeLens = new SKOSConceptSchemeLens(new RDFResource("ex:concept1"), ConceptScheme);
@@ -125,6 +132,61 @@ namespace RDFSharp.Semantics.Extensions.SKOS.Test
         [TestMethod]
         public async Task ShouldGetExactMatchConceptsAsync()
             => Assert.IsTrue((await ConceptSchemeLens.ExactMatchConceptsAsync()).Count == 2);
+
+        [TestMethod]
+        public void ShouldGetRelatedConcepts()
+          => Assert.IsTrue(ConceptSchemeLens.RelatedConcepts().Count == 1);
+
+        [TestMethod]
+        public async Task ShouldGetRelatedConceptsAsync()
+            => Assert.IsTrue((await ConceptSchemeLens.RelatedConceptsAsync()).Count == 1);
+
+        [TestMethod]
+        public void ShouldGetRelatedMatchConcepts()
+          => Assert.IsTrue(ConceptSchemeLens.RelatedMatchConcepts().Count == 1);
+
+        [TestMethod]
+        public async Task ShouldGetRelatedMatchConceptsAsync()
+            => Assert.IsTrue((await ConceptSchemeLens.RelatedMatchConceptsAsync()).Count == 1);
+
+        [TestMethod]
+        public void ShouldGetMappingRelatedConcepts()
+          => Assert.IsTrue(ConceptSchemeLens.MappingRelatedConcepts().Count == 5);
+
+        [TestMethod]
+        public async Task ShouldGetMappingRelatedConceptsAsync()
+            => Assert.IsTrue((await ConceptSchemeLens.MappingRelatedConceptsAsync()).Count == 5);
+
+        [TestMethod]
+        public void ShouldGetSemanticRelatedConcepts()
+          => Assert.IsTrue(ConceptSchemeLens.SemanticRelatedConcepts().Count == 10);
+
+        [TestMethod]
+        public async Task ShouldGetSemanticRelatedConceptsAsync()
+            => Assert.IsTrue((await ConceptSchemeLens.SemanticRelatedConceptsAsync()).Count == 10);
+
+        [TestMethod]
+        public void ShouldGetNotations()
+          => Assert.IsTrue(ConceptSchemeLens.Notations().Count == 1);
+
+        [TestMethod]
+        public async Task ShouldGetNotationsAsync()
+            => Assert.IsTrue((await ConceptSchemeLens.NotationsAsync()).Count == 1);
+
+        [TestMethod]
+        public void ShouldGetLabelRelations()
+          => Assert.IsTrue(ConceptSchemeLens.LabelRelations().Count == 3
+                            && ConceptSchemeLens.LabelRelations().Any(lr => lr.Item1.Equals(RDFVocabulary.SKOS.SKOSXL.PREF_LABEL) && lr.Item2.Equals(new RDFResource("ex:label1")))
+                             && ConceptSchemeLens.LabelRelations().Any(lr => lr.Item1.Equals(RDFVocabulary.SKOS.SKOSXL.ALT_LABEL) && lr.Item2.Equals(new RDFResource("ex:label2")))
+                              && ConceptSchemeLens.LabelRelations().Any(lr => lr.Item1.Equals(RDFVocabulary.SKOS.SKOSXL.HIDDEN_LABEL) && lr.Item2.Equals(new RDFResource("ex:label3"))));
+
+        [TestMethod]
+        public async Task ShouldGetLabelRelationsAsync()
+            => Assert.IsTrue((await ConceptSchemeLens.LabelRelationsAsync()).Count == 3
+                              && (await ConceptSchemeLens.LabelRelationsAsync()).Any(lr => lr.Item1.Equals(RDFVocabulary.SKOS.SKOSXL.PREF_LABEL) && lr.Item2.Equals(new RDFResource("ex:label1")))
+                               && (await ConceptSchemeLens.LabelRelationsAsync()).Any(lr => lr.Item1.Equals(RDFVocabulary.SKOS.SKOSXL.ALT_LABEL) && lr.Item2.Equals(new RDFResource("ex:label2")))
+                                && (await ConceptSchemeLens.LabelRelationsAsync()).Any(lr => lr.Item1.Equals(RDFVocabulary.SKOS.SKOSXL.HIDDEN_LABEL) && lr.Item2.Equals(new RDFResource("ex:label3"))));
+
         #endregion
     }
 }
