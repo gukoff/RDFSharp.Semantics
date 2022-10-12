@@ -34,8 +34,8 @@ namespace RDFSharp.Semantics
                 throw new OWLSemanticsException("Cannot get ontology model from RDFGraph because given \"graph\" parameter is null");
 
             OWLSemanticsEvents.RaiseSemanticsInfo(string.Format("Graph '{0}' is going to be parsed as Model...", graph.Context));
-            ontology.LoadPropertyModel(graph, classModelExtensionPoint);
-            ontology.LoadClassModel(graph, propertyModelExtensionPoint);
+            ontology.LoadPropertyModel(graph, propertyModelExtensionPoint);
+            ontology.LoadClassModel(graph, classModelExtensionPoint);
             OWLSemanticsEvents.RaiseSemanticsInfo(string.Format("Graph '{0}' has been parsed as Model", graph.Context));
         }
         #endregion
