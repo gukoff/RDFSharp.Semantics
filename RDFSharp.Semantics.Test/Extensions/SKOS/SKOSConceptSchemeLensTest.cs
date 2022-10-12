@@ -52,11 +52,17 @@ namespace RDFSharp.Semantics.Extensions.SKOS.Test
                 .DeclarePreferredLabel(new RDFResource("ex:concept1"), new RDFResource("ex:label1"), new RDFPlainLiteral("concept1", "en-US"))
                 .DeclareAlternativeLabel(new RDFResource("ex:concept1"), new RDFResource("ex:label2"), new RDFPlainLiteral("konzept1", "de-DE"))
                 .DeclareHiddenLabel(new RDFResource("ex:concept1"), new RDFResource("ex:label3"), new RDFPlainLiteral("concetto1", "it-IT"))
-                .DeclarePreferredLabel(new RDFResource("ex:concept1"), new RDFPlainLiteral("concept1", "en-US"))
-                .DeclareAlternativeLabel(new RDFResource("ex:concept1"), new RDFPlainLiteral("konzept1", "de-DE"))
-                .DeclareHiddenLabel(new RDFResource("ex:concept1"), new RDFPlainLiteral("concetto1", "it-IT"))
+                .DeclarePreferredLabel(new RDFResource("ex:concept1"), new RDFPlainLiteral("concept1"))
+                .DeclareAlternativeLabel(new RDFResource("ex:concept1"), new RDFPlainLiteral("konzept1"))
+                .DeclareHiddenLabel(new RDFResource("ex:concept1"), new RDFPlainLiteral("concetto1"))
                 .DeclareNotation(new RDFResource("ex:concept1"), new RDFTypedLiteral("this is concept 1", RDFModelEnums.RDFDatatypes.RDFS_LITERAL))
-                .DeclareConceptDefinition(new RDFResource("ex:concept2"), new RDFTypedLiteral("this is concept 2", RDFModelEnums.RDFDatatypes.RDFS_LITERAL))
+                .DeclareConceptNote(new RDFResource("ex:concept1"), new RDFPlainLiteral("note"))
+                .DeclareConceptChangeNote(new RDFResource("ex:concept1"), new RDFPlainLiteral("note"))
+                .DeclareConceptEditorialNote(new RDFResource("ex:concept1"), new RDFPlainLiteral("note"))                
+                .DeclareConceptHistoryNote(new RDFResource("ex:concept1"), new RDFPlainLiteral("note"))
+                .DeclareConceptScopeNote(new RDFResource("ex:concept1"), new RDFPlainLiteral("note"))
+                .DeclareConceptDefinition(new RDFResource("ex:concept1"), new RDFTypedLiteral("this is concept 2", RDFModelEnums.RDFDatatypes.RDFS_LITERAL))
+                .DeclareConceptExample(new RDFResource("ex:concept1"), new RDFTypedLiteral("this is concept 2", RDFModelEnums.RDFDatatypes.RDFS_LITERAL))
                 .DeclareNarrowMatchConcepts(new RDFResource("ex:concept1"), new RDFResource("ex:concept2"))
                 .DeclareCollection(new RDFResource("ex:collection1"), new List<RDFResource>() { new RDFResource("ex:concept1"), new RDFResource("ex:collection2") })
                 .AnnotateCollection(new RDFResource("ex:collection1"), RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("This is a test collection"))
@@ -190,6 +196,27 @@ namespace RDFSharp.Semantics.Extensions.SKOS.Test
                                && (await ConceptSchemeLens.LabelRelationsAsync()).Any(lr => lr.Item1.Equals(RDFVocabulary.SKOS.SKOSXL.ALT_LABEL) && lr.Item2.Equals(new RDFResource("ex:label2")))
                                 && (await ConceptSchemeLens.LabelRelationsAsync()).Any(lr => lr.Item1.Equals(RDFVocabulary.SKOS.SKOSXL.HIDDEN_LABEL) && lr.Item2.Equals(new RDFResource("ex:label3"))));
 
+        [TestMethod]
+        public void ShouldGetLabelAnnotations()
+          => Assert.IsTrue(ConceptSchemeLens.LabelAnnotations().Count == 3
+                            && ConceptSchemeLens.LabelAnnotations().Any(la => la.Item1.Equals(RDFVocabulary.SKOS.PREF_LABEL) && la.Item2.Equals(new RDFPlainLiteral("concept1")))
+                             && ConceptSchemeLens.LabelAnnotations().Any(la => la.Item1.Equals(RDFVocabulary.SKOS.ALT_LABEL) && la.Item2.Equals(new RDFPlainLiteral("konzept1")))
+                              && ConceptSchemeLens.LabelAnnotations().Any(la => la.Item1.Equals(RDFVocabulary.SKOS.HIDDEN_LABEL) && la.Item2.Equals(new RDFPlainLiteral("concetto1"))));
+
+        [TestMethod]
+        public async Task ShouldGetLabelAnnotationsAsync()
+            => Assert.IsTrue((await ConceptSchemeLens.LabelAnnotationsAsync()).Count == 3
+                              && (await ConceptSchemeLens.LabelAnnotationsAsync()).Any(la => la.Item1.Equals(RDFVocabulary.SKOS.PREF_LABEL) && la.Item2.Equals(new RDFPlainLiteral("concept1")))
+                               && (await ConceptSchemeLens.LabelAnnotationsAsync()).Any(la => la.Item1.Equals(RDFVocabulary.SKOS.ALT_LABEL) && la.Item2.Equals(new RDFPlainLiteral("konzept1")))
+                                && (await ConceptSchemeLens.LabelAnnotationsAsync()).Any(la => la.Item1.Equals(RDFVocabulary.SKOS.HIDDEN_LABEL) && la.Item2.Equals(new RDFPlainLiteral("concetto1"))));
+
+        [TestMethod]
+        public void ShouldGetDocumentationAnnotations()
+          => Assert.IsTrue(ConceptSchemeLens.DocumentationAnnotations().Count == 7);
+
+        [TestMethod]
+        public async Task ShouldGetDocumentationAnnotationsAsync()
+            => Assert.IsTrue((await ConceptSchemeLens.DocumentationAnnotationsAsync()).Count == 7);
         #endregion
     }
 }
