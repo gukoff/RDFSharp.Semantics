@@ -11,6 +11,7 @@
    limitations under the License.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -70,6 +71,12 @@ namespace RDFSharp.Semantics
         /// Applies the validator on the given ontology
         /// </summary>
         public OWLValidatorReport Validate(OWLOntology ontology)
+            => Validate(ontology, null);
+
+        /// <summary>
+        /// Applies the validator on the given ontology (internal version supporting extension point)
+        /// </summary>
+        internal OWLValidatorReport Validate(OWLOntology ontology, Action<OWLOntology,OWLValidatorReport> validatorExtensionPoint=null)
         {
             OWLValidatorReport validatorReport = new OWLValidatorReport();
 
@@ -87,34 +94,49 @@ namespace RDFSharp.Semantics
                         switch (standardRule)
                         {
                             case OWLSemanticsEnums.OWLValidatorStandardRules.OWL2_AsymmetricProperty:
+                                //TODO
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.OWL2_HasKey:
+                                //TODO
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.OWL2_IrreflexiveProperty:
+                                //TODO
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.OWL2_NegativeAssertions:
+                                //TODO
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.OWL2_PropertyChainAxiom:
+                                //TODO
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.OWL2_PropertyDisjoint:
+                                //TODO
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.OWLDL_Deprecation:
+                                //TODO
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.OWLDL_GlobalCardinalityConstraint:
+                                //TODO
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.OWLDL_InverseOf:
+                                //TODO
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.OWLDL_LocalCardinalityConstraint:
+                                //TODO
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.OWLDL_SymmetricProperty:
+                                //TODO
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.OWLDL_Vocabulary_Declaration:
+                                //TODO
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.OWLDL_Vocabulary_Disjointness:
+                                //TODO
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.OWL_ClassType:
+                                //TODO
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.RDFS_Domain_Range:
+                                //TODO
                                 break;
                         }
                         validatorReport.MergeEvidences(standardRuleReport);
@@ -134,6 +156,9 @@ namespace RDFSharp.Semantics
                         OWLSemanticsEvents.RaiseSemanticsInfo(string.Format("Completed custom rule '{0}': found {1} evidences", customRule.RuleName, customRuleReport.EvidencesCount));
                     });
 
+                //Extension point (e.g.: SKOS)
+                validatorExtensionPoint?.Invoke(ontology, validatorReport);
+
                 OWLSemanticsEvents.RaiseSemanticsInfo(string.Format("Validator has been applied on Ontology '{0}': found {1] evidences", ontology.URI, validatorReport.EvidencesCount));
             }
 
@@ -143,8 +168,14 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Asynchronously applies the validator on the given ontology
         /// </summary>
-        public Task<OWLValidatorReport> ValidateAsync(this OWLOntology ontology)
-            => Task.Run(() => Validate(ontology));
+        public Task<OWLValidatorReport> ValidateAsync(OWLOntology ontology)
+            => ValidateAsync(ontology, null);
+
+        /// <summary>
+        /// Asynchronously applies the validator on the given ontology
+        /// </summary>
+        internal Task<OWLValidatorReport> ValidateAsync(OWLOntology ontology, Action<OWLOntology,OWLValidatorReport> validatorExtensionPoint=null)
+            => Task.Run(() => Validate(ontology, validatorExtensionPoint));
         #endregion
     }
 }

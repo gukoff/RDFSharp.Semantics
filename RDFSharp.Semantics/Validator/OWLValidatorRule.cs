@@ -25,17 +25,17 @@ namespace RDFSharp.Semantics
     {
         #region Properties
         /// <summary>
-        /// Name of the rule
+        /// Name of the validator rule
         /// </summary>
         public string RuleName { get; internal set; }
 
         /// <summary>
-        /// Description of the rule logic
+        /// Description of the validator rule
         /// </summary>
         public string RuleDescription { get; internal set; }
 
         /// <summary>
-        /// Function which will be executed as body of the rule
+        /// Function which will be executed as body of the validator rule
         /// </summary>
         public ValidatorRuleDelegate ExecuteRule { get; set; }
         #endregion
