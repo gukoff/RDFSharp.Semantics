@@ -11,10 +11,13 @@
    limitations under the License.
 */
 
-using static RDFSharp.Semantics.OWLValidatorRule;
-
 namespace RDFSharp.Semantics
 {
+    /// <summary>
+    /// Delegate definition for the function which will be executed as body of the rule
+    /// </summary>
+    public delegate OWLValidatorReport ValidatorRuleDelegate(OWLOntology ontology);
+
     /// <summary>
     /// OWLValidatorRule represents a rule which analyzes a specific syntactic/semantic aspect of a given ontology
     /// </summary>
@@ -30,11 +33,6 @@ namespace RDFSharp.Semantics
         /// Description of the rule
         /// </summary>
         public string RuleDescription { get; internal set; }
-
-        /// <summary>
-        /// Delegate definition for the function which will be executed as body of the rule
-        /// </summary>
-        public delegate OWLValidatorReport ValidatorRuleDelegate(OWLOntology ontology);
 
         /// <summary>
         /// Function which will be executed as body of the rule
