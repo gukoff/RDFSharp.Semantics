@@ -40,6 +40,17 @@ namespace RDFSharp.Semantics.Validator.Test
         }
 
         [TestMethod]
+        public void ShouldThrowExceptionOnCreatingvalidatorRuleBecauseNullOrEmptyName()
+        {
+            #region RuleDelegate
+            OWLValidatorReport TestRuleBody(OWLOntology ontology)
+                => new OWLValidatorReport();
+            #endregion
+
+            Assert.ThrowsException<OWLSemanticsException>(() => new OWLValidatorRule(null, "description", TestRuleBody));
+        }
+
+        [TestMethod]
         public void ShouldThrowExceptionOnCreatingvalidatorRuleBecauseNullDelegate()
             => Assert.ThrowsException<OWLSemanticsException>(() => new OWLValidatorRule("rulename", "description", null));
         #endregion

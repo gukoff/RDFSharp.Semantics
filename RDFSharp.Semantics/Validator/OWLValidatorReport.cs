@@ -61,22 +61,27 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Exposes a typed enumerator on the validator report's evidences
         /// </summary>
-        IEnumerator<OWLValidatorEvidence> IEnumerable<OWLValidatorEvidence>.GetEnumerator() => EvidencesEnumerator;
+        IEnumerator<OWLValidatorEvidence> IEnumerable<OWLValidatorEvidence>.GetEnumerator()
+            => EvidencesEnumerator;
 
         /// <summary>
         /// Exposes an untyped enumerator on the validator report's evidences
         /// </summary>
-        IEnumerator IEnumerable.GetEnumerator() => EvidencesEnumerator;
+        IEnumerator IEnumerable.GetEnumerator()
+            => EvidencesEnumerator;
         #endregion
 
         #region Methods
         /// <summary>
         /// Adds the given evidence to the validation report
         /// </summary>
-        internal void AddEvidence(OWLValidatorEvidence evidence)
+        public void AddEvidence(OWLValidatorEvidence evidence)
         {
-            lock (SyncLock)
-                Evidences.Add(evidence);
+            if (evidence != null)
+            {
+                lock (SyncLock)
+                    Evidences.Add(evidence);
+            }
         }
 
         /// <summary>

@@ -14,7 +14,7 @@
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// Delegate definition for the function which will be executed as body of the rule
+    /// Signature of any function which can be executed as body of a validator rule
     /// </summary>
     public delegate OWLValidatorReport ValidatorRuleDelegate(OWLOntology ontology);
 
@@ -30,7 +30,7 @@ namespace RDFSharp.Semantics
         public string RuleName { get; internal set; }
 
         /// <summary>
-        /// Description of the rule
+        /// Description of the rule logic
         /// </summary>
         public string RuleDescription { get; internal set; }
 
@@ -46,6 +46,8 @@ namespace RDFSharp.Semantics
         /// </summary>
         public OWLValidatorRule(string ruleName, string ruleDescription, ValidatorRuleDelegate ruleDelegate)
         {
+            if (string.IsNullOrEmpty(ruleName))
+                throw new OWLSemanticsException("Cannot create validator rule because given \"ruleName\" parameter is null");
             if (ruleDelegate == null)
                 throw new OWLSemanticsException("Cannot create validator rule because given \"ruleDelegate\" parameter is null");
 

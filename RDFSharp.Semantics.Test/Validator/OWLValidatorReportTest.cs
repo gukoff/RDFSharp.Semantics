@@ -45,6 +45,7 @@ namespace RDFSharp.Semantics.Validator.Test
         {
             OWLValidatorReport report = new OWLValidatorReport();
             report.AddEvidence(new OWLValidatorEvidence(OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error, "rulename", "message", "suggestion"));
+            report.AddEvidence(null); //Will be discarded, since null evidences are not allowed
 
             Assert.IsTrue(report.EvidencesCount == 1);
 

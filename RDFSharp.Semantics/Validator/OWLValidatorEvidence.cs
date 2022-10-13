@@ -14,7 +14,7 @@
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// OWLValidatorEvidence represents an evidence reported by an ontology validation rule
+    /// OWLValidatorEvidence represents an evidence reported by an ontology validator rule
     /// </summary>
     public class OWLValidatorEvidence
     {
