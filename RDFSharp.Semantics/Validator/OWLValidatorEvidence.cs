@@ -14,15 +14,15 @@
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// OWLOntologyValidatorEvidence represents an evidence reported by an ontology validation rule
+    /// OWLValidatorEvidence represents an evidence reported by an ontology validation rule
     /// </summary>
-    public class OWLOntologyValidatorEvidence
+    public class OWLValidatorEvidence
     {
         #region Properties
         /// <summary>
         /// Category of this evidence
         /// </summary>
-        public OWLSemanticsEnums.OWLOntologyValidatorEvidenceCategory EvidenceCategory { get; internal set; }
+        public OWLSemanticsEnums.OWLValidatorEvidenceCategory EvidenceCategory { get; internal set; }
 
         /// <summary>
         /// Rule which has reported this evidence
@@ -42,12 +42,10 @@ namespace RDFSharp.Semantics
 
         #region Ctors
         /// <summary>
-        /// Default-ctor to build an evidence with given category, provenance, message and suggestion
+        /// Default-ctor to build a validator evidence with given category, provenance, message and suggestion
         /// </summary>
-        internal OWLOntologyValidatorEvidence(OWLSemanticsEnums.OWLOntologyValidatorEvidenceCategory evidenceCategory,
-                                              string evidenceProvenance,
-                                              string evidenceMessage,
-                                              string evidenceSuggestion)
+        public OWLValidatorEvidence(OWLSemanticsEnums.OWLValidatorEvidenceCategory evidenceCategory,
+            string evidenceProvenance, string evidenceMessage, string evidenceSuggestion)
         {
             this.EvidenceCategory = evidenceCategory;
             this.EvidenceProvenance = evidenceProvenance;

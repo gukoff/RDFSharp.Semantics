@@ -22,9 +22,9 @@ namespace RDFSharp.Semantics
     public static class OWLSemanticsEnums
     {
         /// <summary>
-        /// OWLOntologyValidatorEvidenceCategory represents an enumeration for possible categories of ontology validation evidence
+        /// OWLValidatorEvidenceCategory represents an enumeration for possible categories of ontology validator evidence
         /// </summary>
-        public enum OWLOntologyValidatorEvidenceCategory
+        public enum OWLValidatorEvidenceCategory
         {
             /// <summary>
             /// Specifications have not been violated: ontology may contain semantic inconsistencies

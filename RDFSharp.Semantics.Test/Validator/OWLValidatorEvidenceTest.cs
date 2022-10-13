@@ -19,17 +19,17 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace RDFSharp.Semantics.Validator.Test
 {
     [TestClass]
-    public class OWLOntologyValidatorEvidenceTest
+    public class OWLValidatorEvidenceTest
     {
         #region Test
         [TestMethod]
         public void ShouldCreateValidatorEvidence()
         {
-            OWLOntologyValidatorEvidence evidence = new OWLOntologyValidatorEvidence(
-                OWLSemanticsEnums.OWLOntologyValidatorEvidenceCategory.Warning, "rulename", "message", "suggestion");
+            OWLValidatorEvidence evidence = new OWLValidatorEvidence(
+                OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning, "rulename", "message", "suggestion");
 
             Assert.IsNotNull(evidence);
-            Assert.IsTrue(evidence.EvidenceCategory == OWLSemanticsEnums.OWLOntologyValidatorEvidenceCategory.Warning);
+            Assert.IsTrue(evidence.EvidenceCategory == OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning);
             Assert.IsTrue(string.Equals(evidence.EvidenceProvenance, "rulename"));
             Assert.IsTrue(string.Equals(evidence.EvidenceMessage, "message"));
             Assert.IsTrue(string.Equals(evidence.EvidenceSuggestion, "suggestion"));
