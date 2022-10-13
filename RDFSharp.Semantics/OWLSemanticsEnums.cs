@@ -21,6 +21,19 @@ namespace RDFSharp.Semantics
     /// </summary>
     public static class OWLSemanticsEnums
     {
-        
+        /// <summary>
+        /// OWLOntologyValidatorEvidenceCategory represents an enumeration for possible categories of ontology validation evidence
+        /// </summary>
+        public enum OWLOntologyValidatorEvidenceCategory
+        {
+            /// <summary>
+            /// Specifications have not been violated: ontology may contain semantic inconsistencies
+            /// </summary>
+            Warning = 1,
+            /// <summary>
+            /// Specifications have been violated: ontology will contain semantic inconsistencies
+            /// </summary>
+            Error = 2
+        };
     }
 }
