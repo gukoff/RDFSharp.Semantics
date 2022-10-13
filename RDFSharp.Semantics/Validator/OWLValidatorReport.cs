@@ -52,8 +52,8 @@ namespace RDFSharp.Semantics
         /// </summary>
         internal OWLValidatorReport()
         {
-            this.Evidences = new List<OWLValidatorEvidence>();
-            this.SyncLock = new object();
+            Evidences = new List<OWLValidatorEvidence>();
+            SyncLock = new object();
         }
         #endregion
 
@@ -98,7 +98,7 @@ namespace RDFSharp.Semantics
         /// Gets the error evidences from the validation report
         /// </summary>
         public List<OWLValidatorEvidence> SelectErrors()
-            => this.Evidences.FindAll(e => e.EvidenceCategory == OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error);
+            => Evidences.FindAll(e => e.EvidenceCategory == OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error);
         #endregion
     }
 }
