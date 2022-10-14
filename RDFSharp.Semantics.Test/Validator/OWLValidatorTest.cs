@@ -33,6 +33,40 @@ namespace RDFSharp.Semantics.Validator.Test
             Assert.IsNotNull(validator.CustomRules);
             Assert.IsTrue(validator.CustomRules.Count == 0);
         }
+
+        [TestMethod]
+        public void ShouldAddStandardValidatorRule()
+        {
+            OWLValidator validator = new OWLValidator();
+            validator.AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.Vocabulary_Disjointness);
+            validator.AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.Vocabulary_Disjointness); //Will be discarded, since duplicate standard rules are not allowed
+
+            Assert.IsNotNull(validator);
+            Assert.IsNotNull(validator.StandardRules);
+            Assert.IsTrue(validator.StandardRules.Count == 1);
+            Assert.IsNotNull(validator.CustomRules);
+            Assert.IsTrue(validator.CustomRules.Count == 0);
+        }
+
+        [TestMethod]
+        public void ShouldAddCustomValidatorRule()
+        {
+            OWLValidatorReport CustomValidatorRule(OWLOntology ontology)
+                => new OWLValidatorReport().AddEvidence(new OWLValidatorEvidence(OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning, nameof(CustomValidatorRule), "test message", "test suggestion"));
+
+            OWLValidator validator = new OWLValidator();
+            validator.AddCustomRule(new OWLValidatorRule("testRule", "this is test rule", CustomValidatorRule));
+
+            Assert.IsNotNull(validator);
+            Assert.IsNotNull(validator.StandardRules);
+            Assert.IsTrue(validator.StandardRules.Count == 0);
+            Assert.IsNotNull(validator.CustomRules);
+            Assert.IsTrue(validator.CustomRules.Count == 1);
+        }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnCreatingCUstomValidatorRuleBecauseNull()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new OWLValidator().AddCustomRule(null));
         #endregion
     }
 }

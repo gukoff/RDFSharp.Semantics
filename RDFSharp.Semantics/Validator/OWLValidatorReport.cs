@@ -75,22 +75,24 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Adds the given evidence to the validation report
         /// </summary>
-        public void AddEvidence(OWLValidatorEvidence evidence)
+        public OWLValidatorReport AddEvidence(OWLValidatorEvidence evidence)
         {
             if (evidence != null)
             {
                 lock (SyncLock)
                     Evidences.Add(evidence);
             }
+            return this;
         }
 
         /// <summary>
         /// Merges the evidences of the given report
         /// </summary>
-        internal void MergeEvidences(OWLValidatorReport report)
+        internal OWLValidatorReport MergeEvidences(OWLValidatorReport report)
         {
             lock (SyncLock)
                 Evidences.AddRange(report.Evidences);
+            return this;
         }
 
         /// <summary>
