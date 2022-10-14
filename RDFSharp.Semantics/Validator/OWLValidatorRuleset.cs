@@ -24,49 +24,44 @@ namespace RDFSharp.Semantics
     /// </summary>
     internal static class OWLValidatorRuleset
     {
-        #region Rule:Vocabulary_Disjointness
+        #region VocabularyDisjointness
         /// <summary>
         /// OWL-DL validator rule checking for vocabulary disjointness of classes, properties and individuals
         /// </summary>
-        internal static OWLValidatorReport Vocabulary_Disjointness(OWLOntology ontology)
+        internal static OWLValidatorReport VocabularyDisjointness(OWLOntology ontology)
         {
             OWLValidatorReport validatorRuleReport = new OWLValidatorReport();
 
             #region ClassModel
             foreach (RDFResource owlClass in ontology.Model.ClassModel)
             {
+                //ClassModel vs PropertyModel
                 if (ontology.Model.PropertyModel.Properties.ContainsKey(owlClass.PatternMemberID))
-                {
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
-                        nameof(Vocabulary_Disjointness),
+                        nameof(VocabularyDisjointness),
                         $"Disjointess of class model and property model is violated because the name '{owlClass}' refers both to a class and a property",
-                        "Remove or rename one of the two entities: at the moment the ontology is OWL Full!"
-                    ));
-                }
+                        "Remove or rename one of the two entities: at the moment the ontology is OWL Full!"));
+
+                //ClassModel vs Data
                 if (ontology.Data.Individuals.ContainsKey(owlClass.PatternMemberID))
-                {
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
-                        nameof(Vocabulary_Disjointness),
+                        nameof(VocabularyDisjointness),
                         $"Disjointess of class model and data is violated because the name '{owlClass}' refers both to a class and an individual",
-                        "Remove or rename one of the two entities: at the moment the ontology is OWL Full!"
-                    ));
-                }
+                        "Remove or rename one of the two entities: at the moment the ontology is OWL Full!"));
             }
             #endregion
 
             #region PropertyModel
+            //PropertyModel vs Data
             foreach (RDFResource owlProperty in ontology.Model.PropertyModel)
                 if (ontology.Data.Individuals.ContainsKey(owlProperty.PatternMemberID))
-                {
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
-                        nameof(Vocabulary_Disjointness),
+                        nameof(VocabularyDisjointness),
                         $"Disjointess of property model and data is violated because the name '{owlProperty}' refers both to a property and an individual",
-                        "Remove or rename one of the two entities: at the moment the ontology is OWL Full!"
-                    ));
-                }
+                        "Remove or rename one of the two entities: at the moment the ontology is OWL Full!"));
             #endregion
 
             return validatorRuleReport;

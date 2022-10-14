@@ -44,15 +44,15 @@ namespace RDFSharp.Semantics
             /// <summary>
             /// This OWL-DL rule checks for vocabulary disjointness of classes, properties and individuals
             /// </summary>
-            Vocabulary_Disjointness = 1,
+            VocabularyDisjointness = 1,
             /// <summary>
             /// This OWL-DL rule checks for explicit declaration of classes, properties and individuals
             /// </summary>
-            Vocabulary_Declaration = 2,
+            VocabularyDeclaration = 2,
             /// <summary>
             /// This RDFS rule checks for consistency of rdfs:domain and rdfs:range knowledge
             /// </summary>
-            Domain_Range = 3,
+            DomainRange = 3,
             /// <summary>
             /// This OWL-DL rule checks for consistency of owl:inverseOf knowledge
             /// </summary>
