@@ -72,19 +72,19 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Applies the validator on the given ontology
         /// </summary>
-        public OWLValidatorReport Validate(OWLOntology ontology)
+        public OWLValidatorReport ApplyToOntology(OWLOntology ontology)
         {
             OWLValidatorReport validatorReport = new OWLValidatorReport();
 
             if (ontology != null)
             {
-                OWLSemanticsEvents.RaiseSemanticsInfo(string.Format("Validator is going to be applied on Ontology '{0}': this may require intensive processing, depending on size and complexity of domain knowledge and rules", ontology.URI));
+                OWLSemanticsEvents.RaiseSemanticsInfo($"Validator is going to be applied on Ontology '{ontology.URI}': this may require intensive processing, depending on size and complexity of domain knowledge and rules");
 
                 //Standard Rules
                 Parallel.ForEach(StandardRules, 
                     standardRule =>
                     {
-                        OWLSemanticsEvents.RaiseSemanticsInfo(string.Format("Launching standard validator rule '{0}'", standardRule));
+                        OWLSemanticsEvents.RaiseSemanticsInfo($"Launching standard validator rule '{standardRule}'");
 
                         OWLValidatorReport standardRuleReport = new OWLValidatorReport();
                         switch (standardRule)
@@ -151,22 +151,22 @@ namespace RDFSharp.Semantics
                         }
                         validatorReport.MergeEvidences(standardRuleReport);
 
-                        OWLSemanticsEvents.RaiseSemanticsInfo(string.Format("Completed standard validator rule '{0}': found {1} evidences", standardRule, standardRuleReport.EvidencesCount));
+                        OWLSemanticsEvents.RaiseSemanticsInfo($"Completed standard validator rule '{standardRule}': found {standardRuleReport.EvidencesCount} evidences");
                     });
 
                 //Custom Rules
                 Parallel.ForEach(CustomRules, 
                     customRule =>
                     {
-                        OWLSemanticsEvents.RaiseSemanticsInfo(string.Format("Launching custom validator rule '{0}'", customRule.RuleName));
+                        OWLSemanticsEvents.RaiseSemanticsInfo($"Launching custom validator rule '{customRule.RuleName}'");
 
                         OWLValidatorReport customRuleReport = customRule.ExecuteRule(ontology);
                         validatorReport.MergeEvidences(customRuleReport);
 
-                        OWLSemanticsEvents.RaiseSemanticsInfo(string.Format("Completed custom validator rule '{0}': found {1} evidences", customRule.RuleName, customRuleReport.EvidencesCount));
+                        OWLSemanticsEvents.RaiseSemanticsInfo($"Completed custom validator rule '{customRule.RuleName}': found {customRuleReport.EvidencesCount} evidences");
                     });
 
-                OWLSemanticsEvents.RaiseSemanticsInfo(string.Format("Validator has been applied on Ontology '{0}': found {1] evidences", ontology.URI, validatorReport.EvidencesCount));
+                OWLSemanticsEvents.RaiseSemanticsInfo($"Validator has been applied on Ontology '{ontology.URI}': found {validatorReport.EvidencesCount} evidences");
             }
 
             return validatorReport;
@@ -175,8 +175,8 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Asynchronously applies the validator on the given ontology
         /// </summary>
-        public Task<OWLValidatorReport> ValidateAsync(OWLOntology ontology)
-            => Task.Run(() => Validate(ontology));
+        public Task<OWLValidatorReport> ApplyToOntologyAsync(OWLOntology ontology)
+            => Task.Run(() => ApplyToOntology(ontology));
         #endregion
     }
 }

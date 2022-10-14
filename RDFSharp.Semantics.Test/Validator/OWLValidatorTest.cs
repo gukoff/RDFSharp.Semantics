@@ -15,6 +15,8 @@
 */
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using RDFSharp.Model;
+using System.Threading.Tasks;
 
 namespace RDFSharp.Semantics.Validator.Test
 {
@@ -67,6 +69,232 @@ namespace RDFSharp.Semantics.Validator.Test
         [TestMethod]
         public void ShouldThrowExceptionOnCreatingCUstomValidatorRuleBecauseNull()
             => Assert.ThrowsException<OWLSemanticsException>(() => new OWLValidator().AddCustomRule(null));
+
+        [TestMethod]
+        public void ShouldValidateWithStandardRule()
+        {
+            OWLOntology ontology = new OWLOntology("ex:ont");
+            ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:entity"));
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:entity"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:entity"));
+
+            OWLValidator validator = new OWLValidator();
+            validator.AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.Vocabulary_Disjointness);
+
+            OWLValidatorReport validatorReport = validator.ApplyToOntology(ontology);
+
+            Assert.IsNotNull(validatorReport);
+            Assert.IsTrue(validatorReport.EvidencesCount == 3);
+            Assert.IsTrue(validatorReport.SelectErrors().Count == 3);
+            Assert.IsTrue(validatorReport.SelectWarnings().Count == 0);
+        }
+
+        [TestMethod]
+        public void ShouldValidateWithStandardRuleAndSubscribedEvents()
+        {
+            OWLOntology ontology = new OWLOntology("ex:ont");
+            ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:entity"));
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:entity"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:entity"));
+
+            OWLValidator validator = new OWLValidator();
+            validator.AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.Vocabulary_Disjointness);
+
+            string warningMsg = null;
+            OWLSemanticsEvents.OnSemanticsInfo += (string msg) => { warningMsg += msg; };
+
+            OWLValidatorReport validatorReport = validator.ApplyToOntology(ontology);
+
+            Assert.IsNotNull(validatorReport);
+            Assert.IsTrue(validatorReport.EvidencesCount == 3);
+            Assert.IsTrue(validatorReport.SelectErrors().Count == 3);
+            Assert.IsTrue(validatorReport.SelectWarnings().Count == 0);
+            Assert.IsNotNull(warningMsg);
+            Assert.IsTrue(warningMsg.IndexOf("found 3 evidences") > -1);
+        }
+
+        [TestMethod]
+        public void ShouldValidateWithCustomRule()
+        {
+            OWLValidatorReport CustomValidatorRule(OWLOntology ontology)
+                => new OWLValidatorReport().AddEvidence(new OWLValidatorEvidence(OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning, nameof(CustomValidatorRule), "test message", "test suggestion"));
+
+            OWLOntology ontology = new OWLOntology("ex:ont");
+
+            OWLValidator validator = new OWLValidator();
+            validator.AddCustomRule(new OWLValidatorRule("testRule", "this is test rule", CustomValidatorRule));
+
+            OWLValidatorReport validatorReport = validator.ApplyToOntology(ontology);
+
+            Assert.IsNotNull(validatorReport);
+            Assert.IsTrue(validatorReport.EvidencesCount == 1);
+            Assert.IsTrue(validatorReport.SelectErrors().Count == 0);
+            Assert.IsTrue(validatorReport.SelectWarnings().Count == 1);
+        }
+
+        [TestMethod]
+        public void ShouldValidateWithStandardAndCustomRules()
+        {
+            OWLValidatorReport CustomValidatorRule(OWLOntology ontology)
+                => new OWLValidatorReport().AddEvidence(new OWLValidatorEvidence(OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning, nameof(CustomValidatorRule), "test message", "test suggestion"));
+
+            OWLOntology ontology = new OWLOntology("ex:ont");
+            ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:entity"));
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:entity"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:entity"));
+
+            OWLValidator validator = new OWLValidator();
+            validator.AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.Vocabulary_Disjointness);
+            validator.AddCustomRule(new OWLValidatorRule("testRule", "this is test rule", CustomValidatorRule));
+
+            OWLValidatorReport validatorReport = validator.ApplyToOntology(ontology);
+
+            Assert.IsNotNull(validatorReport);
+            Assert.IsTrue(validatorReport.EvidencesCount == 4);
+            Assert.IsTrue(validatorReport.SelectErrors().Count == 3);
+            Assert.IsTrue(validatorReport.SelectWarnings().Count == 1);
+        }
+
+        [TestMethod]
+        public void ShouldValidateWithStandardAndCustomRulesAndSubscribedEvents()
+        {
+            OWLValidatorReport CustomValidatorRule(OWLOntology ontology)
+                => new OWLValidatorReport().AddEvidence(new OWLValidatorEvidence(OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning, nameof(CustomValidatorRule), "test message", "test suggestion"));
+
+            OWLOntology ontology = new OWLOntology("ex:ont");
+            ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:entity"));
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:entity"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:entity"));
+
+            OWLValidator validator = new OWLValidator();
+            validator.AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.Vocabulary_Disjointness);
+            validator.AddCustomRule(new OWLValidatorRule("testRule", "this is test rule", CustomValidatorRule));
+
+            string warningMsg = null;
+            OWLSemanticsEvents.OnSemanticsInfo += (string msg) => { warningMsg += msg; };
+
+            OWLValidatorReport validatorReport = validator.ApplyToOntology(ontology);
+
+            Assert.IsNotNull(validatorReport);
+            Assert.IsTrue(validatorReport.EvidencesCount == 4);
+            Assert.IsTrue(validatorReport.SelectErrors().Count == 3);
+            Assert.IsTrue(validatorReport.SelectWarnings().Count == 1);
+            Assert.IsNotNull(warningMsg);
+            Assert.IsTrue(warningMsg.IndexOf("found 4 evidences") > -1);
+        }
+
+        [TestMethod]
+        public async Task ShouldValidateWithStandardRuleAsync()
+        {
+            OWLOntology ontology = new OWLOntology("ex:ont");
+            ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:entity"));
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:entity"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:entity"));
+
+            OWLValidator validator = new OWLValidator();
+            validator.AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.Vocabulary_Disjointness);
+
+            OWLValidatorReport validatorReport = await validator.ApplyToOntologyAsync(ontology);
+
+            Assert.IsNotNull(validatorReport);
+            Assert.IsTrue(validatorReport.EvidencesCount == 3);
+            Assert.IsTrue(validatorReport.SelectErrors().Count == 3);
+            Assert.IsTrue(validatorReport.SelectWarnings().Count == 0);
+        }
+
+        [TestMethod]
+        public async Task ShouldValidateWithStandardRuleAndSubscribedEventsAsync()
+        {
+            OWLOntology ontology = new OWLOntology("ex:ont");
+            ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:entity"));
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:entity"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:entity"));
+
+            OWLValidator validator = new OWLValidator();
+            validator.AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.Vocabulary_Disjointness);
+
+            string warningMsg = null;
+            OWLSemanticsEvents.OnSemanticsInfo += (string msg) => { warningMsg += msg; };
+
+            OWLValidatorReport validatorReport = await validator.ApplyToOntologyAsync(ontology);
+
+            Assert.IsNotNull(validatorReport);
+            Assert.IsTrue(validatorReport.EvidencesCount == 3);
+            Assert.IsTrue(validatorReport.SelectErrors().Count == 3);
+            Assert.IsTrue(validatorReport.SelectWarnings().Count == 0);
+            Assert.IsNotNull(warningMsg);
+            Assert.IsTrue(warningMsg.IndexOf("found 3 evidences") > -1);
+        }
+
+        [TestMethod]
+        public async Task ShouldValidateWithCustomRuleAsync()
+        {
+            OWLValidatorReport CustomValidatorRule(OWLOntology ontology)
+                => new OWLValidatorReport().AddEvidence(new OWLValidatorEvidence(OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning, nameof(CustomValidatorRule), "test message", "test suggestion"));
+
+            OWLOntology ontology = new OWLOntology("ex:ont");
+
+            OWLValidator validator = new OWLValidator();
+            validator.AddCustomRule(new OWLValidatorRule("testRule", "this is test rule", CustomValidatorRule));
+
+            OWLValidatorReport validatorReport = await validator.ApplyToOntologyAsync(ontology);
+
+            Assert.IsNotNull(validatorReport);
+            Assert.IsTrue(validatorReport.EvidencesCount == 1);
+            Assert.IsTrue(validatorReport.SelectErrors().Count == 0);
+            Assert.IsTrue(validatorReport.SelectWarnings().Count == 1);
+        }
+
+        [TestMethod]
+        public async Task ShouldValidateWithStandardAndCustomRulesAsync()
+        {
+            OWLValidatorReport CustomValidatorRule(OWLOntology ontology)
+                => new OWLValidatorReport().AddEvidence(new OWLValidatorEvidence(OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning, nameof(CustomValidatorRule), "test message", "test suggestion"));
+
+            OWLOntology ontology = new OWLOntology("ex:ont");
+            ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:entity"));
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:entity"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:entity"));
+
+            OWLValidator validator = new OWLValidator();
+            validator.AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.Vocabulary_Disjointness);
+            validator.AddCustomRule(new OWLValidatorRule("testRule", "this is test rule", CustomValidatorRule));
+
+            OWLValidatorReport validatorReport = await validator.ApplyToOntologyAsync(ontology);
+
+            Assert.IsNotNull(validatorReport);
+            Assert.IsTrue(validatorReport.EvidencesCount == 4);
+            Assert.IsTrue(validatorReport.SelectErrors().Count == 3);
+            Assert.IsTrue(validatorReport.SelectWarnings().Count == 1);
+        }
+
+        [TestMethod]
+        public async Task ShouldValidateWithStandardAndCustomRulesAndSubscribedEventsAsync()
+        {
+            OWLValidatorReport CustomValidatorRule(OWLOntology ontology)
+                => new OWLValidatorReport().AddEvidence(new OWLValidatorEvidence(OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning, nameof(CustomValidatorRule), "test message", "test suggestion"));
+
+            OWLOntology ontology = new OWLOntology("ex:ont");
+            ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:entity"));
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:entity"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:entity"));
+
+            OWLValidator validator = new OWLValidator();
+            validator.AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.Vocabulary_Disjointness);
+            validator.AddCustomRule(new OWLValidatorRule("testRule", "this is test rule", CustomValidatorRule));
+
+            string warningMsg = null;
+            OWLSemanticsEvents.OnSemanticsInfo += (string msg) => { warningMsg += msg; };
+
+            OWLValidatorReport validatorReport = await validator.ApplyToOntologyAsync(ontology);
+
+            Assert.IsNotNull(validatorReport);
+            Assert.IsTrue(validatorReport.EvidencesCount == 4);
+            Assert.IsTrue(validatorReport.SelectErrors().Count == 3);
+            Assert.IsTrue(validatorReport.SelectWarnings().Count == 1);
+            Assert.IsNotNull(warningMsg);
+            Assert.IsTrue(warningMsg.IndexOf("found 4 evidences") > -1);
+        }
         #endregion
     }
 }
