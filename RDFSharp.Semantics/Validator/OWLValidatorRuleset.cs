@@ -28,7 +28,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// OWL-DL validator rule checking for vocabulary disjointness of classes, properties and individuals
         /// </summary>
-        internal static OWLValidatorReport OWLDL_Vocabulary_Disjointness(OWLOntology ontology)
+        internal static OWLValidatorReport Vocabulary_Disjointness(OWLOntology ontology)
         {
             OWLValidatorReport validatorRuleReport = new OWLValidatorReport();
 
@@ -39,7 +39,7 @@ namespace RDFSharp.Semantics
                 {
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
-                        nameof(OWLDL_Vocabulary_Disjointness),
+                        nameof(Vocabulary_Disjointness),
                         $"Disjointess of class model and property model is violated because the name '{owlClass}' refers both to a class and a property",
                         "Remove or rename one of the two entities: at the moment the ontology is OWL Full!"
                     ));
@@ -48,7 +48,7 @@ namespace RDFSharp.Semantics
                 {
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
-                        nameof(OWLDL_Vocabulary_Disjointness),
+                        nameof(Vocabulary_Disjointness),
                         $"Disjointess of class model and data is violated because the name '{owlClass}' refers both to a class and an individual",
                         "Remove or rename one of the two entities: at the moment the ontology is OWL Full!"
                     ));
@@ -62,7 +62,7 @@ namespace RDFSharp.Semantics
                 {
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
-                        nameof(OWLDL_Vocabulary_Disjointness),
+                        nameof(Vocabulary_Disjointness),
                         $"Disjointess of property model and data is violated because the name '{owlProperty}' refers both to a property and an individual",
                         "Remove or rename one of the two entities: at the moment the ontology is OWL Full!"
                     ));

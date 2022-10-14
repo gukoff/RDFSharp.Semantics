@@ -71,12 +71,6 @@ namespace RDFSharp.Semantics
         /// Applies the validator on the given ontology
         /// </summary>
         public OWLValidatorReport Validate(OWLOntology ontology)
-            => Validate(ontology, null);
-
-        /// <summary>
-        /// Applies the validator on the given ontology (internal version supporting extension point)
-        /// </summary>
-        internal OWLValidatorReport Validate(OWLOntology ontology, Action<OWLOntology,OWLValidatorReport> validatorExtensionPoint=null)
         {
             OWLValidatorReport validatorReport = new OWLValidatorReport();
 
@@ -93,49 +87,63 @@ namespace RDFSharp.Semantics
                         OWLValidatorReport standardRuleReport = new OWLValidatorReport();
                         switch (standardRule)
                         {
-                            case OWLSemanticsEnums.OWLValidatorStandardRules.OWL2_AsymmetricProperty:
+                            case OWLSemanticsEnums.OWLValidatorStandardRules.Vocabulary_Disjointness:
+                                standardRuleReport.MergeEvidences(OWLValidatorRuleset.Vocabulary_Disjointness(ontology));
+                                break;
+
+                            case OWLSemanticsEnums.OWLValidatorStandardRules.Vocabulary_Declaration:
                                 //TODO
                                 break;
-                            case OWLSemanticsEnums.OWLValidatorStandardRules.OWL2_HasKey:
+
+                            case OWLSemanticsEnums.OWLValidatorStandardRules.Domain_Range:
                                 //TODO
                                 break;
-                            case OWLSemanticsEnums.OWLValidatorStandardRules.OWL2_IrreflexiveProperty:
+
+                            case OWLSemanticsEnums.OWLValidatorStandardRules.InverseOf:
                                 //TODO
                                 break;
-                            case OWLSemanticsEnums.OWLValidatorStandardRules.OWL2_NegativeAssertions:
+
+                            case OWLSemanticsEnums.OWLValidatorStandardRules.SymmetricProperty:
                                 //TODO
                                 break;
-                            case OWLSemanticsEnums.OWLValidatorStandardRules.OWL2_PropertyChainAxiom:
+
+                            case OWLSemanticsEnums.OWLValidatorStandardRules.AsymmetricProperty:
                                 //TODO
                                 break;
-                            case OWLSemanticsEnums.OWLValidatorStandardRules.OWL2_PropertyDisjoint:
+
+                            case OWLSemanticsEnums.OWLValidatorStandardRules.IrreflexiveProperty:
                                 //TODO
                                 break;
-                            case OWLSemanticsEnums.OWLValidatorStandardRules.OWLDL_Deprecation:
+
+                            case OWLSemanticsEnums.OWLValidatorStandardRules.PropertyDisjoint:
                                 //TODO
                                 break;
-                            case OWLSemanticsEnums.OWLValidatorStandardRules.OWLDL_GlobalCardinalityConstraint:
+
+                            case OWLSemanticsEnums.OWLValidatorStandardRules.NegativeAssertions:
                                 //TODO
                                 break;
-                            case OWLSemanticsEnums.OWLValidatorStandardRules.OWLDL_InverseOf:
+
+                            case OWLSemanticsEnums.OWLValidatorStandardRules.HasKey:
                                 //TODO
                                 break;
-                            case OWLSemanticsEnums.OWLValidatorStandardRules.OWLDL_LocalCardinalityConstraint:
+
+                            case OWLSemanticsEnums.OWLValidatorStandardRules.PropertyChainAxiom:
                                 //TODO
                                 break;
-                            case OWLSemanticsEnums.OWLValidatorStandardRules.OWLDL_SymmetricProperty:
+
+                            case OWLSemanticsEnums.OWLValidatorStandardRules.ClassType:
                                 //TODO
                                 break;
-                            case OWLSemanticsEnums.OWLValidatorStandardRules.OWLDL_Vocabulary_Declaration:
+
+                            case OWLSemanticsEnums.OWLValidatorStandardRules.GlobalCardinalityConstraint:
                                 //TODO
                                 break;
-                            case OWLSemanticsEnums.OWLValidatorStandardRules.OWLDL_Vocabulary_Disjointness:
-                                standardRuleReport.MergeEvidences(OWLValidatorRuleset.OWLDL_Vocabulary_Disjointness(ontology));
-                                break;
-                            case OWLSemanticsEnums.OWLValidatorStandardRules.OWL_ClassType:
+
+                            case OWLSemanticsEnums.OWLValidatorStandardRules.LocalCardinalityConstraint:
                                 //TODO
                                 break;
-                            case OWLSemanticsEnums.OWLValidatorStandardRules.RDFS_Domain_Range:
+
+                            case OWLSemanticsEnums.OWLValidatorStandardRules.Deprecation:
                                 //TODO
                                 break;
                         }
@@ -156,9 +164,6 @@ namespace RDFSharp.Semantics
                         OWLSemanticsEvents.RaiseSemanticsInfo(string.Format("Completed custom validator rule '{0}': found {1} evidences", customRule.RuleName, customRuleReport.EvidencesCount));
                     });
 
-                //Extension point (e.g.: SKOS)
-                validatorExtensionPoint?.Invoke(ontology, validatorReport);
-
                 OWLSemanticsEvents.RaiseSemanticsInfo(string.Format("Validator has been applied on Ontology '{0}': found {1] evidences", ontology.URI, validatorReport.EvidencesCount));
             }
 
@@ -169,13 +174,7 @@ namespace RDFSharp.Semantics
         /// Asynchronously applies the validator on the given ontology
         /// </summary>
         public Task<OWLValidatorReport> ValidateAsync(OWLOntology ontology)
-            => ValidateAsync(ontology, null);
-
-        /// <summary>
-        /// Asynchronously applies the validator on the given ontology
-        /// </summary>
-        internal Task<OWLValidatorReport> ValidateAsync(OWLOntology ontology, Action<OWLOntology,OWLValidatorReport> validatorExtensionPoint=null)
-            => Task.Run(() => Validate(ontology, validatorExtensionPoint));
+            => Task.Run(() => Validate(ontology));
         #endregion
     }
 }

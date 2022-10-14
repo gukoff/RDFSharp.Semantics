@@ -44,63 +44,63 @@ namespace RDFSharp.Semantics
             /// <summary>
             /// This OWL-DL rule checks for vocabulary disjointness of classes, properties and individuals
             /// </summary>
-            OWLDL_Vocabulary_Disjointness = 1,
+            Vocabulary_Disjointness = 1,
             /// <summary>
             /// This OWL-DL rule checks for explicit declaration of classes, properties and individuals
             /// </summary>
-            OWLDL_Vocabulary_Declaration = 2,
+            Vocabulary_Declaration = 2,
             /// <summary>
             /// This RDFS rule checks for consistency of rdfs:domain and rdfs:range knowledge
             /// </summary>
-            RDFS_Domain_Range = 3,
+            Domain_Range = 3,
             /// <summary>
             /// This OWL-DL rule checks for consistency of owl:inverseOf knowledge
             /// </summary>
-            OWLDL_InverseOf = 4,
+            InverseOf = 4,
             /// <summary>
             /// This OWL-DL rule checks for consistency of owl:SymmetricProperty knowledge
             /// </summary>
-            OWLDL_SymmetricProperty = 5,
+            SymmetricProperty = 5,
             /// <summary>
             /// This OWL2 rule checks for consistency of owl:AsymmetricProperty knowledge
             /// </summary>
-            OWL2_AsymmetricProperty = 6,
+            AsymmetricProperty = 6,
             /// <summary>
             /// This OWL2 rule checks for consistency of owl:IrreflexiveProperty knowledge
             /// </summary>
-            OWL2_IrreflexiveProperty = 7,
+            IrreflexiveProperty = 7,
             /// <summary>
             /// This OWL2 rule checks for consistency of owl:propertyDisjointWith knowledge
             /// </summary>
-            OWL2_PropertyDisjoint = 8,
+            PropertyDisjoint = 8,
             /// <summary>
             /// This OWL2 rule checks for consistency of owl:NegativePropertyAssertion knowledge
             /// </summary>
-            OWL2_NegativeAssertions = 9,
+            NegativeAssertions = 9,
             /// <summary>
             /// This OWL2 rule checks for consistency of owl:hasKey knowledge
             /// </summary>
-            OWL2_HasKey = 10,
+            HasKey = 10,
             /// <summary>
             /// This OWL2 rule checks for consistency of owl:propertyChainAxiom knowledge
             /// </summary>
-            OWL2_PropertyChainAxiom = 11,
+            PropertyChainAxiom = 11,
             /// <summary>
             /// This OWL-DL rule checks for consistency of rdf:type knowledge
             /// </summary>
-            OWL_ClassType = 12,
+            ClassType = 12,
             /// <summary>
             /// This OWL-DL rule checks for consistency of global cardinality constraints
             /// </summary>
-            OWLDL_GlobalCardinalityConstraint = 13,
+            GlobalCardinalityConstraint = 13,
             /// <summary>
             /// This OWL-DL rule checks for consistency of local cardinality constraints
             /// </summary>
-            OWLDL_LocalCardinalityConstraint = 14,
+            LocalCardinalityConstraint = 14,
             /// <summary>
             /// This OWL-DL rule checks for usage of deprecated classes and properties
             /// </summary>
-            OWLDL_Deprecation = 15
+            Deprecation = 15
         };
     }
 }
