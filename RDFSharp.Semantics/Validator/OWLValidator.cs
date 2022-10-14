@@ -88,7 +88,7 @@ namespace RDFSharp.Semantics
                 Parallel.ForEach(StandardRules, 
                     standardRule =>
                     {
-                        OWLSemanticsEvents.RaiseSemanticsInfo(string.Format("Launching standard rule '{0}'", standardRule));
+                        OWLSemanticsEvents.RaiseSemanticsInfo(string.Format("Launching standard validator rule '{0}'", standardRule));
 
                         OWLValidatorReport standardRuleReport = new OWLValidatorReport();
                         switch (standardRule)
@@ -130,7 +130,7 @@ namespace RDFSharp.Semantics
                                 //TODO
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.OWLDL_Vocabulary_Disjointness:
-                                //TODO
+                                standardRuleReport.MergeEvidences(OWLValidatorRuleset.OWLDL_Vocabulary_Disjointness(ontology));
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.OWL_ClassType:
                                 //TODO
@@ -141,19 +141,19 @@ namespace RDFSharp.Semantics
                         }
                         validatorReport.MergeEvidences(standardRuleReport);
 
-                        OWLSemanticsEvents.RaiseSemanticsInfo(string.Format("Completed standard rule '{0}': found {1} evidences", standardRule, standardRuleReport.EvidencesCount));
+                        OWLSemanticsEvents.RaiseSemanticsInfo(string.Format("Completed standard validator rule '{0}': found {1} evidences", standardRule, standardRuleReport.EvidencesCount));
                     });
 
                 //Custom Rules
                 Parallel.ForEach(CustomRules, 
                     customRule =>
                     {
-                        OWLSemanticsEvents.RaiseSemanticsInfo(string.Format("Launching custom rule '{0}'", customRule.RuleName));
+                        OWLSemanticsEvents.RaiseSemanticsInfo(string.Format("Launching custom validator rule '{0}'", customRule.RuleName));
 
                         OWLValidatorReport customRuleReport = customRule.ExecuteRule(ontology);
                         validatorReport.MergeEvidences(customRuleReport);
 
-                        OWLSemanticsEvents.RaiseSemanticsInfo(string.Format("Completed custom rule '{0}': found {1} evidences", customRule.RuleName, customRuleReport.EvidencesCount));
+                        OWLSemanticsEvents.RaiseSemanticsInfo(string.Format("Completed custom validator rule '{0}': found {1} evidences", customRule.RuleName, customRuleReport.EvidencesCount));
                     });
 
                 //Extension point (e.g.: SKOS)
