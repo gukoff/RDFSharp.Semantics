@@ -139,10 +139,10 @@ namespace RDFSharp.Semantics
                         $"Declaration of enumerate class '{oneOfTriple.Subject}' is not found in the model: it is required as subject of an 'owl:oneOf' relation",
                         $"Declare '{oneOfTriple.Subject}' enumerate class to the class model"));
 
-                List<RDFResource> oneOfMembers = ontology.Data.GetIndividualsOf(ontology.Model, (RDFResource)oneOfTriple.Subject);
-                foreach (RDFResource oneOfMember in oneOfMembers)
+                RDFCollection oneOfMembersCollection = RDFModelUtilities.DeserializeCollectionFromGraph(ontology.Model.ClassModel.TBoxGraph, (RDFResource)oneOfTriple.Object, RDFModelEnums.RDFTripleFlavors.SPO);
+                foreach (RDFPatternMember oneOfMember in oneOfMembersCollection)
                 {
-                    if (!ontology.Data.CheckHasIndividual(oneOfMember))
+                    if (!ontology.Data.CheckHasIndividual((RDFResource)oneOfMember))
                         validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                             OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
                             nameof(VocabularyDeclaration),
@@ -275,9 +275,19 @@ namespace RDFSharp.Semantics
                     }
                 }
             }
+            #endregion
+
+            #region PropertyModel
             //rdfs:domain
             foreach (RDFTriple domainTriple in ontology.Model.PropertyModel.TBoxGraph[null, RDFVocabulary.RDFS.DOMAIN, null, null])
             {
+                if (!ontology.Model.PropertyModel.CheckHasProperty((RDFResource)domainTriple.Subject))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(VocabularyDeclaration),
+                        $"Declaration of property '{domainTriple.Subject}' is not found in the model: it is required as subject of a 'rdfs:domain' relation",
+                        $"Declare '{domainTriple.Subject}' property to the property model"));
+
                 if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)domainTriple.Object))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
@@ -288,6 +298,13 @@ namespace RDFSharp.Semantics
             //rdfs:range
             foreach (RDFTriple rangeTriple in ontology.Model.PropertyModel.TBoxGraph[null, RDFVocabulary.RDFS.RANGE, null, null])
             {
+                if(!ontology.Model.PropertyModel.CheckHasProperty((RDFResource)rangeTriple.Subject))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(VocabularyDeclaration),
+                        $"Declaration of property '{rangeTriple.Subject}' is not found in the model: it is required as subject of a 'rdfs:range' relation",
+                        $"Declare '{rangeTriple.Subject}' property to the property model"));
+
                 if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)rangeTriple.Object))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
@@ -295,10 +312,6 @@ namespace RDFSharp.Semantics
                         $"Declaration of class '{rangeTriple.Object}' is not found in the model: it is required by 'rdfs:range' relation of '{(RDFResource)rangeTriple.Subject}' property",
                         $"Declare '{rangeTriple.Object}' class or restriction to the class model"));
             }
-            #endregion
-
-            #region PropertyModel
-
             #endregion
 
             #region Data
