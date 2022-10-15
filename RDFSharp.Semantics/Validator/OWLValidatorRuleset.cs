@@ -210,7 +210,98 @@ namespace RDFSharp.Semantics
                         nameof(VocabularyDeclaration),
                         $"Declaration of class '{complementOfTriple.Object}' is not found in the model: it is required by owl:complementOf relation of '{(RDFResource)complementOfTriple.Subject}' complement class",
                         $"Declare '{complementOfTriple.Object}' class or restriction to the class model"));
-
+            }
+            //owl:hasKey [OWL2]
+            foreach (RDFTriple hasKeyTriple in ontology.Model.ClassModel.TBoxGraph[null, RDFVocabulary.OWL.HAS_KEY, null, null])
+            {
+                if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)hasKeyTriple.Subject))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(VocabularyDeclaration),
+                        $"Declaration of class '{hasKeyTriple.Subject}' is not found in the model: it is required as subject of an owl:hasKey relation",
+                        $"Declare '{hasKeyTriple.Subject}' class to the class model"));
+                else
+                {
+                    RDFCollection hasKeyMembersCollection = RDFModelUtilities.DeserializeCollectionFromGraph(ontology.Model.ClassModel.TBoxGraph, (RDFResource)hasKeyTriple.Object, RDFModelEnums.RDFTripleFlavors.SPO);
+                    foreach (RDFPatternMember hasKeyMember in hasKeyMembersCollection)
+                    {
+                        if (!ontology.Model.PropertyModel.CheckHasProperty((RDFResource)hasKeyMember))
+                            validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                                OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                                nameof(VocabularyDeclaration),
+                                $"Declaration of property '{hasKeyMember}' is not found in the model: it is required by owl:hasKey relation of '{(RDFResource)hasKeyTriple.Subject}' class",
+                                $"Declare '{hasKeyMember}' property to the property model"));
+                    }
+                }
+            }
+            //owl:disjointUnionOf [OWL2]
+            foreach (RDFTriple disjointUnionOfTriple in ontology.Model.ClassModel.TBoxGraph[null, RDFVocabulary.OWL.DISJOINT_UNION_OF, null, null])
+            {
+                if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)disjointUnionOfTriple.Subject))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(VocabularyDeclaration),
+                        $"Declaration of disjoint union class '{disjointUnionOfTriple.Subject}' is not found in the model: it is required as subject of an owl:disjointUnionOf relation",
+                        $"Declare '{disjointUnionOfTriple.Subject}' disjoint union class to the class model"));
+                else
+                {
+                    RDFCollection disjointUnionMembersCollection = RDFModelUtilities.DeserializeCollectionFromGraph(ontology.Model.ClassModel.TBoxGraph, (RDFResource)disjointUnionOfTriple.Object, RDFModelEnums.RDFTripleFlavors.SPO);
+                    foreach (RDFPatternMember disjointUnionMember in disjointUnionMembersCollection)
+                    {
+                        if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)disjointUnionMember))
+                            validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                                OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                                nameof(VocabularyDeclaration),
+                                $"Declaration of class '{disjointUnionMember}' is not found in the model: it is required by owl:disjointUnionOf relation of '{(RDFResource)disjointUnionOfTriple.Subject}' disjoint union class",
+                                $"Declare '{disjointUnionMember}' class or restriction to the class model"));
+                    }
+                }
+            }
+            //owl:AllDisjointClasses [OWL2]
+            foreach (RDFTriple allDisjointClassesTriple in ontology.Model.ClassModel.TBoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ALL_DISJOINT_CLASSES, null])
+            {
+                if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)allDisjointClassesTriple.Subject))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(VocabularyDeclaration),
+                        $"Declaration of AllDisjointClass class '{allDisjointClassesTriple.Subject}' is not found in the model: it is required as subject of an owl:members relation",
+                        $"Declare '{allDisjointClassesTriple.Subject}' AllDisjointClass class to the class model"));
+                else
+                {
+                    foreach (RDFTriple allDisjointClassesMembersTriple in ontology.Model.ClassModel.TBoxGraph[(RDFResource)allDisjointClassesTriple.Subject, RDFVocabulary.OWL.MEMBERS, null, null])
+                    {
+                        RDFCollection allDisjointClassesMembersCollection = RDFModelUtilities.DeserializeCollectionFromGraph(ontology.Model.ClassModel.TBoxGraph, (RDFResource)allDisjointClassesMembersTriple.Object, RDFModelEnums.RDFTripleFlavors.SPO);
+                        foreach (RDFPatternMember allDisjointClassesMember in allDisjointClassesMembersCollection)
+                        {
+                            if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)allDisjointClassesMember))
+                                validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                                    OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                                    nameof(VocabularyDeclaration),
+                                    $"Declaration of class '{allDisjointClassesMember}' is not found in the model: it is required by owl:members relation of '{(RDFResource)allDisjointClassesTriple.Subject}' AllDisjointClasses class",
+                                    $"Declare '{allDisjointClassesMember}' class or restriction to the class model"));
+                        }
+                    }
+                }
+            }
+            //rdfs:domain
+            foreach (RDFTriple domainTriple in ontology.Model.PropertyModel.TBoxGraph[null, RDFVocabulary.RDFS.DOMAIN, null, null])
+            {
+                if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)domainTriple.Object))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(VocabularyDeclaration),
+                        $"Declaration of class '{domainTriple.Object}' is not found in the model: it is required by rdfs:domain relation of '{(RDFResource)domainTriple.Subject}' property",
+                        $"Declare '{domainTriple.Object}' class or restriction to the class model"));
+            }
+            //rdfs:range
+            foreach (RDFTriple rangeTriple in ontology.Model.PropertyModel.TBoxGraph[null, RDFVocabulary.RDFS.RANGE, null, null])
+            {
+                if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)rangeTriple.Object))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(VocabularyDeclaration),
+                        $"Declaration of class '{rangeTriple.Object}' is not found in the model: it is required by rdfs:range relation of '{(RDFResource)rangeTriple.Subject}' property",
+                        $"Declare '{rangeTriple.Object}' class or restriction to the class model"));
             }
             #endregion
 
