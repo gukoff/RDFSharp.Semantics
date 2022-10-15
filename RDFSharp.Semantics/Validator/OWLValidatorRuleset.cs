@@ -12,6 +12,7 @@
 */
 
 using RDFSharp.Model;
+using RDFSharp.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,7 +67,9 @@ namespace RDFSharp.Semantics
 
             return validatorRuleReport;
         }
+        #endregion
 
+        #region VocabularyDeclaration
         /// <summary>
         /// OWL-DL validator rule checking for explicit declaration of classes, properties and individuals
         /// </summary>
@@ -145,6 +148,69 @@ namespace RDFSharp.Semantics
                                 $"Declare '{oneOfMember}' individual to the data"));
                     }
                 }
+            }
+            //owl:unionOf
+            foreach (RDFTriple unionOfTriple in ontology.Model.ClassModel.TBoxGraph[null, RDFVocabulary.OWL.UNION_OF, null, null])
+            {
+                if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)unionOfTriple.Subject))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(VocabularyDeclaration),
+                        $"Declaration of union class '{unionOfTriple.Subject}' is not found in the model: it is required as subject of an owl:unionOf relation",
+                        $"Declare '{unionOfTriple.Subject}' union class to the class model"));
+                else
+                {
+                    RDFCollection unionMembersCollection = RDFModelUtilities.DeserializeCollectionFromGraph(ontology.Model.ClassModel.TBoxGraph, (RDFResource)unionOfTriple.Object, RDFModelEnums.RDFTripleFlavors.SPO);
+                    foreach (RDFPatternMember unionMember in unionMembersCollection)
+                    {
+                        if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)unionMember))
+                            validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                                OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                                nameof(VocabularyDeclaration),
+                                $"Declaration of class '{unionMember}' is not found in the model: it is required by owl:unionOf relation of '{(RDFResource)unionOfTriple.Subject}' union class",
+                                $"Declare '{unionMember}' class or restriction to the class model"));
+                    }
+                }   
+            }
+            //owl:intersectionOf
+            foreach (RDFTriple intersectionOfTriple in ontology.Model.ClassModel.TBoxGraph[null, RDFVocabulary.OWL.INTERSECTION_OF, null, null])
+            {
+                if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)intersectionOfTriple.Subject))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(VocabularyDeclaration),
+                        $"Declaration of intersection class '{intersectionOfTriple.Subject}' is not found in the model: it is required as subject of an owl:intersectionOf relation",
+                        $"Declare '{intersectionOfTriple.Subject}' intersection class to the class model"));
+                else
+                {
+                    RDFCollection intersectionMembersCollection = RDFModelUtilities.DeserializeCollectionFromGraph(ontology.Model.ClassModel.TBoxGraph, (RDFResource)intersectionOfTriple.Object, RDFModelEnums.RDFTripleFlavors.SPO);
+                    foreach (RDFPatternMember intersectionMember in intersectionMembersCollection)
+                    {
+                        if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)intersectionMember))
+                            validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                                OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                                nameof(VocabularyDeclaration),
+                                $"Declaration of class '{intersectionMember}' is not found in the model: it is required by owl:intersectionOf relation of '{(RDFResource)intersectionOfTriple.Subject}' intersection class",
+                                $"Declare '{intersectionMember}' class or restriction to the class model"));
+                    }
+                }
+            }
+            //owl:complementOf
+            foreach (RDFTriple complementOfTriple in ontology.Model.ClassModel.TBoxGraph[null, RDFVocabulary.OWL.COMPLEMENT_OF, null, null])
+            {
+                if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)complementOfTriple.Subject))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(VocabularyDeclaration),
+                        $"Declaration of complement class '{complementOfTriple.Subject}' is not found in the model: it is required as subject of an owl:complementOf relation",
+                        $"Declare '{complementOfTriple.Subject}' complement class to the class model"));
+                if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)complementOfTriple.Object))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(VocabularyDeclaration),
+                        $"Declaration of class '{complementOfTriple.Object}' is not found in the model: it is required by owl:complementOf relation of '{(RDFResource)complementOfTriple.Subject}' complement class",
+                        $"Declare '{complementOfTriple.Object}' class or restriction to the class model"));
+
             }
             #endregion
 
