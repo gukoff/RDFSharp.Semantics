@@ -94,7 +94,7 @@ namespace RDFSharp.Semantics
                                 break;
 
                             case OWLSemanticsEnums.OWLValidatorStandardRules.VocabularyDeclaration:
-                                //TODO
+                                standardRuleReport.MergeEvidences(OWLValidatorRuleset.VocabularyDeclaration(ontology));
                                 break;
 
                             case OWLSemanticsEnums.OWLValidatorStandardRules.DomainRange:
