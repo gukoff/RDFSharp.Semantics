@@ -268,6 +268,20 @@ namespace RDFSharp.Semantics.Validator.Test
             Assert.IsTrue(validatorReport.SelectErrors().Count == 0);
             Assert.IsTrue(validatorReport.SelectWarnings().Count == 2);
         }
+
+        [TestMethod]
+        public void ShouldValidateVocabularyDeclaration_OnProperty()
+        {
+            OWLOntology ontology = new OWLOntology("ex:ont");
+            ontology.Model.ClassModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:restr"), RDFVocabulary.OWL.ON_PROPERTY, new RDFResource("ex:prop")));
+
+            OWLValidatorReport validatorReport = OWLValidatorRuleset.VocabularyDeclaration(ontology);
+
+            Assert.IsNotNull(validatorReport);
+            Assert.IsTrue(validatorReport.EvidencesCount == 2);
+            Assert.IsTrue(validatorReport.SelectErrors().Count == 0);
+            Assert.IsTrue(validatorReport.SelectWarnings().Count == 2);
+        }
         #endregion
     }
 }
