@@ -198,6 +198,76 @@ namespace RDFSharp.Semantics.Validator.Test
             Assert.IsTrue(validatorReport.SelectErrors().Count == 0);
             Assert.IsTrue(validatorReport.SelectWarnings().Count == 2);
         }
+
+        [TestMethod]
+        public void ShouldValidateVocabularyDeclaration_AllValuesFrom()
+        {
+            OWLOntology ontology = new OWLOntology("ex:ont");
+            ontology.Model.ClassModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:class1"), RDFVocabulary.OWL.ALL_VALUES_FROM, new RDFResource("ex:class2")));
+
+            OWLValidatorReport validatorReport = OWLValidatorRuleset.VocabularyDeclaration(ontology);
+
+            Assert.IsNotNull(validatorReport);
+            Assert.IsTrue(validatorReport.EvidencesCount == 2);
+            Assert.IsTrue(validatorReport.SelectErrors().Count == 0);
+            Assert.IsTrue(validatorReport.SelectWarnings().Count == 2);
+        }
+
+        [TestMethod]
+        public void ShouldValidateVocabularyDeclaration_SomeValuesFrom()
+        {
+            OWLOntology ontology = new OWLOntology("ex:ont");
+            ontology.Model.ClassModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:class1"), RDFVocabulary.OWL.SOME_VALUES_FROM, new RDFResource("ex:class2")));
+
+            OWLValidatorReport validatorReport = OWLValidatorRuleset.VocabularyDeclaration(ontology);
+
+            Assert.IsNotNull(validatorReport);
+            Assert.IsTrue(validatorReport.EvidencesCount == 2);
+            Assert.IsTrue(validatorReport.SelectErrors().Count == 0);
+            Assert.IsTrue(validatorReport.SelectWarnings().Count == 2);
+        }
+
+        [TestMethod]
+        public void ShouldValidateVocabularyDeclaration_HasValue()
+        {
+            OWLOntology ontology = new OWLOntology("ex:ont");
+            ontology.Model.ClassModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:class"), RDFVocabulary.OWL.HAS_VALUE, new RDFResource("ex:individual")));
+
+            OWLValidatorReport validatorReport = OWLValidatorRuleset.VocabularyDeclaration(ontology);
+
+            Assert.IsNotNull(validatorReport);
+            Assert.IsTrue(validatorReport.EvidencesCount == 2);
+            Assert.IsTrue(validatorReport.SelectErrors().Count == 0);
+            Assert.IsTrue(validatorReport.SelectWarnings().Count == 2);
+        }
+
+        [TestMethod]
+        public void ShouldValidateVocabularyDeclaration_HasSelf()
+        {
+            OWLOntology ontology = new OWLOntology("ex:ont");
+            ontology.Model.ClassModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:class"), RDFVocabulary.OWL.HAS_SELF, RDFTypedLiteral.True));
+
+            OWLValidatorReport validatorReport = OWLValidatorRuleset.VocabularyDeclaration(ontology);
+
+            Assert.IsNotNull(validatorReport);
+            Assert.IsTrue(validatorReport.EvidencesCount == 1);
+            Assert.IsTrue(validatorReport.SelectErrors().Count == 0);
+            Assert.IsTrue(validatorReport.SelectWarnings().Count == 1);
+        }
+
+        [TestMethod]
+        public void ShouldValidateVocabularyDeclaration_OnClass()
+        {
+            OWLOntology ontology = new OWLOntology("ex:ont");
+            ontology.Model.ClassModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:qRestr"), RDFVocabulary.OWL.ON_CLASS, new RDFResource("ex:class")));
+
+            OWLValidatorReport validatorReport = OWLValidatorRuleset.VocabularyDeclaration(ontology);
+
+            Assert.IsNotNull(validatorReport);
+            Assert.IsTrue(validatorReport.EvidencesCount == 2);
+            Assert.IsTrue(validatorReport.SelectErrors().Count == 0);
+            Assert.IsTrue(validatorReport.SelectWarnings().Count == 2);
+        }
         #endregion
     }
 }

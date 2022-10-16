@@ -275,9 +275,104 @@ namespace RDFSharp.Semantics
                     }
                 }
             }
+            //owl:allValuesFrom
+            foreach (RDFTriple allValuesFromTriple in ontology.Model.ClassModel.TBoxGraph[null, RDFVocabulary.OWL.ALL_VALUES_FROM, null, null])
+            {
+                if (!ontology.Model.ClassModel.CheckHasRestrictionClass((RDFResource)allValuesFromTriple.Subject))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(VocabularyDeclaration),
+                        $"Declaration of restriction '{allValuesFromTriple.Subject}' is not found in the model: it is required as subject of an 'owl:allValuesFrom' relation",
+                        $"Declare '{allValuesFromTriple.Subject}' restriction to the class model"));
+
+                if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)allValuesFromTriple.Object))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(VocabularyDeclaration),
+                        $"Declaration of class '{allValuesFromTriple.Object}' is not found in the model: it is required by 'owl:allValuesFrom' relation of '{allValuesFromTriple.Subject}' restriction",
+                        $"Declare '{allValuesFromTriple.Object}' class or restriction to the class model"));
+            }
+            //owl:someValuesFrom
+            foreach (RDFTriple someValuesFromTriple in ontology.Model.ClassModel.TBoxGraph[null, RDFVocabulary.OWL.SOME_VALUES_FROM, null, null])
+            {
+                if (!ontology.Model.ClassModel.CheckHasRestrictionClass((RDFResource)someValuesFromTriple.Subject))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(VocabularyDeclaration),
+                        $"Declaration of restriction '{someValuesFromTriple.Subject}' is not found in the model: it is required as subject of an 'owl:someValuesFrom' relation",
+                        $"Declare '{someValuesFromTriple.Subject}' restriction to the class model"));
+
+                if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)someValuesFromTriple.Object))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(VocabularyDeclaration),
+                        $"Declaration of class '{someValuesFromTriple.Object}' is not found in the model: it is required by 'owl:someValuesFrom' relation of '{someValuesFromTriple.Subject}' restriction",
+                        $"Declare '{someValuesFromTriple.Object}' class or restriction to the class model"));
+            }
+            //owl:hasValue
+            foreach (RDFTriple hasValueTriple in ontology.Model.ClassModel.TBoxGraph[null, RDFVocabulary.OWL.HAS_VALUE, null, null])
+            {
+                if (!ontology.Model.ClassModel.CheckHasRestrictionClass((RDFResource)hasValueTriple.Subject))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(VocabularyDeclaration),
+                        $"Declaration of restriction '{hasValueTriple.Subject}' is not found in the model: it is required as subject of an 'owl:hasValue' relation",
+                        $"Declare '{hasValueTriple.Subject}' restriction to the class model"));
+
+                if (hasValueTriple.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPO && !ontology.Data.CheckHasIndividual((RDFResource)hasValueTriple.Object))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(VocabularyDeclaration),
+                        $"Declaration of individual '{hasValueTriple.Object}' is not found in the data: it is required by 'owl:hasValue' relation of '{hasValueTriple.Subject}' restriction",
+                        $"Declare '{hasValueTriple.Object}' individual to the data"));
+            }
+            //owl:hasSelf [OWL2]
+            foreach (RDFTriple hasSelfTriple in ontology.Model.ClassModel.TBoxGraph[null, RDFVocabulary.OWL.HAS_SELF, null, null])
+            {
+                if (!ontology.Model.ClassModel.CheckHasRestrictionClass((RDFResource)hasSelfTriple.Subject))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(VocabularyDeclaration),
+                        $"Declaration of restriction '{hasSelfTriple.Subject}' is not found in the model: it is required as subject of an 'owl:hasSelf' relation",
+                        $"Declare '{hasSelfTriple.Subject}' restriction to the class model"));
+            }
+            //owl:onClass
+            foreach (RDFTriple onClassTriple in ontology.Model.ClassModel.TBoxGraph[null, RDFVocabulary.OWL.ON_CLASS, null, null])
+            {
+                if (!ontology.Model.ClassModel.CheckHasRestrictionClass((RDFResource)onClassTriple.Subject))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(VocabularyDeclaration),
+                        $"Declaration of restriction '{onClassTriple.Subject}' is not found in the model: it is required as subject of an 'owl:hasValue' relation",
+                        $"Declare '{onClassTriple.Subject}' restriction to the class model"));
+
+                if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)onClassTriple.Object))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(VocabularyDeclaration),
+                        $"Declaration of class '{onClassTriple.Object}' is not found in the data: it is required by 'owl:onClass' relation of '{onClassTriple.Subject}' qualified restriction",
+                        $"Declare '{onClassTriple.Object}' class or restriction to the class model"));
+            }
             #endregion
 
             #region PropertyModel
+            //owl:onProperty
+            foreach (RDFTriple onPropertyTriple in ontology.Model.PropertyModel.TBoxGraph[null, RDFVocabulary.OWL.ON_PROPERTY, null, null])
+            {
+                if (!ontology.Model.PropertyModel.CheckHasProperty((RDFResource)onPropertyTriple.Object))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(VocabularyDeclaration),
+                        $"Declaration of property '{onPropertyTriple.Object}' is not found in the model: it is required as object of an 'owl:onProperty' relation",
+                        $"Declare '{onPropertyTriple.Object}' property to the property model"));
+
+                if (!ontology.Model.ClassModel.CheckHasRestrictionClass((RDFResource)onPropertyTriple.Subject))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(VocabularyDeclaration),
+                        $"Declaration of restriction '{onPropertyTriple.Subject}' is not found in the model: it is required by 'owl:onProperty' relation on '{onPropertyTriple.Object}' property",
+                        $"Declare '{onPropertyTriple.Subject}' restriction to the class model"));
+            }
             //rdfs:domain
             foreach (RDFTriple domainTriple in ontology.Model.PropertyModel.TBoxGraph[null, RDFVocabulary.RDFS.DOMAIN, null, null])
             {
@@ -315,7 +410,7 @@ namespace RDFSharp.Semantics
             #endregion
 
             #region Data
-
+            
             #endregion
 
             return validatorRuleReport;
