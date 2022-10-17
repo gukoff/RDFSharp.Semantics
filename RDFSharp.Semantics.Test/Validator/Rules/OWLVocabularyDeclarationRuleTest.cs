@@ -352,9 +352,9 @@ namespace RDFSharp.Semantics.Validator.Test
             OWLValidatorReport validatorReport = OWLVocabularyDeclarationRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
-            Assert.IsTrue(validatorReport.EvidencesCount == 2);
+            Assert.IsTrue(validatorReport.EvidencesCount == 1);
             Assert.IsTrue(validatorReport.SelectErrors().Count == 0);
-            Assert.IsTrue(validatorReport.SelectWarnings().Count == 2);
+            Assert.IsTrue(validatorReport.SelectWarnings().Count == 1);
         }
 
         [TestMethod]

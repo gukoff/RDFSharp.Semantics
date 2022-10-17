@@ -13,6 +13,8 @@
 
 using RDFSharp.Model;
 using RDFSharp.Query;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace RDFSharp.Semantics
 {
@@ -413,13 +415,6 @@ namespace RDFSharp.Semantics
             //owl:AllDisjointProperties [OWL2]
             foreach (RDFTriple allDisjointPropertiesTriple in ontology.Model.PropertyModel.TBoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ALL_DISJOINT_PROPERTIES, null])
             {
-                if (!ontology.Model.PropertyModel.CheckHasProperty((RDFResource)allDisjointPropertiesTriple.Subject))
-                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
-                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
-                        $"Declaration of AllDisjointProperties class '{allDisjointPropertiesTriple.Subject}' is not found in the model: it is required as subject of an 'owl:members' relation",
-                        $"Declare '{allDisjointPropertiesTriple.Subject}' AllDisjointProperties class to the property model"));
-
                 foreach (RDFTriple allDisjointPropertiesMembersTriple in ontology.Model.PropertyModel.TBoxGraph[(RDFResource)allDisjointPropertiesTriple.Subject, RDFVocabulary.OWL.MEMBERS, null, null])
                 {
                     RDFCollection allDisjointPropertiesMembersCollection = RDFModelUtilities.DeserializeCollectionFromGraph(ontology.Model.PropertyModel.TBoxGraph, (RDFResource)allDisjointPropertiesMembersTriple.Object, RDFModelEnums.RDFTripleFlavors.SPO);
@@ -471,7 +466,111 @@ namespace RDFSharp.Semantics
             #endregion
 
             #region Data
+            //rdf:type
+            foreach (RDFTriple typeTriple in ontology.Data.ABoxGraph[null, RDFVocabulary.RDF.TYPE, null, null].Where(t => t.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPO && !((RDFResource)t.Object).CheckReservedClass()))
+            {
+                if (!ontology.Data.CheckHasIndividual((RDFResource)typeTriple.Subject))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(OWLVocabularyDeclarationRule),
+                        $"Declaration of individual '{typeTriple.Subject}' is not found in the data: it is required as subject of a 'rdf:type' relation",
+                        $"Declare '{typeTriple.Subject}' individual to the data"));
 
+                if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)typeTriple.Object))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(OWLVocabularyDeclarationRule),
+                        $"Declaration of class '{typeTriple.Object}' is not found in the model: it is required as object of a 'rdf:type' relation",
+                        $"Declare '{typeTriple.Object}' class to the class model"));
+            }
+            //owl:sameAs
+            foreach (RDFTriple sameAsTriple in ontology.Data.ABoxGraph[null, RDFVocabulary.OWL.SAME_AS, null, null])
+            {
+                if (!ontology.Data.CheckHasIndividual((RDFResource)sameAsTriple.Subject))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(OWLVocabularyDeclarationRule),
+                        $"Declaration of individual '{sameAsTriple.Subject}' is not found in the data: it is required as subject of an 'owl:sameAs' relation",
+                        $"Declare '{sameAsTriple.Subject}' individual to the data"));
+
+                if (!ontology.Data.CheckHasIndividual((RDFResource)sameAsTriple.Object))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(OWLVocabularyDeclarationRule),
+                        $"Declaration of class '{sameAsTriple.Object}' is not found in the model: it is required as object of an 'owl:sameAs' relation",
+                        $"Declare '{sameAsTriple.Object}' individual to the data"));
+            }
+            //owl:differentFrom
+            foreach (RDFTriple differentFromTriple in ontology.Data.ABoxGraph[null, RDFVocabulary.OWL.DIFFERENT_FROM, null, null])
+            {
+                if (!ontology.Data.CheckHasIndividual((RDFResource)differentFromTriple.Subject))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(OWLVocabularyDeclarationRule),
+                        $"Declaration of individual '{differentFromTriple.Subject}' is not found in the data: it is required as subject of an 'owl:differentFrom' relation",
+                        $"Declare '{differentFromTriple.Subject}' individual to the data"));
+
+                if (!ontology.Data.CheckHasIndividual((RDFResource)differentFromTriple.Object))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(OWLVocabularyDeclarationRule),
+                        $"Declaration of class '{differentFromTriple.Object}' is not found in the model: it is required as object of an 'owl:differentFrom' relation",
+                        $"Declare '{differentFromTriple.Object}' individual to the data"));
+            }
+            //owl:AllDifferent [OWL2]
+            foreach (RDFTriple allDifferentTriple in ontology.Data.ABoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ALL_DIFFERENT, null])
+            {
+                foreach (RDFTriple allDifferentMembersTriple in ontology.Model.PropertyModel.TBoxGraph[(RDFResource)allDifferentTriple.Subject, RDFVocabulary.OWL.DISTINCT_MEMBERS, null, null])
+                {
+                    RDFCollection allDifferentMembersCollection = RDFModelUtilities.DeserializeCollectionFromGraph(ontology.Model.PropertyModel.TBoxGraph, (RDFResource)allDifferentMembersTriple.Object, RDFModelEnums.RDFTripleFlavors.SPO);
+                    foreach (RDFPatternMember allDifferentMember in allDifferentMembersCollection)
+                    {
+                        if (!ontology.Data.CheckHasIndividual((RDFResource)allDifferentMember))
+                            validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                                OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                                nameof(OWLVocabularyDeclarationRule),
+                                $"Declaration of individual '{allDifferentMember}' is not found in the data: it is required by 'owl:distinctMembers' relation of '{(RDFResource)allDifferentTriple.Subject}' AllDifferent class",
+                                $"Declare '{allDifferentMember}' individual to the data"));
+                    }
+                }
+            }
+            //owl:ObjectAssertion
+            IEnumerator<RDFResource> objectProperties = ontology.Model.PropertyModel.ObjectPropertiesEnumerator;
+            while (objectProperties.MoveNext())
+            {
+                foreach (RDFTriple objectAssertion in ontology.Data.ABoxGraph[null, objectProperties.Current, null, null])
+                {
+                    if (!ontology.Data.CheckHasIndividual((RDFResource)objectAssertion.Subject))
+                        validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                            OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                            nameof(OWLVocabularyDeclarationRule),
+                            $"Declaration of individual '{objectAssertion.Subject}' is not found in the data: it is required as subject of an 'owl:ObjectAssertion' relation",
+                            $"Declare '{objectAssertion.Subject}' individual to the data"));
+
+                    if (!ontology.Data.CheckHasIndividual((RDFResource)objectAssertion.Object))
+                        validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                            OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                            nameof(OWLVocabularyDeclarationRule),
+                            $"Declaration of individual '{objectAssertion.Object}' is not found in the data: it is required as object of an 'owl:objectAssertion' relation",
+                            $"Declare '{objectAssertion.Object}' individual to the data"));
+                }
+            }
+            //owl:DatatypeAssertion
+            IEnumerator<RDFResource> datatypeProperties = ontology.Model.PropertyModel.DatatypePropertiesEnumerator;
+            while (datatypeProperties.MoveNext())
+            {
+                foreach (RDFTriple datatypeAssertion in ontology.Data.ABoxGraph[null, datatypeProperties.Current, null, null])
+                {
+                    if (!ontology.Data.CheckHasIndividual((RDFResource)datatypeAssertion.Subject))
+                        validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                            OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                            nameof(OWLVocabularyDeclarationRule),
+                            $"Declaration of individual '{datatypeAssertion.Subject}' is not found in the data: it is required as subject of an 'owl:DatatypeAssertion' relation",
+                            $"Declare '{datatypeAssertion.Subject}' individual to the data"));
+                }
+            }
+            //owl:NegativeObjectAssertion [OWL2]
+            
             #endregion
 
             return validatorRuleReport;

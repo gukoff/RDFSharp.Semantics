@@ -117,6 +117,7 @@ namespace RDFSharp.Semantics
                 RDFVocabulary.OWL.RESTRICTION.PatternMemberID,
                 RDFVocabulary.OWL.DATA_RANGE.PatternMemberID,
                 RDFVocabulary.OWL.INDIVIDUAL.PatternMemberID,
+                RDFVocabulary.OWL.NAMED_INDIVIDUAL.PatternMemberID,
                 RDFVocabulary.OWL.ONTOLOGY.PatternMemberID,
                 RDFVocabulary.OWL.ANNOTATION_PROPERTY.PatternMemberID,
                 RDFVocabulary.OWL.DATATYPE_PROPERTY.PatternMemberID,
@@ -129,7 +130,6 @@ namespace RDFSharp.Semantics
                 RDFVocabulary.OWL.TRANSITIVE_PROPERTY.PatternMemberID,
                 RDFVocabulary.OWL.THING.PatternMemberID,
                 RDFVocabulary.OWL.NOTHING.PatternMemberID,
-                RDFVocabulary.OWL.NAMED_INDIVIDUAL.PatternMemberID,
                 //OWL2
                 RDFVocabulary.OWL.ALL_DISJOINT_CLASSES.PatternMemberID,
                 RDFVocabulary.OWL.ALL_DISJOINT_PROPERTIES.PatternMemberID,
