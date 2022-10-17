@@ -14,6 +14,7 @@
 using RDFSharp.Model;
 using RDFSharp.Query;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 
 namespace RDFSharp.Semantics
@@ -570,7 +571,77 @@ namespace RDFSharp.Semantics
                 }
             }
             //owl:NegativeObjectAssertion [OWL2]
-            
+            RDFSelectQuery negativeObjectAssertionQuery = new RDFSelectQuery()
+                .AddPatternGroup(new RDFPatternGroup()
+                    .AddPattern(new RDFPattern(new RDFVariable("?NASN_REPRESENTATIVE"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION))
+                    .AddPattern(new RDFPattern(new RDFVariable("?NASN_REPRESENTATIVE"), RDFVocabulary.OWL.SOURCE_INDIVIDUAL, new RDFVariable("?NASN_SOURCE")))
+                    .AddPattern(new RDFPattern(new RDFVariable("?NASN_REPRESENTATIVE"), RDFVocabulary.OWL.ASSERTION_PROPERTY, new RDFVariable("?NASN_PROPERTY")))
+                    .AddPattern(new RDFPattern(new RDFVariable("?NASN_REPRESENTATIVE"), RDFVocabulary.OWL.TARGET_INDIVIDUAL, new RDFVariable("?NASN_TARGET")))
+                    .AddFilter(new RDFIsUriFilter(new RDFVariable("?NASN_SOURCE")))
+                    .AddFilter(new RDFIsUriFilter(new RDFVariable("?NASN_PROPERTY")))
+                    .AddFilter(new RDFIsUriFilter(new RDFVariable("?NASN_TARGET"))))
+                .AddProjectionVariable(new RDFVariable("?NASN_SOURCE"))
+                .AddProjectionVariable(new RDFVariable("?NASN_PROPERTY"))
+                .AddProjectionVariable(new RDFVariable("?NASN_TARGET"));
+            RDFSelectQueryResult negativeObjectAssertionQueryResult = negativeObjectAssertionQuery.ApplyToGraph(ontology.Data.ABoxGraph);
+            foreach (DataRow negativeObjectAssertion in negativeObjectAssertionQueryResult.SelectResults.Rows)
+            {
+                string nasnSource = negativeObjectAssertion["?NASN_SOURCE"].ToString();
+                if (!ontology.Data.CheckHasIndividual(new RDFResource(nasnSource)))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(OWLVocabularyDeclarationRule),
+                        $"Declaration of individual '{nasnSource}' is not found in the data: it is required as subject of an 'owl:NegativeObjectAssertion' relation",
+                        $"Declare '{nasnSource}' individual to the data"));
+
+                string nasnProperty = negativeObjectAssertion["?NASN_PROPERTY"].ToString();
+                if (!ontology.Model.PropertyModel.CheckHasProperty(new RDFResource(nasnProperty)))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(OWLVocabularyDeclarationRule),
+                        $"Declaration of property '{nasnProperty}' is not found in the model: it is required as predicate of an 'owl:NegativeObjectAssertion' relation",
+                        $"Declare '{nasnProperty}' property to the property model"));
+
+                string nasnTarget = negativeObjectAssertion["?NASN_TARGET"].ToString();
+                if (!ontology.Data.CheckHasIndividual(new RDFResource(nasnTarget)))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(OWLVocabularyDeclarationRule),
+                        $"Declaration of individual '{nasnTarget}' is not found in the data: it is required as object of an 'owl:NegativeObjectAssertion' relation",
+                        $"Declare '{nasnTarget}' individual to the data"));
+            }
+            //owl:NegativeDatatypeAssertion [OWL2]
+            RDFSelectQuery negativeDatatypeAssertionQuery = new RDFSelectQuery()
+                .AddPatternGroup(new RDFPatternGroup()
+                    .AddPattern(new RDFPattern(new RDFVariable("?NASN_REPRESENTATIVE"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION))
+                    .AddPattern(new RDFPattern(new RDFVariable("?NASN_REPRESENTATIVE"), RDFVocabulary.OWL.SOURCE_INDIVIDUAL, new RDFVariable("?NASN_SOURCE")))
+                    .AddPattern(new RDFPattern(new RDFVariable("?NASN_REPRESENTATIVE"), RDFVocabulary.OWL.ASSERTION_PROPERTY, new RDFVariable("?NASN_PROPERTY")))
+                    .AddPattern(new RDFPattern(new RDFVariable("?NASN_REPRESENTATIVE"), RDFVocabulary.OWL.TARGET_VALUE, new RDFVariable("?NASN_TARGET")))
+                    .AddFilter(new RDFIsUriFilter(new RDFVariable("?NASN_SOURCE")))
+                    .AddFilter(new RDFIsUriFilter(new RDFVariable("?NASN_PROPERTY")))
+                    .AddFilter(new RDFIsLiteralFilter(new RDFVariable("?NASN_TARGET"))))
+                .AddProjectionVariable(new RDFVariable("?NASN_SOURCE"))
+                .AddProjectionVariable(new RDFVariable("?NASN_PROPERTY"))
+                .AddProjectionVariable(new RDFVariable("?NASN_TARGET"));
+            RDFSelectQueryResult negativeDatatypeAssertionQueryResult = negativeDatatypeAssertionQuery.ApplyToGraph(ontology.Data.ABoxGraph);
+            foreach (DataRow negativeDatatypeAssertion in negativeDatatypeAssertionQueryResult.SelectResults.Rows)
+            {
+                string nasnSource = negativeDatatypeAssertion["?NASN_SOURCE"].ToString();
+                if (!ontology.Data.CheckHasIndividual(new RDFResource(nasnSource)))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(OWLVocabularyDeclarationRule),
+                        $"Declaration of individual '{nasnSource}' is not found in the data: it is required as subject of an 'owl:NegativeDatatypeAssertion' relation",
+                        $"Declare '{nasnSource}' individual to the data"));
+
+                string nasnProperty = negativeDatatypeAssertion["?NASN_PROPERTY"].ToString();
+                if (!ontology.Model.PropertyModel.CheckHasProperty(new RDFResource(nasnProperty)))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(OWLVocabularyDeclarationRule),
+                        $"Declaration of property '{nasnProperty}' is not found in the model: it is required as predicate of an 'owl:NegativeDatatypeAssertion' relation",
+                        $"Declare '{nasnProperty}' property to the property model"));
+            }
             #endregion
 
             return validatorRuleReport;
