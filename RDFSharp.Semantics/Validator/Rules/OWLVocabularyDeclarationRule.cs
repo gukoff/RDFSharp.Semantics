@@ -321,6 +321,119 @@ namespace RDFSharp.Semantics
             #endregion
 
             #region PropertyModel
+            //rdfs:subPropertyOf
+            foreach (RDFTriple subPropertyOfTriple in ontology.Model.PropertyModel.TBoxGraph[null, RDFVocabulary.RDFS.SUB_PROPERTY_OF, null, null])
+            {
+                if (!ontology.Model.PropertyModel.CheckHasProperty((RDFResource)subPropertyOfTriple.Subject))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(OWLVocabularyDeclarationRule),
+                        $"Declaration of property '{subPropertyOfTriple.Subject}' is not found in the model: it is required as subject of a 'rdfs:subPropertyOf' relation",
+                        $"Declare '{subPropertyOfTriple.Subject}' property to the property model"));
+
+                if (!ontology.Model.PropertyModel.CheckHasProperty((RDFResource)subPropertyOfTriple.Object))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(OWLVocabularyDeclarationRule),
+                        $"Declaration of property '{subPropertyOfTriple.Object}' is not found in the model: it is required as object of a 'rdfs:subPropertyOf' relation",
+                        $"Declare '{subPropertyOfTriple.Object}' property to the property model"));
+            }
+            //owl:equivalentProperty
+            foreach (RDFTriple equivalentPropertyTriple in ontology.Model.PropertyModel.TBoxGraph[null, RDFVocabulary.OWL.EQUIVALENT_PROPERTY, null, null])
+            {
+                if (!ontology.Model.PropertyModel.CheckHasProperty((RDFResource)equivalentPropertyTriple.Subject))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(OWLVocabularyDeclarationRule),
+                        $"Declaration of property '{equivalentPropertyTriple.Subject}' is not found in the model: it is required as subject of an 'owl:equivalentProperty' relation",
+                        $"Declare '{equivalentPropertyTriple.Subject}' property to the property model"));
+
+                if (!ontology.Model.PropertyModel.CheckHasProperty((RDFResource)equivalentPropertyTriple.Object))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(OWLVocabularyDeclarationRule),
+                        $"Declaration of property '{equivalentPropertyTriple.Object}' is not found in the model: it is required as object of an 'owl:equivalentProperty' relation",
+                        $"Declare '{equivalentPropertyTriple.Object}' property to the property model"));
+            }
+            //owl:propertyDisjointWith
+            foreach (RDFTriple propertyDisjointWithTriple in ontology.Model.PropertyModel.TBoxGraph[null, RDFVocabulary.OWL.PROPERTY_DISJOINT_WITH, null, null])
+            {
+                if (!ontology.Model.PropertyModel.CheckHasProperty((RDFResource)propertyDisjointWithTriple.Subject))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(OWLVocabularyDeclarationRule),
+                        $"Declaration of property '{propertyDisjointWithTriple.Subject}' is not found in the model: it is required as subject of an 'owl:propertyDisjointWith' relation",
+                        $"Declare '{propertyDisjointWithTriple.Subject}' property to the property model"));
+
+                if (!ontology.Model.PropertyModel.CheckHasProperty((RDFResource)propertyDisjointWithTriple.Object))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(OWLVocabularyDeclarationRule),
+                        $"Declaration of property '{propertyDisjointWithTriple.Object}' is not found in the model: it is required as object of an 'owl:propertyDisjointWith' relation",
+                        $"Declare '{propertyDisjointWithTriple.Object}' property to the property model"));
+            }
+            //owl:inverseOf
+            foreach (RDFTriple inverseOfTriple in ontology.Model.PropertyModel.TBoxGraph[null, RDFVocabulary.OWL.INVERSE_OF, null, null])
+            {
+                if (!ontology.Model.PropertyModel.CheckHasProperty((RDFResource)inverseOfTriple.Subject))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(OWLVocabularyDeclarationRule),
+                        $"Declaration of property '{inverseOfTriple.Subject}' is not found in the model: it is required as subject of an 'owl:inverseOf' relation",
+                        $"Declare '{inverseOfTriple.Subject}' property to the property model"));
+
+                if (!ontology.Model.PropertyModel.CheckHasProperty((RDFResource)inverseOfTriple.Object))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(OWLVocabularyDeclarationRule),
+                        $"Declaration of property '{inverseOfTriple.Object}' is not found in the model: it is required as object of an 'owl:inverseOf' relation",
+                        $"Declare '{inverseOfTriple.Object}' property to the property model"));
+            }
+            //owl:propertyChainAxiom [OWL2]
+            foreach (RDFTriple propertyChainAxiomTriple in ontology.Model.PropertyModel.TBoxGraph[null, RDFVocabulary.OWL.PROPERTY_CHAIN_AXIOM, null, null])
+            {
+                if (!ontology.Model.PropertyModel.CheckHasProperty((RDFResource)propertyChainAxiomTriple.Subject))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(OWLVocabularyDeclarationRule),
+                        $"Declaration of property '{propertyChainAxiomTriple.Subject}' is not found in the model: it is required as subject of an 'owl:propertyChainAxiom' relation",
+                        $"Declare '{propertyChainAxiomTriple.Subject}' property to the property model"));
+
+                RDFCollection propertyChainAxiomMembersCollection = RDFModelUtilities.DeserializeCollectionFromGraph(ontology.Model.PropertyModel.TBoxGraph, (RDFResource)propertyChainAxiomTriple.Object, RDFModelEnums.RDFTripleFlavors.SPO);
+                foreach (RDFPatternMember propertyChainAxiomMember in propertyChainAxiomMembersCollection)
+                {
+                    if (!ontology.Model.PropertyModel.CheckHasProperty((RDFResource)propertyChainAxiomMember))
+                        validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                            OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                            nameof(OWLVocabularyDeclarationRule),
+                            $"Declaration of property '{propertyChainAxiomMember}' is not found in the model: it is required by 'owl:propertyChainAxiom' relation of '{(RDFResource)propertyChainAxiomTriple.Subject}' property",
+                            $"Declare '{propertyChainAxiomMember}' property to the property model"));
+                }
+            }
+            //owl:AllDisjointProperties [OWL2]
+            foreach (RDFTriple allDisjointPropertiesTriple in ontology.Model.PropertyModel.TBoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ALL_DISJOINT_PROPERTIES, null])
+            {
+                if (!ontology.Model.PropertyModel.CheckHasProperty((RDFResource)allDisjointPropertiesTriple.Subject))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(OWLVocabularyDeclarationRule),
+                        $"Declaration of AllDisjointProperties class '{allDisjointPropertiesTriple.Subject}' is not found in the model: it is required as subject of an 'owl:members' relation",
+                        $"Declare '{allDisjointPropertiesTriple.Subject}' AllDisjointProperties class to the property model"));
+
+                foreach (RDFTriple allDisjointPropertiesMembersTriple in ontology.Model.PropertyModel.TBoxGraph[(RDFResource)allDisjointPropertiesTriple.Subject, RDFVocabulary.OWL.MEMBERS, null, null])
+                {
+                    RDFCollection allDisjointPropertiesMembersCollection = RDFModelUtilities.DeserializeCollectionFromGraph(ontology.Model.PropertyModel.TBoxGraph, (RDFResource)allDisjointPropertiesMembersTriple.Object, RDFModelEnums.RDFTripleFlavors.SPO);
+                    foreach (RDFPatternMember allDisjointPropertiesMember in allDisjointPropertiesMembersCollection)
+                    {
+                        if (!ontology.Model.PropertyModel.CheckHasProperty((RDFResource)allDisjointPropertiesMember))
+                            validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                                OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                                nameof(OWLVocabularyDeclarationRule),
+                                $"Declaration of property '{allDisjointPropertiesMember}' is not found in the model: it is required by 'owl:members' relation of '{(RDFResource)allDisjointPropertiesTriple.Subject}' AllDisjointProperties class",
+                                $"Declare '{allDisjointPropertiesMember}' property to the property model"));
+                    }
+                }
+            }
             //rdfs:domain
             foreach (RDFTriple domainTriple in ontology.Model.PropertyModel.TBoxGraph[null, RDFVocabulary.RDFS.DOMAIN, null, null])
             {
