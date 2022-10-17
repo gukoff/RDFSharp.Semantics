@@ -90,11 +90,11 @@ namespace RDFSharp.Semantics
                         switch (standardRule)
                         {
                             case OWLSemanticsEnums.OWLValidatorStandardRules.VocabularyDisjointness:
-                                standardRuleReport.MergeEvidences(OWLValidatorRuleset.VocabularyDisjointness(ontology));
+                                standardRuleReport.MergeEvidences(OWLVocabularyDisjointnessRule.ExecuteRule(ontology));
                                 break;
 
                             case OWLSemanticsEnums.OWLValidatorStandardRules.VocabularyDeclaration:
-                                standardRuleReport.MergeEvidences(OWLValidatorRuleset.VocabularyDeclaration(ontology));
+                                standardRuleReport.MergeEvidences(OWLVocabularyDeclarationRule.ExecuteRule(ontology));
                                 break;
 
                             case OWLSemanticsEnums.OWLValidatorStandardRules.DomainRange:
