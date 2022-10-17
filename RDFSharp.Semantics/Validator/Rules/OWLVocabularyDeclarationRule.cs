@@ -355,7 +355,7 @@ namespace RDFSharp.Semantics
                         $"Declaration of property '{equivalentPropertyTriple.Object}' is not found in the model: it is required as object of an 'owl:equivalentProperty' relation",
                         $"Declare '{equivalentPropertyTriple.Object}' property to the property model"));
             }
-            //owl:propertyDisjointWith
+            //owl:propertyDisjointWith [OWL2]
             foreach (RDFTriple propertyDisjointWithTriple in ontology.Model.PropertyModel.TBoxGraph[null, RDFVocabulary.OWL.PROPERTY_DISJOINT_WITH, null, null])
             {
                 if (!ontology.Model.PropertyModel.CheckHasProperty((RDFResource)propertyDisjointWithTriple.Subject))
