@@ -468,7 +468,8 @@ namespace RDFSharp.Semantics
 
             #region Data
             //rdf:type
-            foreach (RDFTriple typeTriple in ontology.Data.ABoxGraph[null, RDFVocabulary.RDF.TYPE, null, null].Where(t => t.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPO && !((RDFResource)t.Object).CheckReservedClass()))
+            foreach (RDFTriple typeTriple in ontology.Data.ABoxGraph[null, RDFVocabulary.RDF.TYPE, null, null].Where(t => t.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPO 
+                                                                                                                            && !((RDFResource)t.Object).CheckReservedClass()))
             {
                 if (!ontology.Data.CheckHasIndividual((RDFResource)typeTriple.Subject))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
@@ -521,9 +522,9 @@ namespace RDFSharp.Semantics
             //owl:AllDifferent [OWL2]
             foreach (RDFTriple allDifferentTriple in ontology.Data.ABoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ALL_DIFFERENT, null])
             {
-                foreach (RDFTriple allDifferentMembersTriple in ontology.Model.PropertyModel.TBoxGraph[(RDFResource)allDifferentTriple.Subject, RDFVocabulary.OWL.DISTINCT_MEMBERS, null, null])
+                foreach (RDFTriple allDifferentMembersTriple in ontology.Data.ABoxGraph[(RDFResource)allDifferentTriple.Subject, RDFVocabulary.OWL.DISTINCT_MEMBERS, null, null])
                 {
-                    RDFCollection allDifferentMembersCollection = RDFModelUtilities.DeserializeCollectionFromGraph(ontology.Model.PropertyModel.TBoxGraph, (RDFResource)allDifferentMembersTriple.Object, RDFModelEnums.RDFTripleFlavors.SPO);
+                    RDFCollection allDifferentMembersCollection = RDFModelUtilities.DeserializeCollectionFromGraph(ontology.Data.ABoxGraph, (RDFResource)allDifferentMembersTriple.Object, RDFModelEnums.RDFTripleFlavors.SPO);
                     foreach (RDFPatternMember allDifferentMember in allDifferentMembersCollection)
                     {
                         if (!ontology.Data.CheckHasIndividual((RDFResource)allDifferentMember))
