@@ -97,6 +97,10 @@ namespace RDFSharp.Semantics
                                 standardRuleReport.MergeEvidences(OWLVocabularyDeclarationRule.ExecuteRule(ontology));
                                 break;
 
+                            case OWLSemanticsEnums.OWLValidatorStandardRules.Deprecation:
+                                standardRuleReport.MergeEvidences(OWLDeprecationRule.ExecuteRule(ontology));
+                                break;
+
                             case OWLSemanticsEnums.OWLValidatorStandardRules.DomainRange:
                                 //TODO
                                 break;
@@ -142,10 +146,6 @@ namespace RDFSharp.Semantics
                                 break;
 
                             case OWLSemanticsEnums.OWLValidatorStandardRules.LocalCardinalityConstraint:
-                                //TODO
-                                break;
-
-                            case OWLSemanticsEnums.OWLValidatorStandardRules.Deprecation:
                                 //TODO
                                 break;
                         }
