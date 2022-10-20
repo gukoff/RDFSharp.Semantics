@@ -30,13 +30,13 @@ namespace RDFSharp.Semantics
             IEnumerator<RDFResource> asymmetricPropertiesEnumerator = ontology.Model.PropertyModel.AsymmetricPropertiesEnumerator;
             while (asymmetricPropertiesEnumerator.MoveNext())
             {
-                if (ontology.Data.ABoxGraph[null, asymmetricPropertiesEnumerator.Current, null, null].Any(t => t.Subject.Equals(t.Object)))
+                RDFGraph asymmetricObjectAssertions = ontology.Data.ABoxGraph[null, asymmetricPropertiesEnumerator.Current, null, null];
+                if (asymmetricObjectAssertions.Any(asn => ontology.Data.CheckHasObjectAssertion((RDFResource)asn.Object, asymmetricPropertiesEnumerator.Current, (RDFResource)asn.Subject)))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
                         nameof(OWLAsymmetricPropertyRule),
-                        $"Asymmetric property '{asymmetricPropertiesEnumerator.Current}' is used in an object assertion having the same subject and object term: this violates OWL2 integrity",
-                        "Revise your object assertions: correct asymmetric property usage in order to not have the same subject and object term"));
-
+                        $"Violation of 'owl:AsymmetricProperty' behavior on property '{asymmetricPropertiesEnumerator.Current}'",
+                        "Revise your object assertions: fix asymmetric property usage in order to not clash on subject/predicate asimmetry"));
             }
 
             return validatorRuleReport;

@@ -29,7 +29,9 @@ namespace RDFSharp.Semantics.Validator.Test
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objprop"), new OWLOntologyObjectPropertyBehavior() { Asymmetric = true });
             ontology.Data.DeclareIndividual(new RDFResource("ex:indiv1"));
-            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objprop"), new RDFResource("ex:indiv1"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objprop"), new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv2"), new RDFResource("ex:objprop"), new RDFResource("ex:indiv1")); //clash
 
             OWLValidatorReport validatorReport = OWLAsymmetricPropertyRule.ExecuteRule(ontology);
 
@@ -45,7 +47,9 @@ namespace RDFSharp.Semantics.Validator.Test
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objprop"), new OWLOntologyObjectPropertyBehavior() { Asymmetric = true });
             ontology.Data.DeclareIndividual(new RDFResource("ex:indiv1"));
-            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objprop"), new RDFResource("ex:indiv1"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objprop"), new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv2"), new RDFResource("ex:objprop"), new RDFResource("ex:indiv1")); //clash
 
             OWLValidator validator = new OWLValidator().AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.AsymmetricProperty);
             OWLValidatorReport validatorReport = validator.ApplyToOntology(ontology);
