@@ -42,6 +42,21 @@ namespace RDFSharp.Semantics.Validator.Test
         }
 
         [TestMethod]
+        public void ShouldValidateVocabularyDeclaration_SubClassOf_ViaValidator()
+        {
+            OWLOntology ontology = new OWLOntology("ex:ont");
+            ontology.Model.ClassModel.DeclareSubClasses(new RDFResource("ex:class1"), new RDFResource("ex:class2"));
+
+            OWLValidator validator = new OWLValidator().AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.VocabularyDeclaration);
+            OWLValidatorReport validatorReport = validator.ApplyToOntology(ontology);
+
+            Assert.IsNotNull(validatorReport);
+            Assert.IsTrue(validatorReport.EvidencesCount == 2);
+            Assert.IsTrue(validatorReport.SelectErrors().Count == 0);
+            Assert.IsTrue(validatorReport.SelectWarnings().Count == 2);
+        }
+
+        [TestMethod]
         public void ShouldValidateVocabularyDeclaration_EquivalentClass()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");

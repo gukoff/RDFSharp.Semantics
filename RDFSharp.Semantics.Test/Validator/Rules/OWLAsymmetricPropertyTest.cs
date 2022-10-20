@@ -20,44 +20,40 @@ using RDFSharp.Model;
 namespace RDFSharp.Semantics.Validator.Test
 {
     [TestClass]
-    public class OWLDeprecationRuleTest
+    public class OWLAsymmetricPropertyTest
     {
         #region Tests
         [TestMethod]
-        public void ShouldValidateDeprecation()
+        public void ShouldValidateAsymmetricProperty()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
-            ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:class"), new OWLOntologyClassBehavior() { Deprecated = true });
-            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objprop"), new OWLOntologyObjectPropertyBehavior() { Deprecated = true });
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objprop"), new OWLOntologyObjectPropertyBehavior() { Asymmetric = true });
             ontology.Data.DeclareIndividual(new RDFResource("ex:indiv1"));
-            ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv1"), new RDFResource("ex:class"));
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objprop"), new RDFResource("ex:indiv1"));
 
-            OWLValidatorReport validatorReport = OWLDeprecationRule.ExecuteRule(ontology);
+            OWLValidatorReport validatorReport = OWLAsymmetricPropertyRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
-            Assert.IsTrue(validatorReport.EvidencesCount == 2);
-            Assert.IsTrue(validatorReport.SelectErrors().Count == 0);
-            Assert.IsTrue(validatorReport.SelectWarnings().Count == 2);
+            Assert.IsTrue(validatorReport.EvidencesCount == 1);
+            Assert.IsTrue(validatorReport.SelectErrors().Count == 1);
+            Assert.IsTrue(validatorReport.SelectWarnings().Count == 0);
         }
 
         [TestMethod]
-        public void ShouldValidateDeprecationViaValidator()
+        public void ShouldValidateAsymmetricPropertyViaValidator()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
-            ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:class"), new OWLOntologyClassBehavior() { Deprecated = true });
-            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objprop"), new OWLOntologyObjectPropertyBehavior() { Deprecated = true });
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objprop"), new OWLOntologyObjectPropertyBehavior() { Asymmetric = true });
             ontology.Data.DeclareIndividual(new RDFResource("ex:indiv1"));
-            ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv1"), new RDFResource("ex:class"));
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objprop"), new RDFResource("ex:indiv1"));
 
-            OWLValidator validator = new OWLValidator().AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.Deprecation);
+            OWLValidator validator = new OWLValidator().AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.AsymmetricProperty);
             OWLValidatorReport validatorReport = validator.ApplyToOntology(ontology);
 
             Assert.IsNotNull(validatorReport);
-            Assert.IsTrue(validatorReport.EvidencesCount == 2);
-            Assert.IsTrue(validatorReport.SelectErrors().Count == 0);
-            Assert.IsTrue(validatorReport.SelectWarnings().Count == 2);
+            Assert.IsTrue(validatorReport.EvidencesCount == 1);
+            Assert.IsTrue(validatorReport.SelectErrors().Count == 1);
+            Assert.IsTrue(validatorReport.SelectWarnings().Count == 0);
         }
         #endregion
     }

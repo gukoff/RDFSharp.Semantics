@@ -34,7 +34,7 @@ namespace RDFSharp.Semantics
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
                         nameof(OWLDeprecationRule),
                         $"Deprecated class '{deprecatedClassesEnumerator.Current}' is used by individuals through 'rdf:type' relation",
-                        $"Revise your 'rdf:type' relations: abandon active usage of deprecated classes (which may be removed in future ontology editions)"));
+                        "Revise your 'rdf:type' relations: abandon active usage of deprecated classes (which may be removed in future ontology editions)"));
             }
 
             //owl:DeprecatedProperty
@@ -46,7 +46,7 @@ namespace RDFSharp.Semantics
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
                         nameof(OWLDeprecationRule),
                         $"Deprecated property '{deprecatedPropertiesEnumerator.Current}' is used by individuals through object or datatype assertions",
-                        $"Revise your object or datatype assertions: abandon active usage of deprecated properties (which may be removed in future ontology editions)"));
+                        "Revise your object or datatype assertions: abandon active usage of deprecated properties (which may be removed in future ontology editions)"));
             }
 
             return validatorRuleReport;

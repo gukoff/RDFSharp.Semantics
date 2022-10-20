@@ -39,6 +39,23 @@ namespace RDFSharp.Semantics.Validator.Test
             Assert.IsTrue(validatorReport.SelectErrors().Count == 3);
             Assert.IsTrue(validatorReport.SelectWarnings().Count == 0);
         }
+
+        [TestMethod]
+        public void ShouldValidateVocabularyDisjointnessViaValidator()
+        {
+            OWLOntology ontology = new OWLOntology("ex:ont");
+            ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:entity"));
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:entity"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:entity"));
+
+            OWLValidator validator = new OWLValidator().AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.VocabularyDisjointness);
+            OWLValidatorReport validatorReport = validator.ApplyToOntology(ontology);
+
+            Assert.IsNotNull(validatorReport);
+            Assert.IsTrue(validatorReport.EvidencesCount == 3);
+            Assert.IsTrue(validatorReport.SelectErrors().Count == 3);
+            Assert.IsTrue(validatorReport.SelectWarnings().Count == 0);
+        }
         #endregion
     }
 }

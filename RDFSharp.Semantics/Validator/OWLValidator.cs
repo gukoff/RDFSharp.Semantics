@@ -114,7 +114,7 @@ namespace RDFSharp.Semantics
                                 break;
 
                             case OWLSemanticsEnums.OWLValidatorStandardRules.AsymmetricProperty:
-                                //TODO
+                                standardRuleReport.MergeEvidences(OWLAsymmetricPropertyRule.ExecuteRule(ontology));
                                 break;
 
                             case OWLSemanticsEnums.OWLValidatorStandardRules.IrreflexiveProperty:
