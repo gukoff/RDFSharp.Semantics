@@ -18,25 +18,25 @@ using System.Linq;
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// OWL2 validator rule checking for consistency of assertions using asymmetric properties [OWL2]
+    /// OWL2 validator rule checking for consistency of assertions using irreflexive properties [OWL2]
     /// </summary>
-    internal static class OWLAsymmetricPropertyRule
+    internal static class OWLIrreflexivePropertyRule
     {
         internal static OWLValidatorReport ExecuteRule(OWLOntology ontology)
         {
             OWLValidatorReport validatorRuleReport = new OWLValidatorReport();
 
-            //owl:AsymmetricProperty
-            IEnumerator<RDFResource> asymmetricPropertiesEnumerator = ontology.Model.PropertyModel.AsymmetricPropertiesEnumerator;
-            while (asymmetricPropertiesEnumerator.MoveNext())
+            //owl:IrreflexiveProperty
+            IEnumerator<RDFResource> irreflexivePropertiesEnumerator = ontology.Model.PropertyModel.IrreflexivePropertiesEnumerator;
+            while (irreflexivePropertiesEnumerator.MoveNext())
             {
-                RDFGraph asymmetricObjectAssertions = ontology.Data.ABoxGraph[null, asymmetricPropertiesEnumerator.Current, null, null];
-                if (asymmetricObjectAssertions.Any(asn => asn.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPO && ontology.Data.CheckHasObjectAssertion((RDFResource)asn.Object, asymmetricPropertiesEnumerator.Current, (RDFResource)asn.Subject)))
+                RDFGraph irreflexiveObjectAssertions = ontology.Data.ABoxGraph[null, irreflexivePropertiesEnumerator.Current, null, null];
+                if (irreflexiveObjectAssertions.Any(asn => asn.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPO && asn.Subject.Equals(asn.Object)))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
-                        nameof(OWLAsymmetricPropertyRule),
-                        $"Violation of 'owl:AsymmetricProperty' behavior on property '{asymmetricPropertiesEnumerator.Current}'",
-                        "Revise your object assertions: fix asymmetric property usage in order to not clash on subject/predicate asimmetry"));
+                        nameof(OWLIrreflexivePropertyRule),
+                        $"Violation of 'owl:IrreflexiveProperty' behavior on property '{irreflexivePropertiesEnumerator.Current}'",
+                        "Revise your object assertions: fix irreflexive property usage in order to not clash on subject/predicate irreflexivity"));
             }
 
             return validatorRuleReport;
