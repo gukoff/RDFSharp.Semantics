@@ -110,7 +110,7 @@ namespace RDFSharp.Semantics
                                 break;
 
                             case OWLSemanticsEnums.OWLValidatorStandardRules.SymmetricProperty:
-                                //TODO
+                                standardRuleReport.MergeEvidences(OWLSymmetricPropertyRule.ExecuteRule(ontology));
                                 break;
 
                             case OWLSemanticsEnums.OWLValidatorStandardRules.AsymmetricProperty:
