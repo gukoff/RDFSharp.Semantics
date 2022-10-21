@@ -18,7 +18,7 @@ namespace RDFSharp.Semantics
     /// <summary>
     /// OWL-DL validator rule checking for vocabulary disjointness of classes, properties and individuals
     /// </summary>
-    internal static class OWLVocabularyDisjointnessRule
+    internal static class OWLTermDisjointnessRule
     {
         internal static OWLValidatorReport ExecuteRule(OWLOntology ontology)
         {
@@ -31,7 +31,7 @@ namespace RDFSharp.Semantics
                 if (ontology.Model.PropertyModel.Properties.ContainsKey(owlClass.PatternMemberID))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
-                        nameof(OWLVocabularyDisjointnessRule),
+                        nameof(OWLTermDisjointnessRule),
                         $"Disjointess of class model and property model is violated because the name '{owlClass}' refers both to a class and a property",
                         "Remove or rename one of the two entities: at the moment the ontology is OWL Full!"));
 
@@ -39,7 +39,7 @@ namespace RDFSharp.Semantics
                 if (ontology.Data.Individuals.ContainsKey(owlClass.PatternMemberID))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
-                        nameof(OWLVocabularyDisjointnessRule),
+                        nameof(OWLTermDisjointnessRule),
                         $"Disjointess of class model and data is violated because the name '{owlClass}' refers both to a class and an individual",
                         "Remove or rename one of the two entities: at the moment the ontology is OWL Full!"));
             }
@@ -51,7 +51,7 @@ namespace RDFSharp.Semantics
                 if (ontology.Data.Individuals.ContainsKey(owlProperty.PatternMemberID))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
-                        nameof(OWLVocabularyDisjointnessRule),
+                        nameof(OWLTermDisjointnessRule),
                         $"Disjointess of property model and data is violated because the name '{owlProperty}' refers both to a property and an individual",
                         "Remove or rename one of the two entities: at the moment the ontology is OWL Full!"));
             #endregion

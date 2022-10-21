@@ -40,8 +40,8 @@ namespace RDFSharp.Semantics.Validator.Test
         public void ShouldAddStandardValidatorRule()
         {
             OWLValidator validator = new OWLValidator();
-            validator.AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.VocabularyDisjointness);
-            validator.AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.VocabularyDisjointness); //Will be discarded, since duplicate standard rules are not allowed
+            validator.AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.TermDisjointness);
+            validator.AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.TermDisjointness); //Will be discarded, since duplicate standard rules are not allowed
 
             Assert.IsNotNull(validator);
             Assert.IsNotNull(validator.StandardRules);
@@ -79,7 +79,7 @@ namespace RDFSharp.Semantics.Validator.Test
             ontology.Data.DeclareIndividual(new RDFResource("ex:entity"));
 
             OWLValidator validator = new OWLValidator();
-            validator.AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.VocabularyDisjointness);
+            validator.AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.TermDisjointness);
 
             OWLValidatorReport validatorReport = validator.ApplyToOntology(ontology);
 
@@ -98,7 +98,7 @@ namespace RDFSharp.Semantics.Validator.Test
             ontology.Data.DeclareIndividual(new RDFResource("ex:entity"));
 
             OWLValidator validator = new OWLValidator();
-            validator.AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.VocabularyDisjointness);
+            validator.AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.TermDisjointness);
 
             string warningMsg = null;
             OWLSemanticsEvents.OnSemanticsInfo += (string msg) => { warningMsg += msg; };
@@ -144,7 +144,7 @@ namespace RDFSharp.Semantics.Validator.Test
             ontology.Data.DeclareIndividual(new RDFResource("ex:entity"));
 
             OWLValidator validator = new OWLValidator();
-            validator.AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.VocabularyDisjointness);
+            validator.AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.TermDisjointness);
             validator.AddCustomRule(new OWLValidatorRule("testRule", "this is test rule", CustomValidatorRule));
 
             OWLValidatorReport validatorReport = validator.ApplyToOntology(ontology);
@@ -167,7 +167,7 @@ namespace RDFSharp.Semantics.Validator.Test
             ontology.Data.DeclareIndividual(new RDFResource("ex:entity"));
 
             OWLValidator validator = new OWLValidator();
-            validator.AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.VocabularyDisjointness);
+            validator.AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.TermDisjointness);
             validator.AddCustomRule(new OWLValidatorRule("testRule", "this is test rule", CustomValidatorRule));
 
             string warningMsg = null;
@@ -192,7 +192,7 @@ namespace RDFSharp.Semantics.Validator.Test
             ontology.Data.DeclareIndividual(new RDFResource("ex:entity"));
 
             OWLValidator validator = new OWLValidator();
-            validator.AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.VocabularyDisjointness);
+            validator.AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.TermDisjointness);
 
             OWLValidatorReport validatorReport = await validator.ApplyToOntologyAsync(ontology);
 
@@ -211,7 +211,7 @@ namespace RDFSharp.Semantics.Validator.Test
             ontology.Data.DeclareIndividual(new RDFResource("ex:entity"));
 
             OWLValidator validator = new OWLValidator();
-            validator.AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.VocabularyDisjointness);
+            validator.AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.TermDisjointness);
 
             string warningMsg = null;
             OWLSemanticsEvents.OnSemanticsInfo += (string msg) => { warningMsg += msg; };
@@ -257,7 +257,7 @@ namespace RDFSharp.Semantics.Validator.Test
             ontology.Data.DeclareIndividual(new RDFResource("ex:entity"));
 
             OWLValidator validator = new OWLValidator();
-            validator.AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.VocabularyDisjointness);
+            validator.AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.TermDisjointness);
             validator.AddCustomRule(new OWLValidatorRule("testRule", "this is test rule", CustomValidatorRule));
 
             OWLValidatorReport validatorReport = await validator.ApplyToOntologyAsync(ontology);
@@ -280,7 +280,7 @@ namespace RDFSharp.Semantics.Validator.Test
             ontology.Data.DeclareIndividual(new RDFResource("ex:entity"));
 
             OWLValidator validator = new OWLValidator();
-            validator.AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.VocabularyDisjointness);
+            validator.AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.TermDisjointness);
             validator.AddCustomRule(new OWLValidatorRule("testRule", "this is test rule", CustomValidatorRule));
 
             string warningMsg = null;

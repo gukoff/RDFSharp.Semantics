@@ -19,7 +19,7 @@ namespace RDFSharp.Semantics
     /// <summary>
     /// OWL-DL validator rule checking for usage of deprecated classes and properties
     /// </summary>
-    internal static class OWLDeprecationRule
+    internal static class OWLTermDeprecationRule
     {
         internal static OWLValidatorReport ExecuteRule(OWLOntology ontology)
         {
@@ -32,7 +32,7 @@ namespace RDFSharp.Semantics
                 if (ontology.Data.ABoxGraph[null, RDFVocabulary.RDF.TYPE, deprecatedClassesEnumerator.Current, null].TriplesCount > 0)
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLDeprecationRule),
+                        nameof(OWLTermDeprecationRule),
                         $"Deprecated class '{deprecatedClassesEnumerator.Current}' is used by individuals through 'rdf:type' relation",
                         "Revise your 'rdf:type' relations: abandon active usage of deprecated classes (which may be removed in future ontology editions)"));
             }
@@ -44,7 +44,7 @@ namespace RDFSharp.Semantics
                 if (ontology.Data.ABoxGraph[null, deprecatedPropertiesEnumerator.Current, null, null].TriplesCount > 0)
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLDeprecationRule),
+                        nameof(OWLTermDeprecationRule),
                         $"Deprecated property '{deprecatedPropertiesEnumerator.Current}' is used by individuals through object or datatype assertions",
                         "Revise your object or datatype assertions: abandon active usage of deprecated properties (which may be removed in future ontology editions)"));
             }

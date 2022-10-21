@@ -22,7 +22,7 @@ namespace RDFSharp.Semantics
     /// <summary>
     /// OWL-DL validator rule checking for explicit declaration of classes, properties and individuals
     /// </summary>
-    internal class OWLVocabularyDeclarationRule
+    internal class OWLTermDeclarationRule
     {
         internal static OWLValidatorReport ExecuteRule(OWLOntology ontology)
         {
@@ -35,14 +35,14 @@ namespace RDFSharp.Semantics
                 if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)subClassOfTriple.Subject))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of class '{subClassOfTriple.Subject}' is not found in the model: it is required as subject of a 'rdfs:subClassOf' relation",
                         $"Declare '{subClassOfTriple.Subject}' class or restriction to the class model"));
 
                 if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)subClassOfTriple.Object))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of class '{subClassOfTriple.Object}' is not found in the model: it is required as object of a 'rdfs:subClassOf' relation",
                         $"Declare '{subClassOfTriple.Object}' class or restriction to the class model"));
             }
@@ -52,14 +52,14 @@ namespace RDFSharp.Semantics
                 if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)equivalentClassTriple.Subject))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of class '{equivalentClassTriple.Subject}' is not found in the model: it is required as subject of an 'owl:equivalentClass' relation",
                         $"Declare '{equivalentClassTriple.Subject}' class or restriction to the class model"));
 
                 if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)equivalentClassTriple.Object))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of class '{equivalentClassTriple.Object}' is not found in the model: it is required as object of an 'owl:equivalentClass' relation",
                         $"Declare '{equivalentClassTriple.Object}' class or restriction to the class model"));
             }
@@ -69,14 +69,14 @@ namespace RDFSharp.Semantics
                 if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)disjointWithTriple.Subject))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of class '{disjointWithTriple.Subject}' is not found in the model: it is required as subject of an 'owl:disjointWith' relation",
                         $"Declare '{disjointWithTriple.Subject}' class or restriction to the class model"));
 
                 if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)disjointWithTriple.Object))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of class '{disjointWithTriple.Object}' is not found in the model: it is required as object of an 'owl:disjointWith' relation",
                         $"Declare '{disjointWithTriple.Object}' class or restriction to the class model"));
             }
@@ -86,7 +86,7 @@ namespace RDFSharp.Semantics
                 if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)oneOfTriple.Subject))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of enumerate class '{oneOfTriple.Subject}' is not found in the model: it is required as subject of an 'owl:oneOf' relation",
                         $"Declare '{oneOfTriple.Subject}' enumerate class to the class model"));
 
@@ -96,7 +96,7 @@ namespace RDFSharp.Semantics
                     if (!ontology.Data.CheckHasIndividual((RDFResource)oneOfMember))
                         validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                             OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                            nameof(OWLVocabularyDeclarationRule),
+                            nameof(OWLTermDeclarationRule),
                             $"Declaration of individual '{oneOfMember}' is not found in the data: it is required by 'owl:oneOf' relation of '{(RDFResource)oneOfTriple.Subject}' enumerate class",
                             $"Declare '{oneOfMember}' individual to the data"));
                 }
@@ -107,7 +107,7 @@ namespace RDFSharp.Semantics
                 if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)unionOfTriple.Subject))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of union class '{unionOfTriple.Subject}' is not found in the model: it is required as subject of an 'owl:unionOf' relation",
                         $"Declare '{unionOfTriple.Subject}' union class to the class model"));
 
@@ -117,7 +117,7 @@ namespace RDFSharp.Semantics
                     if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)unionMember))
                         validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                             OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                            nameof(OWLVocabularyDeclarationRule),
+                            nameof(OWLTermDeclarationRule),
                             $"Declaration of class '{unionMember}' is not found in the model: it is required by 'owl:unionOf' relation of '{(RDFResource)unionOfTriple.Subject}' union class",
                             $"Declare '{unionMember}' class or restriction to the class model"));
                 }
@@ -128,7 +128,7 @@ namespace RDFSharp.Semantics
                 if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)intersectionOfTriple.Subject))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of intersection class '{intersectionOfTriple.Subject}' is not found in the model: it is required as subject of an 'owl:intersectionOf' relation",
                         $"Declare '{intersectionOfTriple.Subject}' intersection class to the class model"));
 
@@ -138,7 +138,7 @@ namespace RDFSharp.Semantics
                     if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)intersectionMember))
                         validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                             OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                            nameof(OWLVocabularyDeclarationRule),
+                            nameof(OWLTermDeclarationRule),
                             $"Declaration of class '{intersectionMember}' is not found in the model: it is required by 'owl:intersectionOf' relation of '{(RDFResource)intersectionOfTriple.Subject}' intersection class",
                             $"Declare '{intersectionMember}' class or restriction to the class model"));
                 }
@@ -149,14 +149,14 @@ namespace RDFSharp.Semantics
                 if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)complementOfTriple.Subject))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of complement class '{complementOfTriple.Subject}' is not found in the model: it is required as subject of an 'owl:complementOf' relation",
                         $"Declare '{complementOfTriple.Subject}' complement class to the class model"));
 
                 if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)complementOfTriple.Object))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of class '{complementOfTriple.Object}' is not found in the model: it is required by 'owl:complementOf' relation of '{(RDFResource)complementOfTriple.Subject}' complement class",
                         $"Declare '{complementOfTriple.Object}' class or restriction to the class model"));
             }
@@ -166,7 +166,7 @@ namespace RDFSharp.Semantics
                 if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)hasKeyTriple.Subject))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of class '{hasKeyTriple.Subject}' is not found in the model: it is required as subject of an 'owl:hasKey' relation",
                         $"Declare '{hasKeyTriple.Subject}' class to the class model"));
 
@@ -176,7 +176,7 @@ namespace RDFSharp.Semantics
                     if (!ontology.Model.PropertyModel.CheckHasProperty((RDFResource)hasKeyMember))
                         validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                             OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                            nameof(OWLVocabularyDeclarationRule),
+                            nameof(OWLTermDeclarationRule),
                             $"Declaration of property '{hasKeyMember}' is not found in the model: it is required by 'owl:hasKey' relation of '{(RDFResource)hasKeyTriple.Subject}' class",
                             $"Declare '{hasKeyMember}' property to the property model"));
                 }
@@ -187,7 +187,7 @@ namespace RDFSharp.Semantics
                 if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)disjointUnionOfTriple.Subject))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of disjoint union class '{disjointUnionOfTriple.Subject}' is not found in the model: it is required as subject of an 'owl:disjointUnionOf' relation",
                         $"Declare '{disjointUnionOfTriple.Subject}' disjoint union class to the class model"));
 
@@ -197,7 +197,7 @@ namespace RDFSharp.Semantics
                     if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)disjointUnionMember))
                         validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                             OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                            nameof(OWLVocabularyDeclarationRule),
+                            nameof(OWLTermDeclarationRule),
                             $"Declaration of class '{disjointUnionMember}' is not found in the model: it is required by 'owl:disjointUnionOf' relation of '{(RDFResource)disjointUnionOfTriple.Subject}' disjoint union class",
                             $"Declare '{disjointUnionMember}' class or restriction to the class model"));
                 }
@@ -208,7 +208,7 @@ namespace RDFSharp.Semantics
                 if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)allDisjointClassesTriple.Subject))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of AllDisjointClass class '{allDisjointClassesTriple.Subject}' is not found in the model: it is required as subject of an 'owl:members' relation",
                         $"Declare '{allDisjointClassesTriple.Subject}' AllDisjointClass class to the class model"));
 
@@ -220,7 +220,7 @@ namespace RDFSharp.Semantics
                         if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)allDisjointClassesMember))
                             validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                                 OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                                nameof(OWLVocabularyDeclarationRule),
+                                nameof(OWLTermDeclarationRule),
                                 $"Declaration of class '{allDisjointClassesMember}' is not found in the model: it is required by 'owl:members' relation of '{(RDFResource)allDisjointClassesTriple.Subject}' AllDisjointClasses class",
                                 $"Declare '{allDisjointClassesMember}' class or restriction to the class model"));
                     }
@@ -232,14 +232,14 @@ namespace RDFSharp.Semantics
                 if (!ontology.Model.ClassModel.CheckHasRestrictionClass((RDFResource)allValuesFromTriple.Subject))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of restriction '{allValuesFromTriple.Subject}' is not found in the model: it is required as subject of an 'owl:allValuesFrom' relation",
                         $"Declare '{allValuesFromTriple.Subject}' restriction to the class model"));
 
                 if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)allValuesFromTriple.Object))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of class '{allValuesFromTriple.Object}' is not found in the model: it is required by 'owl:allValuesFrom' relation of '{allValuesFromTriple.Subject}' restriction",
                         $"Declare '{allValuesFromTriple.Object}' class or restriction to the class model"));
             }
@@ -249,14 +249,14 @@ namespace RDFSharp.Semantics
                 if (!ontology.Model.ClassModel.CheckHasRestrictionClass((RDFResource)someValuesFromTriple.Subject))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of restriction '{someValuesFromTriple.Subject}' is not found in the model: it is required as subject of an 'owl:someValuesFrom' relation",
                         $"Declare '{someValuesFromTriple.Subject}' restriction to the class model"));
 
                 if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)someValuesFromTriple.Object))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of class '{someValuesFromTriple.Object}' is not found in the model: it is required by 'owl:someValuesFrom' relation of '{someValuesFromTriple.Subject}' restriction",
                         $"Declare '{someValuesFromTriple.Object}' class or restriction to the class model"));
             }
@@ -266,14 +266,14 @@ namespace RDFSharp.Semantics
                 if (!ontology.Model.ClassModel.CheckHasRestrictionClass((RDFResource)hasValueTriple.Subject))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of restriction '{hasValueTriple.Subject}' is not found in the model: it is required as subject of an 'owl:hasValue' relation",
                         $"Declare '{hasValueTriple.Subject}' restriction to the class model"));
 
                 if (hasValueTriple.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPO && !ontology.Data.CheckHasIndividual((RDFResource)hasValueTriple.Object))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of individual '{hasValueTriple.Object}' is not found in the data: it is required by 'owl:hasValue' relation of '{hasValueTriple.Subject}' restriction",
                         $"Declare '{hasValueTriple.Object}' individual to the data"));
             }
@@ -283,7 +283,7 @@ namespace RDFSharp.Semantics
                 if (!ontology.Model.ClassModel.CheckHasRestrictionClass((RDFResource)hasSelfTriple.Subject))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of restriction '{hasSelfTriple.Subject}' is not found in the model: it is required as subject of an 'owl:hasSelf' relation",
                         $"Declare '{hasSelfTriple.Subject}' restriction to the class model"));
             }
@@ -293,14 +293,14 @@ namespace RDFSharp.Semantics
                 if (!ontology.Model.ClassModel.CheckHasRestrictionClass((RDFResource)onClassTriple.Subject))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of restriction '{onClassTriple.Subject}' is not found in the model: it is required as subject of an 'owl:hasValue' relation",
                         $"Declare '{onClassTriple.Subject}' restriction to the class model"));
 
                 if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)onClassTriple.Object))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of class '{onClassTriple.Object}' is not found in the data: it is required by 'owl:onClass' relation of '{onClassTriple.Subject}' qualified restriction",
                         $"Declare '{onClassTriple.Object}' class or restriction to the class model"));
             }
@@ -310,14 +310,14 @@ namespace RDFSharp.Semantics
                 if (!ontology.Model.ClassModel.CheckHasRestrictionClass((RDFResource)onPropertyTriple.Subject))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of restriction '{onPropertyTriple.Subject}' is not found in the model: it is required by 'owl:onProperty' relation on '{onPropertyTriple.Object}' property",
                         $"Declare '{onPropertyTriple.Subject}' restriction to the class model"));
 
                 if (!ontology.Model.PropertyModel.CheckHasProperty((RDFResource)onPropertyTriple.Object))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of property '{onPropertyTriple.Object}' is not found in the model: it is required as object of an 'owl:onProperty' relation",
                         $"Declare '{onPropertyTriple.Object}' property to the property model"));
             }
@@ -330,14 +330,14 @@ namespace RDFSharp.Semantics
                 if (!ontology.Model.PropertyModel.CheckHasProperty((RDFResource)subPropertyOfTriple.Subject))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of property '{subPropertyOfTriple.Subject}' is not found in the model: it is required as subject of a 'rdfs:subPropertyOf' relation",
                         $"Declare '{subPropertyOfTriple.Subject}' property to the property model"));
 
                 if (!ontology.Model.PropertyModel.CheckHasProperty((RDFResource)subPropertyOfTriple.Object))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of property '{subPropertyOfTriple.Object}' is not found in the model: it is required as object of a 'rdfs:subPropertyOf' relation",
                         $"Declare '{subPropertyOfTriple.Object}' property to the property model"));
             }
@@ -347,14 +347,14 @@ namespace RDFSharp.Semantics
                 if (!ontology.Model.PropertyModel.CheckHasProperty((RDFResource)equivalentPropertyTriple.Subject))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of property '{equivalentPropertyTriple.Subject}' is not found in the model: it is required as subject of an 'owl:equivalentProperty' relation",
                         $"Declare '{equivalentPropertyTriple.Subject}' property to the property model"));
 
                 if (!ontology.Model.PropertyModel.CheckHasProperty((RDFResource)equivalentPropertyTriple.Object))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of property '{equivalentPropertyTriple.Object}' is not found in the model: it is required as object of an 'owl:equivalentProperty' relation",
                         $"Declare '{equivalentPropertyTriple.Object}' property to the property model"));
             }
@@ -364,14 +364,14 @@ namespace RDFSharp.Semantics
                 if (!ontology.Model.PropertyModel.CheckHasProperty((RDFResource)propertyDisjointWithTriple.Subject))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of property '{propertyDisjointWithTriple.Subject}' is not found in the model: it is required as subject of an 'owl:propertyDisjointWith' relation",
                         $"Declare '{propertyDisjointWithTriple.Subject}' property to the property model"));
 
                 if (!ontology.Model.PropertyModel.CheckHasProperty((RDFResource)propertyDisjointWithTriple.Object))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of property '{propertyDisjointWithTriple.Object}' is not found in the model: it is required as object of an 'owl:propertyDisjointWith' relation",
                         $"Declare '{propertyDisjointWithTriple.Object}' property to the property model"));
             }
@@ -381,14 +381,14 @@ namespace RDFSharp.Semantics
                 if (!ontology.Model.PropertyModel.CheckHasProperty((RDFResource)inverseOfTriple.Subject))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of property '{inverseOfTriple.Subject}' is not found in the model: it is required as subject of an 'owl:inverseOf' relation",
                         $"Declare '{inverseOfTriple.Subject}' property to the property model"));
 
                 if (!ontology.Model.PropertyModel.CheckHasProperty((RDFResource)inverseOfTriple.Object))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of property '{inverseOfTriple.Object}' is not found in the model: it is required as object of an 'owl:inverseOf' relation",
                         $"Declare '{inverseOfTriple.Object}' property to the property model"));
             }
@@ -398,7 +398,7 @@ namespace RDFSharp.Semantics
                 if (!ontology.Model.PropertyModel.CheckHasProperty((RDFResource)propertyChainAxiomTriple.Subject))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of property '{propertyChainAxiomTriple.Subject}' is not found in the model: it is required as subject of an 'owl:propertyChainAxiom' relation",
                         $"Declare '{propertyChainAxiomTriple.Subject}' property to the property model"));
 
@@ -408,7 +408,7 @@ namespace RDFSharp.Semantics
                     if (!ontology.Model.PropertyModel.CheckHasProperty((RDFResource)propertyChainAxiomMember))
                         validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                             OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                            nameof(OWLVocabularyDeclarationRule),
+                            nameof(OWLTermDeclarationRule),
                             $"Declaration of property '{propertyChainAxiomMember}' is not found in the model: it is required by 'owl:propertyChainAxiom' relation of '{(RDFResource)propertyChainAxiomTriple.Subject}' property",
                             $"Declare '{propertyChainAxiomMember}' property to the property model"));
                 }
@@ -424,7 +424,7 @@ namespace RDFSharp.Semantics
                         if (!ontology.Model.PropertyModel.CheckHasProperty((RDFResource)allDisjointPropertiesMember))
                             validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                                 OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                                nameof(OWLVocabularyDeclarationRule),
+                                nameof(OWLTermDeclarationRule),
                                 $"Declaration of property '{allDisjointPropertiesMember}' is not found in the model: it is required by 'owl:members' relation of '{(RDFResource)allDisjointPropertiesTriple.Subject}' AllDisjointProperties class",
                                 $"Declare '{allDisjointPropertiesMember}' property to the property model"));
                     }
@@ -436,14 +436,14 @@ namespace RDFSharp.Semantics
                 if (!ontology.Model.PropertyModel.CheckHasProperty((RDFResource)domainTriple.Subject))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of property '{domainTriple.Subject}' is not found in the model: it is required as subject of a 'rdfs:domain' relation",
                         $"Declare '{domainTriple.Subject}' property to the property model"));
 
                 if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)domainTriple.Object))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of class '{domainTriple.Object}' is not found in the model: it is required by 'rdfs:domain' relation of '{(RDFResource)domainTriple.Subject}' property",
                         $"Declare '{domainTriple.Object}' class or restriction to the class model"));
             }
@@ -453,14 +453,14 @@ namespace RDFSharp.Semantics
                 if (!ontology.Model.PropertyModel.CheckHasProperty((RDFResource)rangeTriple.Subject))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of property '{rangeTriple.Subject}' is not found in the model: it is required as subject of a 'rdfs:range' relation",
                         $"Declare '{rangeTriple.Subject}' property to the property model"));
 
                 if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)rangeTriple.Object))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of class '{rangeTriple.Object}' is not found in the model: it is required by 'rdfs:range' relation of '{(RDFResource)rangeTriple.Subject}' property",
                         $"Declare '{rangeTriple.Object}' class or restriction to the class model"));
             }
@@ -474,14 +474,14 @@ namespace RDFSharp.Semantics
                 if (!ontology.Data.CheckHasIndividual((RDFResource)typeTriple.Subject))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of individual '{typeTriple.Subject}' is not found in the data: it is required as subject of a 'rdf:type' relation",
                         $"Declare '{typeTriple.Subject}' individual to the data"));
 
                 if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)typeTriple.Object))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of class '{typeTriple.Object}' is not found in the model: it is required as object of a 'rdf:type' relation",
                         $"Declare '{typeTriple.Object}' class to the class model"));
             }
@@ -491,14 +491,14 @@ namespace RDFSharp.Semantics
                 if (!ontology.Data.CheckHasIndividual((RDFResource)sameAsTriple.Subject))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of individual '{sameAsTriple.Subject}' is not found in the data: it is required as subject of an 'owl:sameAs' relation",
                         $"Declare '{sameAsTriple.Subject}' individual to the data"));
 
                 if (!ontology.Data.CheckHasIndividual((RDFResource)sameAsTriple.Object))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of class '{sameAsTriple.Object}' is not found in the model: it is required as object of an 'owl:sameAs' relation",
                         $"Declare '{sameAsTriple.Object}' individual to the data"));
             }
@@ -508,14 +508,14 @@ namespace RDFSharp.Semantics
                 if (!ontology.Data.CheckHasIndividual((RDFResource)differentFromTriple.Subject))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of individual '{differentFromTriple.Subject}' is not found in the data: it is required as subject of an 'owl:differentFrom' relation",
                         $"Declare '{differentFromTriple.Subject}' individual to the data"));
 
                 if (!ontology.Data.CheckHasIndividual((RDFResource)differentFromTriple.Object))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of class '{differentFromTriple.Object}' is not found in the model: it is required as object of an 'owl:differentFrom' relation",
                         $"Declare '{differentFromTriple.Object}' individual to the data"));
             }
@@ -530,7 +530,7 @@ namespace RDFSharp.Semantics
                         if (!ontology.Data.CheckHasIndividual((RDFResource)allDifferentMember))
                             validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                                 OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                                nameof(OWLVocabularyDeclarationRule),
+                                nameof(OWLTermDeclarationRule),
                                 $"Declaration of individual '{allDifferentMember}' is not found in the data: it is required by 'owl:distinctMembers' relation of '{(RDFResource)allDifferentTriple.Subject}' AllDifferent class",
                                 $"Declare '{allDifferentMember}' individual to the data"));
                     }
@@ -545,14 +545,14 @@ namespace RDFSharp.Semantics
                     if (!ontology.Data.CheckHasIndividual((RDFResource)objectAssertion.Subject))
                         validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                             OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                            nameof(OWLVocabularyDeclarationRule),
+                            nameof(OWLTermDeclarationRule),
                             $"Declaration of individual '{objectAssertion.Subject}' is not found in the data: it is required as subject of an 'owl:ObjectAssertion' relation",
                             $"Declare '{objectAssertion.Subject}' individual to the data"));
 
                     if (!ontology.Data.CheckHasIndividual((RDFResource)objectAssertion.Object))
                         validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                             OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                            nameof(OWLVocabularyDeclarationRule),
+                            nameof(OWLTermDeclarationRule),
                             $"Declaration of individual '{objectAssertion.Object}' is not found in the data: it is required as object of an 'owl:objectAssertion' relation",
                             $"Declare '{objectAssertion.Object}' individual to the data"));
                 }
@@ -566,7 +566,7 @@ namespace RDFSharp.Semantics
                     if (!ontology.Data.CheckHasIndividual((RDFResource)datatypeAssertion.Subject))
                         validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                             OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                            nameof(OWLVocabularyDeclarationRule),
+                            nameof(OWLTermDeclarationRule),
                             $"Declaration of individual '{datatypeAssertion.Subject}' is not found in the data: it is required as subject of an 'owl:DatatypeAssertion' relation",
                             $"Declare '{datatypeAssertion.Subject}' individual to the data"));
                 }
@@ -591,7 +591,7 @@ namespace RDFSharp.Semantics
                 if (!ontology.Data.CheckHasIndividual(new RDFResource(nasnSource)))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of individual '{nasnSource}' is not found in the data: it is required as subject of an 'owl:NegativeObjectAssertion' relation",
                         $"Declare '{nasnSource}' individual to the data"));
 
@@ -599,7 +599,7 @@ namespace RDFSharp.Semantics
                 if (!ontology.Model.PropertyModel.CheckHasProperty(new RDFResource(nasnProperty)))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of property '{nasnProperty}' is not found in the model: it is required as predicate of an 'owl:NegativeObjectAssertion' relation",
                         $"Declare '{nasnProperty}' property to the property model"));
 
@@ -607,7 +607,7 @@ namespace RDFSharp.Semantics
                 if (!ontology.Data.CheckHasIndividual(new RDFResource(nasnTarget)))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of individual '{nasnTarget}' is not found in the data: it is required as object of an 'owl:NegativeObjectAssertion' relation",
                         $"Declare '{nasnTarget}' individual to the data"));
             }
@@ -631,7 +631,7 @@ namespace RDFSharp.Semantics
                 if (!ontology.Data.CheckHasIndividual(new RDFResource(nasnSource)))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of individual '{nasnSource}' is not found in the data: it is required as subject of an 'owl:NegativeDatatypeAssertion' relation",
                         $"Declare '{nasnSource}' individual to the data"));
 
@@ -639,7 +639,7 @@ namespace RDFSharp.Semantics
                 if (!ontology.Model.PropertyModel.CheckHasProperty(new RDFResource(nasnProperty)))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
-                        nameof(OWLVocabularyDeclarationRule),
+                        nameof(OWLTermDeclarationRule),
                         $"Declaration of property '{nasnProperty}' is not found in the model: it is required as predicate of an 'owl:NegativeDatatypeAssertion' relation",
                         $"Declare '{nasnProperty}' property to the property model"));
             }

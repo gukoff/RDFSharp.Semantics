@@ -21,18 +21,18 @@ using System.Collections.Generic;
 namespace RDFSharp.Semantics.Validator.Test
 {
     [TestClass]
-    public class OWLVocabularyDisjointnessRuleTest
+    public class OWLTermDisjointnessRuleTest
     {
         #region Tests
         [TestMethod]
-        public void ShouldValidateVocabularyDisjointness()
+        public void ShouldValidateTermDisjointness()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:entity"));
             ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:entity"));
             ontology.Data.DeclareIndividual(new RDFResource("ex:entity"));
 
-            OWLValidatorReport validatorReport = OWLVocabularyDisjointnessRule.ExecuteRule(ontology);
+            OWLValidatorReport validatorReport = OWLTermDisjointnessRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
             Assert.IsTrue(validatorReport.EvidencesCount == 3);
@@ -41,14 +41,14 @@ namespace RDFSharp.Semantics.Validator.Test
         }
 
         [TestMethod]
-        public void ShouldValidateVocabularyDisjointnessViaValidator()
+        public void ShouldValidateTermDisjointnessViaValidator()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:entity"));
             ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:entity"));
             ontology.Data.DeclareIndividual(new RDFResource("ex:entity"));
 
-            OWLValidator validator = new OWLValidator().AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.VocabularyDisjointness);
+            OWLValidator validator = new OWLValidator().AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.TermDisjointness);
             OWLValidatorReport validatorReport = validator.ApplyToOntology(ontology);
 
             Assert.IsNotNull(validatorReport);

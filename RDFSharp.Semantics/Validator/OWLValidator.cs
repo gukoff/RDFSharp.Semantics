@@ -89,16 +89,16 @@ namespace RDFSharp.Semantics
                         OWLValidatorReport standardRuleReport = new OWLValidatorReport();
                         switch (standardRule)
                         {
-                            case OWLSemanticsEnums.OWLValidatorStandardRules.VocabularyDisjointness:
-                                standardRuleReport.MergeEvidences(OWLVocabularyDisjointnessRule.ExecuteRule(ontology));
+                            case OWLSemanticsEnums.OWLValidatorStandardRules.TermDisjointness:
+                                standardRuleReport.MergeEvidences(OWLTermDisjointnessRule.ExecuteRule(ontology));
                                 break;
 
-                            case OWLSemanticsEnums.OWLValidatorStandardRules.VocabularyDeclaration:
-                                standardRuleReport.MergeEvidences(OWLVocabularyDeclarationRule.ExecuteRule(ontology));
+                            case OWLSemanticsEnums.OWLValidatorStandardRules.TermDeclaration:
+                                standardRuleReport.MergeEvidences(OWLTermDeclarationRule.ExecuteRule(ontology));
                                 break;
 
-                            case OWLSemanticsEnums.OWLValidatorStandardRules.Deprecation:
-                                standardRuleReport.MergeEvidences(OWLDeprecationRule.ExecuteRule(ontology));
+                            case OWLSemanticsEnums.OWLValidatorStandardRules.TermDeprecation:
+                                standardRuleReport.MergeEvidences(OWLTermDeprecationRule.ExecuteRule(ontology));
                                 break;
 
                             case OWLSemanticsEnums.OWLValidatorStandardRules.DomainRange:

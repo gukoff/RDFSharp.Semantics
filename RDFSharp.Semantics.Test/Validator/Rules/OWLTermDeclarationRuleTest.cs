@@ -21,19 +21,19 @@ using System.Collections.Generic;
 namespace RDFSharp.Semantics.Validator.Test
 {
     [TestClass]
-    public class OWLVocabularyDeclarationRuleTest
+    public class OWLTermDeclarationRuleTest
     {
         #region Tests
 
         // CLASSMODEL
 
         [TestMethod]
-        public void ShouldValidateVocabularyDeclaration_SubClassOf()
+        public void ShouldValidateTermDeclaration_SubClassOf()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.ClassModel.DeclareSubClasses(new RDFResource("ex:class1"), new RDFResource("ex:class2"));
 
-            OWLValidatorReport validatorReport = OWLVocabularyDeclarationRule.ExecuteRule(ontology);
+            OWLValidatorReport validatorReport = OWLTermDeclarationRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
             Assert.IsTrue(validatorReport.EvidencesCount == 2);
@@ -42,12 +42,12 @@ namespace RDFSharp.Semantics.Validator.Test
         }
 
         [TestMethod]
-        public void ShouldValidateVocabularyDeclaration_SubClassOf_ViaValidator()
+        public void ShouldValidateTermDeclaration_SubClassOf_ViaValidator()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.ClassModel.DeclareSubClasses(new RDFResource("ex:class1"), new RDFResource("ex:class2"));
 
-            OWLValidator validator = new OWLValidator().AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.VocabularyDeclaration);
+            OWLValidator validator = new OWLValidator().AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.TermDeclaration);
             OWLValidatorReport validatorReport = validator.ApplyToOntology(ontology);
 
             Assert.IsNotNull(validatorReport);
@@ -57,12 +57,12 @@ namespace RDFSharp.Semantics.Validator.Test
         }
 
         [TestMethod]
-        public void ShouldValidateVocabularyDeclaration_EquivalentClass()
+        public void ShouldValidateTermDeclaration_EquivalentClass()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.ClassModel.DeclareEquivalentClasses(new RDFResource("ex:class1"), new RDFResource("ex:class2"));
 
-            OWLValidatorReport validatorReport = OWLVocabularyDeclarationRule.ExecuteRule(ontology);
+            OWLValidatorReport validatorReport = OWLTermDeclarationRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
             Assert.IsTrue(validatorReport.EvidencesCount == 4); //Consider also the automatic inferences
@@ -71,12 +71,12 @@ namespace RDFSharp.Semantics.Validator.Test
         }
 
         [TestMethod]
-        public void ShouldValidateVocabularyDeclaration_DisjointWith()
+        public void ShouldValidateTermDeclaration_DisjointWith()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.ClassModel.DeclareDisjointClasses(new RDFResource("ex:class1"), new RDFResource("ex:class2"));
 
-            OWLValidatorReport validatorReport = OWLVocabularyDeclarationRule.ExecuteRule(ontology);
+            OWLValidatorReport validatorReport = OWLTermDeclarationRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
             Assert.IsTrue(validatorReport.EvidencesCount == 4); //Consider also the automatic inferences
@@ -85,7 +85,7 @@ namespace RDFSharp.Semantics.Validator.Test
         }
 
         [TestMethod]
-        public void ShouldValidateVocabularyDeclaration_OneOf()
+        public void ShouldValidateTermDeclaration_OneOf()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.ClassModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:enumerateClass"), RDFVocabulary.OWL.ONE_OF, new RDFResource("bnode:representative")));
@@ -93,7 +93,7 @@ namespace RDFSharp.Semantics.Validator.Test
             ontology.Model.ClassModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("bnode:representative"), RDFVocabulary.RDF.FIRST, new RDFResource("ex:individual1")));
             ontology.Model.ClassModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("bnode:representative"), RDFVocabulary.RDF.REST, RDFVocabulary.RDF.NIL));
 
-            OWLValidatorReport validatorReport = OWLVocabularyDeclarationRule.ExecuteRule(ontology);
+            OWLValidatorReport validatorReport = OWLTermDeclarationRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
             Assert.IsTrue(validatorReport.EvidencesCount == 2);
@@ -102,7 +102,7 @@ namespace RDFSharp.Semantics.Validator.Test
         }
 
         [TestMethod]
-        public void ShouldValidateVocabularyDeclaration_UnionOf()
+        public void ShouldValidateTermDeclaration_UnionOf()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.ClassModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:unionClass"), RDFVocabulary.OWL.UNION_OF, new RDFResource("bnode:representative")));
@@ -110,7 +110,7 @@ namespace RDFSharp.Semantics.Validator.Test
             ontology.Model.ClassModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("bnode:representative"), RDFVocabulary.RDF.FIRST, new RDFResource("ex:class1")));
             ontology.Model.ClassModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("bnode:representative"), RDFVocabulary.RDF.REST, RDFVocabulary.RDF.NIL));
 
-            OWLValidatorReport validatorReport = OWLVocabularyDeclarationRule.ExecuteRule(ontology);
+            OWLValidatorReport validatorReport = OWLTermDeclarationRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
             Assert.IsTrue(validatorReport.EvidencesCount == 2);
@@ -119,7 +119,7 @@ namespace RDFSharp.Semantics.Validator.Test
         }
 
         [TestMethod]
-        public void ShouldValidateVocabularyDeclaration_IntersectionOf()
+        public void ShouldValidateTermDeclaration_IntersectionOf()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.ClassModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:intersectionClass"), RDFVocabulary.OWL.INTERSECTION_OF, new RDFResource("bnode:representative")));
@@ -127,7 +127,7 @@ namespace RDFSharp.Semantics.Validator.Test
             ontology.Model.ClassModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("bnode:representative"), RDFVocabulary.RDF.FIRST, new RDFResource("ex:class1")));
             ontology.Model.ClassModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("bnode:representative"), RDFVocabulary.RDF.REST, RDFVocabulary.RDF.NIL));
 
-            OWLValidatorReport validatorReport = OWLVocabularyDeclarationRule.ExecuteRule(ontology);
+            OWLValidatorReport validatorReport = OWLTermDeclarationRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
             Assert.IsTrue(validatorReport.EvidencesCount == 2);
@@ -136,12 +136,12 @@ namespace RDFSharp.Semantics.Validator.Test
         }
 
         [TestMethod]
-        public void ShouldValidateVocabularyDeclaration_ComplementOf()
+        public void ShouldValidateTermDeclaration_ComplementOf()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.ClassModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:class1"), RDFVocabulary.OWL.COMPLEMENT_OF, new RDFResource("ex:class2")));
 
-            OWLValidatorReport validatorReport = OWLVocabularyDeclarationRule.ExecuteRule(ontology);
+            OWLValidatorReport validatorReport = OWLTermDeclarationRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
             Assert.IsTrue(validatorReport.EvidencesCount == 2);
@@ -150,7 +150,7 @@ namespace RDFSharp.Semantics.Validator.Test
         }
 
         [TestMethod]
-        public void ShouldValidateVocabularyDeclaration_HasKey()
+        public void ShouldValidateTermDeclaration_HasKey()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.ClassModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:class"), RDFVocabulary.OWL.HAS_KEY, new RDFResource("bnode:representative")));
@@ -158,7 +158,7 @@ namespace RDFSharp.Semantics.Validator.Test
             ontology.Model.ClassModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("bnode:representative"), RDFVocabulary.RDF.FIRST, new RDFResource("ex:objprop1")));
             ontology.Model.ClassModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("bnode:representative"), RDFVocabulary.RDF.REST, RDFVocabulary.RDF.NIL));
 
-            OWLValidatorReport validatorReport = OWLVocabularyDeclarationRule.ExecuteRule(ontology);
+            OWLValidatorReport validatorReport = OWLTermDeclarationRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
             Assert.IsTrue(validatorReport.EvidencesCount == 2);
@@ -167,7 +167,7 @@ namespace RDFSharp.Semantics.Validator.Test
         }
 
         [TestMethod]
-        public void ShouldValidateVocabularyDeclaration_DisjointUnionOf()
+        public void ShouldValidateTermDeclaration_DisjointUnionOf()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.ClassModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:disjointUnionClass"), RDFVocabulary.OWL.DISJOINT_UNION_OF, new RDFResource("bnode:representative")));
@@ -175,7 +175,7 @@ namespace RDFSharp.Semantics.Validator.Test
             ontology.Model.ClassModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("bnode:representative"), RDFVocabulary.RDF.FIRST, new RDFResource("ex:class1")));
             ontology.Model.ClassModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("bnode:representative"), RDFVocabulary.RDF.REST, RDFVocabulary.RDF.NIL));
 
-            OWLValidatorReport validatorReport = OWLVocabularyDeclarationRule.ExecuteRule(ontology);
+            OWLValidatorReport validatorReport = OWLTermDeclarationRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
             Assert.IsTrue(validatorReport.EvidencesCount == 2);
@@ -184,7 +184,7 @@ namespace RDFSharp.Semantics.Validator.Test
         }
 
         [TestMethod]
-        public void ShouldValidateVocabularyDeclaration_AllDisjointClasses()
+        public void ShouldValidateTermDeclaration_AllDisjointClasses()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.ClassModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:allDisjointClasses"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ALL_DISJOINT_CLASSES));
@@ -193,7 +193,7 @@ namespace RDFSharp.Semantics.Validator.Test
             ontology.Model.ClassModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("bnode:representative"), RDFVocabulary.RDF.FIRST, new RDFResource("ex:class1")));
             ontology.Model.ClassModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("bnode:representative"), RDFVocabulary.RDF.REST, RDFVocabulary.RDF.NIL));
 
-            OWLValidatorReport validatorReport = OWLVocabularyDeclarationRule.ExecuteRule(ontology);
+            OWLValidatorReport validatorReport = OWLTermDeclarationRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
             Assert.IsTrue(validatorReport.EvidencesCount == 2);
@@ -202,12 +202,12 @@ namespace RDFSharp.Semantics.Validator.Test
         }
 
         [TestMethod]
-        public void ShouldValidateVocabularyDeclaration_AllValuesFrom()
+        public void ShouldValidateTermDeclaration_AllValuesFrom()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.ClassModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:class1"), RDFVocabulary.OWL.ALL_VALUES_FROM, new RDFResource("ex:class2")));
 
-            OWLValidatorReport validatorReport = OWLVocabularyDeclarationRule.ExecuteRule(ontology);
+            OWLValidatorReport validatorReport = OWLTermDeclarationRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
             Assert.IsTrue(validatorReport.EvidencesCount == 2);
@@ -216,12 +216,12 @@ namespace RDFSharp.Semantics.Validator.Test
         }
 
         [TestMethod]
-        public void ShouldValidateVocabularyDeclaration_SomeValuesFrom()
+        public void ShouldValidateTermDeclaration_SomeValuesFrom()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.ClassModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:class1"), RDFVocabulary.OWL.SOME_VALUES_FROM, new RDFResource("ex:class2")));
 
-            OWLValidatorReport validatorReport = OWLVocabularyDeclarationRule.ExecuteRule(ontology);
+            OWLValidatorReport validatorReport = OWLTermDeclarationRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
             Assert.IsTrue(validatorReport.EvidencesCount == 2);
@@ -230,12 +230,12 @@ namespace RDFSharp.Semantics.Validator.Test
         }
 
         [TestMethod]
-        public void ShouldValidateVocabularyDeclaration_HasValue()
+        public void ShouldValidateTermDeclaration_HasValue()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.ClassModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:class"), RDFVocabulary.OWL.HAS_VALUE, new RDFResource("ex:individual")));
 
-            OWLValidatorReport validatorReport = OWLVocabularyDeclarationRule.ExecuteRule(ontology);
+            OWLValidatorReport validatorReport = OWLTermDeclarationRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
             Assert.IsTrue(validatorReport.EvidencesCount == 2);
@@ -244,12 +244,12 @@ namespace RDFSharp.Semantics.Validator.Test
         }
 
         [TestMethod]
-        public void ShouldValidateVocabularyDeclaration_HasSelf()
+        public void ShouldValidateTermDeclaration_HasSelf()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.ClassModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:class"), RDFVocabulary.OWL.HAS_SELF, RDFTypedLiteral.True));
 
-            OWLValidatorReport validatorReport = OWLVocabularyDeclarationRule.ExecuteRule(ontology);
+            OWLValidatorReport validatorReport = OWLTermDeclarationRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
             Assert.IsTrue(validatorReport.EvidencesCount == 1);
@@ -258,12 +258,12 @@ namespace RDFSharp.Semantics.Validator.Test
         }
 
         [TestMethod]
-        public void ShouldValidateVocabularyDeclaration_OnClass()
+        public void ShouldValidateTermDeclaration_OnClass()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.ClassModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:qRestr"), RDFVocabulary.OWL.ON_CLASS, new RDFResource("ex:class")));
 
-            OWLValidatorReport validatorReport = OWLVocabularyDeclarationRule.ExecuteRule(ontology);
+            OWLValidatorReport validatorReport = OWLTermDeclarationRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
             Assert.IsTrue(validatorReport.EvidencesCount == 2);
@@ -272,12 +272,12 @@ namespace RDFSharp.Semantics.Validator.Test
         }
 
         [TestMethod]
-        public void ShouldValidateVocabularyDeclaration_OnProperty()
+        public void ShouldValidateTermDeclaration_OnProperty()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.ClassModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:restr"), RDFVocabulary.OWL.ON_PROPERTY, new RDFResource("ex:prop")));
 
-            OWLValidatorReport validatorReport = OWLVocabularyDeclarationRule.ExecuteRule(ontology);
+            OWLValidatorReport validatorReport = OWLTermDeclarationRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
             Assert.IsTrue(validatorReport.EvidencesCount == 2);
@@ -288,12 +288,12 @@ namespace RDFSharp.Semantics.Validator.Test
         // PROPERTYMODEL
 
         [TestMethod]
-        public void ShouldValidateVocabularyDeclaration_SubPropertyOf()
+        public void ShouldValidateTermDeclaration_SubPropertyOf()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.PropertyModel.DeclareSubProperties(new RDFResource("ex:property1"), new RDFResource("ex:property2"));
 
-            OWLValidatorReport validatorReport = OWLVocabularyDeclarationRule.ExecuteRule(ontology);
+            OWLValidatorReport validatorReport = OWLTermDeclarationRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
             Assert.IsTrue(validatorReport.EvidencesCount == 2);
@@ -302,12 +302,12 @@ namespace RDFSharp.Semantics.Validator.Test
         }
 
         [TestMethod]
-        public void ShouldValidateVocabularyDeclaration_EquivalentProperty()
+        public void ShouldValidateTermDeclaration_EquivalentProperty()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.PropertyModel.DeclareEquivalentProperties(new RDFResource("ex:property1"), new RDFResource("ex:property2"));
 
-            OWLValidatorReport validatorReport = OWLVocabularyDeclarationRule.ExecuteRule(ontology);
+            OWLValidatorReport validatorReport = OWLTermDeclarationRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
             Assert.IsTrue(validatorReport.EvidencesCount == 4); //Consider also the automatic inferences
@@ -316,12 +316,12 @@ namespace RDFSharp.Semantics.Validator.Test
         }
 
         [TestMethod]
-        public void ShouldValidateVocabularyDeclaration_PropertyDisjointWith()
+        public void ShouldValidateTermDeclaration_PropertyDisjointWith()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.PropertyModel.DeclareDisjointProperties(new RDFResource("ex:property1"), new RDFResource("ex:property2"));
 
-            OWLValidatorReport validatorReport = OWLVocabularyDeclarationRule.ExecuteRule(ontology);
+            OWLValidatorReport validatorReport = OWLTermDeclarationRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
             Assert.IsTrue(validatorReport.EvidencesCount == 4); //Consider also the automatic inferences
@@ -330,12 +330,12 @@ namespace RDFSharp.Semantics.Validator.Test
         }
 
         [TestMethod]
-        public void ShouldValidateVocabularyDeclaration_InverseOf()
+        public void ShouldValidateTermDeclaration_InverseOf()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.PropertyModel.DeclareInverseProperties(new RDFResource("ex:property1"), new RDFResource("ex:property2"));
 
-            OWLValidatorReport validatorReport = OWLVocabularyDeclarationRule.ExecuteRule(ontology);
+            OWLValidatorReport validatorReport = OWLTermDeclarationRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
             Assert.IsTrue(validatorReport.EvidencesCount == 4); //Consider also the automatic inferences
@@ -344,12 +344,12 @@ namespace RDFSharp.Semantics.Validator.Test
         }
 
         [TestMethod]
-        public void ShouldValidateVocabularyDeclaration_PropertyChainAxiom()
+        public void ShouldValidateTermDeclaration_PropertyChainAxiom()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.PropertyModel.DeclarePropertyChainAxiom(new RDFResource("ex:propertyChainAxiom"), new List<RDFResource>() { new RDFResource("ex:objprop1") });
 
-            OWLValidatorReport validatorReport = OWLVocabularyDeclarationRule.ExecuteRule(ontology);
+            OWLValidatorReport validatorReport = OWLTermDeclarationRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
             Assert.IsTrue(validatorReport.EvidencesCount == 1); //ChainAxiom is automatically declared as owl:ObjectProperty
@@ -358,12 +358,12 @@ namespace RDFSharp.Semantics.Validator.Test
         }
 
         [TestMethod]
-        public void ShouldValidateVocabularyDeclaration_AllDisjointProperties()
+        public void ShouldValidateTermDeclaration_AllDisjointProperties()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.PropertyModel.DeclareAllDisjointProperties(new RDFResource("ex:allDisjointProperties"), new List<RDFResource>() { new RDFResource("ex:class1") });
 
-            OWLValidatorReport validatorReport = OWLVocabularyDeclarationRule.ExecuteRule(ontology);
+            OWLValidatorReport validatorReport = OWLTermDeclarationRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
             Assert.IsTrue(validatorReport.EvidencesCount == 1);
@@ -372,12 +372,12 @@ namespace RDFSharp.Semantics.Validator.Test
         }
 
         [TestMethod]
-        public void ShouldValidateVocabularyDeclaration_Domain()
+        public void ShouldValidateTermDeclaration_Domain()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.PropertyModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:property"), RDFVocabulary.RDFS.DOMAIN, new RDFResource("ex:class")));
 
-            OWLValidatorReport validatorReport = OWLVocabularyDeclarationRule.ExecuteRule(ontology);
+            OWLValidatorReport validatorReport = OWLTermDeclarationRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
             Assert.IsTrue(validatorReport.EvidencesCount == 2);
@@ -386,12 +386,12 @@ namespace RDFSharp.Semantics.Validator.Test
         }
 
         [TestMethod]
-        public void ShouldValidateVocabularyDeclaration_Range()
+        public void ShouldValidateTermDeclaration_Range()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.PropertyModel.TBoxGraph.AddTriple(new RDFTriple(new RDFResource("ex:property"), RDFVocabulary.RDFS.RANGE, new RDFResource("ex:class")));
 
-            OWLValidatorReport validatorReport = OWLVocabularyDeclarationRule.ExecuteRule(ontology);
+            OWLValidatorReport validatorReport = OWLTermDeclarationRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
             Assert.IsTrue(validatorReport.EvidencesCount == 2);
@@ -402,12 +402,12 @@ namespace RDFSharp.Semantics.Validator.Test
         // DATA
 
         [TestMethod]
-        public void ShouldValidateVocabularyDeclaration_Type()
+        public void ShouldValidateTermDeclaration_Type()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Data.DeclareIndividualType(new RDFResource("ex:individual"), new RDFResource("ex:class"));
 
-            OWLValidatorReport validatorReport = OWLVocabularyDeclarationRule.ExecuteRule(ontology);
+            OWLValidatorReport validatorReport = OWLTermDeclarationRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
             Assert.IsTrue(validatorReport.EvidencesCount == 2);
@@ -416,12 +416,12 @@ namespace RDFSharp.Semantics.Validator.Test
         }
 
         [TestMethod]
-        public void ShouldValidateVocabularyDeclaration_SameAs()
+        public void ShouldValidateTermDeclaration_SameAs()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Data.DeclareSameIndividuals(new RDFResource("ex:individual1"), new RDFResource("ex:individual2"));
 
-            OWLValidatorReport validatorReport = OWLVocabularyDeclarationRule.ExecuteRule(ontology);
+            OWLValidatorReport validatorReport = OWLTermDeclarationRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
             Assert.IsTrue(validatorReport.EvidencesCount == 4); //Consider also the automatic inferences
@@ -430,12 +430,12 @@ namespace RDFSharp.Semantics.Validator.Test
         }
 
         [TestMethod]
-        public void ShouldValidateVocabularyDeclaration_DifferentFrom()
+        public void ShouldValidateTermDeclaration_DifferentFrom()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Data.DeclareDifferentIndividuals(new RDFResource("ex:individual1"), new RDFResource("ex:individual2"));
 
-            OWLValidatorReport validatorReport = OWLVocabularyDeclarationRule.ExecuteRule(ontology);
+            OWLValidatorReport validatorReport = OWLTermDeclarationRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
             Assert.IsTrue(validatorReport.EvidencesCount == 4); //Consider also the automatic inferences
@@ -444,12 +444,12 @@ namespace RDFSharp.Semantics.Validator.Test
         }
 
         [TestMethod]
-        public void ShouldValidateVocabularyDeclaration_AllDifferent()
+        public void ShouldValidateTermDeclaration_AllDifferent()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Data.DeclareAllDifferentIndividuals(new RDFResource("ex:allDifferent"), new List<RDFResource>() { new RDFResource("ex:individual1") });
 
-            OWLValidatorReport validatorReport = OWLVocabularyDeclarationRule.ExecuteRule(ontology);
+            OWLValidatorReport validatorReport = OWLTermDeclarationRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
             Assert.IsTrue(validatorReport.EvidencesCount == 1);
@@ -458,13 +458,13 @@ namespace RDFSharp.Semantics.Validator.Test
         }
 
         [TestMethod]
-        public void ShouldValidateVocabularyDeclaration_ObjectAssertion()
+        public void ShouldValidateTermDeclaration_ObjectAssertion()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objprop"));
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:individual1"), new RDFResource("ex:objprop"), new RDFResource("ex:individual2"));
 
-            OWLValidatorReport validatorReport = OWLVocabularyDeclarationRule.ExecuteRule(ontology);
+            OWLValidatorReport validatorReport = OWLTermDeclarationRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
             Assert.IsTrue(validatorReport.EvidencesCount == 2);
@@ -473,13 +473,13 @@ namespace RDFSharp.Semantics.Validator.Test
         }
 
         [TestMethod]
-        public void ShouldValidateVocabularyDeclaration_DatatypeAssertion()
+        public void ShouldValidateTermDeclaration_DatatypeAssertion()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.PropertyModel.DeclareDatatypeProperty(new RDFResource("ex:dtprop"));
             ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:individual1"), new RDFResource("ex:dtprop"), new RDFPlainLiteral("value"));
 
-            OWLValidatorReport validatorReport = OWLVocabularyDeclarationRule.ExecuteRule(ontology);
+            OWLValidatorReport validatorReport = OWLTermDeclarationRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
             Assert.IsTrue(validatorReport.EvidencesCount == 1);
@@ -488,12 +488,12 @@ namespace RDFSharp.Semantics.Validator.Test
         }
 
         [TestMethod]
-        public void ShouldValidateVocabularyDeclaration_NegativeObjectAssertion()
+        public void ShouldValidateTermDeclaration_NegativeObjectAssertion()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Data.DeclareNegativeObjectAssertion(new RDFResource("ex:individual1"), new RDFResource("ex:objprop"), new RDFResource("ex:individual2"));
 
-            OWLValidatorReport validatorReport = OWLVocabularyDeclarationRule.ExecuteRule(ontology);
+            OWLValidatorReport validatorReport = OWLTermDeclarationRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
             Assert.IsTrue(validatorReport.EvidencesCount == 3);
@@ -502,12 +502,12 @@ namespace RDFSharp.Semantics.Validator.Test
         }
 
         [TestMethod]
-        public void ShouldValidateVocabularyDeclaration_NegativeDatatypeAssertion()
+        public void ShouldValidateTermDeclaration_NegativeDatatypeAssertion()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Data.DeclareNegativeDatatypeAssertion(new RDFResource("ex:individual1"), new RDFResource("ex:dtprop"), new RDFPlainLiteral("value"));
 
-            OWLValidatorReport validatorReport = OWLVocabularyDeclarationRule.ExecuteRule(ontology);
+            OWLValidatorReport validatorReport = OWLTermDeclarationRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
             Assert.IsTrue(validatorReport.EvidencesCount == 2);

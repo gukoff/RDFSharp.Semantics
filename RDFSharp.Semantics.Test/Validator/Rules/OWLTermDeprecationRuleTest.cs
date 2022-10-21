@@ -20,11 +20,11 @@ using RDFSharp.Model;
 namespace RDFSharp.Semantics.Validator.Test
 {
     [TestClass]
-    public class OWLDeprecationRuleTest
+    public class OWLTermDeprecationRuleTest
     {
         #region Tests
         [TestMethod]
-        public void ShouldValidateDeprecation()
+        public void ShouldValidateTermDeprecation()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:class"), new OWLOntologyClassBehavior() { Deprecated = true });
@@ -33,7 +33,7 @@ namespace RDFSharp.Semantics.Validator.Test
             ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv1"), new RDFResource("ex:class"));
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objprop"), new RDFResource("ex:indiv1"));
 
-            OWLValidatorReport validatorReport = OWLDeprecationRule.ExecuteRule(ontology);
+            OWLValidatorReport validatorReport = OWLTermDeprecationRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
             Assert.IsTrue(validatorReport.EvidencesCount == 2);
@@ -42,7 +42,7 @@ namespace RDFSharp.Semantics.Validator.Test
         }
 
         [TestMethod]
-        public void ShouldValidateDeprecationViaValidator()
+        public void ShouldValidateTermDeprecationViaValidator()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:class"), new OWLOntologyClassBehavior() { Deprecated = true });
@@ -51,7 +51,7 @@ namespace RDFSharp.Semantics.Validator.Test
             ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv1"), new RDFResource("ex:class"));
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objprop"), new RDFResource("ex:indiv1"));
 
-            OWLValidator validator = new OWLValidator().AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.Deprecation);
+            OWLValidator validator = new OWLValidator().AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.TermDeprecation);
             OWLValidatorReport validatorReport = validator.ApplyToOntology(ontology);
 
             Assert.IsNotNull(validatorReport);
