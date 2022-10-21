@@ -498,6 +498,28 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
+        public void ShouldAnswerDomainOfProperty()
+        {
+            OWLOntologyPropertyModel propertyModel = new OWLOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:objprop"), new OWLOntologyObjectPropertyBehavior() { Domain = new RDFResource("ex:class") });
+
+            Assert.IsTrue(propertyModel.GetDomainOf(new RDFResource("ex:objprop")).Any(cls => cls.Equals(new RDFResource("ex:class"))));
+            Assert.IsTrue(propertyModel.GetDomainOf(new RDFResource("ex:objprop2")).Count == 0);
+            Assert.IsTrue(propertyModel.GetDomainOf(null).Count == 0);
+        }
+
+        [TestMethod]
+        public void ShouldAnswerRangeOfProperty()
+        {
+            OWLOntologyPropertyModel propertyModel = new OWLOntologyPropertyModel();
+            propertyModel.DeclareObjectProperty(new RDFResource("ex:objprop"), new OWLOntologyObjectPropertyBehavior() { Range = new RDFResource("ex:class") });
+
+            Assert.IsTrue(propertyModel.GetRangeOf(new RDFResource("ex:objprop")).Any(cls => cls.Equals(new RDFResource("ex:class"))));
+            Assert.IsTrue(propertyModel.GetRangeOf(new RDFResource("ex:objprop2")).Count == 0);
+            Assert.IsTrue(propertyModel.GetRangeOf(null).Count == 0);
+        }
+
+        [TestMethod]
         public void ShouldAnswerChainAxiomProperties()
         {
             OWLOntologyPropertyModel propertyModel = new OWLOntologyPropertyModel();

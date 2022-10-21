@@ -434,6 +434,42 @@ namespace RDFSharp.Semantics
         }
 
         /// <summary>
+        /// Analyzes "Domain(owlProperty,X)" relations of the model to enlist the domain classes of the given owl:Property
+        /// </summary>
+        public static List<RDFResource> GetDomainOf(this OWLOntologyPropertyModel propertyModel, RDFResource owlProperty)
+        {
+            List<RDFResource> domainClasses = new List<RDFResource>();
+
+            if (propertyModel != null && owlProperty != null)
+            {
+                //DIRECT
+                RDFGraph domainGraph = propertyModel.TBoxGraph[owlProperty, RDFVocabulary.RDFS.DOMAIN, null, null];
+                foreach (RDFTriple domainTriple in domainGraph)
+                    domainClasses.Add((RDFResource)domainTriple.Object);
+            }
+
+            return domainClasses;
+        }
+
+        /// <summary>
+        /// Analyzes "Range(owlProperty,X)" relations of the model to enlist the range classes of the given owl:Property
+        /// </summary>
+        public static List<RDFResource> GetRangeOf(this OWLOntologyPropertyModel propertyModel, RDFResource owlProperty)
+        {
+            List<RDFResource> rangeClasses = new List<RDFResource>();
+
+            if (propertyModel != null && owlProperty != null)
+            {
+                //DIRECT
+                RDFGraph rangeGraph = propertyModel.TBoxGraph[owlProperty, RDFVocabulary.RDFS.RANGE, null, null];
+                foreach (RDFTriple rangeTriple in rangeGraph)
+                    rangeClasses.Add((RDFResource)rangeTriple.Object);
+            }
+
+            return rangeClasses;
+        }
+
+        /// <summary>
         ///  Analyzes "propertyChainAxiom(owlProperty,X)" relations of the model to answer the chain axiom properties of the given owl:Property [OWL2]
         /// </summary>
         public static List<RDFResource> GetChainAxiomPropertiesOf(this OWLOntologyPropertyModel propertyModel, RDFResource owlProperty)
