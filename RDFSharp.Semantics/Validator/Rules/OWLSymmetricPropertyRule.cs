@@ -37,7 +37,7 @@ namespace RDFSharp.Semantics
                     RDFGraph symmetricObjectAssertions = ontology.Data.ABoxGraph[null, symmetricPropertiesEnumerator.Current, null, null];
                     foreach (RDFTriple symmetricObjectAssertion in symmetricObjectAssertions)
                     {
-                        //rdfs:domain => object of the symmetric assertion should be compatible with these classes
+                        //In order to not generate inferences having inconsistent rdfs:domain, object of symmetric assertions should be compatible with specified rdfs:domain
                         if (domainClasses.Any(domainClass => !ontology.Data.CheckIsIndividualOf(ontology.Model, (RDFResource)symmetricObjectAssertion.Object, domainClass)))
                             validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                                 OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
@@ -45,7 +45,7 @@ namespace RDFSharp.Semantics
                                 $"Violation of 'owl:SymmetricProperty' behavior on property '{symmetricPropertiesEnumerator.Current}'",
                                 "Revise your object assertions: fix symmetric property usage in order to not tamper domain/range constraints of the property"));
 
-                        //rdfs:range => subject of the symmetric assertion should be compatible with these classes
+                        //In order to not generate inferences having inconsistent rdfs:range, subject of symmetric assertions should be compatible with specified rdfs:range
                         if (rangeClasses.Any(rangeClass => !ontology.Data.CheckIsIndividualOf(ontology.Model, (RDFResource)symmetricObjectAssertion.Subject, rangeClass)))
                             validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                                 OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,

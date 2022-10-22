@@ -30,13 +30,14 @@ namespace RDFSharp.Semantics
             IEnumerator<RDFResource> asymmetricPropertiesEnumerator = ontology.Model.PropertyModel.AsymmetricPropertiesEnumerator;
             while (asymmetricPropertiesEnumerator.MoveNext())
             {
+                //There should not be asymmetric object assertions switching subject/object
                 RDFGraph asymmetricObjectAssertions = ontology.Data.ABoxGraph[null, asymmetricPropertiesEnumerator.Current, null, null];
                 if (asymmetricObjectAssertions.Any(asn => asn.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPO && ontology.Data.CheckHasObjectAssertion((RDFResource)asn.Object, asymmetricPropertiesEnumerator.Current, (RDFResource)asn.Subject)))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
                         nameof(OWLAsymmetricPropertyRule),
                         $"Violation of 'owl:AsymmetricProperty' behavior on property '{asymmetricPropertiesEnumerator.Current}'",
-                        "Revise your object assertions: fix asymmetric property usage in order to not clash on subject/predicate asimmetry"));
+                        "Revise your object assertions: fix asymmetric property usage in order to not clash on subject/object asimmetry"));
             }
 
             return validatorRuleReport;

@@ -30,13 +30,14 @@ namespace RDFSharp.Semantics
             IEnumerator<RDFResource> irreflexivePropertiesEnumerator = ontology.Model.PropertyModel.IrreflexivePropertiesEnumerator;
             while (irreflexivePropertiesEnumerator.MoveNext())
             {
+                //There should not be irreflexive object assertions having the same subject as object
                 RDFGraph irreflexiveObjectAssertions = ontology.Data.ABoxGraph[null, irreflexivePropertiesEnumerator.Current, null, null];
                 if (irreflexiveObjectAssertions.Any(asn => asn.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPO && asn.Subject.Equals(asn.Object)))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
                         nameof(OWLIrreflexivePropertyRule),
                         $"Violation of 'owl:IrreflexiveProperty' behavior on property '{irreflexivePropertiesEnumerator.Current}'",
-                        "Revise your object assertions: fix irreflexive property usage in order to not clash on subject/predicate irreflexivity"));
+                        "Revise your object assertions: fix irreflexive property usage in order to not clash on subject/object irreflexivity"));
             }
 
             return validatorRuleReport;

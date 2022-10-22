@@ -29,24 +29,26 @@ namespace RDFSharp.Semantics
             IEnumerator<RDFResource> deprecatedClassesEnumerator = ontology.Model.ClassModel.DeprecatedClassesEnumerator;
             while (deprecatedClassesEnumerator.MoveNext())
             {
+                //It should be avoided the assigment of deprecated classes as class types of individuals
                 if (ontology.Data.ABoxGraph[null, RDFVocabulary.RDF.TYPE, deprecatedClassesEnumerator.Current, null].TriplesCount > 0)
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
                         nameof(OWLTermDeprecationRule),
                         $"Deprecated class '{deprecatedClassesEnumerator.Current}' is used by individuals through 'rdf:type' relation",
-                        "Revise your 'rdf:type' relations: abandon active usage of deprecated classes (which may be removed in future ontology editions)"));
+                        "Revise your 'rdf:type' relations: abandon usage of deprecated classes (which may be removed in future ontology editions)"));
             }
 
             //owl:DeprecatedProperty
             IEnumerator<RDFResource> deprecatedPropertiesEnumerator = ontology.Model.PropertyModel.DeprecatedPropertiesEnumerator;
             while (deprecatedPropertiesEnumerator.MoveNext())
             {
+                //It should be avoided the usage of deprecated properties in assertions
                 if (ontology.Data.ABoxGraph[null, deprecatedPropertiesEnumerator.Current, null, null].TriplesCount > 0)
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
                         nameof(OWLTermDeprecationRule),
                         $"Deprecated property '{deprecatedPropertiesEnumerator.Current}' is used by individuals through object or datatype assertions",
-                        "Revise your object or datatype assertions: abandon active usage of deprecated properties (which may be removed in future ontology editions)"));
+                        "Revise your object or datatype assertions: abandon usage of deprecated properties (which may be removed in future ontology editions)"));
             }
 
             return validatorRuleReport;
