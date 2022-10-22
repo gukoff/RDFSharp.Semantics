@@ -138,7 +138,7 @@ namespace RDFSharp.Semantics
                                 break;
 
                             case OWLSemanticsEnums.OWLValidatorStandardRules.ClassType:
-                                //TODO
+                                standardRuleReport.MergeEvidences(OWLClassTypeRule.ExecuteRule(ontology));
                                 break;
 
                             case OWLSemanticsEnums.OWLValidatorStandardRules.GlobalCardinalityConstraint:

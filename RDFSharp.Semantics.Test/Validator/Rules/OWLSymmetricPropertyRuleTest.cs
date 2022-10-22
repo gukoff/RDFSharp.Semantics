@@ -20,7 +20,7 @@ using RDFSharp.Model;
 namespace RDFSharp.Semantics.Validator.Test
 {
     [TestClass]
-    public class OWLSymmetricPropertyTest
+    public class OWLSymmetricPropertyRuleTest
     {
         #region Tests
         [TestMethod]
