@@ -123,7 +123,7 @@ namespace RDFSharp.Semantics
                                 //TODO
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.PropertyChainAxiom:
-                                //TODO
+                                standardRuleReport.MergeEvidences(OWLPropertyChainAxiomRule.ExecuteRule(ontology));
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.ClassType:
                                 standardRuleReport.MergeEvidences(OWLClassTypeRule.ExecuteRule(ontology));
