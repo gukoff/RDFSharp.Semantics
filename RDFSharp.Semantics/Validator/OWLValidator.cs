@@ -92,59 +92,45 @@ namespace RDFSharp.Semantics
                             case OWLSemanticsEnums.OWLValidatorStandardRules.TermDisjointness:
                                 standardRuleReport.MergeEvidences(OWLTermDisjointnessRule.ExecuteRule(ontology));
                                 break;
-
                             case OWLSemanticsEnums.OWLValidatorStandardRules.TermDeclaration:
                                 standardRuleReport.MergeEvidences(OWLTermDeclarationRule.ExecuteRule(ontology));
                                 break;
-
                             case OWLSemanticsEnums.OWLValidatorStandardRules.TermDeprecation:
                                 standardRuleReport.MergeEvidences(OWLTermDeprecationRule.ExecuteRule(ontology));
                                 break;
-
                             case OWLSemanticsEnums.OWLValidatorStandardRules.DomainRange:
-                                //TODO
+                                standardRuleReport.MergeEvidences(OWLDomainRangeRule.ExecuteRule(ontology));
                                 break;
-
                             case OWLSemanticsEnums.OWLValidatorStandardRules.InverseOf:
                                 //TODO
                                 break;
-
                             case OWLSemanticsEnums.OWLValidatorStandardRules.SymmetricProperty:
                                 standardRuleReport.MergeEvidences(OWLSymmetricPropertyRule.ExecuteRule(ontology));
                                 break;
-
                             case OWLSemanticsEnums.OWLValidatorStandardRules.AsymmetricProperty:
                                 standardRuleReport.MergeEvidences(OWLAsymmetricPropertyRule.ExecuteRule(ontology));
                                 break;
-
                             case OWLSemanticsEnums.OWLValidatorStandardRules.IrreflexiveProperty:
                                 standardRuleReport.MergeEvidences(OWLIrreflexivePropertyRule.ExecuteRule(ontology));
                                 break;
-
                             case OWLSemanticsEnums.OWLValidatorStandardRules.PropertyDisjoint:
                                 //TODO
                                 break;
-
                             case OWLSemanticsEnums.OWLValidatorStandardRules.NegativeAssertions:
                                 //TODO
                                 break;
-
                             case OWLSemanticsEnums.OWLValidatorStandardRules.HasKey:
                                 //TODO
                                 break;
-
                             case OWLSemanticsEnums.OWLValidatorStandardRules.PropertyChainAxiom:
                                 //TODO
                                 break;
-
                             case OWLSemanticsEnums.OWLValidatorStandardRules.ClassType:
                                 standardRuleReport.MergeEvidences(OWLClassTypeRule.ExecuteRule(ontology));
                                 break;
-
                             case OWLSemanticsEnums.OWLValidatorStandardRules.GlobalCardinalityConstraint:
                                 //TODO
                                 break;
-
                             case OWLSemanticsEnums.OWLValidatorStandardRules.LocalCardinalityConstraint:
                                 //TODO
                                 break;
