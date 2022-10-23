@@ -128,11 +128,11 @@ namespace RDFSharp.Semantics
                             case OWLSemanticsEnums.OWLValidatorStandardRules.ClassType:
                                 standardRuleReport.MergeEvidences(OWLClassTypeRule.ExecuteRule(ontology));
                                 break;
-                            case OWLSemanticsEnums.OWLValidatorStandardRules.GlobalCardinalityConstraint:
+                            case OWLSemanticsEnums.OWLValidatorStandardRules.GlobalCardinality:
                                 //TODO
                                 break;
-                            case OWLSemanticsEnums.OWLValidatorStandardRules.LocalCardinalityConstraint:
-                                //TODO
+                            case OWLSemanticsEnums.OWLValidatorStandardRules.LocalCardinality:
+                                standardRuleReport.MergeEvidences(OWLLocalCardinalityRule.ExecuteRule(ontology));
                                 break;
                         }
                         validatorReport.MergeEvidences(standardRuleReport);

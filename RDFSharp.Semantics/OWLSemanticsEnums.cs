@@ -96,11 +96,11 @@ namespace RDFSharp.Semantics
             /// <summary>
             /// This OWL-DL rule checks for consistency of global cardinality constraints
             /// </summary>
-            GlobalCardinalityConstraint = 14,
+            GlobalCardinality = 14,
             /// <summary>
             /// This OWL-DL rule checks for consistency of local cardinality constraints
             /// </summary>
-            LocalCardinalityConstraint = 15            
+            LocalCardinality = 15            
         };
     }
 }

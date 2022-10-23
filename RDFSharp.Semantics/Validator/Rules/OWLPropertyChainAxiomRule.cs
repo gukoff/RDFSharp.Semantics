@@ -30,7 +30,7 @@ namespace RDFSharp.Semantics
             IEnumerator<RDFResource> restrictionsEnumerator = ontology.Model.ClassModel.RestrictionsEnumerator;
             while (restrictionsEnumerator.MoveNext())
             {
-                //There should not be cardinality or self restrictions having a propertyChainAxiom as working property
+                //There should not be cardinality or self restrictions working on a property chain axiom
                 if (ontology.Model.ClassModel.CheckHasCardinalityRestrictionClass(restrictionsEnumerator.Current)
                      || ontology.Model.ClassModel.CheckHasMinCardinalityRestrictionClass(restrictionsEnumerator.Current)
                       || ontology.Model.ClassModel.CheckHasMaxCardinalityRestrictionClass(restrictionsEnumerator.Current)
@@ -40,11 +40,17 @@ namespace RDFSharp.Semantics
                           || ontology.Model.ClassModel.CheckHasMaxQualifiedCardinalityRestrictionClass(restrictionsEnumerator.Current)
                            || ontology.Model.ClassModel.CheckHasMinMaxQualifiedCardinalityRestrictionClass(restrictionsEnumerator.Current)
                             || ontology.Model.ClassModel.CheckHasSelfRestrictionClass(restrictionsEnumerator.Current))
-                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
-                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
-                        nameof(OWLPropertyChainAxiomRule),
-                        $"Violation of OWL2-DL integrity caused by 'owl:propertyChainAxiom' used as 'owl:onProperty' of restriction '{restrictionsEnumerator.Current}'",
-                        "Revise your class model: it is not allowed the use of property chain axioms on cardinality or self restrictions"));
+                {
+                    //Grab owl:onProperty value to check if it is a property chain axiom
+                    RDFResource onProperty = ontology.Model.ClassModel.TBoxGraph[restrictionsEnumerator.Current, RDFVocabulary.OWL.ON_PROPERTY, null, null]
+                                                .FirstOrDefault()?.Object as RDFResource;
+                    if (ontology.Model.PropertyModel.CheckHasPropertyChainAxiom(onProperty))
+                        validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                            OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
+                            nameof(OWLPropertyChainAxiomRule),
+                            $"Violation of OWL2-DL integrity caused by 'owl:propertyChainAxiom' used as 'owl:onProperty' of restriction '{restrictionsEnumerator.Current}'",
+                            "Revise your class model: it is not allowed the use of property chain axioms on cardinality or self restrictions"));
+                }
             }
 
             //owl:ObjectProperty
