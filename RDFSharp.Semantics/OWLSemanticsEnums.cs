@@ -84,7 +84,7 @@ namespace RDFSharp.Semantics
             /// <summary>
             /// This OWL2 rule checks for consistency of owl:hasKey knowledge
             /// </summary>
-            HasKey = 11,
+            ClassKey = 11,
             /// <summary>
             /// This OWL2 rule checks for consistency of owl:propertyChainAxiom knowledge
             /// </summary>

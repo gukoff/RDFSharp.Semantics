@@ -46,7 +46,7 @@ namespace RDFSharp.Semantics
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
                         nameof(OWLClassTypeRule),
                         $"Violation of 'rdf:type' relations on individual '{individualsEnumerator.Current}'",
-                        "Revise your class model: you have disjoint classes which are "));
+                        "Revise your class model: you have disjoint classes sharing an individual"));
             }
 
             return validatorRuleReport;
