@@ -30,6 +30,9 @@ namespace RDFSharp.Semantics.Validator.Test
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:class1"));
             ontology.Model.ClassModel.DeclareHasKey(new RDFResource("ex:class1"), new List<RDFResource>() { new RDFResource("ex:dtprop1"), new RDFResource("ex:dtprop2") });
+            ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:class2")); //this class has no keys, it will not be considered
+            ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:class3")); //this class has no members, it will not be considered
+            ontology.Model.ClassModel.DeclareHasKey(new RDFResource("ex:class3"), new List<RDFResource>() { new RDFResource("ex:dtprop1") });
             ontology.Model.PropertyModel.DeclareDatatypeProperty(new RDFResource("ex:dtprop1"));
             ontology.Model.PropertyModel.DeclareDatatypeProperty(new RDFResource("ex:dtprop2"));
             ontology.Data.DeclareIndividual(new RDFResource("ex:indiv1"));
@@ -42,12 +45,12 @@ namespace RDFSharp.Semantics.Validator.Test
             ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:indiv2"), new RDFResource("ex:dtprop2"), new RDFPlainLiteral("val2"));
             ontology.Data.DeclareDifferentIndividuals(new RDFResource("ex:indiv1"), new RDFResource("ex:indiv2"));
 
-            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv3")); //this individual, although colliding on key, will not clash on owl:differentFrom
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv3")); //this individual, although colliding on key with ex:individual1 and ex:individual2, will not clash on owl:differentFrom
             ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv3"), new RDFResource("ex:class1"));
             ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:dtprop1"), new RDFPlainLiteral("val1"));
             ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:dtprop2"), new RDFPlainLiteral("val2"));
 
-            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv4")); //this individual has a partial key: it will not be considered
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv4")); //this individual has a partial key: it cannot clash with full keys
             ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv4"), new RDFResource("ex:class1"));
             ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:indiv4"), new RDFResource("ex:dtprop1"), new RDFPlainLiteral("val1"));
 
