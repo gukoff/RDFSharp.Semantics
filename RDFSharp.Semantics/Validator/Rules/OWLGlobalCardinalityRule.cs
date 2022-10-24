@@ -50,8 +50,8 @@ namespace RDFSharp.Semantics
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
                         nameof(OWLGlobalCardinalityRule),
-                        $"Violation of OWL-DL integrity caused by functional property '{fpEnumerator.Current}' having a super property being 'owl:TransitiveProperty'",
-                        "Revise your property model: it is not allowed for a functional property to have super properties being 'owl:TransitiveProperty'"));
+                        $"Violation of OWL-DL integrity caused by functional property '{fpEnumerator.Current}' being 'owl:TransitiveProperty', or having a super property being 'owl:TransitiveProperty'",
+                        "Revise your property model: it is not allowed for a functional property to be also 'owl:TransitiveProperty', or to have super properties being 'owl:TransitiveProperty'"));
             }
 
             //owl:InverseFunctionalProperty
@@ -77,8 +77,8 @@ namespace RDFSharp.Semantics
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
                         nameof(OWLGlobalCardinalityRule),
-                        $"Violation of OWL-DL integrity caused by inverse functional property '{ifpEnumerator.Current}' having a super property being 'owl:TransitiveProperty'",
-                        "Revise your property model: it is not allowed for an inverse functional property to have super properties being 'owl:TransitiveProperty'"));
+                        $"Violation of OWL-DL integrity caused by inverse functional property '{ifpEnumerator.Current}' being 'owl:TransitiveProperty', or having a super property being 'owl:TransitiveProperty'",
+                        "Revise your property model: it is not allowed for an inverse functional property to be also 'owl:TransitiveProperty', or to have super properties being 'owl:TransitiveProperty'"));
             }
 
             return validatorRuleReport;
