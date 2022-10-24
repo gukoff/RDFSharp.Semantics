@@ -129,7 +129,7 @@ namespace RDFSharp.Semantics
                                 standardRuleReport.MergeEvidences(OWLClassTypeRule.ExecuteRule(ontology));
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.GlobalCardinality:
-                                //TODO
+                                standardRuleReport.MergeEvidences(OWLGlobalCardinalityRule.ExecuteRule(ontology));
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.LocalCardinality:
                                 standardRuleReport.MergeEvidences(OWLLocalCardinalityRule.ExecuteRule(ontology));
