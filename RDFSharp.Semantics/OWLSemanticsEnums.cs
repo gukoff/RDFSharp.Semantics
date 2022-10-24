@@ -58,45 +58,41 @@ namespace RDFSharp.Semantics
             /// </summary>
             DomainRange = 4,
             /// <summary>
-            /// This OWL-DL rule checks for consistency of owl:inverseOf knowledge
-            /// </summary>
-            InverseOf = 5,
-            /// <summary>
             /// This OWL-DL rule checks for consistency of owl:SymmetricProperty knowledge
             /// </summary>
-            SymmetricProperty = 6,
+            SymmetricProperty = 5,
             /// <summary>
             /// This OWL2 rule checks for consistency of owl:AsymmetricProperty knowledge
             /// </summary>
-            AsymmetricProperty = 7,
+            AsymmetricProperty = 6,
             /// <summary>
             /// This OWL2 rule checks for consistency of owl:IrreflexiveProperty knowledge
             /// </summary>
-            IrreflexiveProperty = 8,
+            IrreflexiveProperty = 7,
             /// <summary>
             /// This OWL2 rule checks for consistency of owl:propertyDisjointWith knowledge
             /// </summary>
-            PropertyDisjoint = 9,
+            PropertyDisjoint = 8,
             /// <summary>
             /// This OWL2 rule checks for consistency of owl:hasKey knowledge
             /// </summary>
-            ClassKey = 10,
+            ClassKey = 9,
             /// <summary>
             /// This OWL2 rule checks for consistency of owl:propertyChainAxiom knowledge
             /// </summary>
-            PropertyChainAxiom = 11,
+            PropertyChainAxiom = 10,
             /// <summary>
             /// This OWL-DL rule checks for consistency of rdf:type knowledge
             /// </summary>
-            ClassType = 12,
+            ClassType = 11,
             /// <summary>
             /// This OWL-DL rule checks for consistency of global cardinality constraints
             /// </summary>
-            GlobalCardinality = 13,
+            GlobalCardinality = 12,
             /// <summary>
             /// This OWL-DL rule checks for consistency of local cardinality constraints
             /// </summary>
-            LocalCardinality = 14
+            LocalCardinality = 13
         };
     }
 }
