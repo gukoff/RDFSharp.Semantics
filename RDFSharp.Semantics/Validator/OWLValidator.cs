@@ -116,9 +116,6 @@ namespace RDFSharp.Semantics
                             case OWLSemanticsEnums.OWLValidatorStandardRules.PropertyDisjoint:
                                 //TODO
                                 break;
-                            case OWLSemanticsEnums.OWLValidatorStandardRules.NegativeAssertions:
-                                //TODO
-                                break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.ClassKey:
                                 standardRuleReport.MergeEvidences(OWLClassKeyRule.ExecuteRule(ontology));
                                 break;

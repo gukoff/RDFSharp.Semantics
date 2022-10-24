@@ -37,7 +37,7 @@ namespace RDFSharp.Semantics
         };
 
         /// <summary>
-        /// Represents an enumeration for available standard RDFS/OWL-DL/OWL2 validator rules
+        /// Represents an enumeration for the set of built-in standard RDFS/OWL-DL/OWL2 validator rules
         /// </summary>
         public enum OWLValidatorStandardRules
         {
@@ -78,29 +78,25 @@ namespace RDFSharp.Semantics
             /// </summary>
             PropertyDisjoint = 9,
             /// <summary>
-            /// This OWL2 rule checks for consistency of owl:NegativePropertyAssertion knowledge
-            /// </summary>
-            NegativeAssertions = 10,
-            /// <summary>
             /// This OWL2 rule checks for consistency of owl:hasKey knowledge
             /// </summary>
-            ClassKey = 11,
+            ClassKey = 10,
             /// <summary>
             /// This OWL2 rule checks for consistency of owl:propertyChainAxiom knowledge
             /// </summary>
-            PropertyChainAxiom = 12,
+            PropertyChainAxiom = 11,
             /// <summary>
             /// This OWL-DL rule checks for consistency of rdf:type knowledge
             /// </summary>
-            ClassType = 13,
+            ClassType = 12,
             /// <summary>
             /// This OWL-DL rule checks for consistency of global cardinality constraints
             /// </summary>
-            GlobalCardinality = 14,
+            GlobalCardinality = 13,
             /// <summary>
             /// This OWL-DL rule checks for consistency of local cardinality constraints
             /// </summary>
-            LocalCardinality = 15            
+            LocalCardinality = 14
         };
     }
 }
