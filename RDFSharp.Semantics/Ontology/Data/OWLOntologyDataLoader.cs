@@ -77,19 +77,17 @@ namespace RDFSharp.Semantics
             foreach (RDFTriple differentFromRelation in graph[null, RDFVocabulary.OWL.DIFFERENT_FROM, null, null])
                 ontology.Data.DeclareDifferentIndividuals((RDFResource)differentFromRelation.Subject, (RDFResource)differentFromRelation.Object);
 
-            //owl:ObjectPropertyAssertion
-            foreach (RDFTriple objectAssertion in GetObjectAssertions(ontology, graph))
-                ontology.Data.DeclareObjectAssertion((RDFResource)objectAssertion.Subject, (RDFResource)objectAssertion.Predicate, (RDFResource)objectAssertion.Object);
-
-            //owl:DatatypeAssertion
-            foreach (RDFTriple datatypeAssertion in GetDatatypeAssertions(ontology, graph))
-                ontology.Data.DeclareDatatypeAssertion((RDFResource)datatypeAssertion.Subject, (RDFResource)datatypeAssertion.Predicate, (RDFLiteral)datatypeAssertion.Object);
-
             //owl:NegativePropertyAssertion [OWL2]
             foreach (RDFTriple negativeObjectAssertion in GetNegativeObjectAssertions(graph))
                 ontology.Data.DeclareNegativeObjectAssertion((RDFResource)negativeObjectAssertion.Subject, (RDFResource)negativeObjectAssertion.Predicate, (RDFResource)negativeObjectAssertion.Object);
             foreach (RDFTriple negativeDatatypeAssertion in GetNegativeDatatypeAssertions(graph))
                 ontology.Data.DeclareNegativeDatatypeAssertion((RDFResource)negativeDatatypeAssertion.Subject, (RDFResource)negativeDatatypeAssertion.Predicate, (RDFLiteral)negativeDatatypeAssertion.Object);
+
+            //owl:[Object|Datatype]PropertyAssertion
+            foreach (RDFTriple objectAssertion in GetObjectAssertions(ontology, graph))
+                ontology.Data.DeclareObjectAssertion((RDFResource)objectAssertion.Subject, (RDFResource)objectAssertion.Predicate, (RDFResource)objectAssertion.Object);
+            foreach (RDFTriple datatypeAssertion in GetDatatypeAssertions(ontology, graph))
+                ontology.Data.DeclareDatatypeAssertion((RDFResource)datatypeAssertion.Subject, (RDFResource)datatypeAssertion.Predicate, (RDFLiteral)datatypeAssertion.Object);
 
             //owl:AllDifferent [OWL2]
             foreach (RDFResource allDifferent in GetAllDifferentDeclarations(graph))
