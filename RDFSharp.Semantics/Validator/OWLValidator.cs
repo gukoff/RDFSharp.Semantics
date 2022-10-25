@@ -122,6 +122,9 @@ namespace RDFSharp.Semantics
                             case OWLSemanticsEnums.OWLValidatorStandardRules.ClassType:
                                 standardRuleReport.MergeEvidences(OWLClassTypeRule.ExecuteRule(ontology));
                                 break;
+                            case OWLSemanticsEnums.OWLValidatorStandardRules.NegativeAssertions:
+                                standardRuleReport.MergeEvidences(OWLNegativeAssertionsRule.ExecuteRule(ontology));
+                                break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.GlobalCardinality:
                                 standardRuleReport.MergeEvidences(OWLGlobalCardinalityRule.ExecuteRule(ontology));
                                 break;

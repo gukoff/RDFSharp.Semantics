@@ -86,13 +86,17 @@ namespace RDFSharp.Semantics
             /// </summary>
             ClassType = 11,
             /// <summary>
+            /// This OWL2 rule checks for consistency of owl:NegativePropertyAssertion knowledge
+            /// </summary>
+            NegativeAssertions = 12,
+            /// <summary>
             /// This OWL-DL rule checks for consistency of global cardinality constraints
             /// </summary>
-            GlobalCardinality = 12,
+            GlobalCardinality = 13,
             /// <summary>
             /// This OWL-DL rule checks for consistency of local cardinality constraints
             /// </summary>
-            LocalCardinality = 13
+            LocalCardinality = 14
         };
     }
 }

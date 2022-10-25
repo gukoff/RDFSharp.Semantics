@@ -138,7 +138,7 @@ namespace RDFSharp.Semantics
         /// </summary>
         internal static RDFGraph GetNegativeObjectAssertions(RDFGraph graph)
         {
-            //Perform a SPARQL query to fetch all negative object assertions of the given owl:Individual
+            //Perform a SPARQL query to fetch all negative object assertions
             RDFSelectQuery negativeObjectAssertionQuery = new RDFSelectQuery()
                 .AddPatternGroup(new RDFPatternGroup()
                     .AddPattern(new RDFPattern(new RDFVariable("?NASN_REPRESENTATIVE"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION))
@@ -166,7 +166,7 @@ namespace RDFSharp.Semantics
         /// </summary>
         internal static RDFGraph GetNegativeDatatypeAssertions(RDFGraph graph)
         {
-            //Perform a SPARQL query to fetch all negative datatype assertions of the given owl:Individual
+            //Perform a SPARQL query to fetch all negative datatype assertions
             RDFSelectQuery negativeDatatypeAssertionQuery = new RDFSelectQuery()
                 .AddPatternGroup(new RDFPatternGroup()
                     .AddPattern(new RDFPattern(new RDFVariable("?NASN_REPRESENTATIVE"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION))
