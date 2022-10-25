@@ -24,6 +24,29 @@ namespace RDFSharp.Semantics.Validator.Test
     {
         #region Tests
         [TestMethod]
+        public void ShouldValidateInverseOfAndNotFail()
+        {
+            OWLOntology ontology = new OWLOntology("ex:ont");
+            ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:human"));
+            ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:man"));
+            ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:woman"));
+            ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:male"));
+            ontology.Model.ClassModel.DeclareSubClasses(new RDFResource("ex:man"), new RDFResource("ex:human"));
+            ontology.Model.ClassModel.DeclareSubClasses(new RDFResource("ex:woman"), new RDFResource("ex:human"));
+            ontology.Model.ClassModel.DeclareEquivalentClasses(new RDFResource("ex:male"), new RDFResource("ex:man"));
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:hasWife"), new OWLOntologyObjectPropertyBehavior() { Domain = new RDFResource("ex:man"), Range = new RDFResource("ex:woman") });
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:hasHusband"), new OWLOntologyObjectPropertyBehavior() { Domain = new RDFResource("ex:woman"), Range = new RDFResource("ex:male") });
+            ontology.Model.PropertyModel.DeclareInverseProperties(new RDFResource("ex:hasWife"), new RDFResource("ex:hasHusband"));
+
+            OWLValidatorReport validatorReport = OWLInverseOfRule.ExecuteRule(ontology);
+
+            Assert.IsNotNull(validatorReport);
+            Assert.IsTrue(validatorReport.EvidencesCount == 0);
+            Assert.IsTrue(validatorReport.SelectErrors().Count == 0);
+            Assert.IsTrue(validatorReport.SelectWarnings().Count == 0);
+        }
+
+        [TestMethod]
         public void ShouldValidateInverseOfByFailingOnDomainVSRange()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
