@@ -36,7 +36,11 @@ namespace RDFSharp.Semantics.Validator.Test
             ontology.Data.DeclareIndividual(new RDFResource("ex:mark"));
             ontology.Data.DeclareIndividual(new RDFResource("ex:valentina"));
             ontology.Data.DeclareIndividual(new RDFResource("ex:valentine"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:rebecca"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:marta"));
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:marco"), new RDFResource("ex:loves"), new RDFResource("ex:valentina"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:marco"), new RDFResource("ex:loves"), new RDFResource("ex:rebecca"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:marco"), new RDFResource("ex:hates"), new RDFResource("ex:marta"));
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:marco"), new RDFResource("ex:hates"), new RDFResource("ex:valentina"));   //exact violation
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:mark"), new RDFResource("ex:hates"), new RDFResource("ex:valentina"));    //inferred violation on synonim subject
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:marco"), new RDFResource("ex:hates"), new RDFResource("ex:valentine"));   //inferred violation on synonim object
@@ -92,6 +96,8 @@ namespace RDFSharp.Semantics.Validator.Test
             ontology.Data.DeclareIndividual(new RDFResource("ex:marco"));
             ontology.Data.DeclareIndividual(new RDFResource("ex:mark"));
             ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:marco"), new RDFResource("ex:loves"), new RDFPlainLiteral("valentina"));
+            ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:marco"), new RDFResource("ex:loves"), new RDFPlainLiteral("rebecca"));
+            ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:marco"), new RDFResource("ex:hates"), new RDFPlainLiteral("marta"));
             ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:marco"), new RDFResource("ex:hates"), new RDFPlainLiteral("valentina"));   //exact violation
             ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:mark"), new RDFResource("ex:hates"), new RDFPlainLiteral("valentina"));    //inferred violation on synonim subject
             ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:mark"), new RDFResource("ex:despises"), new RDFPlainLiteral("valentine")); //inferred violation on synonim subject and indirectly disjoint property
