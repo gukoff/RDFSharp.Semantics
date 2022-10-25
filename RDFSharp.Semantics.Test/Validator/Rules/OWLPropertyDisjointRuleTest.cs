@@ -24,7 +24,7 @@ namespace RDFSharp.Semantics.Validator.Test
     {
         #region Tests
         [TestMethod]
-        public void ShouldValidateObjectPropertyDisjoint()
+        public void ShouldValidateObjectPropertyDisjointExactViolation()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:loves"));
@@ -38,19 +38,136 @@ namespace RDFSharp.Semantics.Validator.Test
             ontology.Data.DeclareIndividual(new RDFResource("ex:valentine"));
             ontology.Data.DeclareIndividual(new RDFResource("ex:rebecca"));
             ontology.Data.DeclareIndividual(new RDFResource("ex:marta"));
-            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:marco"), new RDFResource("ex:loves"), new RDFResource("ex:valentina"));
+            ontology.Data.DeclareSameIndividuals(new RDFResource("ex:marco"), new RDFResource("ex:mark"));
+            ontology.Data.DeclareSameIndividuals(new RDFResource("ex:valentina"), new RDFResource("ex:valentine"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:marco"), new RDFResource("ex:loves"), new RDFResource("ex:valentina")); //exact violation with ex:hates
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:marco"), new RDFResource("ex:loves"), new RDFResource("ex:rebecca"));
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:marco"), new RDFResource("ex:hates"), new RDFResource("ex:marta"));
-            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:marco"), new RDFResource("ex:hates"), new RDFResource("ex:valentina"));   //exact violation
-            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:mark"), new RDFResource("ex:hates"), new RDFResource("ex:valentina"));    //inferred violation on synonim subject
-            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:marco"), new RDFResource("ex:hates"), new RDFResource("ex:valentine"));   //inferred violation on synonim object
-            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:mark"), new RDFResource("ex:hates"), new RDFResource("ex:valentine"));    //inferred violation on synonim subject and synonim object
-            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:mark"), new RDFResource("ex:despises"), new RDFResource("ex:valentine")); //inferred violation on synonim subject and synonim object and indirectly disjoint property
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:marco"), new RDFResource("ex:hates"), new RDFResource("ex:valentina")); //exact violation with ex:loves
+            OWLValidatorReport validatorReport = OWLPropertyDisjointRule.ExecuteRule(ontology);
+
+            Assert.IsNotNull(validatorReport);
+            Assert.IsTrue(validatorReport.EvidencesCount == 2);
+            Assert.IsTrue(validatorReport.SelectErrors().Count == 2);
+            Assert.IsTrue(validatorReport.SelectWarnings().Count == 0);
+        }
+
+        [TestMethod]
+        public void ShouldValidateObjectPropertyDisjointInferredViolationOnSynonimSubject()
+        {
+            OWLOntology ontology = new OWLOntology("ex:ont");
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:loves"));
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:hates"));
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:despises"));
+            ontology.Model.PropertyModel.DeclareDisjointProperties(new RDFResource("ex:loves"), new RDFResource("ex:hates"));
+            ontology.Model.PropertyModel.DeclareEquivalentProperties(new RDFResource("ex:hates"), new RDFResource("ex:despises"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:marco"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:mark"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:valentina"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:valentine"));
+            ontology.Data.DeclareSameIndividuals(new RDFResource("ex:marco"), new RDFResource("ex:mark"));
+            ontology.Data.DeclareSameIndividuals(new RDFResource("ex:valentina"), new RDFResource("ex:valentine"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:rebecca"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:marta"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:marco"), new RDFResource("ex:loves"), new RDFResource("ex:valentina")); //inferred violation on synonim subject with ex:hates
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:marco"), new RDFResource("ex:loves"), new RDFResource("ex:rebecca"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:marco"), new RDFResource("ex:hates"), new RDFResource("ex:marta"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:mark"), new RDFResource("ex:hates"), new RDFResource("ex:valentina"));  //inferred violation on synonim subject with ex:loves
 
             OWLValidatorReport validatorReport = OWLPropertyDisjointRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
-            Assert.IsTrue(validatorReport.EvidencesCount == 2); //we are reporting that 'ex:hates' and 'ex:despises' are clashing with 'ex:loves'
+            Assert.IsTrue(validatorReport.EvidencesCount == 2);
+            Assert.IsTrue(validatorReport.SelectErrors().Count == 2);
+            Assert.IsTrue(validatorReport.SelectWarnings().Count == 0);
+        }
+
+        [TestMethod]
+        public void ShouldValidateObjectPropertyDisjointInferredViolationOnSynonimObject()
+        {
+            OWLOntology ontology = new OWLOntology("ex:ont");
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:loves"));
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:hates"));
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:despises"));
+            ontology.Model.PropertyModel.DeclareDisjointProperties(new RDFResource("ex:loves"), new RDFResource("ex:hates"));
+            ontology.Model.PropertyModel.DeclareEquivalentProperties(new RDFResource("ex:hates"), new RDFResource("ex:despises"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:marco"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:mark"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:valentina"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:valentine"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:rebecca"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:marta"));
+            ontology.Data.DeclareSameIndividuals(new RDFResource("ex:marco"), new RDFResource("ex:mark"));
+            ontology.Data.DeclareSameIndividuals(new RDFResource("ex:valentina"), new RDFResource("ex:valentine"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:marco"), new RDFResource("ex:loves"), new RDFResource("ex:valentina")); //inferred violation on synonim object with ex:hates
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:marco"), new RDFResource("ex:loves"), new RDFResource("ex:rebecca"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:marco"), new RDFResource("ex:hates"), new RDFResource("ex:marta"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:marco"), new RDFResource("ex:hates"), new RDFResource("ex:valentine")); //inferred violation on synonim object with ex:loves
+
+            OWLValidatorReport validatorReport = OWLPropertyDisjointRule.ExecuteRule(ontology);
+
+            Assert.IsNotNull(validatorReport);
+            Assert.IsTrue(validatorReport.EvidencesCount == 2);
+            Assert.IsTrue(validatorReport.SelectErrors().Count == 2);
+            Assert.IsTrue(validatorReport.SelectWarnings().Count == 0);
+        }
+
+        [TestMethod]
+        public void ShouldValidateObjectPropertyDisjointInferredViolationOnSynonimSubjectAndSynonimObject()
+        {
+            OWLOntology ontology = new OWLOntology("ex:ont");
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:loves"));
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:hates"));
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:despises"));
+            ontology.Model.PropertyModel.DeclareDisjointProperties(new RDFResource("ex:loves"), new RDFResource("ex:hates"));
+            ontology.Model.PropertyModel.DeclareEquivalentProperties(new RDFResource("ex:hates"), new RDFResource("ex:despises"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:marco"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:mark"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:valentina"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:valentine"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:rebecca"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:marta"));
+            ontology.Data.DeclareSameIndividuals(new RDFResource("ex:marco"), new RDFResource("ex:mark"));
+            ontology.Data.DeclareSameIndividuals(new RDFResource("ex:valentina"), new RDFResource("ex:valentine"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:marco"), new RDFResource("ex:loves"), new RDFResource("ex:valentina")); //inferred violation on synonim subject and synonim object with ex:hates
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:marco"), new RDFResource("ex:loves"), new RDFResource("ex:rebecca"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:marco"), new RDFResource("ex:hates"), new RDFResource("ex:marta"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:mark"), new RDFResource("ex:hates"), new RDFResource("ex:valentine"));  //inferred violation on synonim subject and synonim object with ex:loves
+
+            OWLValidatorReport validatorReport = OWLPropertyDisjointRule.ExecuteRule(ontology);
+
+            Assert.IsNotNull(validatorReport);
+            Assert.IsTrue(validatorReport.EvidencesCount == 2);
+            Assert.IsTrue(validatorReport.SelectErrors().Count == 2);
+            Assert.IsTrue(validatorReport.SelectWarnings().Count == 0);
+        }
+
+        [TestMethod]
+        public void ShouldValidateObjectPropertyDisjointInferredViolationOnSynonimSubjectAndSynonimObjectAndIndirectlyDisjointProperty()
+        {
+            OWLOntology ontology = new OWLOntology("ex:ont");
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:loves"));
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:hates"));
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:despises"));
+            ontology.Model.PropertyModel.DeclareDisjointProperties(new RDFResource("ex:loves"), new RDFResource("ex:hates"));
+            ontology.Model.PropertyModel.DeclareEquivalentProperties(new RDFResource("ex:hates"), new RDFResource("ex:despises"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:marco"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:mark"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:valentina"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:valentine"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:rebecca"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:marta"));
+            ontology.Data.DeclareSameIndividuals(new RDFResource("ex:marco"), new RDFResource("ex:mark"));
+            ontology.Data.DeclareSameIndividuals(new RDFResource("ex:valentina"), new RDFResource("ex:valentine"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:marco"), new RDFResource("ex:loves"), new RDFResource("ex:valentina")); //inferred violation on synonim subject and synonim object and indirectly disjoint property with ex:despises
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:marco"), new RDFResource("ex:loves"), new RDFResource("ex:rebecca"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:marco"), new RDFResource("ex:hates"), new RDFResource("ex:marta"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:mark"), new RDFResource("ex:despises"), new RDFResource("ex:valentine")); //inferred violation on synonim subject and synonim object and indirectly disjoint property with ex:loves
+
+            OWLValidatorReport validatorReport = OWLPropertyDisjointRule.ExecuteRule(ontology);
+
+            Assert.IsNotNull(validatorReport);
+            Assert.IsTrue(validatorReport.EvidencesCount == 2);
             Assert.IsTrue(validatorReport.SelectErrors().Count == 2);
             Assert.IsTrue(validatorReport.SelectWarnings().Count == 0);
         }
@@ -68,24 +185,26 @@ namespace RDFSharp.Semantics.Validator.Test
             ontology.Data.DeclareIndividual(new RDFResource("ex:mark"));
             ontology.Data.DeclareIndividual(new RDFResource("ex:valentina"));
             ontology.Data.DeclareIndividual(new RDFResource("ex:valentine"));
-            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:marco"), new RDFResource("ex:loves"), new RDFResource("ex:valentina"));
-            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:marco"), new RDFResource("ex:hates"), new RDFResource("ex:valentina"));   //exact violation
-            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:mark"), new RDFResource("ex:hates"), new RDFResource("ex:valentina"));    //inferred violation on synonim subject
-            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:marco"), new RDFResource("ex:hates"), new RDFResource("ex:valentine"));   //inferred violation on synonim object
-            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:mark"), new RDFResource("ex:hates"), new RDFResource("ex:valentine"));    //inferred violation on synonim subject and synonim object
-            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:mark"), new RDFResource("ex:despises"), new RDFResource("ex:valentine")); //inferred violation on synonim subject and synonim object and indirectly disjoint property
+            ontology.Data.DeclareIndividual(new RDFResource("ex:rebecca"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:marta"));
+            ontology.Data.DeclareSameIndividuals(new RDFResource("ex:marco"), new RDFResource("ex:mark"));
+            ontology.Data.DeclareSameIndividuals(new RDFResource("ex:valentina"), new RDFResource("ex:valentine"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:marco"), new RDFResource("ex:loves"), new RDFResource("ex:valentina")); //exact violation with ex:hates
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:marco"), new RDFResource("ex:loves"), new RDFResource("ex:rebecca"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:marco"), new RDFResource("ex:hates"), new RDFResource("ex:marta"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:marco"), new RDFResource("ex:hates"), new RDFResource("ex:valentina")); //exact violation with ex:loves
 
             OWLValidator validator = new OWLValidator().AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.PropertyDisjoint);
             OWLValidatorReport validatorReport = validator.ApplyToOntology(ontology);
 
             Assert.IsNotNull(validatorReport);
-            Assert.IsTrue(validatorReport.EvidencesCount == 2); //we are reporting that 'ex:hates' and 'ex:despises' are clashing with 'ex:loves'
+            Assert.IsTrue(validatorReport.EvidencesCount == 2);
             Assert.IsTrue(validatorReport.SelectErrors().Count == 2);
             Assert.IsTrue(validatorReport.SelectWarnings().Count == 0);
         }
 
         [TestMethod]
-        public void ShouldValidateDatatypePropertyDisjoint()
+        public void ShouldValidateDatatypePropertyDisjointExactViolation()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.PropertyModel.DeclareDatatypeProperty(new RDFResource("ex:loves"));
@@ -95,17 +214,65 @@ namespace RDFSharp.Semantics.Validator.Test
             ontology.Model.PropertyModel.DeclareEquivalentProperties(new RDFResource("ex:hates"), new RDFResource("ex:despises"));
             ontology.Data.DeclareIndividual(new RDFResource("ex:marco"));
             ontology.Data.DeclareIndividual(new RDFResource("ex:mark"));
-            ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:marco"), new RDFResource("ex:loves"), new RDFPlainLiteral("valentina"));
+            ontology.Data.DeclareSameIndividuals(new RDFResource("ex:marco"), new RDFResource("ex:mark"));
+            ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:marco"), new RDFResource("ex:loves"), new RDFPlainLiteral("valentina"));  //exact violation with ex:hates
             ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:marco"), new RDFResource("ex:loves"), new RDFPlainLiteral("rebecca"));
             ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:marco"), new RDFResource("ex:hates"), new RDFPlainLiteral("marta"));
-            ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:marco"), new RDFResource("ex:hates"), new RDFPlainLiteral("valentina"));   //exact violation
-            ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:mark"), new RDFResource("ex:hates"), new RDFPlainLiteral("valentina"));    //inferred violation on synonim subject
-            ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:mark"), new RDFResource("ex:despises"), new RDFPlainLiteral("valentine")); //inferred violation on synonim subject and indirectly disjoint property
+            ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:marco"), new RDFResource("ex:hates"), new RDFPlainLiteral("valentina"));  //exact violation with ex:loves
+            OWLValidatorReport validatorReport = OWLPropertyDisjointRule.ExecuteRule(ontology);
+
+            Assert.IsNotNull(validatorReport);
+            Assert.IsTrue(validatorReport.EvidencesCount == 2);
+            Assert.IsTrue(validatorReport.SelectErrors().Count == 2);
+            Assert.IsTrue(validatorReport.SelectWarnings().Count == 0);
+        }
+
+        [TestMethod]
+        public void ShouldValidateDatatypePropertyDisjointOnSynonimSubject()
+        {
+            OWLOntology ontology = new OWLOntology("ex:ont");
+            ontology.Model.PropertyModel.DeclareDatatypeProperty(new RDFResource("ex:loves"));
+            ontology.Model.PropertyModel.DeclareDatatypeProperty(new RDFResource("ex:hates"));
+            ontology.Model.PropertyModel.DeclareDatatypeProperty(new RDFResource("ex:despises"));
+            ontology.Model.PropertyModel.DeclareDisjointProperties(new RDFResource("ex:loves"), new RDFResource("ex:hates"));
+            ontology.Model.PropertyModel.DeclareEquivalentProperties(new RDFResource("ex:hates"), new RDFResource("ex:despises"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:marco"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:mark"));
+            ontology.Data.DeclareSameIndividuals(new RDFResource("ex:marco"), new RDFResource("ex:mark"));
+            ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:marco"), new RDFResource("ex:loves"), new RDFPlainLiteral("valentina")); //inferred violation on synonim subject wit ex:hates
+            ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:marco"), new RDFResource("ex:loves"), new RDFPlainLiteral("rebecca"));
+            ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:marco"), new RDFResource("ex:hates"), new RDFPlainLiteral("marta"));
+            ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:mark"), new RDFResource("ex:hates"), new RDFPlainLiteral("valentina"));  //inferred violation on synonim subject wit ex:loves
 
             OWLValidatorReport validatorReport = OWLPropertyDisjointRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
-            Assert.IsTrue(validatorReport.EvidencesCount == 2); //we are reporting that 'ex:hates' and 'ex:despises' are clashing with 'ex:loves'
+            Assert.IsTrue(validatorReport.EvidencesCount == 2);
+            Assert.IsTrue(validatorReport.SelectErrors().Count == 2);
+            Assert.IsTrue(validatorReport.SelectWarnings().Count == 0);
+        }
+
+        [TestMethod]
+        public void ShouldValidateDatatypePropertyDisjointOnSynonimSubjectAndSynonimObjectAndIndirectlyDisjointProperty()
+        {
+            OWLOntology ontology = new OWLOntology("ex:ont");
+            ontology.Model.PropertyModel.DeclareDatatypeProperty(new RDFResource("ex:loves"));
+            ontology.Model.PropertyModel.DeclareDatatypeProperty(new RDFResource("ex:hates"));
+            ontology.Model.PropertyModel.DeclareDatatypeProperty(new RDFResource("ex:despises"));
+            ontology.Model.PropertyModel.DeclareDisjointProperties(new RDFResource("ex:loves"), new RDFResource("ex:hates"));
+            ontology.Model.PropertyModel.DeclareEquivalentProperties(new RDFResource("ex:hates"), new RDFResource("ex:despises"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:marco"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:mark"));
+            ontology.Data.DeclareSameIndividuals(new RDFResource("ex:marco"), new RDFResource("ex:mark"));
+            ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:marco"), new RDFResource("ex:loves"), new RDFPlainLiteral("valentina"));  //inferred violation on synonim subject and indirectly disjoint property with ex:despises
+            ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:marco"), new RDFResource("ex:loves"), new RDFPlainLiteral("rebecca"));
+            ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:marco"), new RDFResource("ex:hates"), new RDFPlainLiteral("marta"));
+            ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:mark"), new RDFResource("ex:despises"), new RDFPlainLiteral("valentina")); //inferred violation on synonim subject and indirectly disjoint property with ex:loves
+
+            OWLValidatorReport validatorReport = OWLPropertyDisjointRule.ExecuteRule(ontology);
+
+            Assert.IsNotNull(validatorReport);
+            Assert.IsTrue(validatorReport.EvidencesCount == 2);
             Assert.IsTrue(validatorReport.SelectErrors().Count == 2);
             Assert.IsTrue(validatorReport.SelectWarnings().Count == 0);
         }
@@ -121,15 +288,17 @@ namespace RDFSharp.Semantics.Validator.Test
             ontology.Model.PropertyModel.DeclareEquivalentProperties(new RDFResource("ex:hates"), new RDFResource("ex:despises"));
             ontology.Data.DeclareIndividual(new RDFResource("ex:marco"));
             ontology.Data.DeclareIndividual(new RDFResource("ex:mark"));
-            ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:marco"), new RDFResource("ex:loves"), new RDFPlainLiteral("valentina"));
-            ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:marco"), new RDFResource("ex:hates"), new RDFPlainLiteral("valentina"));   //exact violation
-            ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:mark"), new RDFResource("ex:hates"), new RDFPlainLiteral("valentina"));    //inferred violation on synonim subject
-            ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:mark"), new RDFResource("ex:despises"), new RDFPlainLiteral("valentine")); //inferred violation on synonim subject and indirectly disjoint property
+            ontology.Data.DeclareSameIndividuals(new RDFResource("ex:marco"), new RDFResource("ex:mark"));
+            ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:marco"), new RDFResource("ex:loves"), new RDFPlainLiteral("valentina"));  //exact violation with ex:hates
+            ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:marco"), new RDFResource("ex:loves"), new RDFPlainLiteral("rebecca"));
+            ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:marco"), new RDFResource("ex:hates"), new RDFPlainLiteral("marta"));
+            ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:marco"), new RDFResource("ex:hates"), new RDFPlainLiteral("valentina"));  //exact violation with ex:loves
+
             OWLValidator validator = new OWLValidator().AddStandardRule(OWLSemanticsEnums.OWLValidatorStandardRules.PropertyDisjoint);
             OWLValidatorReport validatorReport = validator.ApplyToOntology(ontology);
 
             Assert.IsNotNull(validatorReport);
-            Assert.IsTrue(validatorReport.EvidencesCount == 2); //we are reporting that 'ex:hates' and 'ex:despises' are clashing with 'ex:loves'
+            Assert.IsTrue(validatorReport.EvidencesCount == 2);
             Assert.IsTrue(validatorReport.SelectErrors().Count == 2);
             Assert.IsTrue(validatorReport.SelectWarnings().Count == 0);
         }

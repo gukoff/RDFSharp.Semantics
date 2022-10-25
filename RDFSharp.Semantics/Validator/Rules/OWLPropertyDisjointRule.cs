@@ -75,15 +75,14 @@ namespace RDFSharp.Semantics
                 foreach (RDFResource disjointObjectProperty in ontology.Model.PropertyModel.GetDisjointPropertiesWith(objectProperties.Current))
                     disjointObjectAssertionsGraph = disjointObjectAssertionsGraph.UnionWith(ontology.Data.ABoxGraph[null, disjointObjectProperty, null, null]);
 
-                //There should not be object assertions connecting the same (or compatible) subject individual and the same (or compatible) object individual,
-                //since we know that the properties between datatypeAssertionsGraph and disjointDatatypeAssertionsGraph are mutually disjoint
+                //There should not be disjoint object assertions connecting the same subject individual with the same object individual
                 foreach (RDFTriple objectAssertion in objectAssertionsGraph)
                     if (disjointObjectAssertionsGraph.Any(disjointObjectAssertion => DetectObjectRuleViolation(objectAssertion, disjointObjectAssertion)))
                         validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                             OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
                             nameof(OWLPropertyDisjointRule),
                             $"Violation of 'owl:propertyDisjointWith' behavior on object property '{objectProperties.Current}'",
-                            "Revise your object assertions: there should not be object assertions connecting the same (or compatible) subject individual and the same (or compatible) object individual"));
+                            "Revise your object assertions: there should not be disjoint object assertions connecting the same subject individual with the same object individual"));
             }
 
             //owl:DatatypeProperty
@@ -98,15 +97,14 @@ namespace RDFSharp.Semantics
                 foreach (RDFResource disjointDatatypeProperty in ontology.Model.PropertyModel.GetDisjointPropertiesWith(datatypeProperties.Current))
                     disjointDatatypeAssertionsGraph = disjointDatatypeAssertionsGraph.UnionWith(ontology.Data.ABoxGraph[null, disjointDatatypeProperty, null, null]);
 
-                //There should not be datatype assertions connecting the same (or compatible) subject individual and the same object literal,
-                //since we know that the properties between datatypeAssertionsGraph and disjointDatatypeAssertionsGraph are mutually disjoint
+                //There should not be disjoint datatype assertions connecting the same subject individual with the same literal
                 foreach (RDFTriple datatypeAssertion in datatypeAssertionsGraph)
                     if (disjointDatatypeAssertionsGraph.Any(disjointDatatypeAssertion => DetectDatatypeRuleViolation(datatypeAssertion, disjointDatatypeAssertion)))
                         validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                             OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
                             nameof(OWLPropertyDisjointRule),
                             $"Violation of 'owl:propertyDisjointWith' behavior on datatype property '{datatypeProperties.Current}'",
-                            "Revise your datatype assertions: there should not be datatype assertions connecting the same (or compatible) subject individual and the same object literal"));
+                            "Revise your datatype assertions: there should not be disjoint datatype assertions connecting the same subject individual with the same literal"));
             }
 
             return validatorRuleReport;
