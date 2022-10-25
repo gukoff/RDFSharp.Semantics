@@ -123,7 +123,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets the annotation behavior of the given property
         /// </summary>
-        private static OWLOntologyAnnotationPropertyBehavior GetAnnotationPropertyBehavior(RDFResource property, RDFGraph graph)
+        internal static OWLOntologyAnnotationPropertyBehavior GetAnnotationPropertyBehavior(RDFResource property, RDFGraph graph)
             => new OWLOntologyAnnotationPropertyBehavior()
             {
                 Deprecated = graph.ContainsTriple(new RDFTriple(property, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.DEPRECATED_PROPERTY))
@@ -132,7 +132,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets the datatype behavior of the given property
         /// </summary>
-        private static OWLOntologyDatatypePropertyBehavior GetDatatypePropertyBehavior(RDFResource property, RDFGraph graph)
+        internal static OWLOntologyDatatypePropertyBehavior GetDatatypePropertyBehavior(RDFResource property, RDFGraph graph)
             => new OWLOntologyDatatypePropertyBehavior()
             {
                 Deprecated = GetAnnotationPropertyBehavior(property, graph).Deprecated,
@@ -144,7 +144,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets the object behavior of the given property
         /// </summary>
-        private static OWLOntologyObjectPropertyBehavior GetObjectPropertyBehavior(RDFResource property, RDFGraph graph)
+        internal static OWLOntologyObjectPropertyBehavior GetObjectPropertyBehavior(RDFResource property, RDFGraph graph)
         {
             OWLOntologyDatatypePropertyBehavior datatypePropertyBehavior = GetDatatypePropertyBehavior(property, graph);
             return new OWLOntologyObjectPropertyBehavior()
@@ -166,7 +166,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets the owl:ObjectProperty declarations
         /// </summary>
-        private static HashSet<RDFResource> GetObjectPropertyDeclarations(RDFGraph graph)
+        internal static HashSet<RDFResource> GetObjectPropertyDeclarations(RDFGraph graph)
             => new HashSet<RDFResource>(graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY, null]
                                            .Select(t => t.Subject)
                                            .OfType<RDFResource>());
@@ -174,7 +174,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets the owl:DeprecatedProperty declarations
         /// </summary>
-        private static HashSet<RDFResource> GetDeprecatedPropertyDeclarations(RDFGraph graph)
+        internal static HashSet<RDFResource> GetDeprecatedPropertyDeclarations(RDFGraph graph)
             => new HashSet<RDFResource>(graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.DEPRECATED_PROPERTY, null]
                                            .Select(t => t.Subject)
                                            .OfType<RDFResource>());
@@ -182,7 +182,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets the owl:SymmetricProperty declarations
         /// </summary>
-        private static HashSet<RDFResource> GetSymmetricPropertyDeclarations(RDFGraph graph)
+        internal static HashSet<RDFResource> GetSymmetricPropertyDeclarations(RDFGraph graph)
             => new HashSet<RDFResource>(graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.SYMMETRIC_PROPERTY, null]
                                            .Select(t => t.Subject)
                                            .OfType<RDFResource>());
@@ -190,7 +190,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets the owl:TransitiveProperty declarations
         /// </summary>
-        private static HashSet<RDFResource> GetTransitivePropertyDeclarations(RDFGraph graph)
+        internal static HashSet<RDFResource> GetTransitivePropertyDeclarations(RDFGraph graph)
             => new HashSet<RDFResource>(graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.TRANSITIVE_PROPERTY, null]
                                            .Select(t => t.Subject)
                                            .OfType<RDFResource>());
@@ -198,7 +198,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets the owl:InverseFunctionalProperty declarations
         /// </summary>
-        private static HashSet<RDFResource> GetInverseFunctionalPropertyDeclarations(RDFGraph graph)
+        internal static HashSet<RDFResource> GetInverseFunctionalPropertyDeclarations(RDFGraph graph)
             => new HashSet<RDFResource>(graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.INVERSE_FUNCTIONAL_PROPERTY, null]
                                            .Select(t => t.Subject)
                                            .OfType<RDFResource>());
@@ -206,7 +206,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets the owl:AsymmetricProperty declarations [OWL2]
         /// </summary>
-        private static HashSet<RDFResource> GetAsymmetricPropertyDeclarations(RDFGraph graph)
+        internal static HashSet<RDFResource> GetAsymmetricPropertyDeclarations(RDFGraph graph)
             => new HashSet<RDFResource>(graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ASYMMETRIC_PROPERTY, null]
                                            .Select(t => t.Subject)
                                            .OfType<RDFResource>());
@@ -214,7 +214,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets the owl:ReflexiveProperty declarations [OWL2]
         /// </summary>
-        private static HashSet<RDFResource> GetReflexivePropertyDeclarations(RDFGraph graph)
+        internal static HashSet<RDFResource> GetReflexivePropertyDeclarations(RDFGraph graph)
             => new HashSet<RDFResource>(graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.REFLEXIVE_PROPERTY, null]
                                            .Select(t => t.Subject)
                                            .OfType<RDFResource>());
@@ -222,7 +222,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets the owl:IrreflexiveProperty declarations [OWL2]
         /// </summary>
-        private static HashSet<RDFResource> GetIrreflexivePropertyDeclarations(RDFGraph graph)
+        internal static HashSet<RDFResource> GetIrreflexivePropertyDeclarations(RDFGraph graph)
             => new HashSet<RDFResource>(graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.IRREFLEXIVE_PROPERTY, null]
                                            .Select(t => t.Subject)
                                            .OfType<RDFResource>());
@@ -230,7 +230,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets the owl:DatatypeProperty declarations
         /// </summary>
-        private static HashSet<RDFResource> GetDatatypePropertyDeclarations(RDFGraph graph)
+        internal static HashSet<RDFResource> GetDatatypePropertyDeclarations(RDFGraph graph)
             => new HashSet<RDFResource>(graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.DATATYPE_PROPERTY, null]
                                            .Select(t => t.Subject)
                                            .OfType<RDFResource>());
@@ -238,7 +238,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets the owl:AnnotationProperty declarations
         /// </summary>
-        private static HashSet<RDFResource> GetAnnotationPropertyDeclarations(RDFGraph graph)
+        internal static HashSet<RDFResource> GetAnnotationPropertyDeclarations(RDFGraph graph)
             => new HashSet<RDFResource>(graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ANNOTATION_PROPERTY, null]
                                            .Select(t => t.Subject)
                                            .OfType<RDFResource>());
@@ -246,7 +246,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets the owl:AllDisjointProperties declarations [OWL2]
         /// </summary>
-        private static HashSet<RDFResource> GetAllDisjointPropertiesDeclarations(RDFGraph graph)
+        internal static HashSet<RDFResource> GetAllDisjointPropertiesDeclarations(RDFGraph graph)
             => new HashSet<RDFResource>(graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ALL_DISJOINT_PROPERTIES, null]
                                            .Select(t => t.Subject)
                                            .OfType<RDFResource>());

@@ -112,7 +112,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets the owl:NamedIndividual declarations
         /// </summary>
-        private static HashSet<RDFResource> GetNamedIndividualDeclarations(RDFGraph graph)
+        internal static HashSet<RDFResource> GetNamedIndividualDeclarations(RDFGraph graph)
             => new HashSet<RDFResource>(graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL, null]
                                            .Select(t => t.Subject)
                                            .OfType<RDFResource>());
@@ -120,7 +120,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets the owl:Individual declarations
         /// </summary>
-        private static HashSet<RDFResource> GetIndividualDeclarations(RDFGraph graph)
+        internal static HashSet<RDFResource> GetIndividualDeclarations(RDFGraph graph)
             => new HashSet<RDFResource>(graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.INDIVIDUAL, null]
                                            .Select(t => t.Subject)
                                            .OfType<RDFResource>());
@@ -128,7 +128,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets the owl:AllDifferent declarations [OWL2]
         /// </summary>
-        private static HashSet<RDFResource> GetAllDifferentDeclarations(RDFGraph graph)
+        internal static HashSet<RDFResource> GetAllDifferentDeclarations(RDFGraph graph)
             => new HashSet<RDFResource>(graph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ALL_DIFFERENT, null]
                                            .Select(t => t.Subject)
                                            .OfType<RDFResource>());
@@ -136,7 +136,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets the negative object assertions of the given graph (same algorythm of DataLens)
         /// </summary>
-        private static RDFGraph GetNegativeObjectAssertions(RDFGraph graph)
+        internal static RDFGraph GetNegativeObjectAssertions(RDFGraph graph)
         {
             //Perform a SPARQL query to fetch all negative object assertions of the given owl:Individual
             RDFSelectQuery negativeObjectAssertionQuery = new RDFSelectQuery()
@@ -164,7 +164,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets the negative data assertions of the given graph (same algorythm of DataLens)
         /// </summary>
-        private static RDFGraph GetNegativeDatatypeAssertions(RDFGraph graph)
+        internal static RDFGraph GetNegativeDatatypeAssertions(RDFGraph graph)
         {
             //Perform a SPARQL query to fetch all negative datatype assertions of the given owl:Individual
             RDFSelectQuery negativeDatatypeAssertionQuery = new RDFSelectQuery()
@@ -192,7 +192,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets the object relations of the given owl:Individual
         /// </summary>
-        private static RDFGraph GetObjectAssertions(OWLOntology ontology, RDFGraph graph)
+        internal static RDFGraph GetObjectAssertions(OWLOntology ontology, RDFGraph graph)
         {
             #region Filters
             bool IsObjectAssertion(RDFTriple triple)
@@ -217,7 +217,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets the data relations of the given owl:Individual
         /// </summary>
-        private static RDFGraph GetDatatypeAssertions(OWLOntology ontology, RDFGraph graph)
+        internal static RDFGraph GetDatatypeAssertions(OWLOntology ontology, RDFGraph graph)
         {
             #region Filters
             bool IsDatatypeAssertion(RDFTriple triple)
