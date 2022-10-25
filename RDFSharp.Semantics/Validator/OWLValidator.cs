@@ -101,6 +101,9 @@ namespace RDFSharp.Semantics
                             case OWLSemanticsEnums.OWLValidatorStandardRules.DomainRange:
                                 standardRuleReport.MergeEvidences(OWLDomainRangeRule.ExecuteRule(ontology));
                                 break;
+                            case OWLSemanticsEnums.OWLValidatorStandardRules.InverseOf:
+                                standardRuleReport.MergeEvidences(OWLInverseOfRule.ExecuteRule(ontology));
+                                break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.SymmetricProperty:
                                 standardRuleReport.MergeEvidences(OWLSymmetricPropertyRule.ExecuteRule(ontology));
                                 break;

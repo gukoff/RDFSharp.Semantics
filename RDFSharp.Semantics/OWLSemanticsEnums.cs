@@ -58,45 +58,49 @@ namespace RDFSharp.Semantics
             /// </summary>
             DomainRange = 4,
             /// <summary>
+            /// This OWL-DL rule checks for consistency of owl:inverseOf knowledge
+            /// </summary>
+            InverseOf = 5,
+            /// <summary>
             /// This OWL-DL rule checks for consistency of owl:SymmetricProperty knowledge
             /// </summary>
-            SymmetricProperty = 5,
-            /// <summary>
-            /// This OWL2 rule checks for consistency of owl:AsymmetricProperty knowledge
-            /// </summary>
-            AsymmetricProperty = 6,
-            /// <summary>
-            /// This OWL2 rule checks for consistency of owl:IrreflexiveProperty knowledge
-            /// </summary>
-            IrreflexiveProperty = 7,
-            /// <summary>
-            /// This OWL2 rule checks for consistency of owl:propertyDisjointWith knowledge
-            /// </summary>
-            PropertyDisjoint = 8,
-            /// <summary>
-            /// This OWL2 rule checks for consistency of owl:hasKey knowledge
-            /// </summary>
-            ClassKey = 9,
-            /// <summary>
-            /// This OWL2 rule checks for consistency of owl:propertyChainAxiom knowledge
-            /// </summary>
-            PropertyChainAxiom = 10,
+            SymmetricProperty = 6,
             /// <summary>
             /// This OWL-DL rule checks for consistency of rdf:type knowledge
             /// </summary>
-            ClassType = 11,
+            ClassType = 7,
+            /// <summary>
+            /// This OWL2 rule checks for consistency of owl:AsymmetricProperty knowledge
+            /// </summary>
+            AsymmetricProperty = 8,
+            /// <summary>
+            /// This OWL2 rule checks for consistency of owl:IrreflexiveProperty knowledge
+            /// </summary>
+            IrreflexiveProperty = 9,
+            /// <summary>
+            /// This OWL2 rule checks for consistency of owl:propertyDisjointWith knowledge
+            /// </summary>
+            PropertyDisjoint = 10,
+            /// <summary>
+            /// This OWL2 rule checks for consistency of owl:hasKey knowledge
+            /// </summary>
+            ClassKey = 11,
+            /// <summary>
+            /// This OWL2 rule checks for consistency of owl:propertyChainAxiom knowledge
+            /// </summary>
+            PropertyChainAxiom = 12,           
             /// <summary>
             /// This OWL2 rule checks for consistency of owl:NegativePropertyAssertion knowledge
             /// </summary>
-            NegativeAssertions = 12,
+            NegativeAssertions = 13,
             /// <summary>
             /// This OWL-DL rule checks for consistency of global cardinality constraints
             /// </summary>
-            GlobalCardinality = 13,
+            GlobalCardinality = 14,
             /// <summary>
             /// This OWL-DL rule checks for consistency of local cardinality constraints
             /// </summary>
-            LocalCardinality = 14
+            LocalCardinality = 15
         };
     }
 }
