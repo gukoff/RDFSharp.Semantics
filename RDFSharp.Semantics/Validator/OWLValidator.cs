@@ -111,7 +111,7 @@ namespace RDFSharp.Semantics
                                 standardRuleReport.MergeEvidences(OWLIrreflexivePropertyRule.ExecuteRule(ontology));
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.PropertyDisjoint:
-                                //TODO
+                                standardRuleReport.MergeEvidences(OWLPropertyDisjointRule.ExecuteRule(ontology));
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.ClassKey:
                                 standardRuleReport.MergeEvidences(OWLClassKeyRule.ExecuteRule(ontology));
