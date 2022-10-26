@@ -70,6 +70,9 @@ namespace RDFSharp.Semantics.Extensions.SKOS
                             case SKOSEnums.SKOSValidatorStandardRules.TopConcept:
                                 standardRuleReport.MergeEvidences(SKOSTopConceptRule.ExecuteRule(conceptScheme));
                                 break;
+                            case SKOSEnums.SKOSValidatorStandardRules.LiteralForm:
+                                standardRuleReport.MergeEvidences(SKOSXLLiteralFormRule.ExecuteRule(conceptScheme));
+                                break;
                         }
                         validatorReport.MergeEvidences(standardRuleReport);
 

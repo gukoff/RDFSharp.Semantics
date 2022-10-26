@@ -22,14 +22,18 @@ namespace RDFSharp.Semantics.Extensions.SKOS
     public static class SKOSEnums
     {
         /// <summary>
-        /// Represents an enumeration for the set of built-in standard SKOS validator rules
+        /// Represents an enumeration for the set of built-in standard SKOS/SKOS-XL validator rules
         /// </summary>
         public enum SKOSValidatorStandardRules
         {
             /// <summary>
             /// This SKOS rule checks for consistency of skos:hasTopConcept knowledge
             /// </summary>
-            TopConcept = 1
+            TopConcept = 1,
+            /// <summary>
+            /// This SKOS-XL rule checks for consistency of skosxl:literalForm knowledge
+            /// </summary>
+            LiteralForm = 2
         };
     }
 }

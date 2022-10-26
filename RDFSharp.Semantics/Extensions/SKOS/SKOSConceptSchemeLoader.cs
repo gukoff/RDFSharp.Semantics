@@ -177,6 +177,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             propertyModel.DeclareDisjointProperties(RDFVocabulary.SKOS.EXACT_MATCH, RDFVocabulary.SKOS.BROAD_MATCH);
             propertyModel.DeclareDisjointProperties(RDFVocabulary.SKOS.EXACT_MATCH, RDFVocabulary.SKOS.NARROW_MATCH);
             propertyModel.DeclareDisjointProperties(RDFVocabulary.SKOS.EXACT_MATCH, RDFVocabulary.SKOS.RELATED_MATCH);
+            propertyModel.DeclareAllDisjointProperties(new RDFResource("bnode:AllDisjointSKOSLabelingProperties"), new List<RDFResource>() { RDFVocabulary.SKOS.PREF_LABEL, RDFVocabulary.SKOS.ALT_LABEL, RDFVocabulary.SKOS.HIDDEN_LABEL });
 
             //SKOS-XL
             propertyModel.DeclareDatatypeProperty(RDFVocabulary.SKOS.SKOSXL.LITERAL_FORM, new OWLOntologyDatatypePropertyBehavior() { Domain = RDFVocabulary.SKOS.SKOSXL.LABEL });
