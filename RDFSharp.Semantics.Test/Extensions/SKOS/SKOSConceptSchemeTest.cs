@@ -571,10 +571,10 @@ namespace RDFSharp.Semantics.Extensions.SKOS.Test
             => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").AnnotateOrderedCollection(new RDFResource("ex:orderedCollection"), RDFVocabulary.RDFS.COMMENT, null as RDFResource));
 
         [TestMethod]
-        public void ShouldDeclareConceptNote()
+        public void ShouldDocumentConceptNote()
         {
             SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
-            conceptScheme.DeclareConceptNote(new RDFResource("ex:concept"), new RDFPlainLiteral("This is a note!"));
+            conceptScheme.DocumentConceptWithNote(new RDFResource("ex:concept"), new RDFPlainLiteral("This is a note!"));
 
             //Test evolution of SKOS knowledge
             Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
@@ -585,18 +585,18 @@ namespace RDFSharp.Semantics.Extensions.SKOS.Test
         }
 
         [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringConceptNoteBecauseNullConcept()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DeclareConceptNote(null, new RDFPlainLiteral("This is a note!")));
+        public void ShouldThrowExceptionOnDocumentingConceptNoteBecauseNullConcept()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DocumentConceptWithNote(null, new RDFPlainLiteral("This is a note!")));
 
         [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringConceptNoteBecauseNullValue()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DeclareConceptNote(new RDFResource("ex:concept"), null));
+        public void ShouldThrowExceptionOnDocumentingConceptNoteBecauseNullValue()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DocumentConceptWithNote(new RDFResource("ex:concept"), null));
 
         [TestMethod]
-        public void ShouldDeclareConceptChangeNote()
+        public void ShouldDocumentConceptChangeNote()
         {
             SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
-            conceptScheme.DeclareConceptChangeNote(new RDFResource("ex:concept"), new RDFPlainLiteral("This is a note!"));
+            conceptScheme.DocumentConceptWithChangeNote(new RDFResource("ex:concept"), new RDFPlainLiteral("This is a note!"));
 
             //Test evolution of SKOS knowledge
             Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
@@ -607,18 +607,18 @@ namespace RDFSharp.Semantics.Extensions.SKOS.Test
         }
 
         [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringConceptChangeNoteBecauseNullConcept()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DeclareConceptChangeNote(null, new RDFPlainLiteral("This is a note!")));
+        public void ShouldThrowExceptionOnDocumentingConceptChangeNoteBecauseNullConcept()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DocumentConceptWithChangeNote(null, new RDFPlainLiteral("This is a note!")));
 
         [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringConceptChangeNoteBecauseNullValue()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DeclareConceptChangeNote(new RDFResource("ex:concept"), null));
+        public void ShouldThrowExceptionOnDocumentingConceptChangeNoteBecauseNullValue()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DocumentConceptWithChangeNote(new RDFResource("ex:concept"), null));
 
         [TestMethod]
-        public void ShouldDeclareConceptEditorialNote()
+        public void ShouldDocumentConceptEditorialNote()
         {
             SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
-            conceptScheme.DeclareConceptEditorialNote(new RDFResource("ex:concept"), new RDFPlainLiteral("This is a note!"));
+            conceptScheme.DocumentConceptWithEditorialNote(new RDFResource("ex:concept"), new RDFPlainLiteral("This is a note!"));
 
             //Test evolution of SKOS knowledge
             Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
@@ -629,18 +629,18 @@ namespace RDFSharp.Semantics.Extensions.SKOS.Test
         }
 
         [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringConceptEditorialNoteBecauseNullConcept()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DeclareConceptEditorialNote(null, new RDFPlainLiteral("This is a note!")));
+        public void ShouldThrowExceptionODocumentingConceptEditorialNoteBecauseNullConcept()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DocumentConceptWithEditorialNote(null, new RDFPlainLiteral("This is a note!")));
 
         [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringConceptEditorialNoteBecauseNullValue()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DeclareConceptEditorialNote(new RDFResource("ex:concept"), null));
+        public void ShouldThrowExceptionOnDocumentingConceptEditorialNoteBecauseNullValue()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DocumentConceptWithEditorialNote(new RDFResource("ex:concept"), null));
 
         [TestMethod]
-        public void ShouldDeclareConceptHistoryNote()
+        public void ShouldDocumentConceptHistoryNote()
         {
             SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
-            conceptScheme.DeclareConceptHistoryNote(new RDFResource("ex:concept"), new RDFPlainLiteral("This is a note!"));
+            conceptScheme.DocumentConceptWithHistoryNote(new RDFResource("ex:concept"), new RDFPlainLiteral("This is a note!"));
 
             //Test evolution of SKOS knowledge
             Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
@@ -651,18 +651,18 @@ namespace RDFSharp.Semantics.Extensions.SKOS.Test
         }
 
         [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringConceptHistoryNoteBecauseNullConcept()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DeclareConceptHistoryNote(null, new RDFPlainLiteral("This is a note!")));
+        public void ShouldThrowExceptionOnDocumentingConceptHistoryNoteBecauseNullConcept()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DocumentConceptWithHistoryNote(null, new RDFPlainLiteral("This is a note!")));
 
         [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringConceptHistoryNoteBecauseNullValue()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DeclareConceptHistoryNote(new RDFResource("ex:concept"), null));
+        public void ShouldThrowExceptionOnDocumentingConceptHistoryNoteBecauseNullValue()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DocumentConceptWithHistoryNote(new RDFResource("ex:concept"), null));
 
         [TestMethod]
-        public void ShouldDeclareConceptScopeNote()
+        public void ShouldDocumentConceptScopeNote()
         {
             SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
-            conceptScheme.DeclareConceptScopeNote(new RDFResource("ex:concept"), new RDFPlainLiteral("This is a note!"));
+            conceptScheme.DocumentConceptWithScopeNote(new RDFResource("ex:concept"), new RDFPlainLiteral("This is a note!"));
 
             //Test evolution of SKOS knowledge
             Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
@@ -673,18 +673,18 @@ namespace RDFSharp.Semantics.Extensions.SKOS.Test
         }
 
         [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringConceptScopeNoteBecauseNullConcept()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DeclareConceptScopeNote(null, new RDFPlainLiteral("This is a note!")));
+        public void ShouldThrowExceptionOnDocumentingConceptScopeNoteBecauseNullConcept()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DocumentConceptWithScopeNote(null, new RDFPlainLiteral("This is a note!")));
 
         [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringConceptScopeNoteBecauseNullValue()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DeclareConceptScopeNote(new RDFResource("ex:concept"), null));
+        public void ShouldThrowExceptionOnDocumentingConceptScopeNoteBecauseNullValue()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DocumentConceptWithScopeNote(new RDFResource("ex:concept"), null));
 
         [TestMethod]
-        public void ShouldDeclareConceptExample()
+        public void ShouldDocumentConceptExample()
         {
             SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
-            conceptScheme.DeclareConceptExample(new RDFResource("ex:concept"), new RDFPlainLiteral("This is a note!"));
+            conceptScheme.DocumentConceptWithExample(new RDFResource("ex:concept"), new RDFPlainLiteral("This is a note!"));
 
             //Test evolution of SKOS knowledge
             Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
@@ -695,18 +695,18 @@ namespace RDFSharp.Semantics.Extensions.SKOS.Test
         }
 
         [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringConceptExampleBecauseNullConcept()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DeclareConceptExample(null, new RDFPlainLiteral("This is a note!")));
+        public void ShouldThrowExceptionOnDocumentingConceptExampleBecauseNullConcept()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DocumentConceptWithExample(null, new RDFPlainLiteral("This is a note!")));
 
         [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringConceptExampleBecauseNullValue()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DeclareConceptExample(new RDFResource("ex:concept"), null));
+        public void ShouldThrowExceptionOnDocumentingConceptExampleBecauseNullValue()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DocumentConceptWithExample(new RDFResource("ex:concept"), null));
 
         [TestMethod]
-        public void ShouldDeclareConceptDefinition()
+        public void ShouldDocumentConceptDefinition()
         {
             SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
-            conceptScheme.DeclareConceptDefinition(new RDFResource("ex:concept"), new RDFPlainLiteral("This is a note!"));
+            conceptScheme.DocumentConceptWithDefinition(new RDFResource("ex:concept"), new RDFPlainLiteral("This is a note!"));
 
             //Test evolution of SKOS knowledge
             Assert.IsTrue(conceptScheme.Ontology.URI.Equals(conceptScheme.URI));
@@ -717,12 +717,12 @@ namespace RDFSharp.Semantics.Extensions.SKOS.Test
         }
 
         [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringConceptDefinitionBecauseNullConcept()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DeclareConceptDefinition(null, new RDFPlainLiteral("This is a note!")));
+        public void ShouldThrowExceptionOnDocumentingConceptDefinitionBecauseNullConcept()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DocumentConceptWithDefinition(null, new RDFPlainLiteral("This is a note!")));
 
         [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringConceptDefinitionBecauseNullValue()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DeclareConceptDefinition(new RDFResource("ex:concept"), null));
+        public void ShouldThrowExceptionODocumentingConceptDefinitionBecauseNullValue()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new SKOSConceptScheme("ex:conceptScheme").DocumentConceptWithDefinition(new RDFResource("ex:concept"), null));
 
         //RELATIONS
 
