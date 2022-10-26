@@ -20,7 +20,7 @@ using RDFSharp.Model;
 namespace RDFSharp.Semantics.Extensions.SKOS.Validator.Test
 {
     [TestClass]
-    internal class SKOSValidatorTest
+    public class SKOSValidatorTest
     {
         #region Tests
         [TestMethod]
@@ -80,9 +80,9 @@ namespace RDFSharp.Semantics.Extensions.SKOS.Validator.Test
             OWLValidatorReport validatorReport = validator.ApplyToConceptScheme(conceptScheme);
 
             Assert.IsNotNull(validatorReport);
-            Assert.IsTrue(validatorReport.EvidencesCount == 3);
-            Assert.IsTrue(validatorReport.SelectErrors().Count == 3);
-            Assert.IsTrue(validatorReport.SelectWarnings().Count == 0);
+            Assert.IsTrue(validatorReport.EvidencesCount == 1);
+            Assert.IsTrue(validatorReport.SelectErrors().Count == 0);
+            Assert.IsTrue(validatorReport.SelectWarnings().Count == 1);
             Assert.IsNotNull(warningMsg);
             Assert.IsTrue(warningMsg.IndexOf("found 1 evidences") > -1);
         }

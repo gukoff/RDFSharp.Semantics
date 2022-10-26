@@ -20,7 +20,7 @@ using RDFSharp.Model;
 namespace RDFSharp.Semantics.Extensions.SKOS.Validator.Test
 {
     [TestClass]
-    internal class SKOSTopConceptRuleTest
+    public class SKOSTopConceptRuleTest
     {
         #region Tests
         [TestMethod]
