@@ -12,8 +12,6 @@
 */
 
 using RDFSharp.Model;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace RDFSharp.Semantics.Extensions.SKOS
 {
@@ -26,7 +24,16 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         {
             OWLValidatorReport validatorRuleReport = new OWLValidatorReport();
 
-            //TODO
+            //skos:hasTopConcept
+            foreach (RDFTriple hasTopConceptRelation in conceptScheme.Ontology.Data.ABoxGraph[conceptScheme, RDFVocabulary.SKOS.HAS_TOP_CONCEPT, null, null])
+            { 
+                if (conceptScheme.GetBroaderConcepts((RDFResource)hasTopConceptRelation.Object).Count > 0)
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
+                        nameof(SKOSTopConceptRule),
+                        $"Violation of 'skos:hasTopConcept' behavior on concept scheme '{conceptScheme}' for concept '{hasTopConceptRelation.Object}'",
+                        "If you specify a 'skos:Concept' as root concept of a 'skos:ConceptScheme', this concept should not have any broader concepts int it"));
+            }
 
             return validatorRuleReport;
         }
