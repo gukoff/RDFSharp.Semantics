@@ -11,8 +11,8 @@
     <SignAssembly>false</SignAssembly>
     <Product>RDFSharp.Semantics</Product>
     <PackageId>RDFSharp.Semantics</PackageId>
-    <PackageVersion>$(Version)-preview4</PackageVersion>
-    <PackageTags>rdfs owl owl-dl skos skos-xl ontology reasoner swrl semantic-web linked-data</PackageTags>
+    <PackageVersion>$(Version)-preview5</PackageVersion>
+    <PackageTags>rdfs owl owl-dl owl2 skos skos-xl ontology reasoner swrl semantic-web linked-data</PackageTags>
     <PackageProjectUrl>https://github.com/mdesalvo/RDFSharp.Semantics</PackageProjectUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/mdesalvo/RDFSharp.Semantics.git</RepositoryUrl>
