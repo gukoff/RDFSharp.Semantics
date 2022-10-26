@@ -62,6 +62,30 @@ namespace RDFSharp.Semantics.Extensions.SKOS.Validator.Test
             Assert.IsTrue(validatorReport.SelectErrors().Count == 0);
             Assert.IsTrue(validatorReport.SelectWarnings().Count == 1);
         }
+
+        [TestMethod]
+        public void ShouldValidateWithStandardRuleAndSubscribedEvents()
+        {
+            SKOSConceptScheme conceptScheme = new SKOSConceptScheme("ex:conceptScheme");
+            conceptScheme.DeclareConcept(new RDFResource("ex:concept"));
+            conceptScheme.DeclareConcept(new RDFResource("ex:rootConcept"));
+            conceptScheme.DeclareBroaderConcepts(new RDFResource("ex:concept"), new RDFResource("ex:rootConcept"));
+            conceptScheme.DeclareTopConcept(new RDFResource("ex:concept")); //clash on skos:broader taxonomy
+
+            SKOSValidator validator = new SKOSValidator().AddStandardRule(SKOSEnums.SKOSValidatorStandardRules.TopConcept);            
+
+            string warningMsg = null;
+            OWLSemanticsEvents.OnSemanticsInfo += (string msg) => { warningMsg += msg; };
+
+            OWLValidatorReport validatorReport = validator.ApplyToConceptScheme(conceptScheme);
+
+            Assert.IsNotNull(validatorReport);
+            Assert.IsTrue(validatorReport.EvidencesCount == 3);
+            Assert.IsTrue(validatorReport.SelectErrors().Count == 3);
+            Assert.IsTrue(validatorReport.SelectWarnings().Count == 0);
+            Assert.IsNotNull(warningMsg);
+            Assert.IsTrue(warningMsg.IndexOf("found 1 evidences") > -1);
+        }
         #endregion
     }
 }
