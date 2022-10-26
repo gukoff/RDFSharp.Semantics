@@ -32,7 +32,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
                         nameof(SKOSTopConceptRule),
                         $"Violation of 'skos:hasTopConcept' behavior on concept scheme '{conceptScheme}' for concept '{hasTopConceptRelation.Object}'",
-                        "If you specify a 'skos:Concept' as root concept of a 'skos:ConceptScheme', this concept should not have any broader concepts int it"));
+                        "If you specify a 'skos:Concept' as top concept of a 'skos:ConceptScheme', this concept should not have any broader concepts"));
             }
 
             return validatorRuleReport;
