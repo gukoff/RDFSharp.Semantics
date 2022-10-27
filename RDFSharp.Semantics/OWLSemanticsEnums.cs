@@ -102,5 +102,32 @@ namespace RDFSharp.Semantics
             /// </summary>
             LocalCardinality = 15
         };
+
+        /// <summary>
+        /// Represents an enumeration for possible categories of ontology reasoner evidence
+        /// </summary>
+        public enum OWLReasonerEvidenceCategory
+        {
+            /// <summary>
+            /// Inference generated on class model knowledge (T-BOX)
+            /// </summary>
+            ClassModel = 1,
+            /// <summary>
+            /// Inference generated on property model knowledge (T-BOX)
+            /// </summary>
+            PropertyModel = 2,
+            /// <summary>
+            /// Inference generated on data knowledge (A-BOX)
+            /// </summary>
+            Data = 3
+        };
+
+        /// <summary>
+        /// Represents an enumeration for the set of built-in standard RDFS/OWL-DL/OWL2 reasoner rules
+        /// </summary>
+        public enum OWLReasonerStandardRules
+        {
+
+        };
     }
 }

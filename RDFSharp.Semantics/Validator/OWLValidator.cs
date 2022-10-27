@@ -61,7 +61,7 @@ namespace RDFSharp.Semantics
         public OWLValidator AddCustomRule(OWLValidatorRule customRule)
         {
             if (customRule == null)
-                throw new OWLSemanticsException("Cannot add custom rule to validator because given \"customeRule\" parameter is null");
+                throw new OWLSemanticsException("Cannot add custom rule to validator because given \"customRule\" parameter is null");
 
             CustomRules.Add(customRule);
             return this;

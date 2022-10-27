@@ -22,4 +22,8 @@
 	<ItemGroup>
 		<ProjectReference Include="..\RDFSharp.Semantics\RDFSharp.Semantics.csproj" />
 	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Reasoner\Algebra\" />
+	  <Folder Include="Reasoner\Rules\" />
+	</ItemGroup>
 </Project>
