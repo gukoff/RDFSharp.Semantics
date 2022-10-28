@@ -22,9 +22,8 @@ using System.Data;
 
 namespace RDFSharp.Semantics
 {
-
     /// <summary>
-    /// OWLReasonerRuleObjectPropertyAtom represents an atom inferring assertions between ontology facts 
+    /// OWLReasonerRuleObjectPropertyAtom represents a SWRL atom inferring object relations between individuals
     /// </summary>
     public class OWLReasonerRuleObjectPropertyAtom : OWLReasonerRuleAtom
     {
@@ -32,40 +31,47 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Default-ctor to build an object property atom with the given property and arguments
         /// </summary>
-        public OWLReasonerRuleObjectPropertyAtom(OWLOntologyObjectProperty ontologyObjectProperty, RDFVariable leftArgument, RDFVariable rightArgument)
-            : base(ontologyObjectProperty, leftArgument, rightArgument) { }
+        public OWLReasonerRuleObjectPropertyAtom(RDFResource owlObjectProperty, RDFVariable leftArgument, RDFVariable rightArgument)
+            : base(owlObjectProperty, leftArgument, rightArgument) { }
 
         /// <summary>
         /// Default-ctor to build an object property atom with the given property and arguments
         /// </summary>
-        public OWLReasonerRuleObjectPropertyAtom(OWLOntologyObjectProperty ontologyObjectProperty, RDFVariable leftArgument, OWLOntologyFact rightArgument)
-            : base(ontologyObjectProperty, leftArgument, rightArgument) { }
+        public OWLReasonerRuleObjectPropertyAtom(RDFResource owlObjectProperty, RDFVariable leftArgument, RDFResource rightArgument)
+            : base(owlObjectProperty, leftArgument, rightArgument) { }
         #endregion
 
         #region Methods
         /// <summary>
         /// Evaluates the atom in the context of an antecedent
         /// </summary>
-        internal override DataTable EvaluateOnAntecedent(OWLOntology ontology, OWLOntologyReasonerOptions options)
+        internal override DataTable EvaluateOnAntecedent(OWLOntology ontology)
         {
+            string leftArgumentString = LeftArgument.ToString();
+            string rightArgumentString = RightArgument.ToString();
+
             //Initialize the structure of the atom result
             DataTable atomResult = new DataTable(this.ToString());
-            RDFQueryEngine.AddColumn(atomResult, this.LeftArgument.ToString());
-            if (this.RightArgument is RDFVariable)
-                RDFQueryEngine.AddColumn(atomResult, this.RightArgument.ToString());
+            RDFQueryEngine.AddColumn(atomResult, leftArgumentString);
+            if (RightArgument is RDFVariable)
+                RDFQueryEngine.AddColumn(atomResult, rightArgumentString);
 
-            //Materialize object property assertions of the atom predicate
-            OWLOntologyTaxonomy assertions = ontology.Data.Relations.Assertions.SelectEntriesByPredicate(this.Predicate);
-            if (this.RightArgument is OWLOntologyFact rightArgumentFact)
-                assertions = assertions.SelectEntriesByObject(rightArgumentFact);
-            foreach (OWLOntologyTaxonomyEntry assertion in assertions)
+            //Extract object property assertions of the atom predicate
+            RDFGraph atomPredicateAssertions = ontology.Data.ABoxGraph[null, Predicate, null, null];
+            if (RightArgument is RDFResource rightArgumentIndividual)
+                atomPredicateAssertions = atomPredicateAssertions[null, null, rightArgumentIndividual, null];
+
+            //Save them into the atom result
+            Dictionary<string, string> atomResultBindings = new Dictionary<string, string>();
+            foreach (RDFTriple atomPredicateAssertion in atomPredicateAssertions)
             {
-                Dictionary<string, string> bindings = new Dictionary<string, string>();
-                bindings.Add(this.LeftArgument.ToString(), assertion.TaxonomySubject.ToString());
-                if (this.RightArgument is RDFVariable)
-                    bindings.Add(this.RightArgument.ToString(), assertion.TaxonomyObject.ToString());
+                atomResultBindings.Add(leftArgumentString, atomPredicateAssertion.Subject.ToString());
+                if (RightArgument is RDFVariable)
+                    atomResultBindings.Add(rightArgumentString, atomPredicateAssertion.Object.ToString());
 
-                RDFQueryEngine.AddRow(atomResult, bindings);
+                RDFQueryEngine.AddRow(atomResult, atomResultBindings);
+
+                atomResultBindings.Clear();
             }
 
             //Return the atom result
@@ -75,7 +81,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Evaluates the atom in the context of an consequent
         /// </summary>
-        internal override OWLReasonerReport EvaluateOnConsequent(DataTable antecedentResults, OWLOntology ontology, OWLOntologyReasonerOptions options)
+        internal override OWLReasonerReport EvaluateOnConsequent(DataTable antecedentResults, OWLOntology ontology)
         {
             OWLReasonerReport report = new OWLReasonerReport();
             string leftArgumentString = this.LeftArgument.ToString();
@@ -111,33 +117,21 @@ namespace RDFSharp.Semantics
                 RDFPatternMember leftArgumentValue = RDFQueryUtilities.ParseRDFPatternMember(currentRow[leftArgumentString].ToString());
 
                 //Parse the value of the column corresponding to the atom's right argument
-                RDFPatternMember rightArgumentValue =
-                    this.RightArgument is RDFVariable ? RDFQueryUtilities.ParseRDFPatternMember(currentRow[rightArgumentString].ToString())
-                                                      : ((OWLOntologyFact)this.RightArgument).Value;
+                RDFPatternMember rightArgumentValue = RightArgument is RDFVariable ? RDFQueryUtilities.ParseRDFPatternMember(currentRow[rightArgumentString].ToString())
+                                                                                   : RightArgument; //Resource
 
                 if (leftArgumentValue is RDFResource leftArgumentValueResource
                         && rightArgumentValue is RDFResource rightArgumentValueResource)
                 {
-                    //Search the left fact in the ontology
-                    OWLOntologyFact leftFact = ontology.Data.SelectFact(leftArgumentValueResource.ToString());
-                    if (leftFact == null)
-                        leftFact = new OWLOntologyFact(leftArgumentValueResource);
-
-                    //Search the right fact in the ontology
-                    OWLOntologyFact rightFact = ontology.Data.SelectFact(rightArgumentValueResource.ToString());
-                    if (rightFact == null)
-                        rightFact = new OWLOntologyFact(rightArgumentValueResource);
-
-                    //Protect atom's inferences with implicit taxonomy checks (only if taxonomy protection has been requested)
-                    if (!options.EnforceTaxonomyProtection || OWLOntologyChecker.CheckAssertionCompatibility(ontology.Data, leftFact, (OWLOntologyObjectProperty)this.Predicate, rightFact))
+                    //Protect atom's inferences with implicit taxonomy checks
+                    if (ontology.Data.CheckObjectAssertionCompatibility(leftArgumentValueResource, Predicate, rightArgumentValueResource))
                     {
-                        //Create the inference as a taxonomy entry
-                        OWLOntologyTaxonomyEntry sem_inf = new OWLOntologyTaxonomyEntry(leftFact, (OWLOntologyObjectProperty)this.Predicate, rightFact)
-                                                                .SetInference(RDFSemanticsEnums.OWLOntologyInferenceType.Reasoner);
+                        //Create the inference
+                        RDFTriple atomInference = new RDFTriple(leftArgumentValueResource, Predicate, rightArgumentValueResource);
 
                         //Add the inference to the report
-                        if (!ontology.Data.Relations.Assertions.ContainsEntry(sem_inf))
-                            report.AddEvidence(new OWLOntologyReasonerEvidence(RDFSemanticsEnums.OWLOntologyReasonerEvidenceCategory.Data, this.ToString(), nameof(OWLOntologyData.Relations.Assertions), sem_inf));
+                        if (!ontology.Data.ABoxGraph.ContainsTriple(atomInference))
+                            report.AddEvidence(new OWLReasonerEvidence(OWLSemanticsEnums.OWLReasonerEvidenceCategory.Data, this.ToString(), atomInference));
                     }
                 }
             }
@@ -146,5 +140,4 @@ namespace RDFSharp.Semantics
         }
         #endregion
     }
-
 }
