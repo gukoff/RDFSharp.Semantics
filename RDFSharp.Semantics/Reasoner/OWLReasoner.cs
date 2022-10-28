@@ -100,7 +100,7 @@ namespace RDFSharp.Semantics
                     {
                         OWLSemanticsEvents.RaiseSemanticsInfo($"Launching custom reasoner rule '{customRule.RuleName}'");
 
-                        OWLReasonerReport customRuleReport = customRule.ExecuteRule(ontology);
+                        OWLReasonerReport customRuleReport = customRule.ApplyToOntology(ontology);
                         reasonerReport.MergeEvidences(customRuleReport);
 
                         OWLSemanticsEvents.RaiseSemanticsInfo($"Completed custom reasoner rule '{customRule.RuleName}': found {customRuleReport.EvidencesCount} evidences");

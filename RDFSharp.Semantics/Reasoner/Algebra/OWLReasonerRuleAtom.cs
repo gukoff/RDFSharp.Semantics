@@ -43,7 +43,7 @@ namespace RDFSharp.Semantics
         public RDFPatternMember LeftArgument { get; internal set; }
 
         /// <summary>
-        /// Represents the right argument given to the atom's predicate
+        /// Represents the (optional) right argument given to the atom's predicate
         /// </summary>
         public RDFPatternMember RightArgument { get; internal set; }
         #endregion
@@ -84,7 +84,7 @@ namespace RDFSharp.Semantics
                 if (RightArgument is RDFResource rightArgumentResource)
                     sb.Append($",{RDFModelUtilities.GetShortUri(rightArgumentResource.URI)}");
 
-                //Other cases of right argument (variable, plain/typed literal) are printed in normal form
+                //Other cases of right argument (variable, literal) are printed in normal form
                 else
                     sb.Append($",{RDFQueryPrinter.PrintPatternMember(RightArgument, RDFNamespaceRegister.Instance.Register)}");
             }

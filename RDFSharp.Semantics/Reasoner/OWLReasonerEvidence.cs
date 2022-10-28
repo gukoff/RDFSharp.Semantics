@@ -29,7 +29,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Rule which has generated this evidence
         /// </summary>
-        public string EvidenceProvenance { get; internal set; }
+        public string EvidenceRule { get; internal set; }
 
         /// <summary>
         /// Content of the evidence
@@ -41,15 +41,15 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Default-ctor to build a reasoner evidence with given category, provenance, message and suggestion
         /// </summary>
-        public OWLReasonerEvidence(OWLSemanticsEnums.OWLReasonerEvidenceCategory evidenceCategory, string evidenceProvenance, RDFTriple evidenceContent)
+        public OWLReasonerEvidence(OWLSemanticsEnums.OWLReasonerEvidenceCategory evidenceCategory, string evidenceRule, RDFTriple evidenceContent)
         {
-            if (string.IsNullOrEmpty(evidenceProvenance))
-                throw new OWLSemanticsException("Cannot create reasoner evidence because given \"evidenceProvenance\" parameter is null or empty");
+            if (string.IsNullOrEmpty(evidenceRule))
+                throw new OWLSemanticsException("Cannot create reasoner evidence because given \"evidenceRule\" parameter is null or empty");
             if (evidenceContent == null)
                 throw new OWLSemanticsException("Cannot create reasoner evidence because given \"evidenceContent\" parameter is null");
 
             EvidenceCategory = evidenceCategory;
-            EvidenceProvenance = evidenceProvenance;
+            EvidenceRule = evidenceRule;
             EvidenceContent = evidenceContent;
         }
         #endregion

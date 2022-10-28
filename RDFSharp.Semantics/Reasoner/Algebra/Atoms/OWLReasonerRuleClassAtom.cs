@@ -45,17 +45,21 @@ namespace RDFSharp.Semantics
             string leftArgumentString = LeftArgument.ToString();
 
             //Initialize the structure of the atom result
-            DataTable atomResult = new DataTable();
+            DataTable atomResult = new DataTable(this.ToString());
             RDFQueryEngine.AddColumn(atomResult, leftArgumentString);
 
-            //Materialize members of the atom class
-            List<RDFResource> classMembers = ontology.Data.GetIndividualsOf(ontology.Model, Predicate);
-            foreach (RDFResource classMember in classMembers)
-            {
-                Dictionary<string, string> bindings = new Dictionary<string, string>();
-                bindings.Add(leftArgumentString, classMember.ToString());
+            //Calculate individuals of the atom predicate
+            List<RDFResource> atomClassIndividuals = ontology.Data.GetIndividualsOf(ontology.Model, Predicate);
 
-                RDFQueryEngine.AddRow(atomResult, bindings);
+            //Save them into the atom result
+            Dictionary<string, string> atomResultBindings = new Dictionary<string, string>();
+            foreach (RDFResource atomClassIndividual in atomClassIndividuals)
+            {
+                atomResultBindings.Add(leftArgumentString, atomClassIndividual.ToString());
+
+                RDFQueryEngine.AddRow(atomResult, atomResultBindings);
+
+                atomResultBindings.Clear();
             }
 
             //Return the atom result
@@ -76,8 +80,8 @@ namespace RDFSharp.Semantics
                 return report;
             #endregion
 
-            //Materialize members of the atom class
-            List<RDFResource> atomClassMembers = ontology.Data.GetIndividualsOf(ontology.Model, Predicate);
+            //Calculate individuals of the atom class
+            List<RDFResource> atomClassIndividuals = ontology.Data.GetIndividualsOf(ontology.Model, Predicate);
 
             //Iterate the antecedent results table to materialize the atom's reasoner evidences
             IEnumerator rowsEnum = antecedentResults.Rows.GetEnumerator();
@@ -95,8 +99,8 @@ namespace RDFSharp.Semantics
                 RDFPatternMember leftArgumentValue = RDFQueryUtilities.ParseRDFPatternMember(currentRow[leftArgumentString].ToString());
                 if (leftArgumentValue is RDFResource leftArgumentValueResource)
                 {
-                    //Protect atom's inferences with implicit taxonomy checks (only if taxonomy protection has been requested)
-                    if (atomClassMembers.Any(atomClassMember => atomClassMember.Equals(leftArgumentValueResource)))
+                    //Protect atom's inferences with implicit taxonomy checks
+                    if (atomClassIndividuals.Any(atomClassIndividual => atomClassIndividual.Equals(leftArgumentValueResource)))
                     {
                         //Create the inference
                         RDFTriple atomInference = new RDFTriple(leftArgumentValueResource, RDFVocabulary.RDF.TYPE, Predicate);

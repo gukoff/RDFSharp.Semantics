@@ -27,22 +27,22 @@ namespace RDFSharp.Semantics
     {
         #region Properties
         /// <summary>
-        /// Uri of the rule
+        /// Name of the reasoner rule
         /// </summary>
-        public Uri RuleUri { get; internal set; }
+        public string RuleName { get; internal set; }
 
         /// <summary>
-        /// Description of the rule
+        /// Description of the reasoner rule
         /// </summary>
         public string RuleDescription { get; internal set; }
 
         /// <summary>
-        /// Antecedent of the rule
+        /// Antecedent of the reasoner rule
         /// </summary>
         public OWLReasonerRuleAntecedent Antecedent { get; internal set; }
 
         /// <summary>
-        /// Consequent of the rule
+        /// Consequent of the reasoner rule
         /// </summary>
         public OWLReasonerRuleConsequent Consequent { get; internal set; }
         #endregion
@@ -51,16 +51,16 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Default-ctor to build a rule with given antecedent and consequent
         /// </summary>
-        public OWLReasonerRule(Uri ruleUri, string ruleDescription, OWLReasonerRuleAntecedent antecedent, OWLReasonerRuleConsequent consequent)
+        public OWLReasonerRule(string ruleName, string ruleDescription, OWLReasonerRuleAntecedent antecedent, OWLReasonerRuleConsequent consequent)
         {
-            if (ruleUri == null)
-                throw new OWLSemanticsException("Cannot create rule because given \"ruleUri\" parameter is null");
+            if (string.IsNullOrEmpty(ruleName))
+                throw new OWLSemanticsException("Cannot create rule because given \"ruleName\" parameter is null or empty");
             if (antecedent == null)
                 throw new OWLSemanticsException("Cannot create rule because given \"antecedent\" parameter is null");
             if (consequent == null)
                 throw new OWLSemanticsException("Cannot create rule because given \"consequent\" parameter is null");
 
-            RuleUri = ruleUri;
+            RuleName = ruleName;
             RuleDescription = ruleDescription;
             Antecedent = antecedent;
             Consequent = consequent;

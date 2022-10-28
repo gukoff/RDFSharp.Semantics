@@ -21,7 +21,7 @@ using System.Data;
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// OWLReasonerRuleBuiltIn represents a predefined kind of SWRL atom filtering inferences of a rule's antecedent
+    /// OWLReasonerRuleBuiltIn represents a specific category of SWRL atoms filtering inferences of a rule's antecedent
     /// </summary>
     public abstract class OWLReasonerRuleBuiltIn : OWLReasonerRuleAtom
     {
