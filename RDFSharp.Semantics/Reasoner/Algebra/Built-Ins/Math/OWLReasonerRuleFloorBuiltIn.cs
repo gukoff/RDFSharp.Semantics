@@ -18,7 +18,7 @@ using System.Text;
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// OWLReasonerRuleFloorBuiltIn represents a math built-in of type swrlb:floor
+    /// OWLReasonerRuleFloorBuiltIn represents a SWRL built-in filtering inferences of a rule's antecedent on a swrlb:floor basis
     /// </summary>
     public class OWLReasonerRuleFloorBuiltIn : OWLReasonerRuleMathBuiltIn
     {
@@ -26,7 +26,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Represents the Uri of the built-in (swrlb:floor)
         /// </summary>
-        private static RDFResource BuiltInUri = new RDFResource($"swrlb:floor");
+        private static readonly RDFResource BuiltInUri = new RDFResource("swrlb:floor");
         #endregion
 
         #region Ctors
@@ -34,7 +34,7 @@ namespace RDFSharp.Semantics
         /// Default-ctor to build a swrlb:floor built-in with given arguments
         /// </summary>
         public OWLReasonerRuleFloorBuiltIn(RDFVariable leftArgument, RDFVariable rightArgument)
-            : base(new OWLOntologyResource() { Value = BuiltInUri }, leftArgument, rightArgument, double.NaN) { }
+            : base(BuiltInUri, leftArgument, rightArgument, double.NaN) { }
         #endregion
 
         #region Interfaces
@@ -46,10 +46,10 @@ namespace RDFSharp.Semantics
             StringBuilder sb = new StringBuilder();
 
             //Predicate
-            sb.Append(RDFModelUtilities.GetShortUri(((RDFResource)this.Predicate.Value).URI));
+            sb.Append(RDFModelUtilities.GetShortUri(Predicate.URI));
 
             //Arguments
-            sb.Append($"({this.LeftArgument},{this.RightArgument})");
+            sb.Append($"({LeftArgument},{RightArgument})");
 
             return sb.ToString();
         }

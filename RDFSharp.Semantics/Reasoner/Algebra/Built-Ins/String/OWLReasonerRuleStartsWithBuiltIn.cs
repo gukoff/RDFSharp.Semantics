@@ -18,7 +18,7 @@ using System.Text.RegularExpressions;
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// OWLReasonerRuleStartsWithBuiltIn represents a built-in of type swrlb:startsWith
+    /// OWLReasonerRuleStartsWithBuiltIn represents a SWRL built-in filtering inferences of a rule's antecedent on a swrlb:startsWith basis
     /// </summary>
     public class OWLReasonerRuleStartsWithBuiltIn : OWLReasonerRuleFilterBuiltIn
     {
@@ -26,7 +26,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Represents the Uri of the built-in (swrlb:startsWith)
         /// </summary>
-        private static RDFResource BuiltInUri = new RDFResource($"swrlb:startsWith");
+        private static readonly RDFResource BuiltInUri = new RDFResource("swrlb:startsWith");
         #endregion
 
         #region Ctors
@@ -34,15 +34,13 @@ namespace RDFSharp.Semantics
         /// Default-ctor to build a swrlb:startsWith built-in with given arguments
         /// </summary>
         public OWLReasonerRuleStartsWithBuiltIn(RDFVariable leftArgument, string startString)
-            : base(new OWLOntologyResource() { Value = BuiltInUri }, leftArgument, null)
+            : base(BuiltInUri, leftArgument, null)
         {
             if (startString == null)
-                throw new OWLSemanticsException("Cannot create built-in because given \"startString\" parameter is null.");
+                throw new OWLSemanticsException("Cannot create swrlb:startsWith built-in because given \"startString\" parameter is null.");
 
-            //For printing, this built-in requires simulation of the right argument as plain literal
-            this.RightArgument = new OWLOntologyLiteral(new RDFPlainLiteral(startString));
-
-            this.BuiltInFilter = new RDFRegexFilter(leftArgument, new Regex($"^{startString}"));
+            RightArgument = new RDFPlainLiteral(startString);
+            BuiltInFilter = new RDFRegexFilter(leftArgument, new Regex($"^{startString}"));
         }
         #endregion
     }

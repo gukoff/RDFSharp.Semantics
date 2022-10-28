@@ -18,7 +18,7 @@ using System.Text;
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// OWLReasonerRuleTanBuiltIn represents a math built-in of type swrlb:tan
+    /// OWLReasonerRuleTanBuiltIn represents a SWRL built-in filtering inferences of a rule's antecedent on a swrlb:tan basis
     /// </summary>
     public class OWLReasonerRuleTanBuiltIn : OWLReasonerRuleMathBuiltIn
     {
@@ -26,7 +26,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Represents the Uri of the built-in (swrlb:tan)
         /// </summary>
-        private static RDFResource BuiltInUri = new RDFResource($"swrlb:tan");
+        private static readonly RDFResource BuiltInUri = new RDFResource("swrlb:tan");
         #endregion
 
         #region Ctors
@@ -34,7 +34,7 @@ namespace RDFSharp.Semantics
         /// Default-ctor to build a swrlb:tan built-in with given arguments
         /// </summary>
         public OWLReasonerRuleTanBuiltIn(RDFVariable leftArgument, RDFVariable rightArgument)
-            : base(new OWLOntologyResource() { Value = BuiltInUri }, leftArgument, rightArgument, double.NaN) { }
+            : base(BuiltInUri, leftArgument, rightArgument, double.NaN) { }
         #endregion
 
         #region Interfaces
@@ -46,10 +46,10 @@ namespace RDFSharp.Semantics
             StringBuilder sb = new StringBuilder();
 
             //Predicate
-            sb.Append(RDFModelUtilities.GetShortUri(((RDFResource)this.Predicate.Value).URI));
+            sb.Append(RDFModelUtilities.GetShortUri(Predicate.URI));
 
             //Arguments
-            sb.Append($"({this.LeftArgument},{this.RightArgument})");
+            sb.Append($"({LeftArgument},{RightArgument})");
 
             return sb.ToString();
         }

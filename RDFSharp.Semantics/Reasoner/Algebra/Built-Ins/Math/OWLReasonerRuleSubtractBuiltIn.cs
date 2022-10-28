@@ -17,7 +17,7 @@ using RDFSharp.Query;
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// OWLReasonerRuleSubtractBuiltIn represents a built-in of type swrlb:subtract
+    /// OWLReasonerRuleSubtractBuiltIn represents a SWRL built-in filtering inferences of a rule's antecedent on a swrlb:subtract basis
     /// </summary>
     public class OWLReasonerRuleSubtractBuiltIn : OWLReasonerRuleMathBuiltIn
     {
@@ -25,7 +25,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Represents the Uri of the built-in (swrlb:subtract)
         /// </summary>
-        private static RDFResource BuiltInUri = new RDFResource($"swrlb:subtract");
+        private static readonly RDFResource BuiltInUri = new RDFResource("swrlb:subtract");
         #endregion
 
         #region Ctors
@@ -33,7 +33,7 @@ namespace RDFSharp.Semantics
         /// Default-ctor to build a swrlb:subtract built-in with given arguments
         /// </summary>
         public OWLReasonerRuleSubtractBuiltIn(RDFVariable leftArgument, RDFVariable rightArgument, double subtractValue)
-            : base(new OWLOntologyResource() { Value = BuiltInUri }, leftArgument, rightArgument, subtractValue) { }
+            : base(BuiltInUri, leftArgument, rightArgument, subtractValue) { }
         #endregion
     }
 }

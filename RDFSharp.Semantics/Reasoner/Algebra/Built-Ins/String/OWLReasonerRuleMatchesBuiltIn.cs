@@ -19,7 +19,7 @@ using System.Text.RegularExpressions;
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// OWLReasonerRuleMatchesBuiltIn represents a built-in of type swrlb:matches
+    /// OWLReasonerRuleMatchesBuiltIn represents a SWRL built-in filtering inferences of a rule's antecedent on a swrlb:matches basis
     /// </summary>
     public class OWLReasonerRuleMatchesBuiltIn : OWLReasonerRuleFilterBuiltIn
     {
@@ -27,7 +27,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Represents the Uri of the built-in (swrlb:matches)
         /// </summary>
-        private static RDFResource BuiltInUri = new RDFResource($"swrlb:matches");
+        private static readonly RDFResource BuiltInUri = new RDFResource("swrlb:matches");
         #endregion
 
         #region Ctors
@@ -35,12 +35,11 @@ namespace RDFSharp.Semantics
         /// Default-ctor to build a swrlb:matches built-in with given arguments
         /// </summary>
         public OWLReasonerRuleMatchesBuiltIn(RDFVariable leftArgument, Regex matchesRegex)
-            : base(new OWLOntologyResource() { Value = BuiltInUri }, leftArgument, null)
+            : base(BuiltInUri, leftArgument, null)
         {
             if (matchesRegex == null)
-                throw new OWLSemanticsException("Cannot create built-in because given \"matchesRegex\" parameter is null.");
+                throw new OWLSemanticsException("Cannot create swrlb:matches built-in because given \"matchesRegex\" parameter is null.");
 
-            //For printing, this built-in requires simulation of the right argument as plain literal
             StringBuilder regexFlags = new StringBuilder();
             if (matchesRegex.Options.HasFlag(RegexOptions.IgnoreCase))
                 regexFlags.Append('i');
@@ -50,10 +49,9 @@ namespace RDFSharp.Semantics
                 regexFlags.Append('m');
             if (matchesRegex.Options.HasFlag(RegexOptions.IgnorePatternWhitespace))
                 regexFlags.Append('x');
-            this.RightArgument = regexFlags.ToString() != string.Empty ? new OWLOntologyLiteral(new RDFPlainLiteral($"{matchesRegex}\",\"{regexFlags}"))
-                                                                       : new OWLOntologyLiteral(new RDFPlainLiteral($"{matchesRegex}"));
-
-            this.BuiltInFilter = new RDFRegexFilter(leftArgument, matchesRegex);
+            RightArgument = string.IsNullOrEmpty(regexFlags.ToString()) ? new RDFPlainLiteral($"{matchesRegex}") 
+                                                                        : new RDFPlainLiteral($"{matchesRegex}\",\"{regexFlags}");
+            BuiltInFilter = new RDFRegexFilter(leftArgument, matchesRegex);
         }
         #endregion
     }

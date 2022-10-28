@@ -17,7 +17,7 @@ using RDFSharp.Query;
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// OWLReasonerRuleEqualBuiltIn represents a built-in of type swrlb:equal
+    /// OWLReasonerRuleEqualBuiltInrepresents a SWRL built-in filtering inferences of a rule's antecedent on a swrlb:equal basis
     /// </summary>
     public class OWLReasonerRuleEqualBuiltIn : OWLReasonerRuleFilterBuiltIn
     {
@@ -25,7 +25,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Represents the Uri of the built-in (swrlb:equal)
         /// </summary>
-        private static RDFResource BuiltInUri = new RDFResource($"swrlb:equal");
+        private static readonly RDFResource BuiltInUri = new RDFResource("swrlb:equal");
         #endregion
 
         #region Ctors
@@ -38,21 +38,21 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Default-ctor to build a swrlb:equal built-in with given arguments
         /// </summary>
-        public OWLReasonerRuleEqualBuiltIn(RDFVariable leftArgument, OWLOntologyFact rightArgument)
-            : this(leftArgument, rightArgument?.Value as RDFPatternMember) { }
+        public OWLReasonerRuleEqualBuiltIn(RDFVariable leftArgument, RDFResource rightArgument)
+            : this(leftArgument, rightArgument as RDFPatternMember) { }
 
         /// <summary>
         /// Default-ctor to build a swrlb:equal built-in with given arguments
         /// </summary>
-        public OWLReasonerRuleEqualBuiltIn(RDFVariable leftArgument, OWLOntologyLiteral rightArgument)
-            : this(leftArgument, rightArgument?.Value as RDFPatternMember) { }
+        public OWLReasonerRuleEqualBuiltIn(RDFVariable leftArgument, RDFLiteral rightArgument)
+            : this(leftArgument, rightArgument as RDFPatternMember) { }
 
         /// <summary>
         /// Internal-ctor to build a swrlb:equal built-in with given arguments
         /// </summary>
         internal OWLReasonerRuleEqualBuiltIn(RDFVariable leftArgument, RDFPatternMember rightArgument)
-            : base(new OWLOntologyResource() { Value = BuiltInUri }, leftArgument, rightArgument)
-                => this.BuiltInFilter = new RDFComparisonFilter(RDFQueryEnums.RDFComparisonFlavors.EqualTo, leftArgument, rightArgument);
+            : base(BuiltInUri, leftArgument, rightArgument)
+                => BuiltInFilter = new RDFComparisonFilter(RDFQueryEnums.RDFComparisonFlavors.EqualTo, leftArgument, rightArgument);
         #endregion
     }
 }

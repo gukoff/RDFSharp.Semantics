@@ -17,7 +17,7 @@ using RDFSharp.Query;
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// OWLReasonerRuleDivideBuiltIn represents a math built-in of type swrlb:divide
+    /// OWLReasonerRuleDivideBuiltIn represents a SWRL built-in filtering inferences of a rule's antecedent on a swrlb:divide basis
     /// </summary>
     public class OWLReasonerRuleDivideBuiltIn : OWLReasonerRuleMathBuiltIn
     {
@@ -25,7 +25,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Represents the Uri of the built-in (swrlb:divide)
         /// </summary>
-        private static RDFResource BuiltInUri = new RDFResource($"swrlb:divide");
+        private static readonly RDFResource BuiltInUri = new RDFResource("swrlb:divide");
         #endregion
 
         #region Ctors
@@ -33,10 +33,10 @@ namespace RDFSharp.Semantics
         /// Default-ctor to build a swrlb:divide built-in with given arguments
         /// </summary>
         public OWLReasonerRuleDivideBuiltIn(RDFVariable leftArgument, RDFVariable rightArgument, double divideValue)
-            : base(new OWLOntologyResource() { Value = BuiltInUri }, leftArgument, rightArgument, divideValue)
+            : base(BuiltInUri, leftArgument, rightArgument, divideValue)
         {
             if (divideValue == 0d)
-                throw new OWLSemanticsException("Cannot create divide built-in because given \"divideValue\" is zero.");
+                throw new OWLSemanticsException("Cannot create swrlb:divide built-in because given \"divideValue\" is zero");
         }
         #endregion
     }

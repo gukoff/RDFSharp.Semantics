@@ -18,7 +18,7 @@ using System.Text;
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// OWLReasonerRuleCeilingBuiltIn represents a math built-in of type swrlb:ceiling
+    /// OWLReasonerRuleCeilingBuiltIn represents a SWRL built-in filtering inferences of a rule's antecedent on a swrlb:ceiling basis
     /// </summary>
     public class OWLReasonerRuleCeilingBuiltIn : OWLReasonerRuleMathBuiltIn
     {
@@ -26,7 +26,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Represents the Uri of the built-in (swrlb:ceiling)
         /// </summary>
-        private static RDFResource BuiltInUri = new RDFResource($"swrlb:ceiling");
+        private static readonly RDFResource BuiltInUri = new RDFResource("swrlb:ceiling");
         #endregion
 
         #region Ctors
@@ -34,22 +34,22 @@ namespace RDFSharp.Semantics
         /// Default-ctor to build a swrlb:ceiling built-in with given arguments
         /// </summary>
         public OWLReasonerRuleCeilingBuiltIn(RDFVariable leftArgument, RDFVariable rightArgument)
-            : base(new OWLOntologyResource() { Value = BuiltInUri }, leftArgument, rightArgument, double.NaN) { }
+            : base(BuiltInUri, leftArgument, rightArgument, double.NaN) { }
         #endregion
 
         #region Interfaces
         /// <summary>
-        /// Gives the string representation of the built-in
+        /// Gives the string representation of the SWRL built-in
         /// </summary>
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
 
             //Predicate
-            sb.Append(RDFModelUtilities.GetShortUri(((RDFResource)this.Predicate.Value).URI));
+            sb.Append(RDFModelUtilities.GetShortUri(Predicate.URI));
 
             //Arguments
-            sb.Append($"({this.LeftArgument},{this.RightArgument})");
+            sb.Append($"({LeftArgument},{RightArgument})");
 
             return sb.ToString();
         }

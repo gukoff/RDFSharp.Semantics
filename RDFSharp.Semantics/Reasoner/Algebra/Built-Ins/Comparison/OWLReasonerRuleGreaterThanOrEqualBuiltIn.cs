@@ -17,7 +17,7 @@ using RDFSharp.Query;
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// OWLReasonerRuleGreaterThanOrEqualBuiltIn represents a built-in of type swrlb:greaterThanOrEqual
+    /// OWLReasonerRuleGreaterThanOrEqualBuiltIn represents a SWRL built-in filtering inferences of a rule's antecedent on a swrlb:greaterThanOrEqual basis
     /// </summary>
     public class OWLReasonerRuleGreaterThanOrEqualBuiltIn : OWLReasonerRuleFilterBuiltIn
     {
@@ -25,7 +25,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Represents the Uri of the built-in (swrlb:greaterThanOrEqual)
         /// </summary>
-        private static RDFResource BuiltInUri = new RDFResource($"swrlb:greaterThanOrEqual");
+        private static readonly RDFResource BuiltInUri = new RDFResource("swrlb:greaterThanOrEqual");
         #endregion
 
         #region Ctors
@@ -38,21 +38,21 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Default-ctor to build a swrlb:greaterThanOrEqual built-in with given arguments
         /// </summary>
-        public OWLReasonerRuleGreaterThanOrEqualBuiltIn(RDFVariable leftArgument, OWLOntologyFact rightArgument)
-            : this(leftArgument, rightArgument?.Value as RDFPatternMember) { }
+        public OWLReasonerRuleGreaterThanOrEqualBuiltIn(RDFVariable leftArgument, RDFResource rightArgument)
+            : this(leftArgument, rightArgument as RDFPatternMember) { }
 
         /// <summary>
         /// Default-ctor to build a swrlb:greaterThanOrEqual built-in with given arguments
         /// </summary>
-        public OWLReasonerRuleGreaterThanOrEqualBuiltIn(RDFVariable leftArgument, OWLOntologyLiteral rightArgument)
-            : this(leftArgument, rightArgument?.Value as RDFPatternMember) { }
+        public OWLReasonerRuleGreaterThanOrEqualBuiltIn(RDFVariable leftArgument, RDFLiteral rightArgument)
+            : this(leftArgument, rightArgument as RDFPatternMember) { }
 
         /// <summary>
         /// Internal-ctor to build a swrlb:greaterThanOrEqual built-in with given arguments
         /// </summary>
         internal OWLReasonerRuleGreaterThanOrEqualBuiltIn(RDFVariable leftArgument, RDFPatternMember rightArgument)
-            : base(new OWLOntologyResource() { Value = BuiltInUri }, leftArgument, rightArgument)
-                => this.BuiltInFilter = new RDFComparisonFilter(RDFQueryEnums.RDFComparisonFlavors.GreaterOrEqualThan, leftArgument, rightArgument);
+            : base(BuiltInUri, leftArgument, rightArgument)
+                => BuiltInFilter = new RDFComparisonFilter(RDFQueryEnums.RDFComparisonFlavors.GreaterOrEqualThan, leftArgument, rightArgument);
         #endregion
     }
 }

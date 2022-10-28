@@ -17,7 +17,7 @@ using RDFSharp.Query;
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// OWLReasonerRuleMultiplyBuiltIn represents a built-in of type swrlb:multiply
+    /// OWLReasonerRuleMultiplyBuiltIn represents a SWRL built-in filtering inferences of a rule's antecedent on a swrlb:multiply basis
     /// </summary>
     public class OWLReasonerRuleMultiplyBuiltIn : OWLReasonerRuleMathBuiltIn
     {
@@ -25,7 +25,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Represents the Uri of the built-in (swrlb:multiply)
         /// </summary>
-        private static RDFResource BuiltInUri = new RDFResource($"swrlb:multiply");
+        private static readonly RDFResource BuiltInUri = new RDFResource("swrlb:multiply");
         #endregion
 
         #region Ctors
@@ -33,7 +33,7 @@ namespace RDFSharp.Semantics
         /// Default-ctor to build a swrlb:multiply built-in with given arguments
         /// </summary>
         public OWLReasonerRuleMultiplyBuiltIn(RDFVariable leftArgument, RDFVariable rightArgument, double multiplyValue)
-            : base(new OWLOntologyResource() { Value = BuiltInUri }, leftArgument, rightArgument, multiplyValue) { }
+            : base(BuiltInUri, leftArgument, rightArgument, multiplyValue) { }
         #endregion
     }
 }

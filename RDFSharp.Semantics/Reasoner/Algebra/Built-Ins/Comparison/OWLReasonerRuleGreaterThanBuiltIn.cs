@@ -17,7 +17,7 @@ using RDFSharp.Query;
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// OWLReasonerRuleGreaterThanBuiltIn represents a built-in of type swrlb:greaterThan
+    /// OWLReasonerRuleGreaterThanBuiltIn represents a SWRL built-in filtering inferences of a rule's antecedent on a swrlb:greaterThan basis
     /// </summary>
     public class OWLReasonerRuleGreaterThanBuiltIn : OWLReasonerRuleFilterBuiltIn
     {
@@ -25,7 +25,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Represents the Uri of the built-in (swrlb:greaterThan)
         /// </summary>
-        private static RDFResource BuiltInUri = new RDFResource($"swrlb:greaterThan");
+        private static readonly RDFResource BuiltInUri = new RDFResource("swrlb:greaterThan");
         #endregion
 
         #region Ctors
@@ -38,21 +38,21 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Default-ctor to build a swrlb:greaterThan built-in with given arguments
         /// </summary>
-        public OWLReasonerRuleGreaterThanBuiltIn(RDFVariable leftArgument, OWLOntologyFact rightArgument)
-            : this(leftArgument, rightArgument?.Value as RDFPatternMember) { }
+        public OWLReasonerRuleGreaterThanBuiltIn(RDFVariable leftArgument, RDFResource rightArgument)
+            : this(leftArgument, rightArgument as RDFPatternMember) { }
 
         /// <summary>
         /// Default-ctor to build a swrlb:greaterThan built-in with given arguments
         /// </summary>
-        public OWLReasonerRuleGreaterThanBuiltIn(RDFVariable leftArgument, OWLOntologyLiteral rightArgument)
-            : this(leftArgument, rightArgument?.Value as RDFPatternMember) { }
+        public OWLReasonerRuleGreaterThanBuiltIn(RDFVariable leftArgument, RDFLiteral rightArgument)
+            : this(leftArgument, rightArgument as RDFPatternMember) { }
 
         /// <summary>
         /// Internal-ctor to build a swrlb:greaterThan built-in with given arguments
         /// </summary>
         internal OWLReasonerRuleGreaterThanBuiltIn(RDFVariable leftArgument, RDFPatternMember rightArgument)
-            : base(new OWLOntologyResource() { Value = BuiltInUri }, leftArgument, rightArgument)
-                => this.BuiltInFilter = new RDFComparisonFilter(RDFQueryEnums.RDFComparisonFlavors.GreaterThan, leftArgument, rightArgument);
+            : base(BuiltInUri, leftArgument, rightArgument)
+                => BuiltInFilter = new RDFComparisonFilter(RDFQueryEnums.RDFComparisonFlavors.GreaterThan, leftArgument, rightArgument);
         #endregion
     }
 }

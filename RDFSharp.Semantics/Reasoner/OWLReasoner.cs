@@ -28,9 +28,9 @@ namespace RDFSharp.Semantics
         internal List<OWLSemanticsEnums.OWLReasonerStandardRules> StandardRules { get; set; }
 
         /// <summary>
-        /// List of custom rules applied by the reasoner
+        /// List of SWRL rules applied by the reasoner
         /// </summary>
-        internal List<OWLReasonerRule> CustomRules { get; set; }
+        internal List<OWLReasonerRule> SWRLRules { get; set; }
         #endregion
 
         #region Ctors
@@ -40,7 +40,7 @@ namespace RDFSharp.Semantics
         public OWLReasoner()
         {
             StandardRules = new List<OWLSemanticsEnums.OWLReasonerStandardRules>();
-            CustomRules = new List<OWLReasonerRule>();
+            SWRLRules = new List<OWLReasonerRule>();
         }
         #endregion
 
@@ -56,14 +56,14 @@ namespace RDFSharp.Semantics
         }
 
         /// <summary>
-        /// Adds the given custom rule to the reasoner
+        /// Adds the given SWRL rule to the reasoner
         /// </summary>
-        public OWLReasoner AddCustomRule(OWLReasonerRule customRule)
+        public OWLReasoner AddSWRLRule(OWLReasonerRule swrlRule)
         {
-            if (customRule == null)
-                throw new OWLSemanticsException("Cannot add custom rule to reasoner because given \"customRule\" parameter is null");
+            if (swrlRule == null)
+                throw new OWLSemanticsException("Cannot add SWRL rule to reasoner because given \"swrlRule\" parameter is null");
 
-            CustomRules.Add(customRule);
+            SWRLRules.Add(swrlRule);
             return this;
         }
 
@@ -88,22 +88,23 @@ namespace RDFSharp.Semantics
                         switch (standardRule)
                         {
                             //TODO
+
                         }
                         reasonerReport.MergeEvidences(standardRuleReport);
 
                         OWLSemanticsEvents.RaiseSemanticsInfo($"Completed standard reasoner rule '{standardRule}': found {standardRuleReport.EvidencesCount} evidences");
                     });
 
-                //Custom Rules
-                Parallel.ForEach(CustomRules, 
-                    customRule =>
+                //SWRL Rules
+                Parallel.ForEach(SWRLRules, 
+                    swrlRule =>
                     {
-                        OWLSemanticsEvents.RaiseSemanticsInfo($"Launching custom reasoner rule '{customRule.RuleName}'");
+                        OWLSemanticsEvents.RaiseSemanticsInfo($"Launching SWRL reasoner rule '{swrlRule.RuleName}'");
 
-                        OWLReasonerReport customRuleReport = customRule.ApplyToOntology(ontology);
+                        OWLReasonerReport customRuleReport = swrlRule.ApplyToOntology(ontology);
                         reasonerReport.MergeEvidences(customRuleReport);
 
-                        OWLSemanticsEvents.RaiseSemanticsInfo($"Completed custom reasoner rule '{customRule.RuleName}': found {customRuleReport.EvidencesCount} evidences");
+                        OWLSemanticsEvents.RaiseSemanticsInfo($"Completed SWRL reasoner rule '{swrlRule.RuleName}': found {customRuleReport.EvidencesCount} evidences");
                     });
 
                 OWLSemanticsEvents.RaiseSemanticsInfo($"easoner has been applied on Ontology '{ontology.URI}': found {reasonerReport.EvidencesCount} evidences");

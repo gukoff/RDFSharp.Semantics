@@ -17,7 +17,7 @@ using RDFSharp.Query;
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// OWLReasonerRuleAddBuiltIn represents a math built-in of type swrlb:add
+    /// OWLReasonerRuleAddBuiltIn represents a SWRL built-in filtering inferences of a rule's antecedent on a swrlb:add basis
     /// </summary>
     public class OWLReasonerRuleAddBuiltIn : OWLReasonerRuleMathBuiltIn
     {
@@ -25,7 +25,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Represents the Uri of the built-in (swrlb:add)
         /// </summary>
-        private static RDFResource BuiltInUri = new RDFResource($"swrlb:add");
+        private static readonly RDFResource BuiltInUri = new RDFResource("swrlb:add");
         #endregion
 
         #region Ctors
@@ -33,7 +33,7 @@ namespace RDFSharp.Semantics
         /// Default-ctor to build a swrlb:add built-in with given arguments
         /// </summary>
         public OWLReasonerRuleAddBuiltIn(RDFVariable leftArgument, RDFVariable rightArgument, double addValue)
-            : base(new OWLOntologyResource() { Value = BuiltInUri }, leftArgument, rightArgument, addValue) { }
+            : base(BuiltInUri, leftArgument, rightArgument, addValue) { }
         #endregion
     }
 }

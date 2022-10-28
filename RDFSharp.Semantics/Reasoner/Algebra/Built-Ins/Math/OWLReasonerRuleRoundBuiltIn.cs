@@ -18,7 +18,7 @@ using System.Text;
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// OWLReasonerRuleRoundBuiltIn represents a math built-in of type swrlb:round
+    /// OWLReasonerRuleRoundBuiltIn represents a SWRL built-in filtering inferences of a rule's antecedent on a swrlb:round basis
     /// </summary>
     public class OWLReasonerRuleRoundBuiltIn : OWLReasonerRuleMathBuiltIn
     {
@@ -26,7 +26,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Represents the Uri of the built-in (swrlb:round)
         /// </summary>
-        private static RDFResource BuiltInUri = new RDFResource($"swrlb:round");
+        private static readonly RDFResource BuiltInUri = new RDFResource("swrlb:round");
         #endregion
 
         #region Ctors
@@ -34,7 +34,7 @@ namespace RDFSharp.Semantics
         /// Default-ctor to build a swrlb:ceiling built-in with given arguments
         /// </summary>
         public OWLReasonerRuleRoundBuiltIn(RDFVariable leftArgument, RDFVariable rightArgument)
-            : base(new OWLOntologyResource() { Value = BuiltInUri }, leftArgument, rightArgument, double.NaN) { }
+            : base(BuiltInUri, leftArgument, rightArgument, double.NaN) { }
         #endregion
 
         #region Interfaces
@@ -46,10 +46,10 @@ namespace RDFSharp.Semantics
             StringBuilder sb = new StringBuilder();
 
             //Predicate
-            sb.Append(RDFModelUtilities.GetShortUri(((RDFResource)this.Predicate.Value).URI));
+            sb.Append(RDFModelUtilities.GetShortUri(Predicate.URI));
 
             //Arguments
-            sb.Append($"({this.LeftArgument},{this.RightArgument})");
+            sb.Append($"({LeftArgument},{RightArgument})");
 
             return sb.ToString();
         }

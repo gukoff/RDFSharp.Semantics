@@ -18,7 +18,7 @@ using System.Text.RegularExpressions;
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// OWLReasonerRuleContainsBuiltIn represents a built-in of type swrlb:contains
+    /// OWLReasonerRuleContainsBuiltIn represents a SWRL built-in filtering inferences of a rule's antecedent on a swrlb:contains basis
     /// </summary>
     public class OWLReasonerRuleContainsBuiltIn : OWLReasonerRuleFilterBuiltIn
     {
@@ -26,7 +26,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Represents the Uri of the built-in (swrlb:contains)
         /// </summary>
-        private static RDFResource BuiltInUri = new RDFResource($"swrlb:contains");
+        private static readonly RDFResource BuiltInUri = new RDFResource("swrlb:contains");
         #endregion
 
         #region Ctors
@@ -34,15 +34,13 @@ namespace RDFSharp.Semantics
         /// Default-ctor to build a swrlb:contains built-in with given arguments
         /// </summary>
         public OWLReasonerRuleContainsBuiltIn(RDFVariable leftArgument, string containString)
-            : base(new OWLOntologyResource() { Value = BuiltInUri }, leftArgument, null)
+            : base(BuiltInUri, leftArgument, null)
         {
             if (containString == null)
-                throw new OWLSemanticsException("Cannot create built-in because given \"endString\" parameter is null.");
+                throw new OWLSemanticsException("Cannot create swrlb:contains built-in because given \"containString\" parameter is null.");
 
-            //For printing, this built-in requires simulation of the right argument as plain literal
-            this.RightArgument = new OWLOntologyLiteral(new RDFPlainLiteral(containString));
-
-            this.BuiltInFilter = new RDFRegexFilter(leftArgument, new Regex($"{containString}"));
+            RightArgument = new RDFPlainLiteral(containString);
+            BuiltInFilter = new RDFRegexFilter(leftArgument, new Regex($"{containString}"));
         }
         #endregion
     }

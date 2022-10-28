@@ -18,7 +18,7 @@ using System.Text.RegularExpressions;
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// OWLReasonerRuleContainsIgnoreCaseBuiltIn represents a built-in of type swrlb:containsIgnoreCase
+    /// OWLReasonerRuleContainsIgnoreCaseBuiltIn represents a SWRL built-in filtering inferences of a rule's antecedent on a swrlb:containsIgnoreCase basis
     /// </summary>
     public class OWLReasonerRuleContainsIgnoreCaseBuiltIn : OWLReasonerRuleFilterBuiltIn
     {
@@ -26,7 +26,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Represents the Uri of the built-in (swrlb:containsIgnoreCase)
         /// </summary>
-        private static RDFResource BuiltInUri = new RDFResource($"swrlb:containsIgnoreCase");
+        private static readonly RDFResource BuiltInUri = new RDFResource("swrlb:containsIgnoreCase");
         #endregion
 
         #region Ctors
@@ -34,15 +34,13 @@ namespace RDFSharp.Semantics
         /// Default-ctor to build a swrlb:containsIgnoreCase built-in with given arguments
         /// </summary>
         public OWLReasonerRuleContainsIgnoreCaseBuiltIn(RDFVariable leftArgument, string containString)
-            : base(new OWLOntologyResource() { Value = BuiltInUri }, leftArgument, null)
+            : base(BuiltInUri, leftArgument, null)
         {
             if (containString == null)
-                throw new OWLSemanticsException("Cannot create built-in because given \"endString\" parameter is null.");
+                throw new OWLSemanticsException("Cannot create swrlb:containsIgnoreCase built-in because given \"containString\" parameter is null.");
 
-            //For printing, this built-in requires simulation of the right argument as plain literal
-            this.RightArgument = new OWLOntologyLiteral(new RDFPlainLiteral(containString));
-
-            this.BuiltInFilter = new RDFRegexFilter(leftArgument, new Regex($"{containString}", RegexOptions.IgnoreCase));
+            RightArgument = new RDFPlainLiteral(containString);
+            BuiltInFilter = new RDFRegexFilter(leftArgument, new Regex($"{containString}", RegexOptions.IgnoreCase));
         }
         #endregion
     }
