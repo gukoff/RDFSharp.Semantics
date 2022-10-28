@@ -25,7 +25,7 @@ using System.Text;
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// OWLReasonerRuleFilterBuiltIn represents a predefined kind of math-based atom filtering inferences of a rule's antecedent
+    /// OWLReasonerRuleMathBuiltIn represents a specific category of SWRL built-in filtering inferences of a rule's antecedent on a mathematical basis
     /// </summary>
     public abstract class OWLReasonerRuleMathBuiltIn : OWLReasonerRuleBuiltIn
     {
@@ -38,27 +38,27 @@ namespace RDFSharp.Semantics
 
         #region Ctors
         /// <summary>
-        /// Default-ctor to build a built-in with given predicate and arguments
+        /// Default-ctor to build a SWRL built-in with given predicate and arguments
         /// </summary>
-        internal OWLReasonerRuleMathBuiltIn(OWLOntologyResource predicate, RDFPatternMember leftArgument, RDFPatternMember rightArgument, double mathValue)
+        internal OWLReasonerRuleMathBuiltIn(RDFResource predicate, RDFPatternMember leftArgument, RDFPatternMember rightArgument, double mathValue)
             : base(predicate, leftArgument, rightArgument)
-                => this.MathValue = mathValue;
+                => MathValue = mathValue;
         #endregion
 
         #region Interfaces
         /// <summary>
-        /// Gives the string representation of the built-in
+        /// Gives the string representation of the SWRL built-in
         /// </summary>
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
 
             //Predicate
-            sb.Append(RDFModelUtilities.GetShortUri(((RDFResource)this.Predicate.Value).URI));
+            sb.Append(RDFModelUtilities.GetShortUri(Predicate.URI));
 
             //Arguments
-            RDFTypedLiteral addValueTypedLiteral = new RDFTypedLiteral(this.MathValue.ToString(), RDFModelEnums.RDFDatatypes.XSD_DOUBLE);
-            sb.Append($"({this.LeftArgument},{this.RightArgument},{RDFQueryPrinter.PrintPatternMember(addValueTypedLiteral, RDFNamespaceRegister.Instance.Register)})");
+            RDFTypedLiteral mathValueTypedLiteral = new RDFTypedLiteral(MathValue.ToString(), RDFModelEnums.RDFDatatypes.XSD_DOUBLE);
+            sb.Append($"({LeftArgument},{RightArgument},{RDFQueryPrinter.PrintPatternMember(mathValueTypedLiteral, RDFNamespaceRegister.Instance.Register)})");
 
             return sb.ToString();
         }
@@ -66,19 +66,21 @@ namespace RDFSharp.Semantics
 
         #region Methods
         /// <summary>
-        /// Evaluates the built-in in the context of the given antecedent results
+        /// Evaluates the SWRL built-in in the context of the given antecedent results
         /// </summary>
-        internal override DataTable Evaluate(DataTable antecedentResults, OWLOntology ontology, OWLOntologyReasonerOptions options)
+        internal override DataTable Evaluate(DataTable antecedentResults, OWLOntology ontology)
         {
             DataTable filteredTable = antecedentResults.Clone();
 
+            #region Guards
             //Preliminary checks for built-in's applicability (requires arguments to be well-known variables)
-            string leftArgumentString = this.LeftArgument.ToString();
+            string leftArgumentString = LeftArgument.ToString();
             if (!antecedentResults.Columns.Contains(leftArgumentString))
                 return filteredTable;
-            string rightArgumentString = this.RightArgument.ToString();
+            string rightArgumentString = RightArgument.ToString();
             if (!antecedentResults.Columns.Contains(rightArgumentString))
                 return filteredTable;
+            #endregion
 
             //Iterate the rows of the antecedent result table
             IEnumerator rowsEnum = antecedentResults.Rows.GetEnumerator();
@@ -97,9 +99,9 @@ namespace RDFSharp.Semantics
 
                     //Check compatibility of pattern members with the built-in (requires numeric typed literals)
                     if (leftArgumentPMember is RDFTypedLiteral leftArgumentTypedLiteral
-                            && leftArgumentTypedLiteral.HasDecimalDatatype()
-                                && rightArgumentPMember is RDFTypedLiteral rightArgumentTypedLiteral
-                                    && rightArgumentTypedLiteral.HasDecimalDatatype())
+                         && leftArgumentTypedLiteral.HasDecimalDatatype()
+                          && rightArgumentPMember is RDFTypedLiteral rightArgumentTypedLiteral
+                           && rightArgumentTypedLiteral.HasDecimalDatatype())
                     {
                         if (double.TryParse(leftArgumentTypedLiteral.Value, NumberStyles.Float, CultureInfo.InvariantCulture, out double leftArgumentNumericValue)
                                 && double.TryParse(rightArgumentTypedLiteral.Value, NumberStyles.Float, CultureInfo.InvariantCulture, out double rightArgumentNumericValue))
@@ -107,15 +109,15 @@ namespace RDFSharp.Semantics
                             //Execute the built-in's comparison logics
                             bool keepRow = false;
                             if (this is OWLReasonerRuleAddBuiltIn)
-                                keepRow = (leftArgumentNumericValue == rightArgumentNumericValue + this.MathValue);
+                                keepRow = (leftArgumentNumericValue == rightArgumentNumericValue + MathValue);
                             else if (this is OWLReasonerRuleSubtractBuiltIn)
-                                keepRow = (leftArgumentNumericValue == rightArgumentNumericValue - this.MathValue);
+                                keepRow = (leftArgumentNumericValue == rightArgumentNumericValue - MathValue);
                             else if (this is OWLReasonerRuleMultiplyBuiltIn)
-                                keepRow = (leftArgumentNumericValue == rightArgumentNumericValue * this.MathValue);
+                                keepRow = (leftArgumentNumericValue == rightArgumentNumericValue * MathValue);
                             else if (this is OWLReasonerRuleDivideBuiltIn)
-                                keepRow = (leftArgumentNumericValue == rightArgumentNumericValue / this.MathValue);
+                                keepRow = (leftArgumentNumericValue == rightArgumentNumericValue / MathValue);
                             else if (this is OWLReasonerRulePowBuiltIn)
-                                keepRow = (leftArgumentNumericValue == Math.Pow(rightArgumentNumericValue, this.MathValue));
+                                keepRow = (leftArgumentNumericValue == Math.Pow(rightArgumentNumericValue, MathValue));
                             else if (this is OWLReasonerRuleAbsBuiltIn)
                                 keepRow = (leftArgumentNumericValue == Math.Abs(rightArgumentNumericValue));
                             else if (this is OWLReasonerRuleFloorBuiltIn)

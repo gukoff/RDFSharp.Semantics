@@ -14,6 +14,7 @@
    limitations under the License.
 */
 
+using RDFSharp.Model;
 using RDFSharp.Query;
 using System.Collections;
 using System.Data;
@@ -21,30 +22,30 @@ using System.Data;
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// OWLReasonerRuleFilterBuiltIn represents a predefined kind of filter-based atom filtering inferences of a rule's antecedent
+    /// OWLReasonerRuleFilterBuiltIn represents a specific category of SWRL built-in filtering inferences of a rule's antecedent on a string basis
     /// </summary>
     public abstract class OWLReasonerRuleFilterBuiltIn : OWLReasonerRuleBuiltIn
     {
         #region Properties
         /// <summary>
-        /// Represents the built-in equivalent SPARQL filter
+        /// Represents the SWRL built-in equivalent SPARQL filter
         /// </summary>
         internal RDFFilter BuiltInFilter { get; set; }
         #endregion
 
         #region Ctors
         /// <summary>
-        /// Default-ctor to build a built-in with given predicate and arguments
+        /// Default-ctor to build a SWRL built-in with given predicate and arguments
         /// </summary>
-        internal OWLReasonerRuleFilterBuiltIn(OWLOntologyResource predicate, RDFPatternMember leftArgument, RDFPatternMember rightArgument)
+        internal OWLReasonerRuleFilterBuiltIn(RDFResource predicate, RDFPatternMember leftArgument, RDFPatternMember rightArgument)
             : base(predicate, leftArgument, rightArgument) { }
         #endregion
 
         #region Methods
         /// <summary>
-        /// Evaluates the built-in in the context of the given antecedent results
+        /// Evaluates the SWRL built-in in the context of the given antecedent results
         /// </summary>
-        internal override DataTable Evaluate(DataTable antecedentResults, OWLOntology ontology, OWLOntologyReasonerOptions options)
+        internal override DataTable Evaluate(DataTable antecedentResults, OWLOntology ontology)
         {
             DataTable filteredTable = antecedentResults.Clone();
             IEnumerator rowsEnum = antecedentResults.Rows.GetEnumerator();
@@ -53,7 +54,7 @@ namespace RDFSharp.Semantics
             while (rowsEnum.MoveNext())
             {
                 //Apply the built-in filter on the row
-                bool keepRow = this.BuiltInFilter.ApplyFilter((DataRow)rowsEnum.Current, false);
+                bool keepRow = BuiltInFilter.ApplyFilter((DataRow)rowsEnum.Current, false);
 
                 //If the row has passed the filter, keep it in the filtered result table
                 if (keepRow)
