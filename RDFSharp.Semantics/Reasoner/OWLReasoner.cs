@@ -90,6 +90,15 @@ namespace RDFSharp.Semantics
                             case OWLSemanticsEnums.OWLReasonerStandardRules.SubClassTransitivity:
                                 standardRuleReport.MergeEvidences(OWLSubClassTransitivityRule.ExecuteRule(ontology));
                                 break;
+                            case OWLSemanticsEnums.OWLReasonerStandardRules.SubPropertyTransitivity:
+                                standardRuleReport.MergeEvidences(OWLSubPropertyTransitivityRule.ExecuteRule(ontology));
+                                break;
+                            case OWLSemanticsEnums.OWLReasonerStandardRules.EquivalentClassTransitivity:
+                                //TODO
+                                break;
+                            case OWLSemanticsEnums.OWLReasonerStandardRules.EquivalentPropertyTransitivity:
+                                //TODO
+                                break;
                         }
                         reasonerReport.MergeEvidences(standardRuleReport);
 

@@ -24,24 +24,29 @@ namespace RDFSharp.Semantics
     {
         internal static OWLReasonerReport ExecuteRule(OWLOntology ontology)
         {
+            #region RuleBody
+            void InferSuperClasses(RDFResource currentClass, OWLReasonerReport report)
+            {
+                List<RDFResource> superClasses = ontology.Model.ClassModel.GetSuperClassesOf(currentClass);
+                foreach (RDFResource superClass in superClasses)
+                {
+                    //Create the inference
+                    OWLReasonerEvidence evidence = new OWLReasonerEvidence(OWLSemanticsEnums.OWLReasonerEvidenceCategory.ClassModel,
+                        nameof(OWLSubClassTransitivityRule), new RDFTriple(currentClass, RDFVocabulary.RDFS.SUB_CLASS_OF, superClass));
+
+                    //Add the inference to the report
+                    if (!ontology.Model.ClassModel.TBoxGraph.ContainsTriple(evidence.EvidenceContent))
+                        report.AddEvidence(evidence);
+                }
+            }
+            #endregion
+
             OWLReasonerReport reasonerRuleReport = new OWLReasonerReport();
 
             //owl:Class
             IEnumerator<RDFResource> classesEnumerator = ontology.Model.ClassModel.ClassesEnumerator;
             while (classesEnumerator.MoveNext())
-            {
-                List<RDFResource> superClasses = ontology.Model.ClassModel.GetSuperClassesOf(classesEnumerator.Current);
-                foreach (RDFResource superClass in superClasses)
-                {
-                    //Create the inference
-                    OWLReasonerEvidence evidence = new OWLReasonerEvidence(OWLSemanticsEnums.OWLReasonerEvidenceCategory.ClassModel,
-                        nameof(OWLSubClassTransitivityRule), new RDFTriple(classesEnumerator.Current, RDFVocabulary.RDFS.SUB_CLASS_OF, superClass));
-
-                    //Add the inference to the report
-                    if (!ontology.Model.ClassModel.TBoxGraph.ContainsTriple(evidence.EvidenceContent))
-                        reasonerRuleReport.AddEvidence(evidence);
-                }
-            }
+                InferSuperClasses(classesEnumerator.Current, reasonerRuleReport);
 
             return reasonerRuleReport;
         }

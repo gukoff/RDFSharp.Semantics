@@ -130,7 +130,19 @@ namespace RDFSharp.Semantics
             /// <summary>
             /// This OWL-DL rule targets class model knowledge (T-BOX) to navigate rdfs:subClassOf hierarchy
             /// </summary>
-            SubClassTransitivity = 1
+            SubClassTransitivity = 1,
+            /// <summary>
+            /// This OWL-DL rule targets property model knowledge (T-BOX) to navigate rdfs:subPropertyOf hierarchy
+            /// </summary>
+            SubPropertyTransitivity = 2,
+            /// <summary>
+            /// This OWL-DL rule targets class model knowledge (T-BOX) to navigate owl:equivalentClass hierarchy
+            /// </summary>
+            EquivalentClassTransitivity = 3,
+            /// <summary>
+            /// This OWL-DL rule targets property model knowledge (T-BOX) to navigate owl:equivalentProperty hierarchy
+            /// </summary>
+            EquivalentPropertyTransitivity = 4,
         };
     }
 }
