@@ -237,6 +237,7 @@ namespace RDFSharp.Semantics
             if (owlClassBehavior == null)
                 owlClassBehavior = new OWLOntologyClassBehavior();
 
+            //Declare class to the model
             if (!Classes.ContainsKey(owlClass.PatternMemberID))
                 Classes.Add(owlClass.PatternMemberID, owlClass);
 
