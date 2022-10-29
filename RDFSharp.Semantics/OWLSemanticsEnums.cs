@@ -127,7 +127,10 @@ namespace RDFSharp.Semantics
         /// </summary>
         public enum OWLReasonerStandardRules
         {
-
+            /// <summary>
+            /// This OWL-DL rule targets class model knowledge (T-BOX) to navigate rdfs:subClassOf hierarchy
+            /// </summary>
+            SubClassTransitivity = 1
         };
     }
 }

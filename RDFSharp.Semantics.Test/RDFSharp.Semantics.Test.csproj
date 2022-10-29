@@ -25,6 +25,5 @@
 	<ItemGroup>
 	  <Folder Include="Reasoner\Algebra\Atoms\" />
 	  <Folder Include="Reasoner\Algebra\Built-Ins\" />
-	  <Folder Include="Reasoner\Rules\" />
 	</ItemGroup>
 </Project>

@@ -87,8 +87,9 @@ namespace RDFSharp.Semantics
                         OWLReasonerReport standardRuleReport = new OWLReasonerReport();
                         switch (standardRule)
                         {
-                            //TODO
-
+                            case OWLSemanticsEnums.OWLReasonerStandardRules.SubClassTransitivity:
+                                standardRuleReport.MergeEvidences(OWLSubClassTransitivityRule.ExecuteRule(ontology));
+                                break;
                         }
                         reasonerReport.MergeEvidences(standardRuleReport);
 
