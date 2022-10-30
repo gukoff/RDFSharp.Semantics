@@ -17,23 +17,23 @@ using System.Collections.Generic;
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// OWL-DL reasoner rule targeting class model knowledge (T-BOX) to navigate owl:equivalentClass relations
+    /// OWL-DL reasoner rule targeting class model knowledge (T-BOX) to navigate owl:disjointWith relations
     /// </summary>
-    internal static class OWLEquivalentClassTransitivityRule
+    internal static class OWLDisjointClassEntailmentRule
     {
         internal static OWLReasonerReport ExecuteRule(OWLOntology ontology)
         {
             #region RuleBody
-            void InferEquivalentClasses(RDFResource currentClass, OWLReasonerReport report)
+            void InferDisjointClasses(RDFResource currentClass, OWLReasonerReport report)
             {
-                List<RDFResource> equivalentClasses = ontology.Model.ClassModel.GetEquivalentClassesOf(currentClass);
-                foreach (RDFResource equivalentClass in equivalentClasses)
+                List<RDFResource> disjointClasses = ontology.Model.ClassModel.GetDisjointClassesWith(currentClass);
+                foreach (RDFResource disjointClass in disjointClasses)
                 {
                     //Create the inferences
                     OWLReasonerEvidence evidenceA = new OWLReasonerEvidence(OWLSemanticsEnums.OWLReasonerEvidenceCategory.ClassModel,
-                        nameof(OWLEquivalentClassTransitivityRule), new RDFTriple(currentClass, RDFVocabulary.OWL.EQUIVALENT_CLASS, equivalentClass));
+                        nameof(OWLDisjointClassEntailmentRule), new RDFTriple(currentClass, RDFVocabulary.OWL.DISJOINT_WITH, disjointClass));
                     OWLReasonerEvidence evidenceB = new OWLReasonerEvidence(OWLSemanticsEnums.OWLReasonerEvidenceCategory.ClassModel,
-                        nameof(OWLEquivalentClassTransitivityRule), new RDFTriple(equivalentClass, RDFVocabulary.OWL.EQUIVALENT_CLASS, currentClass));
+                        nameof(OWLDisjointClassEntailmentRule), new RDFTriple(disjointClass, RDFVocabulary.OWL.DISJOINT_WITH, currentClass));
 
                     //Add the inferences to the report
                     if (!ontology.Model.ClassModel.TBoxGraph.ContainsTriple(evidenceA.EvidenceContent))
@@ -49,7 +49,7 @@ namespace RDFSharp.Semantics
             //owl:Class
             IEnumerator<RDFResource> classesEnumerator = ontology.Model.ClassModel.ClassesEnumerator;
             while (classesEnumerator.MoveNext())
-                InferEquivalentClasses(classesEnumerator.Current, reasonerRuleReport);
+                InferDisjointClasses(classesEnumerator.Current, reasonerRuleReport);
 
             return reasonerRuleReport;
         }

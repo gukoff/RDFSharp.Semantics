@@ -99,6 +99,12 @@ namespace RDFSharp.Semantics
                             case OWLSemanticsEnums.OWLReasonerStandardRules.EquivalentPropertyTransitivity:
                                 standardRuleReport.MergeEvidences(OWLEquivalentPropertyTransitivityRule.ExecuteRule(ontology));
                                 break;
+                            case OWLSemanticsEnums.OWLReasonerStandardRules.DisjointClassEntailment:
+                                standardRuleReport.MergeEvidences(OWLDisjointClassEntailmentRule.ExecuteRule(ontology));
+                                break;
+                            case OWLSemanticsEnums.OWLReasonerStandardRules.DisjointPropertyEntailment:
+                                standardRuleReport.MergeEvidences(OWLDisjointPropertyEntailmentRule.ExecuteRule(ontology));
+                                break;
                         }
                         reasonerReport.MergeEvidences(standardRuleReport);
 

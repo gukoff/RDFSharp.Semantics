@@ -17,23 +17,23 @@ using System.Collections.Generic;
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// OWL-DL reasoner rule targeting property model knowledge (T-BOX) to navigate owl:equivalentProperty relations
+    /// OWL2 reasoner rule targeting property model knowledge (T-BOX) to navigate owl:propertyDisjointWith relations
     /// </summary>
-    internal static class OWLEquivalentPropertyTransitivityRule
+    internal static class OWLDisjointPropertyEntailmentRule
     {
         internal static OWLReasonerReport ExecuteRule(OWLOntology ontology)
         {
             #region RuleBody
-            void InferEquivalentProperties(RDFResource currentProperty, OWLReasonerReport report)
+            void InferDisjointProperties(RDFResource currentProperty, OWLReasonerReport report)
             {
-                List<RDFResource> equivalentProperties = ontology.Model.PropertyModel.GetEquivalentPropertiesOf(currentProperty);
-                foreach (RDFResource equivalentProperty in equivalentProperties)
+                List<RDFResource> disjointProperties = ontology.Model.PropertyModel.GetDisjointPropertiesWith(currentProperty);
+                foreach (RDFResource disjointProperty in disjointProperties)
                 {
                     //Create the inferences
                     OWLReasonerEvidence evidenceA = new OWLReasonerEvidence(OWLSemanticsEnums.OWLReasonerEvidenceCategory.PropertyModel,
-                        nameof(OWLEquivalentPropertyTransitivityRule), new RDFTriple(currentProperty, RDFVocabulary.OWL.EQUIVALENT_PROPERTY, equivalentProperty));
+                        nameof(OWLDisjointPropertyEntailmentRule), new RDFTriple(currentProperty, RDFVocabulary.OWL.PROPERTY_DISJOINT_WITH, disjointProperty));
                     OWLReasonerEvidence evidenceB = new OWLReasonerEvidence(OWLSemanticsEnums.OWLReasonerEvidenceCategory.PropertyModel,
-                        nameof(OWLEquivalentPropertyTransitivityRule), new RDFTriple(equivalentProperty, RDFVocabulary.OWL.EQUIVALENT_PROPERTY, currentProperty));
+                        nameof(OWLDisjointPropertyEntailmentRule), new RDFTriple(disjointProperty, RDFVocabulary.OWL.PROPERTY_DISJOINT_WITH, currentProperty));
 
                     //Add the inferences to the report
                     if (!ontology.Model.PropertyModel.TBoxGraph.ContainsTriple(evidenceA.EvidenceContent))
@@ -49,12 +49,12 @@ namespace RDFSharp.Semantics
             //owl:ObjectProperty
             IEnumerator<RDFResource> objectPropertiesEnumerator = ontology.Model.PropertyModel.ObjectPropertiesEnumerator;
             while (objectPropertiesEnumerator.MoveNext())
-                InferEquivalentProperties(objectPropertiesEnumerator.Current, reasonerRuleReport);
+                InferDisjointProperties(objectPropertiesEnumerator.Current, reasonerRuleReport);
 
             //owl:DatatypeProperty
             IEnumerator<RDFResource> datatypePropertiesEnumerator = ontology.Model.PropertyModel.DatatypePropertiesEnumerator;
             while (datatypePropertiesEnumerator.MoveNext())
-                InferEquivalentProperties(datatypePropertiesEnumerator.Current, reasonerRuleReport);
+                InferDisjointProperties(datatypePropertiesEnumerator.Current, reasonerRuleReport);
 
             return reasonerRuleReport;
         }
