@@ -105,6 +105,18 @@ namespace RDFSharp.Semantics
                             case OWLSemanticsEnums.OWLReasonerStandardRules.DisjointPropertyEntailment:
                                 standardRuleReport.MergeEvidences(OWLDisjointPropertyEntailmentRule.ExecuteRule(ontology));
                                 break;
+                            case OWLSemanticsEnums.OWLReasonerStandardRules.DomainEntailment:
+                                standardRuleReport.MergeEvidences(OWLDomainEntailmentRule.ExecuteRule(ontology));
+                                break;
+                            case OWLSemanticsEnums.OWLReasonerStandardRules.RangeEntailment:
+                                //TODO
+                                break;
+                            case OWLSemanticsEnums.OWLReasonerStandardRules.SameAsTransitivity:
+                                //TODO
+                                break;
+                            case OWLSemanticsEnums.OWLReasonerStandardRules.DifferentFromEntailment:
+                                //TODO
+                                break;
                         }
                         reasonerReport.MergeEvidences(standardRuleReport);
 

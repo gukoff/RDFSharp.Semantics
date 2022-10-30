@@ -151,6 +151,22 @@ namespace RDFSharp.Semantics
             /// This OWL2 rule targets property model knowledge (T-BOX) to navigate owl:propertyDisjointWith relations
             /// </summary>
             DisjointPropertyEntailment = 6,
+            /// <summary>
+            /// This RDFS rule targets data knowledge (A-BOX) to infer individual types from rdfs:domain relations
+            /// </summary>
+            DomainEntailment = 7,
+            /// <summary>
+            /// This RDFS rule targets data knowledge (A-BOX) to infer individual types from rdfs:range relations
+            /// </summary>
+            RangeEntailment = 8,
+            /// <summary>
+            /// This OWL-DL rule targets data knowledge (A-BOX) to navigate owl:sameAs relations
+            /// </summary>
+            SameAsTransitivity = 9,
+            /// <summary>
+            /// This OWL-DL rule targets data knowledge (A-BOX) to navigate owl:differentFrom relations
+            /// </summary>
+            DifferentFromEntailment = 10,
         };
     }
 }
