@@ -14,6 +14,7 @@
 using RDFSharp.Model;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace RDFSharp.Semantics
@@ -81,7 +82,11 @@ namespace RDFSharp.Semantics
             if (evidence != null)
             {
                 lock (SyncLock)
-                    Evidences.Add(evidence);
+                {
+                    if (!Evidences.Any(evd => evd.EvidenceCategory == evidence.EvidenceCategory 
+                                                && evd.EvidenceContent.TripleID == evidence.EvidenceContent.TripleID))
+                        Evidences.Add(evidence);
+                }   
             }
             return this;
         }
@@ -91,8 +96,9 @@ namespace RDFSharp.Semantics
         /// </summary>
         internal OWLReasonerReport MergeEvidences(OWLReasonerReport report)
         {
-            lock (SyncLock)
-                Evidences.AddRange(report.Evidences);
+            foreach (OWLReasonerEvidence evidence in report)
+                AddEvidence(evidence);
+                
             return this;
         }
 
