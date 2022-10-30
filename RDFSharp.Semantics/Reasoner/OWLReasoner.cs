@@ -109,7 +109,7 @@ namespace RDFSharp.Semantics
                                 standardRuleReport.MergeEvidences(OWLDomainEntailmentRule.ExecuteRule(ontology));
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.RangeEntailment:
-                                //TODO
+                                standardRuleReport.MergeEvidences(OWLRangeEntailmentRule.ExecuteRule(ontology));
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.SameAsTransitivity:
                                 //TODO
