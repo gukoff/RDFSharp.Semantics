@@ -171,6 +171,10 @@ namespace RDFSharp.Semantics
             /// This OWL-DL rule targets data knowledge (A-BOX) to reason over rdf:type relations
             /// </summary>
             IndividualTypeEntailment = 11,
+            /// <summary>
+            /// This OWL-DL rule targets data knowledge (A-BOX) to reason over symmetric object assertions
+            /// </summary>
+            SymmetricPropertyEntailment = 12,
         };
     }
 }
