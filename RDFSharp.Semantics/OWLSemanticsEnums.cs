@@ -179,6 +179,10 @@ namespace RDFSharp.Semantics
             /// This OWL-DL rule targets data knowledge (A-BOX) to reason over transitive object assertions
             /// </summary>
             TransitivePropertyEntailment = 13,
+            /// <summary>
+            /// This OWL2 rule targets data knowledge (A-BOX) to reason over reflexive object assertions
+            /// </summary>
+            ReflexivePropertyEntailment = 14,
         };
     }
 }
