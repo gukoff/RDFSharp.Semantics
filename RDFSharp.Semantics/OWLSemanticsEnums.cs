@@ -175,6 +175,10 @@ namespace RDFSharp.Semantics
             /// This OWL-DL rule targets data knowledge (A-BOX) to reason over symmetric object assertions
             /// </summary>
             SymmetricPropertyEntailment = 12,
+            /// <summary>
+            /// This OWL-DL rule targets data knowledge (A-BOX) to reason over transitive object assertions
+            /// </summary>
+            TransitivePropertyEntailment = 13,
         };
     }
 }
