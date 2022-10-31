@@ -112,10 +112,10 @@ namespace RDFSharp.Semantics
                                 standardRuleReport.MergeEvidences(OWLRangeEntailmentRule.ExecuteRule(ontology));
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.SameAsTransitivity:
-                                //TODO
+                                standardRuleReport.MergeEvidences(OWLSameAsTransitivityRule.ExecuteRule(ontology));
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.DifferentFromEntailment:
-                                //TODO
+                                standardRuleReport.MergeEvidences(OWLDifferentFromEntailmentRule.ExecuteRule(ontology));
                                 break;
                         }
                         reasonerReport.MergeEvidences(standardRuleReport);

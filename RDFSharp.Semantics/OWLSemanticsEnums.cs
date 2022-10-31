@@ -128,27 +128,27 @@ namespace RDFSharp.Semantics
         public enum OWLReasonerStandardRules
         {
             /// <summary>
-            /// This OWL-DL rule targets class model knowledge (T-BOX) to navigate rdfs:subClassOf hierarchy
+            /// This OWL-DL rule targets class model knowledge (T-BOX) to reason over rdfs:subClassOf hierarchy
             /// </summary>
             SubClassTransitivity = 1,
             /// <summary>
-            /// This OWL-DL rule targets property model knowledge (T-BOX) to navigate rdfs:subPropertyOf hierarchy
+            /// This OWL-DL rule targets property model knowledge (T-BOX) to reason over rdfs:subPropertyOf hierarchy
             /// </summary>
             SubPropertyTransitivity = 2,
             /// <summary>
-            /// This OWL-DL rule targets class model knowledge (T-BOX) to navigate owl:equivalentClass relations
+            /// This OWL-DL rule targets class model knowledge (T-BOX) to reason over owl:equivalentClass relations
             /// </summary>
             EquivalentClassTransitivity = 3,
             /// <summary>
-            /// This OWL-DL rule targets property model knowledge (T-BOX) to navigate owl:equivalentProperty relations
+            /// This OWL-DL rule targets property model knowledge (T-BOX) to reason over owl:equivalentProperty relations
             /// </summary>
             EquivalentPropertyTransitivity = 4,
             /// <summary>
-            /// This OWL-DL rule targets class model knowledge (T-BOX) to navigate owl:disjointWith relations
+            /// This OWL-DL rule targets class model knowledge (T-BOX) to reason over owl:disjointWith relations
             /// </summary>
             DisjointClassEntailment = 5,
             /// <summary>
-            /// This OWL2 rule targets property model knowledge (T-BOX) to navigate owl:propertyDisjointWith relations
+            /// This OWL2 rule targets property model knowledge (T-BOX) to reason over owl:propertyDisjointWith relations
             /// </summary>
             DisjointPropertyEntailment = 6,
             /// <summary>
@@ -160,11 +160,11 @@ namespace RDFSharp.Semantics
             /// </summary>
             RangeEntailment = 8,
             /// <summary>
-            /// This OWL-DL rule targets data knowledge (A-BOX) to navigate owl:sameAs relations
+            /// This OWL-DL rule targets data knowledge (A-BOX) to reason over owl:sameAs relations
             /// </summary>
             SameAsTransitivity = 9,
             /// <summary>
-            /// This OWL-DL rule targets data knowledge (A-BOX) to navigate owl:differentFrom relations
+            /// This OWL-DL rule targets data knowledge (A-BOX) to reason over owl:differentFrom relations
             /// </summary>
             DifferentFromEntailment = 10,
         };
