@@ -17,7 +17,7 @@ using System.Collections.Generic;
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// OWL-DL reasoner rule targeting class model knowledge (T-BOX) to navigate owl:disjointWith relations
+    /// OWL-DL reasoner rule targeting class model knowledge (T-BOX) to reason over owl:disjointWith relations
     /// </summary>
     internal static class OWLDisjointClassEntailmentRule
     {

@@ -17,7 +17,7 @@ using System.Collections.Generic;
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// OWL-DL reasoner rule targeting property model knowledge (T-BOX) to navigate rdfs:subPropertyOf hierarchy
+    /// OWL-DL reasoner rule targeting property model knowledge (T-BOX) to reason over rdfs:subPropertyOf hierarchy
     /// </summary>
     internal static class OWLSubPropertyTransitivityRule
     {

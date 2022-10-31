@@ -167,6 +167,10 @@ namespace RDFSharp.Semantics
             /// This OWL-DL rule targets data knowledge (A-BOX) to reason over owl:differentFrom relations
             /// </summary>
             DifferentFromEntailment = 10,
+            /// <summary>
+            /// This OWL-DL rule targets data knowledge (A-BOX) to reason over rdf:type relations
+            /// </summary>
+            IndividualTypeEntailment = 11,
         };
     }
 }

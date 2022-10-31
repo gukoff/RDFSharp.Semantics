@@ -117,6 +117,9 @@ namespace RDFSharp.Semantics
                             case OWLSemanticsEnums.OWLReasonerStandardRules.DifferentFromEntailment:
                                 standardRuleReport.MergeEvidences(OWLDifferentFromEntailmentRule.ExecuteRule(ontology));
                                 break;
+                            case OWLSemanticsEnums.OWLReasonerStandardRules.IndividualTypeEntailment:
+                                standardRuleReport.MergeEvidences(OWLIndividualTypeEntailmentRule.ExecuteRule(ontology));
+                                break;
                         }
                         reasonerReport.MergeEvidences(standardRuleReport);
 

@@ -13,29 +13,28 @@
 
 using RDFSharp.Model;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// OWL-DL reasoner rule targeting class model knowledge (T-BOX) to reason over rdfs:subClassOf hierarchy
+    /// OWL-DL reasoner rule targeting data knowledge (A-BOX) to reason over rdf:type relations
     /// </summary>
-    internal static class OWLSubClassTransitivityRule
+    internal static class OWLIndividualTypeEntailmentRule
     {
         internal static OWLReasonerReport ExecuteRule(OWLOntology ontology)
         {
             #region RuleBody
-            void InferSuperClasses(RDFResource currentClass, OWLReasonerReport report)
+            void InferClassIndividuals(RDFResource currentClass, OWLReasonerReport report)
             {
-                List<RDFResource> superClasses = ontology.Model.ClassModel.GetSuperClassesOf(currentClass);
-                foreach (RDFResource superClass in superClasses)
+                List<RDFResource> classIndividuals = ontology.Data.GetIndividualsOf(ontology.Model, currentClass);
+                foreach (RDFResource classIndividual in classIndividuals)
                 {
-                    //Create the inference
-                    OWLReasonerEvidence evidence = new OWLReasonerEvidence(OWLSemanticsEnums.OWLReasonerEvidenceCategory.ClassModel,
-                        nameof(OWLSubClassTransitivityRule), new RDFTriple(currentClass, RDFVocabulary.RDFS.SUB_CLASS_OF, superClass));
+                    //Create the inferences
+                    OWLReasonerEvidence evidence = new OWLReasonerEvidence(OWLSemanticsEnums.OWLReasonerEvidenceCategory.Data,
+                        nameof(OWLIndividualTypeEntailmentRule), new RDFTriple(classIndividual, RDFVocabulary.RDF.TYPE, currentClass));
 
-                    //Add the inference to the report
-                    if (!ontology.Model.ClassModel.TBoxGraph.ContainsTriple(evidence.EvidenceContent))
+                    //Add the inferences to the report
+                    if (!ontology.Data.ABoxGraph.ContainsTriple(evidence.EvidenceContent))
                         report.AddEvidence(evidence);
                 }
             }
@@ -46,7 +45,7 @@ namespace RDFSharp.Semantics
             //owl:Class
             IEnumerator<RDFResource> classesEnumerator = ontology.Model.ClassModel.ClassesEnumerator;
             while (classesEnumerator.MoveNext())
-                InferSuperClasses(classesEnumerator.Current, reasonerRuleReport);
+                InferClassIndividuals(classesEnumerator.Current, reasonerRuleReport);
 
             return reasonerRuleReport;
         }

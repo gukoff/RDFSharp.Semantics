@@ -17,7 +17,7 @@ using System.Collections.Generic;
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// OWL-DL reasoner rule targeting class model knowledge (T-BOX) to navigate owl:equivalentClass relations
+    /// OWL-DL reasoner rule targeting class model knowledge (T-BOX) to reason over owl:equivalentClass relations
     /// </summary>
     internal static class OWLEquivalentClassTransitivityRule
     {

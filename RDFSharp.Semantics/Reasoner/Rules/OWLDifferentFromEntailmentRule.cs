@@ -17,7 +17,7 @@ using System.Collections.Generic;
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// OWL-DL reasoner rule targeting data knowledge (A-BOX) to navigate owl:differentFrom relations
+    /// OWL-DL reasoner rule targeting data knowledge (A-BOX) to reason over owl:differentFrom relations
     /// </summary>
     internal static class OWLDifferentFromEntailmentRule
     {

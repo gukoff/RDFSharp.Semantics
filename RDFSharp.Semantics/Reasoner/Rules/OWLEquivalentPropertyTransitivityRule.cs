@@ -17,7 +17,7 @@ using System.Collections.Generic;
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// OWL-DL reasoner rule targeting property model knowledge (T-BOX) to navigate owl:equivalentProperty relations
+    /// OWL-DL reasoner rule targeting property model knowledge (T-BOX) to reason over owl:equivalentProperty relations
     /// </summary>
     internal static class OWLEquivalentPropertyTransitivityRule
     {
