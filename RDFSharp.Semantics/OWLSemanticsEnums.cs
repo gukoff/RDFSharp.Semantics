@@ -191,6 +191,10 @@ namespace RDFSharp.Semantics
             /// This OWL-DL rule targets data knowledge (A-BOX) to infer assertions from rdfs:subPropertyOf and owl:equivalentProperty hierarchies
             /// </summary>
             PropertyEntailment = 16,
+            /// <summary>
+            /// This OWL-DL rule targets data knowledge (A-BOX) to infer assertions from owl:sameAs hierarchy
+            /// </summary>
+            SameAsEntailment = 17,
         };
     }
 }
