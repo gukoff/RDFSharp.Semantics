@@ -129,6 +129,9 @@ namespace RDFSharp.Semantics
                             case OWLSemanticsEnums.OWLReasonerStandardRules.ReflexivePropertyEntailment:
                                 standardRuleReport.MergeEvidences(OWLReflexivePropertyEntailmentRule.ExecuteRule(ontology));
                                 break;
+                            case OWLSemanticsEnums.OWLReasonerStandardRules.InverseOfEntailment:
+                                standardRuleReport.MergeEvidences(OWLInverseOfEntailmentRule.ExecuteRule(ontology));
+                                break;
                         }
                         reasonerReport.MergeEvidences(standardRuleReport);
 

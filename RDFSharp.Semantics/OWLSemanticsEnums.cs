@@ -183,6 +183,10 @@ namespace RDFSharp.Semantics
             /// This OWL2 rule targets data knowledge (A-BOX) to reason over reflexive object assertions
             /// </summary>
             ReflexivePropertyEntailment = 14,
+            /// <summary>
+            /// This OWL-DL rule targets data knowledge (A-BOX) to reason over inverse object assertions
+            /// </summary>
+            InverseOfEntailment = 15,
         };
     }
 }
