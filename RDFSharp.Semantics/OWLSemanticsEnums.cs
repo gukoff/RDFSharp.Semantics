@@ -187,6 +187,10 @@ namespace RDFSharp.Semantics
             /// This OWL-DL rule targets data knowledge (A-BOX) to reason over inverse object assertions
             /// </summary>
             InverseOfEntailment = 15,
+            /// <summary>
+            /// This OWL-DL rule targets data knowledge (A-BOX) to infer assertions from rdfs:subPropertyOf and owl:equivalentProperty hierarchies
+            /// </summary>
+            PropertyEntailment = 16,
         };
     }
 }
