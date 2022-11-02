@@ -132,6 +132,9 @@ namespace RDFSharp.Semantics
                             case OWLSemanticsEnums.OWLValidatorStandardRules.LocalCardinality:
                                 standardRuleReport.MergeEvidences(OWLLocalCardinalityRule.ExecuteRule(ontology));
                                 break;
+                            case OWLSemanticsEnums.OWLValidatorStandardRules.PropertyConsistency:
+                                standardRuleReport.MergeEvidences(OWLPropertyConsistencyRule.ExecuteRule(ontology));
+                                break;
                         }
                         validatorReport.MergeEvidences(standardRuleReport);
 

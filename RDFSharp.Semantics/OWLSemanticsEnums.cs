@@ -100,7 +100,11 @@ namespace RDFSharp.Semantics
             /// <summary>
             /// This OWL-DL rule checks for consistency of local cardinality constraints
             /// </summary>
-            LocalCardinality = 15
+            LocalCardinality = 15,
+            /// <summary>
+            /// This OWL-DL rule checks for consistency of object and datatype properties
+            /// </summary>
+            PropertyConsistency = 16
         };
 
         /// <summary>
