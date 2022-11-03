@@ -39,7 +39,7 @@ namespace RDFSharp.Semantics
                     //Iterate calculated subclasses of the current hasValue restriction
                     foreach (RDFResource subClassOfHVRestriction in subClassesOfHVRestriction)
                     {
-                        //Calculate individual of the current subclass
+                        //Calculate individuals of the current subclass
                         List<RDFResource> subClassOfHVRestrictionMembers = ontology.Data.GetIndividualsOf(ontology.Model, subClassOfHVRestriction);
                         foreach (RDFResource subClassOfHVRestrictionMember in subClassOfHVRestrictionMembers)
                         {

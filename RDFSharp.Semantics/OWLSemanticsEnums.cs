@@ -203,6 +203,10 @@ namespace RDFSharp.Semantics
             /// This OWL-DL rule targets data knowledge (A-BOX) to infer assertions from owl:hasValue restrictions
             /// </summary>
             HasValueEntailment = 18,
+            /// <summary>
+            /// This OWL2 rule targets data knowledge (A-BOX) to infer assertions from owl:hasSelf restrictions
+            /// </summary>
+            HasSelfEntailment = 19,
         };
     }
 }
