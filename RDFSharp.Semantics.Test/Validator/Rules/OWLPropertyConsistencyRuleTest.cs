@@ -40,6 +40,28 @@ namespace RDFSharp.Semantics.Validator.Test
         }
 
         [TestMethod]
+        public void ShouldValidatePropertyConsistencyClashingOnHierarchy()
+        {
+            OWLOntology ontology = new OWLOntology("ex:ont");
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objprop1"));
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objprop2"));
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objprop3"));
+            ontology.Model.PropertyModel.DeclareDatatypeProperty(new RDFResource("ex:dtprop1"));
+            ontology.Model.PropertyModel.DeclareDatatypeProperty(new RDFResource("ex:dtprop2"));
+            ontology.Model.PropertyModel.DeclareDatatypeProperty(new RDFResource("ex:dtprop3"));
+            ontology.Model.PropertyModel.DeclareSubProperties(new RDFResource("ex:objprop1"), new RDFResource("ex:dtprop1"));
+            ontology.Model.PropertyModel.DeclareEquivalentProperties(new RDFResource("ex:objprop2"), new RDFResource("ex:dtprop2"));
+            ontology.Model.PropertyModel.DeclareSubProperties(new RDFResource("ex:dtprop3"), new RDFResource("ex:objprop3"));
+
+            OWLValidatorReport validatorReport = OWLPropertyConsistencyRule.ExecuteRule(ontology);
+
+            Assert.IsNotNull(validatorReport);
+            Assert.IsTrue(validatorReport.EvidencesCount == 3);
+            Assert.IsTrue(validatorReport.SelectErrors().Count == 3);
+            Assert.IsTrue(validatorReport.SelectWarnings().Count == 0);
+        }
+
+        [TestMethod]
         public void ShouldValidatePropertyConsistencyViaValidator()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");

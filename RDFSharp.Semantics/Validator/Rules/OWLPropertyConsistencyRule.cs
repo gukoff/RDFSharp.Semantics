@@ -30,7 +30,7 @@ namespace RDFSharp.Semantics
             IEnumerator<RDFResource> objectProperties = ontology.Model.PropertyModel.ObjectPropertiesEnumerator;
             while (objectProperties.MoveNext())
             {
-                //Clash with owl:AnnotationProperty
+                //Clash with owl:AnnotationProperty definition
                 if (ontology.Model.PropertyModel.CheckHasAnnotationProperty(objectProperties.Current))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
@@ -38,26 +38,53 @@ namespace RDFSharp.Semantics
                         $"Violation of 'rdf:type' definition on object property '{objectProperties.Current}'",
                         $"Revise your property model: it is not allowed to have an object property also declared as annotation property!"));
 
-                //Clash with owl:DatatypeProperty
+                //Clash with owl:DatatypeProperty definition
                 if (ontology.Model.PropertyModel.CheckHasDatatypeProperty(objectProperties.Current))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
                         nameof(OWLPropertyConsistencyRule),
                         $"Violation of 'rdf:type' definition on object property '{objectProperties.Current}'",
                         $"Revise your property model: it is not allowed to have an object property also declared as datatype property!"));
+
+                //Clash on rdfs:subPropertyOf hierarchy
+                List<RDFResource> subProperties = ontology.Model.PropertyModel.GetSubPropertiesOf(objectProperties.Current);
+                foreach (RDFResource subProperty in subProperties.Where(subProperty => ontology.Model.PropertyModel.CheckHasDatatypeProperty(subProperty)))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
+                        nameof(OWLPropertyConsistencyRule),
+                        $"Violation of 'rdfs:subProperty' behavior on object property '{objectProperties.Current}'",
+                        $"Revise your property model: it is not allowed to have an object property with a datatype property as sub property!"));
+
+                //Clash on owl:equivalentProperty hierarchy
+                List<RDFResource> equivalentProperties = ontology.Model.PropertyModel.GetEquivalentPropertiesOf(objectProperties.Current);
+                foreach (RDFResource equivalentProperty in equivalentProperties.Where(equivalentProperty => ontology.Model.PropertyModel.CheckHasDatatypeProperty(equivalentProperty)))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
+                        nameof(OWLPropertyConsistencyRule),
+                        $"Violation of 'owl:equivalentProperty' behavior on object property '{objectProperties.Current}'",
+                        $"Revise your property model: it is not allowed to have an object property with a datatype property as equivalent property!"));
             }
 
             //owl:DatatypeProperty
             IEnumerator<RDFResource> datatypeProperties = ontology.Model.PropertyModel.DatatypePropertiesEnumerator;
             while (datatypeProperties.MoveNext())
             {
-                //Clash with owl:AnnotationProperty
+                //Clash with owl:AnnotationProperty definition
                 if (ontology.Model.PropertyModel.CheckHasAnnotationProperty(datatypeProperties.Current))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
                         nameof(OWLPropertyConsistencyRule),
                         $"Violation of 'rdf:type' definition on datatype property '{datatypeProperties.Current}'",
                         $"Revise your property model: it is not allowed to have a datatype property also declared as annotation property!"));
+
+                //Clash on rdfs:subPropertyOf hierarchy
+                List<RDFResource> subProperties = ontology.Model.PropertyModel.GetSubPropertiesOf(datatypeProperties.Current);
+                foreach (RDFResource subProperty in subProperties.Where(subProperty => ontology.Model.PropertyModel.CheckHasObjectProperty(subProperty)))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
+                        nameof(OWLPropertyConsistencyRule),
+                        $"Violation of 'rdfs:subProperty' behavior on datatype property '{datatypeProperties.Current}'",
+                        $"Revise your property model: it is not allowed to have a datatype property with an object property as sub property!"));
             }
 
             return validatorRuleReport;
