@@ -51,16 +51,19 @@ namespace RDFSharp.Semantics.Validator.Test
             ontology.Model.PropertyModel.DeclareDatatypeProperty(new RDFResource("ex:dtprop2"));
             ontology.Model.PropertyModel.DeclareDatatypeProperty(new RDFResource("ex:dtprop3"));
             ontology.Model.PropertyModel.DeclareDatatypeProperty(new RDFResource("ex:dtprop4"));
+            ontology.Model.PropertyModel.DeclareDatatypeProperty(new RDFResource("ex:dtprop5"));
+            ontology.Model.PropertyModel.DeclareDatatypeProperty(new RDFResource("ex:dtprop6"));
             ontology.Model.PropertyModel.DeclareSubProperties(new RDFResource("ex:objprop1"), new RDFResource("ex:dtprop1"));
             ontology.Model.PropertyModel.DeclareEquivalentProperties(new RDFResource("ex:objprop2"), new RDFResource("ex:dtprop2"));
             ontology.Model.PropertyModel.DeclareSubProperties(new RDFResource("ex:dtprop3"), new RDFResource("ex:objprop3"));
             ontology.Model.PropertyModel.DeclareInverseProperties(new RDFResource("ex:objprop4"), new RDFResource("ex:dtprop4"));
+            ontology.Model.PropertyModel.DeclareInverseProperties(new RDFResource("ex:dtprop5"), new RDFResource("ex:dtprop6")); //will generate 2 evidences
 
             OWLValidatorReport validatorReport = OWLPropertyConsistencyRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
-            Assert.IsTrue(validatorReport.EvidencesCount == 4);
-            Assert.IsTrue(validatorReport.SelectErrors().Count == 4);
+            Assert.IsTrue(validatorReport.EvidencesCount == 7);
+            Assert.IsTrue(validatorReport.SelectErrors().Count == 7);
             Assert.IsTrue(validatorReport.SelectWarnings().Count == 0);
         }
 
