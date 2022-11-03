@@ -207,6 +207,10 @@ namespace RDFSharp.Semantics
             /// This OWL2 rule targets data knowledge (A-BOX) to infer assertions from owl:hasSelf restrictions
             /// </summary>
             HasSelfEntailment = 19,
+            /// <summary>
+            /// This OWL2 rule targets data knowledge (A-BOX) to infer owl:sameAs relations from owl:hasKey relations
+            /// </summary>
+            HasKeyEntailment = 20,
         };
     }
 }

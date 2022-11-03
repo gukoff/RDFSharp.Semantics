@@ -144,6 +144,9 @@ namespace RDFSharp.Semantics
                             case OWLSemanticsEnums.OWLReasonerStandardRules.HasSelfEntailment:
                                 standardRuleReport.MergeEvidences(OWLHasSelfEntailmentRule.ExecuteRule(ontology));
                                 break;
+                            case OWLSemanticsEnums.OWLReasonerStandardRules.HasKeyEntailment:
+                                standardRuleReport.MergeEvidences(OWLHasKeyEntailmentRule.ExecuteRule(ontology));
+                                break;
                         }
                         reasonerReport.MergeEvidences(standardRuleReport);
 
