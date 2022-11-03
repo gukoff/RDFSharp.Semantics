@@ -63,6 +63,15 @@ namespace RDFSharp.Semantics
                         nameof(OWLPropertyConsistencyRule),
                         $"Violation of 'owl:equivalentProperty' behavior on object property '{objectProperties.Current}'",
                         $"Revise your property model: it is not allowed to have an object property with a datatype property as equivalent property!"));
+
+                //Clash on owl:inverseOf hierarchy
+                List<RDFResource> inverseProperties = ontology.Model.PropertyModel.GetInversePropertiesOf(objectProperties.Current);
+                foreach (RDFResource inverseProperty in inverseProperties.Where(inverseProperty => ontology.Model.PropertyModel.CheckHasDatatypeProperty(inverseProperty)))
+                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
+                        nameof(OWLPropertyConsistencyRule),
+                        $"Violation of 'owl:inverseOf' behavior on object property '{objectProperties.Current}'",
+                        $"Revise your property model: it is not allowed to have an object property with a datatype property as inverse property!"));
             }
 
             //owl:DatatypeProperty
