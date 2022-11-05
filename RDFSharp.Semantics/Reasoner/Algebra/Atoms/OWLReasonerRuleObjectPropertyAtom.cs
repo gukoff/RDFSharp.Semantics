@@ -32,13 +32,21 @@ namespace RDFSharp.Semantics
         /// Default-ctor to build an object property atom with the given property and arguments
         /// </summary>
         public OWLReasonerRuleObjectPropertyAtom(RDFResource owlObjectProperty, RDFVariable leftArgument, RDFVariable rightArgument)
-            : base(owlObjectProperty, leftArgument, rightArgument) { }
+            : base(owlObjectProperty, leftArgument, rightArgument)
+        {
+            if (rightArgument == null)
+                throw new OWLSemanticsException("Cannot create atom because given \"rightArgument\" parameter is null");
+        }
 
         /// <summary>
         /// Default-ctor to build an object property atom with the given property and arguments
         /// </summary>
         public OWLReasonerRuleObjectPropertyAtom(RDFResource owlObjectProperty, RDFVariable leftArgument, RDFResource rightArgument)
-            : base(owlObjectProperty, leftArgument, rightArgument) { }
+            : base(owlObjectProperty, leftArgument, rightArgument)
+        {
+            if (rightArgument == null)
+                throw new OWLSemanticsException("Cannot create atom because given \"rightArgument\" parameter is null");
+        }
         #endregion
 
         #region Methods
