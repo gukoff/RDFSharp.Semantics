@@ -32,13 +32,21 @@ namespace RDFSharp.Semantics
         /// Default-ctor to build a data property atom with the given property and arguments
         /// </summary>
         public OWLReasonerRuleDataPropertyAtom(RDFResource owlDatatypeProperty, RDFVariable leftArgument, RDFVariable rightArgument)
-            : base(owlDatatypeProperty, leftArgument, rightArgument) { }
+            : base(owlDatatypeProperty, leftArgument, rightArgument) 
+        {
+            if (rightArgument == null)
+                throw new OWLSemanticsException("Cannot create atom because given \"rightArgument\" parameter is null");
+        }
 
         /// <summary>
         /// Default-ctor to build a data property atom with the given property and arguments
         /// </summary>
         public OWLReasonerRuleDataPropertyAtom(RDFResource owlDatatypeProperty, RDFVariable leftArgument, RDFLiteral rightArgument)
-            : base(owlDatatypeProperty, leftArgument, rightArgument) { }
+            : base(owlDatatypeProperty, leftArgument, rightArgument) 
+        {
+            if (rightArgument == null)
+                throw new OWLSemanticsException("Cannot create atom because given \"rightArgument\" parameter is null");
+        }
         #endregion
 
         #region Methods
@@ -48,12 +56,13 @@ namespace RDFSharp.Semantics
         internal override DataTable EvaluateOnAntecedent(OWLOntology ontology)
         {
             string leftArgumentString = LeftArgument.ToString();
+            string rightArgumentString = RightArgument.ToString();
 
             //Initialize the structure of the atom result
             DataTable atomResult = new DataTable();
             RDFQueryEngine.AddColumn(atomResult, leftArgumentString);
             if (RightArgument is RDFVariable)
-                RDFQueryEngine.AddColumn(atomResult, RightArgument.ToString());
+                RDFQueryEngine.AddColumn(atomResult, rightArgumentString);
 
             //Extract data property assertions of the atom predicate
             RDFGraph atomPredicateAssertions = ontology.Data.ABoxGraph[null, Predicate, null, null];
@@ -66,7 +75,7 @@ namespace RDFSharp.Semantics
             {   
                 atomResultBindings.Add(leftArgumentString, atomPredicateAssertion.Subject.ToString());
                 if (RightArgument is RDFVariable)
-                    atomResultBindings.Add(RightArgument.ToString(), atomPredicateAssertion.Object.ToString());
+                    atomResultBindings.Add(rightArgumentString, atomPredicateAssertion.Object.ToString());
 
                 RDFQueryEngine.AddRow(atomResult, atomResultBindings);
 

@@ -41,6 +41,14 @@ namespace RDFSharp.Semantics.Reasoner.Test
         }
 
         [TestMethod]
+        public void ShouldThrowExceptionOnCreatingClassAtomBecauseNullPredicate()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new OWLReasonerRuleClassAtom(null, new RDFVariable("?C")));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnCreatingClassAtomBecauseNullLeftArgument()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new OWLReasonerRuleClassAtom(new RDFResource("ex:class"), null));
+
+        [TestMethod]
         public void ShouldEvaluateClassAtomOnAntecedent()
         {
             OWLReasonerRuleClassAtom classAtom = new OWLReasonerRuleClassAtom(new RDFResource("ex:class"), new RDFVariable("?C"));
