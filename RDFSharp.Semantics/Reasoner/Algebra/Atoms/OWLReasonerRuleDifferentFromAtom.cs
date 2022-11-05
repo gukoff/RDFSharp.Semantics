@@ -32,13 +32,21 @@ namespace RDFSharp.Semantics
         /// Default-ctor to build an owl:differentFrom atom with the given arguments
         /// </summary>
         public OWLReasonerRuleDifferentFromAtom(RDFVariable leftArgument, RDFVariable rightArgument)
-            : base(RDFVocabulary.OWL.DIFFERENT_FROM, leftArgument, rightArgument) { }
+            : base(RDFVocabulary.OWL.DIFFERENT_FROM, leftArgument, rightArgument)
+        {
+            if (rightArgument == null)
+                throw new OWLSemanticsException("Cannot create atom because given \"rightArgument\" parameter is null");
+        }
 
         /// <summary>
         /// Default-ctor to build an owl:differentFrom atom with the given arguments
         /// </summary>
         public OWLReasonerRuleDifferentFromAtom(RDFVariable leftArgument, RDFResource rightArgument)
-            : base(RDFVocabulary.OWL.DIFFERENT_FROM, leftArgument, rightArgument) { }
+            : base(RDFVocabulary.OWL.DIFFERENT_FROM, leftArgument, rightArgument)
+        {
+            if (rightArgument == null)
+                throw new OWLSemanticsException("Cannot create atom because given \"rightArgument\" parameter is null");
+        }
         #endregion
 
         #region Methods

@@ -32,13 +32,21 @@ namespace RDFSharp.Semantics
         /// Default-ctor to build an owl:sameAs atom with the given arguments
         /// </summary>
         public OWLReasonerRuleSameAsAtom(RDFVariable leftArgument, RDFVariable rightArgument)
-            : base(RDFVocabulary.OWL.SAME_AS, leftArgument, rightArgument) { }
+            : base(RDFVocabulary.OWL.SAME_AS, leftArgument, rightArgument)
+        {
+            if (rightArgument == null)
+                throw new OWLSemanticsException("Cannot create atom because given \"rightArgument\" parameter is null");
+        }
 
         /// <summary>
         /// Default-ctor to build an owl:sameAs atom with the given arguments
         /// </summary>
         public OWLReasonerRuleSameAsAtom(RDFVariable leftArgument, RDFResource rightArgument)
-            : base(RDFVocabulary.OWL.SAME_AS, leftArgument, rightArgument) { }
+            : base(RDFVocabulary.OWL.SAME_AS, leftArgument, rightArgument)
+        {
+            if (rightArgument == null)
+                throw new OWLSemanticsException("Cannot create atom because given \"rightArgument\" parameter is null");
+        }
         #endregion
 
         #region Methods
