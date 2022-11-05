@@ -18,7 +18,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RDFSharp.Model;
 using RDFSharp.Query;
 using System.Data;
-using System.Threading.Tasks;
 
 namespace RDFSharp.Semantics.Reasoner.Test
 {

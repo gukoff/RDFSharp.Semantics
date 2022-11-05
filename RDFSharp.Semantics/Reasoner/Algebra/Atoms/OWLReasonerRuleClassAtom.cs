@@ -45,7 +45,7 @@ namespace RDFSharp.Semantics
             string leftArgumentString = LeftArgument.ToString();
 
             //Initialize the structure of the atom result
-            DataTable atomResult = new DataTable(this.ToString());
+            DataTable atomResult = new DataTable();
             RDFQueryEngine.AddColumn(atomResult, leftArgumentString);
 
             //Calculate individuals of the atom predicate
@@ -73,15 +73,13 @@ namespace RDFSharp.Semantics
         {
             OWLReasonerReport report = new OWLReasonerReport();
             string leftArgumentString = LeftArgument.ToString();
+            string classAtomString = this.ToString();
 
             #region Guards
             //The antecedent results table MUST have a column corresponding to the atom's left argument
             if (!antecedentResults.Columns.Contains(leftArgumentString))
                 return report;
             #endregion
-
-            //Calculate individuals of the atom class
-            List<RDFResource> atomClassIndividuals = ontology.Data.GetIndividualsOf(ontology.Model, Predicate);
 
             //Iterate the antecedent results table to materialize the atom's reasoner evidences
             IEnumerator rowsEnum = antecedentResults.Rows.GetEnumerator();
@@ -99,16 +97,12 @@ namespace RDFSharp.Semantics
                 RDFPatternMember leftArgumentValue = RDFQueryUtilities.ParseRDFPatternMember(currentRow[leftArgumentString].ToString());
                 if (leftArgumentValue is RDFResource leftArgumentValueResource)
                 {
-                    //Protect atom's inferences with implicit taxonomy checks
-                    if (atomClassIndividuals.Any(atomClassIndividual => atomClassIndividual.Equals(leftArgumentValueResource)))
-                    {
-                        //Create the inference
-                        RDFTriple atomInference = new RDFTriple(leftArgumentValueResource, RDFVocabulary.RDF.TYPE, Predicate);
+                    //Create the inference
+                    RDFTriple atomInference = new RDFTriple(leftArgumentValueResource, RDFVocabulary.RDF.TYPE, Predicate);
 
-                        //Add the inference to the report
-                        if (!ontology.Data.ABoxGraph.ContainsTriple(atomInference))
-                            report.AddEvidence(new OWLReasonerEvidence(OWLSemanticsEnums.OWLReasonerEvidenceCategory.Data, this.ToString(), atomInference));
-                    }
+                    //Add the inference to the report
+                    if (!ontology.Data.ABoxGraph.ContainsTriple(atomInference))
+                        report.AddEvidence(new OWLReasonerEvidence(OWLSemanticsEnums.OWLReasonerEvidenceCategory.Data, classAtomString, atomInference));
                 }
             }
 

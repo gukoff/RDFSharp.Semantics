@@ -51,7 +51,7 @@ namespace RDFSharp.Semantics
             string rightArgumentString = RightArgument.ToString();
 
             //Initialize the structure of the atom result
-            DataTable atomResult = new DataTable(this.ToString());
+            DataTable atomResult = new DataTable();
             RDFQueryEngine.AddColumn(atomResult, leftArgumentString);
             if (RightArgument is RDFVariable)
                 RDFQueryEngine.AddColumn(atomResult, rightArgumentString);
@@ -86,6 +86,7 @@ namespace RDFSharp.Semantics
             OWLReasonerReport report = new OWLReasonerReport();
             string leftArgumentString = this.LeftArgument.ToString();
             string rightArgumentString = this.RightArgument.ToString();
+            string objectPropertyAtomString = this.ToString();
 
             #region Guards
             //The antecedent results table MUST have a column corresponding to the atom's left argument
@@ -131,7 +132,7 @@ namespace RDFSharp.Semantics
 
                         //Add the inference to the report
                         if (!ontology.Data.ABoxGraph.ContainsTriple(atomInference))
-                            report.AddEvidence(new OWLReasonerEvidence(OWLSemanticsEnums.OWLReasonerEvidenceCategory.Data, this.ToString(), atomInference));
+                            report.AddEvidence(new OWLReasonerEvidence(OWLSemanticsEnums.OWLReasonerEvidenceCategory.Data, objectPropertyAtomString, atomInference));
                     }
                 }
             }
