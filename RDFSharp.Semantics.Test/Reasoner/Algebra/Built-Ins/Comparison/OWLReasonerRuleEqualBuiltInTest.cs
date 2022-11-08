@@ -92,7 +92,20 @@ namespace RDFSharp.Semantics.Reasoner.Test
         public void ShouldThrowExceptionOnCreatingEqualBuiltInBecauseNullRightArgumentLiteral()
             => Assert.ThrowsException<OWLSemanticsException>(() => new OWLReasonerRuleEqualBuiltIn(new RDFVariable("?L"), null as RDFLiteral));
 
-        //TODO
+        [TestMethod]
+        public void ShouldEvaluateEqualBuiltIn()
+        {
+            DataTable antecedentTable = new DataTable();
+            antecedentTable.Columns.Add("?C");
+            antecedentTable.Rows.Add("ex:indiv");
+            antecedentTable.Rows.Add("ex:indiv2");
+
+            OWLReasonerRuleEqualBuiltIn builtin = new OWLReasonerRuleEqualBuiltIn(new RDFVariable("?C"), new RDFResource("ex:indiv2"));
+            DataTable result = builtin.Evaluate(antecedentTable, null);
+
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.Rows.Count == 1);
+        }
 
         #endregion
     }
