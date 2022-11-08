@@ -17,9 +17,9 @@ using RDFSharp.Query;
 namespace RDFSharp.Semantics
 {
     /// <summary>
-    /// OWLReasonerRuleLessOrEqualThanBuiltIn represents a SWRL built-in filtering inferences of a rule's antecedent on a swrlb:lessThanOrEqual basis
+    /// OWLReasonerRuleLessThanOrEqualBuiltIn represents a SWRL built-in filtering inferences of a rule's antecedent on a swrlb:lessThanOrEqual basis
     /// </summary>
-    public class OWLOntologyReasonerRuleLessOrEqualThanBuiltIn : OWLReasonerRuleFilterBuiltIn
+    public class OWLReasonerRuleLessThanOrEqualBuiltIn : OWLReasonerRuleFilterBuiltIn
     {
         #region Properties
         /// <summary>
@@ -32,27 +32,32 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Default-ctor to build a swrlb:lessThanOrEqual built-in with given arguments
         /// </summary>
-        public OWLOntologyReasonerRuleLessOrEqualThanBuiltIn(RDFVariable leftArgument, RDFVariable rightArgument)
+        public OWLReasonerRuleLessThanOrEqualBuiltIn(RDFVariable leftArgument, RDFVariable rightArgument)
             : this(leftArgument, rightArgument as RDFPatternMember) { }
 
         /// <summary>
         /// Default-ctor to build a swrlb:lessThanOrEqual built-in with given arguments
         /// </summary>
-        public OWLOntologyReasonerRuleLessOrEqualThanBuiltIn(RDFVariable leftArgument, RDFResource rightArgument)
+        public OWLReasonerRuleLessThanOrEqualBuiltIn(RDFVariable leftArgument, RDFResource rightArgument)
             : this(leftArgument, rightArgument as RDFPatternMember) { }
 
         /// <summary>
         /// Default-ctor to build a swrlb:lessThanOrEqual built-in with given arguments
         /// </summary>
-        public OWLOntologyReasonerRuleLessOrEqualThanBuiltIn(RDFVariable leftArgument, RDFLiteral rightArgument)
+        public OWLReasonerRuleLessThanOrEqualBuiltIn(RDFVariable leftArgument, RDFLiteral rightArgument)
             : this(leftArgument, rightArgument as RDFPatternMember) { }
 
         /// <summary>
         /// Internal-ctor to build a swrlb:lessThanOrEqual built-in with given arguments
         /// </summary>
-        internal OWLOntologyReasonerRuleLessOrEqualThanBuiltIn(RDFVariable leftArgument, RDFPatternMember rightArgument)
+        internal OWLReasonerRuleLessThanOrEqualBuiltIn(RDFVariable leftArgument, RDFPatternMember rightArgument)
             : base(BuiltInUri, leftArgument, rightArgument)
-                => BuiltInFilter = new RDFComparisonFilter(RDFQueryEnums.RDFComparisonFlavors.LessOrEqualThan, leftArgument, rightArgument);
+        {
+            if (rightArgument == null)
+                throw new OWLSemanticsException("Cannot create built-in because given \"rightArgument\" parameter is null");
+
+            BuiltInFilter = new RDFComparisonFilter(RDFQueryEnums.RDFComparisonFlavors.LessOrEqualThan, leftArgument, rightArgument);
+        }
         #endregion
     }
 }

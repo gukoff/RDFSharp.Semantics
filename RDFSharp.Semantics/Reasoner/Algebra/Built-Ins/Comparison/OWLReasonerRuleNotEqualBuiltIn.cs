@@ -52,7 +52,12 @@ namespace RDFSharp.Semantics
         /// </summary>
         internal OWLReasonerRuleNotEqualBuiltIn(RDFVariable leftArgument, RDFPatternMember rightArgument)
             : base(BuiltInUri, leftArgument, rightArgument)
-                => BuiltInFilter = new RDFComparisonFilter(RDFQueryEnums.RDFComparisonFlavors.NotEqualTo, leftArgument, rightArgument);
+        {
+            if (rightArgument == null)
+                throw new OWLSemanticsException("Cannot create built-in because given \"rightArgument\" parameter is null");
+
+            BuiltInFilter = new RDFComparisonFilter(RDFQueryEnums.RDFComparisonFlavors.NotEqualTo, leftArgument, rightArgument);
+        }
         #endregion
     }
 }
