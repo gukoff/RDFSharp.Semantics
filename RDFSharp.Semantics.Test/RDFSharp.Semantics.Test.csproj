@@ -23,7 +23,6 @@
 		<ProjectReference Include="..\RDFSharp.Semantics\RDFSharp.Semantics.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="Reasoner\Algebra\Built-Ins\Math\" />
 	  <Folder Include="Reasoner\Algebra\Built-Ins\String\" />
 	</ItemGroup>
 </Project>

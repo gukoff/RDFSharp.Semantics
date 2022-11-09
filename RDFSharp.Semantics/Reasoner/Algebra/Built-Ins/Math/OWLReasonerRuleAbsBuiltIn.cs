@@ -34,13 +34,17 @@ namespace RDFSharp.Semantics
         /// Default-ctor to build a swrlb:abs built-in with given arguments
         /// </summary>
         public OWLReasonerRuleAbsBuiltIn(RDFVariable leftArgument, RDFVariable rightArgument)
-            : base(BuiltInUri, leftArgument, rightArgument, double.NaN) { }
+            : base(BuiltInUri, leftArgument, rightArgument, double.NaN)
+        {
+            if (rightArgument == null)
+                throw new OWLSemanticsException("Cannot create built-in because given \"rightArgument\" parameter is null");
+        }
         #endregion
 
-        #region Interfaces
-        /// <summary>
-        /// Gives the string representation of the built-in
-        /// </summary>
+            #region Interfaces
+            /// <summary>
+            /// Gives the string representation of the built-in
+            /// </summary>
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
