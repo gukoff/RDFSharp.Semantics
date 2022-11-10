@@ -33,7 +33,11 @@ namespace RDFSharp.Semantics
         /// Default-ctor to build a swrlb:subtract built-in with given arguments
         /// </summary>
         public OWLReasonerRuleSubtractBuiltIn(RDFVariable leftArgument, RDFVariable rightArgument, double subtractValue)
-            : base(BuiltInUri, leftArgument, rightArgument, subtractValue) { }
+            : base(BuiltInUri, leftArgument, rightArgument, subtractValue)
+        {
+            if (rightArgument == null)
+                throw new OWLSemanticsException("Cannot create built-in because given \"rightArgument\" parameter is null");
+        }
         #endregion
     }
 }

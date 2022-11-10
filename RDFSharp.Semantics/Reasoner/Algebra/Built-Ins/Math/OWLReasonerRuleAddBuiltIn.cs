@@ -33,7 +33,11 @@ namespace RDFSharp.Semantics
         /// Default-ctor to build a swrlb:add built-in with given arguments
         /// </summary>
         public OWLReasonerRuleAddBuiltIn(RDFVariable leftArgument, RDFVariable rightArgument, double addValue)
-            : base(BuiltInUri, leftArgument, rightArgument, addValue) { }
+            : base(BuiltInUri, leftArgument, rightArgument, addValue)
+        {
+            if (rightArgument == null)
+                throw new OWLSemanticsException("Cannot create built-in because given \"rightArgument\" parameter is null");
+        }
         #endregion
     }
 }

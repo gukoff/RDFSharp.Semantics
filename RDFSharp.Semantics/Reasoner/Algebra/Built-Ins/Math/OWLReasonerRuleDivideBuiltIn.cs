@@ -35,8 +35,10 @@ namespace RDFSharp.Semantics
         public OWLReasonerRuleDivideBuiltIn(RDFVariable leftArgument, RDFVariable rightArgument, double divideValue)
             : base(BuiltInUri, leftArgument, rightArgument, divideValue)
         {
+            if (rightArgument == null)
+                throw new OWLSemanticsException("Cannot create built-in because given \"rightArgument\" parameter is null");
             if (divideValue == 0d)
-                throw new OWLSemanticsException("Cannot create swrlb:divide built-in because given \"divideValue\" is zero");
+                throw new OWLSemanticsException("Cannot create built-in because given \"divideValue\" is zero!");
         }
         #endregion
     }

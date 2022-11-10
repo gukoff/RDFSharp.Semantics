@@ -33,7 +33,11 @@ namespace RDFSharp.Semantics
         /// Default-ctor to build a swrlb:multiply built-in with given arguments
         /// </summary>
         public OWLReasonerRuleMultiplyBuiltIn(RDFVariable leftArgument, RDFVariable rightArgument, double multiplyValue)
-            : base(BuiltInUri, leftArgument, rightArgument, multiplyValue) { }
+            : base(BuiltInUri, leftArgument, rightArgument, multiplyValue)
+        {
+            if (rightArgument == null)
+                throw new OWLSemanticsException("Cannot create built-in because given \"rightArgument\" parameter is null");
+        }
         #endregion
     }
 }
