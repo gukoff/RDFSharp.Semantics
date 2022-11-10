@@ -34,7 +34,11 @@ namespace RDFSharp.Semantics
         /// Default-ctor to build a swrlb:cos built-in with given arguments
         /// </summary>
         public OWLReasonerRuleCosBuiltIn(RDFVariable leftArgument, RDFVariable rightArgument)
-            : base(BuiltInUri, leftArgument, rightArgument, double.NaN) { }
+            : base(BuiltInUri, leftArgument, rightArgument, double.NaN)
+        {
+            if (rightArgument == null)
+                throw new OWLSemanticsException("Cannot create built-in because given \"rightArgument\" parameter is null");
+        }
         #endregion
 
         #region Interfaces
