@@ -22,35 +22,35 @@ using System.Data;
 namespace RDFSharp.Semantics.Reasoner.Test
 {
     [TestClass]
-    public class OWLReasonerRuleFloorBuiltInTest
+    public class OWLReasonerRuleRoundBuiltInTest
     {
         #region Tests
         [TestMethod]
-        public void ShouldCreateAbsBuiltIn()
+        public void ShouldCreateRoundBuiltIn()
         {
-            OWLReasonerRuleFloorBuiltIn builtin = new OWLReasonerRuleFloorBuiltIn(new RDFVariable("?L"), new RDFVariable("?R"));
+            OWLReasonerRuleRoundBuiltIn builtin = new OWLReasonerRuleRoundBuiltIn(new RDFVariable("?L"), new RDFVariable("?R"));
 
             Assert.IsNotNull(builtin);
             Assert.IsNotNull(builtin.Predicate);
-            Assert.IsTrue(builtin.Predicate.Equals(new RDFResource("swrlb:floor")));
+            Assert.IsTrue(builtin.Predicate.Equals(new RDFResource("swrlb:round")));
             Assert.IsNotNull(builtin.LeftArgument);
             Assert.IsTrue(builtin.LeftArgument.Equals(new RDFVariable("?L")));
             Assert.IsNotNull(builtin.RightArgument);
             Assert.IsTrue(builtin.RightArgument.Equals(new RDFVariable("?R")));
             Assert.IsTrue(builtin.IsBuiltIn);
-            Assert.IsTrue(string.Equals("swrlb:floor(?L,?R)", builtin.ToString()));
+            Assert.IsTrue(string.Equals("swrlb:round(?L,?R)", builtin.ToString()));
         }
 
         [TestMethod]
-        public void ShouldThrowExceptionOnCreatingAbsBuiltInBecauseNullLeftArgument()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new OWLReasonerRuleFloorBuiltIn(null, new RDFVariable("?R")));
+        public void ShouldThrowExceptionOnCreatingRoundBuiltInBecauseNullLeftArgument()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new OWLReasonerRuleRoundBuiltIn(null, new RDFVariable("?R")));
 
         [TestMethod]
-        public void ShouldThrowExceptionOnCreatingAbsBuiltInBecauseNullRightArgument()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new OWLReasonerRuleFloorBuiltIn(new RDFVariable("?L"), null));
+        public void ShouldThrowExceptionOnCreatingRoundBuiltInBecauseNullRightArgument()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new OWLReasonerRuleRoundBuiltIn(new RDFVariable("?L"), null));
 
         [TestMethod]
-        public void ShouldEvaluateFloorBuiltIn()
+        public void ShouldEvaluateRoundBuiltIn()
         {
             DataTable antecedentTable = new DataTable();
             antecedentTable.Columns.Add("?X");
@@ -58,7 +58,7 @@ namespace RDFSharp.Semantics.Reasoner.Test
             antecedentTable.Rows.Add($"2.00^^{RDFVocabulary.XSD.FLOAT}", $"2.24^^{RDFVocabulary.XSD.DOUBLE}");
             antecedentTable.Rows.Add($"2^^{RDFVocabulary.XSD.INTEGER}", $"3.57^^{RDFVocabulary.XSD.DOUBLE}");
 
-            OWLReasonerRuleFloorBuiltIn builtin = new OWLReasonerRuleFloorBuiltIn(new RDFVariable("?X"), new RDFVariable("?Y"));
+            OWLReasonerRuleRoundBuiltIn builtin = new OWLReasonerRuleRoundBuiltIn(new RDFVariable("?X"), new RDFVariable("?Y"));
             DataTable result = builtin.Evaluate(antecedentTable, null);
 
             Assert.IsNotNull(result);
