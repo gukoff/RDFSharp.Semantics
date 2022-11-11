@@ -38,7 +38,7 @@ namespace RDFSharp.Semantics
             : base(BuiltInUri, leftArgument, null)
         {
             if (matchesRegex == null)
-                throw new OWLSemanticsException("Cannot create swrlb:matches built-in because given \"matchesRegex\" parameter is null.");
+                throw new OWLSemanticsException("Cannot create built-in because given \"matchesRegex\" parameter is null");
 
             StringBuilder regexFlags = new StringBuilder();
             if (matchesRegex.Options.HasFlag(RegexOptions.IgnoreCase))

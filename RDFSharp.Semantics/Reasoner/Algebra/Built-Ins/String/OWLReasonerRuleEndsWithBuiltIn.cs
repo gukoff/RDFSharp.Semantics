@@ -37,7 +37,7 @@ namespace RDFSharp.Semantics
             : base(BuiltInUri, leftArgument, null)
         {
             if (endString == null)
-                throw new OWLSemanticsException("Cannot create swrlb:endsWith built-in because given \"endString\" parameter is null.");
+                throw new OWLSemanticsException("Cannot create built-in because given \"endString\" parameter is null");
 
             RightArgument = new RDFPlainLiteral(endString);
             BuiltInFilter = new RDFRegexFilter(leftArgument, new Regex($"{endString}$"));

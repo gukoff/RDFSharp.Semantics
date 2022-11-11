@@ -37,7 +37,7 @@ namespace RDFSharp.Semantics
             : base(BuiltInUri, leftArgument, null)
         {
             if (containString == null)
-                throw new OWLSemanticsException("Cannot create swrlb:containsIgnoreCase built-in because given \"containString\" parameter is null.");
+                throw new OWLSemanticsException("Cannot create built-in because given \"containString\" parameter is null");
 
             RightArgument = new RDFPlainLiteral(containString);
             BuiltInFilter = new RDFRegexFilter(leftArgument, new Regex($"{containString}", RegexOptions.IgnoreCase));
