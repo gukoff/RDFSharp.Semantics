@@ -14,7 +14,6 @@
 using RDFSharp.Model;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace RDFSharp.Semantics
@@ -35,12 +34,12 @@ namespace RDFSharp.Semantics
         /// Gets an enumerator on the evidences for iteration
         /// </summary>
         public IEnumerator<OWLReasonerEvidence> EvidencesEnumerator 
-            => Evidences.GetEnumerator();
+            => Evidences.Values.GetEnumerator();
 
         /// <summary>
-        /// List of evidences
+        /// Dictionary of evidences
         /// </summary>
-        internal List<OWLReasonerEvidence> Evidences { get; set; }
+        internal Dictionary<long, OWLReasonerEvidence> Evidences { get; set; }
 
         /// <summary>
         /// SyncLock for evidences
@@ -54,7 +53,7 @@ namespace RDFSharp.Semantics
         /// </summary>
         internal OWLReasonerReport()
         {
-            Evidences = new List<OWLReasonerEvidence>();
+            Evidences = new Dictionary<long, OWLReasonerEvidence>();
             SyncLock = new object();
         }
         #endregion
@@ -77,48 +76,26 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Adds the given evidence to the reasoner report
         /// </summary>
-        public OWLReasonerReport AddEvidence(OWLReasonerEvidence evidence)
+        public void AddEvidence(OWLReasonerEvidence evidence)
         {
             if (evidence != null)
             {
                 lock (SyncLock)
                 {
-                    if (!Evidences.Any(evd => evd.EvidenceCategory == evidence.EvidenceCategory 
-                                                && evd.EvidenceContent.TripleID == evidence.EvidenceContent.TripleID))
-                        Evidences.Add(evidence);
-                }   
+                    if (!Evidences.ContainsKey(evidence.EvidenceContent.TripleID))
+                        Evidences.Add(evidence.EvidenceContent.TripleID, evidence);
+                }
             }
-            return this;
         }
 
         /// <summary>
-        /// Merges the evidences of the given report
+        /// Merges the evidences of the given report into the reasoner report
         /// </summary>
-        internal OWLReasonerReport MergeEvidences(OWLReasonerReport report)
+        internal void MergeEvidences(OWLReasonerReport report)
         {
             foreach (OWLReasonerEvidence evidence in report)
                 AddEvidence(evidence);
-                
-            return this;
         }
-
-        /// <summary>
-        /// Gets the class model evidences (T-BOX) from the reasoner report
-        /// </summary>
-        public List<OWLReasonerEvidence> SelectClassModelEvidences()
-            => Evidences.FindAll(e => e.EvidenceCategory == OWLSemanticsEnums.OWLReasonerEvidenceCategory.ClassModel);
-
-        /// <summary>
-        /// Gets the property model evidences (T-BOX) from the reasoner report
-        /// </summary>
-        public List<OWLReasonerEvidence> SelectPropertyModelEvidences()
-            => Evidences.FindAll(e => e.EvidenceCategory == OWLSemanticsEnums.OWLReasonerEvidenceCategory.PropertyModel);
-
-        /// <summary>
-        /// Gets the data evidences (A-BOX) from the reasoner report
-        /// </summary>
-        public List<OWLReasonerEvidence> SelectDataEvidences()
-            => Evidences.FindAll(e => e.EvidenceCategory == OWLSemanticsEnums.OWLReasonerEvidenceCategory.Data);
 
         /// <summary>
         /// Gets a graph representation of the reasoner report

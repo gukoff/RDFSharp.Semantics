@@ -285,7 +285,7 @@ namespace RDFSharp.Semantics
 
                 //Class
                 else if (model.ClassModel.CheckHasClass(owlClass))
-                    individuals.AddRange(data.FindIndividualsOfClass(model, owlClass, new Dictionary<long, RDFResource>()));
+                    individuals.AddRange(data.FindIndividualsOfClass(model, owlClass));
             }
 
             //We don't want to enlist duplicate individuals
@@ -644,36 +644,29 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Finds "Type(X,owlClass)" relations to enlist the individuals of the given owl:Class
         /// </summary>
-        internal static List<RDFResource> FindIndividualsOfClass(this OWLOntologyData data, OWLOntologyModel model, RDFResource owlClass, Dictionary<long, RDFResource> visitContext)
+        internal static List<RDFResource> FindIndividualsOfClass(this OWLOntologyData data, OWLOntologyModel model, RDFResource owlClass)
         {
             List<RDFResource> classIndividuals = new List<RDFResource>();
 
-            #region VisitContext
-            if (!visitContext.ContainsKey(owlClass.PatternMemberID))
-                visitContext.Add(owlClass.PatternMemberID, owlClass);
-            else
-                return classIndividuals;
-            #endregion
+            //Get the classes compatible with the given class
+            List<RDFResource> compatibleClasses = new List<RDFResource>() { owlClass }
+                                                    .Union(model.ClassModel.GetSubClassesOf(owlClass))
+                                                    .Union(model.ClassModel.GetEquivalentClassesOf(owlClass))
+                                                    .ToList();
 
-            //DIRECT
-            RDFGraph directTypeGraph = data.ABoxGraph[null, RDFVocabulary.RDF.TYPE, owlClass, null];
-            foreach (RDFTriple directTypeTriple in directTypeGraph)
-                classIndividuals.Add((RDFResource)directTypeTriple.Subject);
+            //Get the individuals belonging to the compatible classes
+            List<RDFResource> compatibleIndividuals = data.ABoxGraph[null, RDFVocabulary.RDF.TYPE, null, null]
+                                                          .Where(t => compatibleClasses.Any(cls => cls.Equals(t.Object)))
+                                                          .Select(t => t.Subject)
+                                                          .OfType<RDFResource>()
+                                                          .ToList();
 
-            //INDIRECT (SUBCLASS + EQUIVALENTCLASS)
-            List<RDFResource> subClassIndividuals = new List<RDFResource>();
-            List<RDFResource> equivalentClassIndividuals = new List<RDFResource>();
-            Parallel.Invoke(
-                () => {
-                    foreach (RDFResource subClass in model.ClassModel.GetSubClassesOf(owlClass))
-                        subClassIndividuals.AddRange(data.FindIndividualsOfClass(model, subClass, visitContext));
-                },
-                () => {
-                    foreach (RDFResource equivalentClass in model.ClassModel.GetEquivalentClassesOf(owlClass))
-                        equivalentClassIndividuals.AddRange(data.FindIndividualsOfClass(model, equivalentClass, visitContext));
-                });
-            classIndividuals.AddRange(subClassIndividuals);
-            classIndividuals.AddRange(equivalentClassIndividuals);
+            //Add the individuals to the results
+            classIndividuals.AddRange(compatibleIndividuals);
+            
+            //Add the individuals to the results (exploit owl:sameAs relations)
+            foreach (RDFResource compatibleIndividual in compatibleIndividuals)
+                classIndividuals.AddRange(data.GetSameIndividuals(compatibleIndividual));
 
             return classIndividuals;
         }

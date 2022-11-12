@@ -78,54 +78,6 @@ namespace RDFSharp.Semantics.Reasoner.Test
         }
 
         [TestMethod]
-        public void ShouldSelectClassModelEvidences()
-        {
-            OWLReasonerReport report = new OWLReasonerReport();
-            report.AddEvidence(new OWLReasonerEvidence(OWLSemanticsEnums.OWLReasonerEvidenceCategory.Data,
-                "rulename", new RDFTriple(new RDFResource("ex:subj/"), new RDFResource("ex:pred/"), new RDFResource("ex:obj/"))));
-            report.AddEvidence(new OWLReasonerEvidence(OWLSemanticsEnums.OWLReasonerEvidenceCategory.PropertyModel,
-                "rulename", new RDFTriple(new RDFResource("ex:subj/"), new RDFResource("ex:pred/"), new RDFResource("ex:obj/"))));
-            report.AddEvidence(new OWLReasonerEvidence(OWLSemanticsEnums.OWLReasonerEvidenceCategory.ClassModel,
-                "rulename", new RDFTriple(new RDFResource("ex:subj/"), new RDFResource("ex:pred/"), new RDFResource("ex:obj/"))));
-            List<OWLReasonerEvidence> evidences = report.SelectClassModelEvidences();
-
-            Assert.IsNotNull(evidences);
-            Assert.IsTrue(evidences.Count == 1);
-        }
-
-        [TestMethod]
-        public void ShouldSelectPropertyModelEvidences()
-        {
-            OWLReasonerReport report = new OWLReasonerReport();
-            report.AddEvidence(new OWLReasonerEvidence(OWLSemanticsEnums.OWLReasonerEvidenceCategory.Data,
-                "rulename", new RDFTriple(new RDFResource("ex:subj/"), new RDFResource("ex:pred/"), new RDFResource("ex:obj/"))));
-            report.AddEvidence(new OWLReasonerEvidence(OWLSemanticsEnums.OWLReasonerEvidenceCategory.PropertyModel,
-                "rulename", new RDFTriple(new RDFResource("ex:subj/"), new RDFResource("ex:pred/"), new RDFResource("ex:obj/"))));
-            report.AddEvidence(new OWLReasonerEvidence(OWLSemanticsEnums.OWLReasonerEvidenceCategory.ClassModel,
-                "rulename", new RDFTriple(new RDFResource("ex:subj/"), new RDFResource("ex:pred/"), new RDFResource("ex:obj/"))));
-            List<OWLReasonerEvidence> evidences = report.SelectPropertyModelEvidences();
-
-            Assert.IsNotNull(evidences);
-            Assert.IsTrue(evidences.Count == 1);
-        }
-
-        [TestMethod]
-        public void ShouldSelectDataEvidences()
-        {
-            OWLReasonerReport report = new OWLReasonerReport();
-            report.AddEvidence(new OWLReasonerEvidence(OWLSemanticsEnums.OWLReasonerEvidenceCategory.Data,
-                "rulename", new RDFTriple(new RDFResource("ex:subj/"), new RDFResource("ex:pred/"), new RDFResource("ex:obj/"))));
-            report.AddEvidence(new OWLReasonerEvidence(OWLSemanticsEnums.OWLReasonerEvidenceCategory.PropertyModel,
-                "rulename", new RDFTriple(new RDFResource("ex:subj/"), new RDFResource("ex:pred/"), new RDFResource("ex:obj/"))));
-            report.AddEvidence(new OWLReasonerEvidence(OWLSemanticsEnums.OWLReasonerEvidenceCategory.ClassModel,
-                "rulename", new RDFTriple(new RDFResource("ex:subj/"), new RDFResource("ex:pred/"), new RDFResource("ex:obj/"))));
-            List<OWLReasonerEvidence> evidences = report.SelectDataEvidences();
-
-            Assert.IsNotNull(evidences);
-            Assert.IsTrue(evidences.Count == 1);
-        }
-
-        [TestMethod]
         public void ShouldExportToGraph()
         {
             OWLReasonerReport report = new OWLReasonerReport();
