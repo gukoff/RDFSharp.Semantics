@@ -40,11 +40,6 @@ namespace RDFSharp.Semantics
         /// Dictionary of evidences
         /// </summary>
         internal Dictionary<long, OWLReasonerEvidence> Evidences { get; set; }
-
-        /// <summary>
-        /// SyncLock for evidences
-        /// </summary>
-        internal object SyncLock { get; set; }
         #endregion
 
         #region Ctors
@@ -52,10 +47,7 @@ namespace RDFSharp.Semantics
         /// Default-ctor to build an empty reasoner report
         /// </summary>
         internal OWLReasonerReport()
-        {
-            Evidences = new Dictionary<long, OWLReasonerEvidence>();
-            SyncLock = new object();
-        }
+            => Evidences = new Dictionary<long, OWLReasonerEvidence>();
         #endregion
 
         #region Interfaces
@@ -78,14 +70,8 @@ namespace RDFSharp.Semantics
         /// </summary>
         public void AddEvidence(OWLReasonerEvidence evidence)
         {
-            if (evidence != null)
-            {
-                lock (SyncLock)
-                {
-                    if (!Evidences.ContainsKey(evidence.EvidenceContent.TripleID))
-                        Evidences.Add(evidence.EvidenceContent.TripleID, evidence);
-                }
-            }
+            if (evidence != null && !Evidences.ContainsKey(evidence.EvidenceContent.TripleID))
+                Evidences.Add(evidence.EvidenceContent.TripleID, evidence);
         }
 
         /// <summary>

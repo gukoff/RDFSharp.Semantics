@@ -28,9 +28,9 @@ namespace RDFSharp.Semantics
         internal List<OWLSemanticsEnums.OWLReasonerStandardRules> StandardRules { get; set; }
 
         /// <summary>
-        /// List of SWRL rules applied by the reasoner
+        /// List of custom (SWRL) rules applied by the reasoner
         /// </summary>
-        internal List<OWLReasonerRule> SWRLRules { get; set; }
+        internal List<OWLReasonerRule> CustomRules { get; set; }
         #endregion
 
         #region Ctors
@@ -40,7 +40,7 @@ namespace RDFSharp.Semantics
         public OWLReasoner()
         {
             StandardRules = new List<OWLSemanticsEnums.OWLReasonerStandardRules>();
-            SWRLRules = new List<OWLReasonerRule>();
+            CustomRules = new List<OWLReasonerRule>();
         }
         #endregion
 
@@ -56,14 +56,14 @@ namespace RDFSharp.Semantics
         }
 
         /// <summary>
-        /// Adds the given SWRL rule to the reasoner
+        /// Adds the given custom (SWRL) rule to the reasoner
         /// </summary>
-        public OWLReasoner AddSWRLRule(OWLReasonerRule swrlRule)
+        public OWLReasoner AddCustomRule(OWLReasonerRule swrlRule)
         {
             if (swrlRule == null)
                 throw new OWLSemanticsException("Cannot add SWRL rule to reasoner because given \"swrlRule\" parameter is null");
 
-            SWRLRules.Add(swrlRule);
+            CustomRules.Add(swrlRule);
             return this;
         }
 
@@ -78,97 +78,105 @@ namespace RDFSharp.Semantics
             {
                 OWLSemanticsEvents.RaiseSemanticsInfo($"Reasoner is going to be applied on Ontology '{ontology.URI}': this may require intensive processing, depending on size and complexity of domain knowledge and rules");
 
-                //Standard Rules
+                //Initialize inference registry
+                Dictionary<string, OWLReasonerReport> inferenceRegistry = new Dictionary<string, OWLReasonerReport>();
+                foreach (OWLSemanticsEnums.OWLReasonerStandardRules standardRule in StandardRules)
+                    inferenceRegistry.Add(standardRule.ToString(), null);
+                foreach (OWLReasonerRule customRule in CustomRules)
+                    inferenceRegistry.Add(customRule.RuleName, null);
+
+                //Execute standard rules
                 Parallel.ForEach(StandardRules, 
                     standardRule =>
                     {
                         OWLSemanticsEvents.RaiseSemanticsInfo($"Launching standard reasoner rule '{standardRule}'");
 
-                        OWLReasonerReport standardRuleReport = new OWLReasonerReport();
                         switch (standardRule)
                         {
                             case OWLSemanticsEnums.OWLReasonerStandardRules.SubClassTransitivity:
-                                standardRuleReport.MergeEvidences(OWLSubClassTransitivityRule.ExecuteRule(ontology));
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.SubClassTransitivity.ToString()] = OWLSubClassTransitivityRule.ExecuteRule(ontology);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.SubPropertyTransitivity:
-                                standardRuleReport.MergeEvidences(OWLSubPropertyTransitivityRule.ExecuteRule(ontology));
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.SubPropertyTransitivity.ToString()] = OWLSubPropertyTransitivityRule.ExecuteRule(ontology);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.EquivalentClassTransitivity:
-                                standardRuleReport.MergeEvidences(OWLEquivalentClassTransitivityRule.ExecuteRule(ontology));
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.EquivalentClassTransitivity.ToString()] = OWLEquivalentClassTransitivityRule.ExecuteRule(ontology);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.EquivalentPropertyTransitivity:
-                                standardRuleReport.MergeEvidences(OWLEquivalentPropertyTransitivityRule.ExecuteRule(ontology));
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.EquivalentPropertyTransitivity.ToString()] = OWLEquivalentPropertyTransitivityRule.ExecuteRule(ontology);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.DisjointClassEntailment:
-                                standardRuleReport.MergeEvidences(OWLDisjointClassEntailmentRule.ExecuteRule(ontology));
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.DisjointClassEntailment.ToString()] = OWLDisjointClassEntailmentRule.ExecuteRule(ontology);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.DisjointPropertyEntailment:
-                                standardRuleReport.MergeEvidences(OWLDisjointPropertyEntailmentRule.ExecuteRule(ontology));
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.DisjointPropertyEntailment.ToString()] = OWLDisjointPropertyEntailmentRule.ExecuteRule(ontology);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.DomainEntailment:
-                                standardRuleReport.MergeEvidences(OWLDomainEntailmentRule.ExecuteRule(ontology));
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.DomainEntailment.ToString()] = OWLDomainEntailmentRule.ExecuteRule(ontology);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.RangeEntailment:
-                                standardRuleReport.MergeEvidences(OWLRangeEntailmentRule.ExecuteRule(ontology));
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.RangeEntailment.ToString()] = OWLRangeEntailmentRule.ExecuteRule(ontology);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.SameAsTransitivity:
-                                standardRuleReport.MergeEvidences(OWLSameAsTransitivityRule.ExecuteRule(ontology));
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.SameAsTransitivity.ToString()] = OWLSameAsTransitivityRule.ExecuteRule(ontology);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.DifferentFromEntailment:
-                                standardRuleReport.MergeEvidences(OWLDifferentFromEntailmentRule.ExecuteRule(ontology));
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.DifferentFromEntailment.ToString()] = OWLDifferentFromEntailmentRule.ExecuteRule(ontology);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.IndividualTypeEntailment:
-                                standardRuleReport.MergeEvidences(OWLIndividualTypeEntailmentRule.ExecuteRule(ontology));
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.IndividualTypeEntailment.ToString()] = OWLIndividualTypeEntailmentRule.ExecuteRule(ontology);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.SymmetricPropertyEntailment:
-                                standardRuleReport.MergeEvidences(OWLSymmetricPropertyEntailmentRule.ExecuteRule(ontology));
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.SymmetricPropertyEntailment.ToString()] = OWLSymmetricPropertyEntailmentRule.ExecuteRule(ontology);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.TransitivePropertyEntailment:
-                                standardRuleReport.MergeEvidences(OWLTransitivePropertyEntailmentRule.ExecuteRule(ontology));
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.TransitivePropertyEntailment.ToString()] = OWLTransitivePropertyEntailmentRule.ExecuteRule(ontology);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.ReflexivePropertyEntailment:
-                                standardRuleReport.MergeEvidences(OWLReflexivePropertyEntailmentRule.ExecuteRule(ontology));
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.ReflexivePropertyEntailment.ToString()] = OWLReflexivePropertyEntailmentRule.ExecuteRule(ontology);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.InverseOfEntailment:
-                                standardRuleReport.MergeEvidences(OWLInverseOfEntailmentRule.ExecuteRule(ontology));
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.InverseOfEntailment.ToString()] = OWLInverseOfEntailmentRule.ExecuteRule(ontology);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.PropertyEntailment:
-                                standardRuleReport.MergeEvidences(OWLPropertyEntailmentRule.ExecuteRule(ontology));
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.PropertyEntailment.ToString()] = OWLPropertyEntailmentRule.ExecuteRule(ontology);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.SameAsEntailment:
-                                standardRuleReport.MergeEvidences(OWLSameAsEntailmentRule.ExecuteRule(ontology));
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.SameAsEntailment.ToString()] = OWLSameAsEntailmentRule.ExecuteRule(ontology);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.HasValueEntailment:
-                                standardRuleReport.MergeEvidences(OWLHasValueEntailmentRule.ExecuteRule(ontology));
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.HasValueEntailment.ToString()] = OWLHasValueEntailmentRule.ExecuteRule(ontology);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.HasSelfEntailment:
-                                standardRuleReport.MergeEvidences(OWLHasSelfEntailmentRule.ExecuteRule(ontology));
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.HasSelfEntailment.ToString()] = OWLHasSelfEntailmentRule.ExecuteRule(ontology);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.HasKeyEntailment:
-                                standardRuleReport.MergeEvidences(OWLHasKeyEntailmentRule.ExecuteRule(ontology));
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.HasKeyEntailment.ToString()] = OWLHasKeyEntailmentRule.ExecuteRule(ontology);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.PropertyChainEntailment:
-                                standardRuleReport.MergeEvidences(OWLPropertyChainEntailmentRule.ExecuteRule(ontology));
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.PropertyChainEntailment.ToString()] = OWLPropertyChainEntailmentRule.ExecuteRule(ontology);
                                 break;
                         }
-                        reasonerReport.MergeEvidences(standardRuleReport);
 
-                        OWLSemanticsEvents.RaiseSemanticsInfo($"Completed standard reasoner rule '{standardRule}': found {standardRuleReport.EvidencesCount} evidences");
+                        OWLSemanticsEvents.RaiseSemanticsInfo($"Completed standard reasoner rule '{standardRule}': found {inferenceRegistry[standardRule.ToString()].EvidencesCount} evidences");
                     });
 
-                //SWRL Rules
-                Parallel.ForEach(SWRLRules, 
-                    swrlRule =>
+                //Execute custom rules
+                Parallel.ForEach(CustomRules, 
+                    customRule =>
                     {
-                        OWLSemanticsEvents.RaiseSemanticsInfo($"Launching SWRL reasoner rule '{swrlRule.RuleName}'");
+                        OWLSemanticsEvents.RaiseSemanticsInfo($"Launching custom (SWRL) reasoner rule '{customRule.RuleName}'");
 
-                        OWLReasonerReport customRuleReport = swrlRule.ApplyToOntology(ontology);
-                        reasonerReport.MergeEvidences(customRuleReport);
+                        inferenceRegistry[customRule.RuleName] = customRule.ApplyToOntology(ontology);
 
-                        OWLSemanticsEvents.RaiseSemanticsInfo($"Completed SWRL reasoner rule '{swrlRule.RuleName}': found {customRuleReport.EvidencesCount} evidences");
+                        OWLSemanticsEvents.RaiseSemanticsInfo($"Completed custom (SWRL) reasoner rule '{customRule.RuleName}': found {inferenceRegistry[customRule.RuleName].EvidencesCount} evidences");
                     });
 
-                OWLSemanticsEvents.RaiseSemanticsInfo($"easoner has been applied on Ontology '{ontology.URI}': found {reasonerReport.EvidencesCount} evidences");
+                //Process inference registry
+                foreach (OWLReasonerReport inferenceRegistryReport in inferenceRegistry.Values)
+                    reasonerReport.MergeEvidences(inferenceRegistryReport);
+
+                OWLSemanticsEvents.RaiseSemanticsInfo($"Reasoner has been applied on Ontology '{ontology.URI}': found {reasonerReport.EvidencesCount} evidences");
             }
 
             return reasonerReport;

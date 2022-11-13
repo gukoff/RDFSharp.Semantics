@@ -31,7 +31,6 @@ namespace RDFSharp.Semantics.Reasoner.Test
             OWLReasonerReport report = new OWLReasonerReport();
 
             Assert.IsNotNull(report);
-            Assert.IsNotNull(report.SyncLock);
             Assert.IsNotNull(report.Evidences);
             Assert.IsTrue(report.EvidencesCount == 0);
 
