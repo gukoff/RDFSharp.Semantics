@@ -454,15 +454,8 @@ namespace RDFSharp.Semantics
             if (valuesFromClass == null)
                 throw new OWLSemanticsException($"Cannot find individuals of owl:[All|Some]ValuesFromRestriction '{owlRestriction}' because required owl:[all|some]ValuesFrom information is not declared in the model");
 
-            //Make the given owl:Restriction also work with sub classes and equivalent classes of the given owl:[all|some]ValuesFrom class
-            List<RDFResource> compatibleClasses = model.ClassModel.GetSubClassesOf(valuesFromClass)
-                                                     .Union(model.ClassModel.GetEquivalentClassesOf(valuesFromClass)).ToList();
-
-            //Materialize individuals of the given owl:[all|some]ValuesFrom class and its compatible classes
+            //Materialize individuals of the given owl:[all|some]ValuesFrom class
             List<RDFResource> acceptableIndividuals = data.GetIndividualsOf(model, valuesFromClass);
-            foreach (RDFResource compatibleClass in compatibleClasses)
-                acceptableIndividuals.AddRange(data.GetIndividualsOf(model, compatibleClass));
-            acceptableIndividuals = RDFQueryUtilities.RemoveDuplicates(acceptableIndividuals);
             #endregion
 
             #region Count

@@ -47,7 +47,6 @@ namespace RDFSharp.Semantics
                 //SimpleClass
                 if (ontology.Model.ClassModel.CheckHasSimpleClass(classesEnumerator.Current))
                 {
-                    OWLSemanticsEvents.RaiseSemanticsInfo($"SimpleClass:{classesEnumerator.Current}");
                     List<RDFResource> simpleClassIndividuals = ontology.Data.FindIndividualsOfClass(ontology.Model, classesEnumerator.Current);
                     InferClassIndividuals(classesEnumerator.Current, simpleClassIndividuals, reasonerRuleReport);
                     continue;
@@ -56,7 +55,6 @@ namespace RDFSharp.Semantics
                 //EnumerateClass
                 if (ontology.Model.ClassModel.CheckHasEnumerateClass(classesEnumerator.Current))
                 {
-                    OWLSemanticsEvents.RaiseSemanticsInfo($"EnumerateClass:{classesEnumerator.Current}");
                     List<RDFResource> enumerateClassIndividuals = ontology.Data.FindIndividualsOfEnumerate(ontology.Model, classesEnumerator.Current);
                     InferClassIndividuals(classesEnumerator.Current, enumerateClassIndividuals, reasonerRuleReport);
                     continue;
@@ -65,7 +63,6 @@ namespace RDFSharp.Semantics
                 //RestrictionClass
                 if (ontology.Model.ClassModel.CheckHasRestrictionClass(classesEnumerator.Current))
                 {
-                    OWLSemanticsEvents.RaiseSemanticsInfo($"RestrictionClass:{classesEnumerator.Current}");
                     List<RDFResource> restrictionClassIndividuals = ontology.Data.FindIndividualsOfRestriction(ontology.Model, classesEnumerator.Current);
                     InferClassIndividuals(classesEnumerator.Current, restrictionClassIndividuals, reasonerRuleReport);
                     continue;
@@ -74,7 +71,6 @@ namespace RDFSharp.Semantics
                 //CompositeClass
                 if (ontology.Model.ClassModel.CheckHasCompositeClass(classesEnumerator.Current))
                 {
-                    OWLSemanticsEvents.RaiseSemanticsInfo($"RestrictionClass:{classesEnumerator.Current}");
                     List<RDFResource> compositeClassIndividuals = ontology.Data.FindIndividualsOfComposite(ontology.Model, classesEnumerator.Current);
                     InferClassIndividuals(classesEnumerator.Current, compositeClassIndividuals, reasonerRuleReport);
                     continue;
