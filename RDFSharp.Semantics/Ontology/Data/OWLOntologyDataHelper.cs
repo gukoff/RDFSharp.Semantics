@@ -448,15 +448,21 @@ namespace RDFSharp.Semantics
             List<RDFResource> individuals = new List<RDFResource>();
 
             #region Parse
-            //Get owl:[all|some]ValuesFrom of the given owl:Restriction
+            //Get owl:[all|some]ValuesFrom class of the given owl:Restriction
             bool isAllValuesFrom = model.ClassModel.CheckHasAllValuesFromRestrictionClass(owlRestriction);
             RDFResource valuesFromClass = model.ClassModel.TBoxGraph[owlRestriction, isAllValuesFrom ? RDFVocabulary.OWL.ALL_VALUES_FROM : RDFVocabulary.OWL.SOME_VALUES_FROM, null, null].First().Object as RDFResource;
             if (valuesFromClass == null)
                 throw new OWLSemanticsException($"Cannot find individuals of owl:[All|Some]ValuesFromRestriction '{owlRestriction}' because required owl:[all|some]ValuesFrom information is not declared in the model");
 
-            //Make the given owl:Restriction also work with sub classes and equivalent classes of the given owl:[all|some]ValuesFrom
+            //Make the given owl:Restriction also work with sub classes and equivalent classes of the given owl:[all|some]ValuesFrom class
             List<RDFResource> compatibleClasses = model.ClassModel.GetSubClassesOf(valuesFromClass)
                                                      .Union(model.ClassModel.GetEquivalentClassesOf(valuesFromClass)).ToList();
+
+            //Materialize individuals of the given owl:[all|some]ValuesFrom class and its compatible classes
+            List<RDFResource> acceptableIndividuals = data.GetIndividualsOf(model, valuesFromClass);
+            foreach (RDFResource compatibleClass in compatibleClasses)
+                acceptableIndividuals.AddRange(data.GetIndividualsOf(model, compatibleClass));
+            acceptableIndividuals = RDFQueryUtilities.RemoveDuplicates(acceptableIndividuals);
             #endregion
 
             #region Count
@@ -469,19 +475,10 @@ namespace RDFSharp.Semantics
                 if (!valuesFromRegistry.ContainsKey(assertionTriple.Subject.PatternMemberID))
                     valuesFromRegistry.Add(assertionTriple.Subject.PatternMemberID, (assertionTriple.Subject, 0, 0));
 
-                //Check if the object individual belongs to the given owl:[all|some]ValuesFrom class or any compatible classes
-                bool fromClassFound = data.CheckIsIndividualOf(model, (RDFResource)assertionTriple.Object, valuesFromClass);
-                if (!fromClassFound)
-                {
-                    IEnumerator<RDFResource> compatibleClassesEnumerator = compatibleClasses.GetEnumerator();
-                    while (!fromClassFound && compatibleClassesEnumerator.MoveNext())
-                        fromClassFound = data.CheckIsIndividualOf(model, (RDFResource)assertionTriple.Object, compatibleClassesEnumerator.Current);
-                }
-
                 //Update the occurrence counters of the subject individual
                 long equalityCounter = valuesFromRegistry[assertionTriple.Subject.PatternMemberID].Item2;
                 long differenceCounter = valuesFromRegistry[assertionTriple.Subject.PatternMemberID].Item3;
-                if (fromClassFound)
+                if (acceptableIndividuals.Any(idv => idv.Equals(assertionTriple.Object)))
                     valuesFromRegistry[assertionTriple.Subject.PatternMemberID] = (assertionTriple.Subject, equalityCounter + 1, differenceCounter);
                 else
                     valuesFromRegistry[assertionTriple.Subject.PatternMemberID] = (assertionTriple.Subject, equalityCounter, differenceCounter + 1);

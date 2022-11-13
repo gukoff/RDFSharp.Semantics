@@ -24,9 +24,8 @@ namespace RDFSharp.Semantics
         internal static OWLReasonerReport ExecuteRule(OWLOntology ontology)
         {
             #region RuleBody
-            void InferClassIndividuals(RDFResource currentClass, OWLReasonerReport report)
+            void InferClassIndividuals(RDFResource currentClass, List<RDFResource> classIndividuals, OWLReasonerReport report)
             {
-                List<RDFResource> classIndividuals = ontology.Data.GetIndividualsOf(ontology.Model, currentClass);
                 foreach (RDFResource classIndividual in classIndividuals)
                 {
                     //Create the inferences
@@ -42,10 +41,45 @@ namespace RDFSharp.Semantics
 
             OWLReasonerReport reasonerRuleReport = new OWLReasonerReport();
 
-            //owl:Class
             IEnumerator<RDFResource> classesEnumerator = ontology.Model.ClassModel.ClassesEnumerator;
             while (classesEnumerator.MoveNext())
-                InferClassIndividuals(classesEnumerator.Current, reasonerRuleReport);
+            {
+                //SimpleClass
+                if (ontology.Model.ClassModel.CheckHasSimpleClass(classesEnumerator.Current))
+                {
+                    OWLSemanticsEvents.RaiseSemanticsInfo($"SimpleClass:{classesEnumerator.Current}");
+                    List<RDFResource> simpleClassIndividuals = ontology.Data.FindIndividualsOfClass(ontology.Model, classesEnumerator.Current);
+                    InferClassIndividuals(classesEnumerator.Current, simpleClassIndividuals, reasonerRuleReport);
+                    continue;
+                }
+
+                //EnumerateClass
+                if (ontology.Model.ClassModel.CheckHasEnumerateClass(classesEnumerator.Current))
+                {
+                    OWLSemanticsEvents.RaiseSemanticsInfo($"EnumerateClass:{classesEnumerator.Current}");
+                    List<RDFResource> enumerateClassIndividuals = ontology.Data.FindIndividualsOfEnumerate(ontology.Model, classesEnumerator.Current);
+                    InferClassIndividuals(classesEnumerator.Current, enumerateClassIndividuals, reasonerRuleReport);
+                    continue;
+                }
+
+                //RestrictionClass
+                if (ontology.Model.ClassModel.CheckHasRestrictionClass(classesEnumerator.Current))
+                {
+                    OWLSemanticsEvents.RaiseSemanticsInfo($"RestrictionClass:{classesEnumerator.Current}");
+                    List<RDFResource> restrictionClassIndividuals = ontology.Data.FindIndividualsOfRestriction(ontology.Model, classesEnumerator.Current);
+                    InferClassIndividuals(classesEnumerator.Current, restrictionClassIndividuals, reasonerRuleReport);
+                    continue;
+                }
+
+                //CompositeClass
+                if (ontology.Model.ClassModel.CheckHasCompositeClass(classesEnumerator.Current))
+                {
+                    OWLSemanticsEvents.RaiseSemanticsInfo($"RestrictionClass:{classesEnumerator.Current}");
+                    List<RDFResource> compositeClassIndividuals = ontology.Data.FindIndividualsOfComposite(ontology.Model, classesEnumerator.Current);
+                    InferClassIndividuals(classesEnumerator.Current, compositeClassIndividuals, reasonerRuleReport);
+                    continue;
+                }
+            }
 
             return reasonerRuleReport;
         }
