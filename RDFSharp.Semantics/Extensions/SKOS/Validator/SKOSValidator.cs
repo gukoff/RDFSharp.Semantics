@@ -58,26 +58,33 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             {
                 OWLSemanticsEvents.RaiseSemanticsInfo($"SKOS Validator is going to be applied on skos:ConceptScheme '{conceptScheme.URI}'");
 
-                //Standard Rules
+                //Initialize validator registry
+                Dictionary<string, OWLValidatorReport> validatorRegistry = new Dictionary<string, OWLValidatorReport>();
+                foreach (SKOSEnums.SKOSValidatorStandardRules standardRule in StandardRules)
+                    validatorRegistry.Add(standardRule.ToString(), null);
+
+                //Execute standard rules
                 Parallel.ForEach(StandardRules,
                     standardRule =>
                     {
                         OWLSemanticsEvents.RaiseSemanticsInfo($"Launching standard SKOS validator rule '{standardRule}'");
 
-                        OWLValidatorReport standardRuleReport = new OWLValidatorReport();
                         switch (standardRule)
                         {
                             case SKOSEnums.SKOSValidatorStandardRules.TopConcept:
-                                standardRuleReport.MergeEvidences(SKOSTopConceptRule.ExecuteRule(conceptScheme));
+                                validatorRegistry[SKOSEnums.SKOSValidatorStandardRules.TopConcept.ToString()] = SKOSTopConceptRule.ExecuteRule(conceptScheme);
                                 break;
                             case SKOSEnums.SKOSValidatorStandardRules.LiteralForm:
-                                standardRuleReport.MergeEvidences(SKOSXLLiteralFormRule.ExecuteRule(conceptScheme));
+                                validatorRegistry[SKOSEnums.SKOSValidatorStandardRules.LiteralForm.ToString()] = SKOSXLLiteralFormRule.ExecuteRule(conceptScheme);
                                 break;
                         }
-                        validatorReport.MergeEvidences(standardRuleReport);
 
-                        OWLSemanticsEvents.RaiseSemanticsInfo($"Completed standard SKOS validator rule '{standardRule}': found {standardRuleReport.EvidencesCount} evidences");
+                        OWLSemanticsEvents.RaiseSemanticsInfo($"Completed standard SKOS validator rule '{standardRule}': found {validatorRegistry[standardRule.ToString()].EvidencesCount} evidences");
                     });
+
+                //Process validator registry
+                foreach (OWLValidatorReport validatorRegistryReport in validatorRegistry.Values)
+                    validatorReport.MergeEvidences(validatorRegistryReport);
 
                 OWLSemanticsEvents.RaiseSemanticsInfo($"SKOS Validator has been applied on skos:ConceptScheme '{conceptScheme.URI}': found {validatorReport.EvidencesCount} evidences");
             }
