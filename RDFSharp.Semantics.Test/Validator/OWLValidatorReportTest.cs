@@ -29,7 +29,6 @@ namespace RDFSharp.Semantics.Validator.Test
             OWLValidatorReport report = new OWLValidatorReport();
 
             Assert.IsNotNull(report);
-            Assert.IsNotNull(report.SyncLock);
             Assert.IsNotNull(report.Evidences);
             Assert.IsTrue(report.EvidencesCount == 0);
 

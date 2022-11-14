@@ -38,11 +38,6 @@ namespace RDFSharp.Semantics
         /// List of evidences
         /// </summary>
         internal List<OWLValidatorEvidence> Evidences { get; set; }
-
-        /// <summary>
-        /// SyncLock for evidences
-        /// </summary>
-        internal object SyncLock { get; set; }
         #endregion
 
         #region Ctors
@@ -50,10 +45,7 @@ namespace RDFSharp.Semantics
         /// Default-ctor to build an empty validator report
         /// </summary>
         internal OWLValidatorReport()
-        {
-            Evidences = new List<OWLValidatorEvidence>();
-            SyncLock = new object();
-        }
+            => Evidences = new List<OWLValidatorEvidence>();
         #endregion
 
         #region Interfaces
@@ -77,22 +69,15 @@ namespace RDFSharp.Semantics
         public OWLValidatorReport AddEvidence(OWLValidatorEvidence evidence)
         {
             if (evidence != null)
-            {
-                lock (SyncLock)
-                    Evidences.Add(evidence);
-            }
+                Evidences.Add(evidence);
             return this;
         }
 
         /// <summary>
         /// Merges the evidences of the given report
         /// </summary>
-        internal OWLValidatorReport MergeEvidences(OWLValidatorReport report)
-        {
-            lock (SyncLock)
-                Evidences.AddRange(report.Evidences);
-            return this;
-        }
+        internal void MergeEvidences(OWLValidatorReport report)
+            => Evidences.AddRange(report.Evidences);
 
         /// <summary>
         /// Gets the warning evidences from the validation report

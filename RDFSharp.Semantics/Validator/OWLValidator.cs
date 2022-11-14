@@ -78,80 +78,88 @@ namespace RDFSharp.Semantics
             {
                 OWLSemanticsEvents.RaiseSemanticsInfo($"Validator is going to be applied on Ontology '{ontology.URI}': this may require intensive processing, depending on size and complexity of domain knowledge and rules");
 
-                //Standard Rules
+                //Initialize validator registry
+                Dictionary<string, OWLValidatorReport> validatorRegistry = new Dictionary<string, OWLValidatorReport>();
+                foreach (OWLSemanticsEnums.OWLValidatorStandardRules standardRule in StandardRules)
+                    validatorRegistry.Add(standardRule.ToString(), null);
+                foreach (OWLValidatorRule customRule in CustomRules)
+                    validatorRegistry.Add(customRule.RuleName, null);
+
+                //Execute standard rules
                 Parallel.ForEach(StandardRules, 
                     standardRule =>
                     {
                         OWLSemanticsEvents.RaiseSemanticsInfo($"Launching standard validator rule '{standardRule}'");
 
-                        OWLValidatorReport standardRuleReport = new OWLValidatorReport();
                         switch (standardRule)
                         {
                             case OWLSemanticsEnums.OWLValidatorStandardRules.TermDisjointness:
-                                standardRuleReport.MergeEvidences(OWLTermDisjointnessRule.ExecuteRule(ontology));
+                                validatorRegistry[OWLSemanticsEnums.OWLValidatorStandardRules.TermDisjointness.ToString()] = OWLTermDisjointnessRule.ExecuteRule(ontology);
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.TermDeclaration:
-                                standardRuleReport.MergeEvidences(OWLTermDeclarationRule.ExecuteRule(ontology));
+                                validatorRegistry[OWLSemanticsEnums.OWLValidatorStandardRules.TermDeclaration.ToString()] = OWLTermDeclarationRule.ExecuteRule(ontology);
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.TermDeprecation:
-                                standardRuleReport.MergeEvidences(OWLTermDeprecationRule.ExecuteRule(ontology));
+                                validatorRegistry[OWLSemanticsEnums.OWLValidatorStandardRules.TermDeprecation.ToString()] = OWLTermDeprecationRule.ExecuteRule(ontology);
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.DomainRange:
-                                standardRuleReport.MergeEvidences(OWLDomainRangeRule.ExecuteRule(ontology));
+                                validatorRegistry[OWLSemanticsEnums.OWLValidatorStandardRules.DomainRange.ToString()] = OWLDomainRangeRule.ExecuteRule(ontology);
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.InverseOf:
-                                standardRuleReport.MergeEvidences(OWLInverseOfRule.ExecuteRule(ontology));
+                                validatorRegistry[OWLSemanticsEnums.OWLValidatorStandardRules.InverseOf.ToString()] = OWLInverseOfRule.ExecuteRule(ontology);
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.SymmetricProperty:
-                                standardRuleReport.MergeEvidences(OWLSymmetricPropertyRule.ExecuteRule(ontology));
+                                validatorRegistry[OWLSemanticsEnums.OWLValidatorStandardRules.SymmetricProperty.ToString()] = OWLSymmetricPropertyRule.ExecuteRule(ontology);
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.AsymmetricProperty:
-                                standardRuleReport.MergeEvidences(OWLAsymmetricPropertyRule.ExecuteRule(ontology));
+                                validatorRegistry[OWLSemanticsEnums.OWLValidatorStandardRules.AsymmetricProperty.ToString()] = OWLAsymmetricPropertyRule.ExecuteRule(ontology);
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.IrreflexiveProperty:
-                                standardRuleReport.MergeEvidences(OWLIrreflexivePropertyRule.ExecuteRule(ontology));
+                                validatorRegistry[OWLSemanticsEnums.OWLValidatorStandardRules.IrreflexiveProperty.ToString()] = OWLIrreflexivePropertyRule.ExecuteRule(ontology);
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.PropertyDisjoint:
-                                standardRuleReport.MergeEvidences(OWLPropertyDisjointRule.ExecuteRule(ontology));
+                                validatorRegistry[OWLSemanticsEnums.OWLValidatorStandardRules.PropertyDisjoint.ToString()] = OWLPropertyDisjointRule.ExecuteRule(ontology);
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.ClassKey:
-                                standardRuleReport.MergeEvidences(OWLClassKeyRule.ExecuteRule(ontology));
+                                validatorRegistry[OWLSemanticsEnums.OWLValidatorStandardRules.ClassKey.ToString()] = OWLClassKeyRule.ExecuteRule(ontology);
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.PropertyChainAxiom:
-                                standardRuleReport.MergeEvidences(OWLPropertyChainAxiomRule.ExecuteRule(ontology));
+                                validatorRegistry[OWLSemanticsEnums.OWLValidatorStandardRules.PropertyChainAxiom.ToString()] = OWLPropertyChainAxiomRule.ExecuteRule(ontology);
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.ClassType:
-                                standardRuleReport.MergeEvidences(OWLClassTypeRule.ExecuteRule(ontology));
+                                validatorRegistry[OWLSemanticsEnums.OWLValidatorStandardRules.ClassType.ToString()] = OWLClassTypeRule.ExecuteRule(ontology);
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.NegativeAssertions:
-                                standardRuleReport.MergeEvidences(OWLNegativeAssertionsRule.ExecuteRule(ontology));
+                                validatorRegistry[OWLSemanticsEnums.OWLValidatorStandardRules.NegativeAssertions.ToString()] = OWLNegativeAssertionsRule.ExecuteRule(ontology);
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.GlobalCardinality:
-                                standardRuleReport.MergeEvidences(OWLGlobalCardinalityRule.ExecuteRule(ontology));
+                                validatorRegistry[OWLSemanticsEnums.OWLValidatorStandardRules.GlobalCardinality.ToString()] = OWLGlobalCardinalityRule.ExecuteRule(ontology);
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.LocalCardinality:
-                                standardRuleReport.MergeEvidences(OWLLocalCardinalityRule.ExecuteRule(ontology));
+                                validatorRegistry[OWLSemanticsEnums.OWLValidatorStandardRules.LocalCardinality.ToString()] = OWLLocalCardinalityRule.ExecuteRule(ontology);
                                 break;
                             case OWLSemanticsEnums.OWLValidatorStandardRules.PropertyConsistency:
-                                standardRuleReport.MergeEvidences(OWLPropertyConsistencyRule.ExecuteRule(ontology));
+                                validatorRegistry[OWLSemanticsEnums.OWLValidatorStandardRules.PropertyConsistency.ToString()] = OWLPropertyConsistencyRule.ExecuteRule(ontology);
                                 break;
                         }
-                        validatorReport.MergeEvidences(standardRuleReport);
 
-                        OWLSemanticsEvents.RaiseSemanticsInfo($"Completed standard validator rule '{standardRule}': found {standardRuleReport.EvidencesCount} evidences");
+                        OWLSemanticsEvents.RaiseSemanticsInfo($"Completed standard validator rule '{standardRule}': found {validatorRegistry[standardRule.ToString()].EvidencesCount} evidences");
                     });
 
-                //Custom Rules
+                //Execute custom rules
                 Parallel.ForEach(CustomRules, 
                     customRule =>
                     {
                         OWLSemanticsEvents.RaiseSemanticsInfo($"Launching custom validator rule '{customRule.RuleName}'");
 
-                        OWLValidatorReport customRuleReport = customRule.ExecuteRule(ontology);
-                        validatorReport.MergeEvidences(customRuleReport);
+                        validatorRegistry[customRule.RuleName] = customRule.ExecuteRule(ontology);
 
-                        OWLSemanticsEvents.RaiseSemanticsInfo($"Completed custom validator rule '{customRule.RuleName}': found {customRuleReport.EvidencesCount} evidences");
+                        OWLSemanticsEvents.RaiseSemanticsInfo($"Completed custom validator rule '{customRule.RuleName}': found {validatorRegistry[customRule.RuleName].EvidencesCount} evidences");
                     });
+
+                //Process validator registry
+                foreach (OWLValidatorReport validatorRegistryReport in validatorRegistry.Values)
+                    validatorReport.MergeEvidences(validatorRegistryReport);
 
                 OWLSemanticsEvents.RaiseSemanticsInfo($"Validator has been applied on Ontology '{ontology.URI}': found {validatorReport.EvidencesCount} evidences");
             }
