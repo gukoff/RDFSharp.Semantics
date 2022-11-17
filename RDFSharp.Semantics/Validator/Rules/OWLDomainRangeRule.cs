@@ -77,7 +77,7 @@ namespace RDFSharp.Semantics
                 List<RDFResource> domainClasses = ontology.Model.PropertyModel.GetDomainOf(datatypeProperties.Current);
                 if (domainClasses.Any())
                 {
-                    //Materialize cache of individuals belonging to domain/range classes
+                    //Materialize cache of individuals belonging to domain class
                     foreach (RDFResource domainClass in domainClasses)
                     { 
                         if (!individualsCache.ContainsKey(domainClass.PatternMemberID))
