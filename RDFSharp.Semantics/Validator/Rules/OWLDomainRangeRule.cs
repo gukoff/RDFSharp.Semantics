@@ -31,8 +31,6 @@ namespace RDFSharp.Semantics
             IEnumerator<RDFResource> objectProperties = ontology.Model.PropertyModel.ObjectPropertiesEnumerator;
             while (objectProperties.MoveNext())
             {
-                OWLSemanticsEvents.RaiseSemanticsInfo($"OBJPROP:{objectProperties.Current}");
-
                 List<RDFResource> domainClasses = ontology.Model.PropertyModel.GetDomainOf(objectProperties.Current);
                 List<RDFResource> rangeClasses = ontology.Model.PropertyModel.GetRangeOf(objectProperties.Current);
                 if (domainClasses.Any() || rangeClasses.Any())
@@ -76,8 +74,6 @@ namespace RDFSharp.Semantics
             IEnumerator<RDFResource> datatypeProperties = ontology.Model.PropertyModel.DatatypePropertiesEnumerator;
             while (datatypeProperties.MoveNext())
             {
-                OWLSemanticsEvents.RaiseSemanticsInfo($"DTPROP:{objectProperties.Current}");
-
                 List<RDFResource> domainClasses = ontology.Model.PropertyModel.GetDomainOf(datatypeProperties.Current);
                 if (domainClasses.Any())
                 {
