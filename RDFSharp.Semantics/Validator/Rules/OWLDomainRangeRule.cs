@@ -25,7 +25,7 @@ namespace RDFSharp.Semantics
         internal static OWLValidatorReport ExecuteRule(OWLOntology ontology)
         {
             OWLValidatorReport validatorRuleReport = new OWLValidatorReport();
-            Dictionary<long, List<RDFResource>> individualsCache = new Dictionary<long, List<RDFResource>>();
+            Dictionary<long, HashSet<long>> individualsCache = new Dictionary<long, HashSet<long>>();
 
             //owl:ObjectAssertion
             IEnumerator<RDFResource> objectProperties = ontology.Model.PropertyModel.ObjectPropertiesEnumerator;
@@ -39,12 +39,12 @@ namespace RDFSharp.Semantics
                     foreach (RDFResource domainClass in domainClasses)
                     { 
                         if (!individualsCache.ContainsKey(domainClass.PatternMemberID))
-                            individualsCache.Add(domainClass.PatternMemberID, ontology.Data.GetIndividualsOf(ontology.Model, domainClass));
+                            individualsCache.Add(domainClass.PatternMemberID, new HashSet<long>(ontology.Data.GetIndividualsOf(ontology.Model, domainClass).Select(idv => idv.PatternMemberID)));
                     }
                     foreach (RDFResource rangeClass in rangeClasses)
                     { 
                         if (!individualsCache.ContainsKey(rangeClass.PatternMemberID))
-                            individualsCache.Add(rangeClass.PatternMemberID, ontology.Data.GetIndividualsOf(ontology.Model, rangeClass));
+                            individualsCache.Add(rangeClass.PatternMemberID, new HashSet<long>(ontology.Data.GetIndividualsOf(ontology.Model, rangeClass).Select(idv => idv.PatternMemberID)));
                     }
 
                     //Analyze A-BOX object assertions using the current object property
@@ -52,7 +52,7 @@ namespace RDFSharp.Semantics
                     foreach (RDFTriple objectPropertyAssertion in objectPropertyAssertions)
                     {
                         //Subject of object property assertion should be compatible with specified rdfs:domain
-                        if (domainClasses.Any(domainClass => individualsCache[domainClass.PatternMemberID].Count > 0 && !individualsCache[domainClass.PatternMemberID].Any(indiv => indiv.Equals(objectPropertyAssertion.Subject))))
+                        if (domainClasses.Any(domainClass => individualsCache[domainClass.PatternMemberID].Count > 0 && !individualsCache[domainClass.PatternMemberID].Contains(objectPropertyAssertion.Subject.PatternMemberID)))
                             validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                                 OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
                                 nameof(OWLDomainRangeRule),
@@ -60,7 +60,7 @@ namespace RDFSharp.Semantics
                                 $"Revise 'rdf:type' relations of '{objectPropertyAssertion.Subject}' individual: it is not compatible with expected 'rdfs:domain' constraint"));
 
                         //Object of object property assertion should be compatible with specified rdfs:range
-                        if (rangeClasses.Any(rangeClass => individualsCache[rangeClass.PatternMemberID].Count > 0 && !individualsCache[rangeClass.PatternMemberID].Any(indiv => indiv.Equals(objectPropertyAssertion.Object))))
+                        if (rangeClasses.Any(rangeClass => individualsCache[rangeClass.PatternMemberID].Count > 0 && !individualsCache[rangeClass.PatternMemberID].Contains(objectPropertyAssertion.Object.PatternMemberID)))
                             validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                                 OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
                                 nameof(OWLDomainRangeRule),
@@ -81,7 +81,7 @@ namespace RDFSharp.Semantics
                     foreach (RDFResource domainClass in domainClasses)
                     { 
                         if (!individualsCache.ContainsKey(domainClass.PatternMemberID))
-                            individualsCache.Add(domainClass.PatternMemberID, ontology.Data.GetIndividualsOf(ontology.Model, domainClass));
+                            individualsCache.Add(domainClass.PatternMemberID, new HashSet<long>(ontology.Data.GetIndividualsOf(ontology.Model, domainClass).Select(idv => idv.PatternMemberID)));
                     }
 
                     //Analyze A-BOX datatype assertions using the current datatype property
@@ -89,7 +89,7 @@ namespace RDFSharp.Semantics
                     foreach (RDFTriple datatypePropertyAssertion in datatypePropertyAssertions)
                     {
                         //Subject of datatype property assertion should be compatible with specified rdfs:domain
-                        if (domainClasses.Any(domainClass => individualsCache[domainClass.PatternMemberID].Count > 0 && !individualsCache[domainClass.PatternMemberID].Any(indiv => indiv.Equals(datatypePropertyAssertion.Subject))))
+                        if (domainClasses.Any(domainClass => individualsCache[domainClass.PatternMemberID].Count > 0 && !individualsCache[domainClass.PatternMemberID].Contains(datatypePropertyAssertion.Subject.PatternMemberID)))
                             validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                                 OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
                                 nameof(OWLDomainRangeRule),
