@@ -25,6 +25,7 @@ namespace RDFSharp.Semantics
         internal static OWLValidatorReport ExecuteRule(OWLOntology ontology)
         {
             OWLValidatorReport validatorRuleReport = new OWLValidatorReport();
+            Dictionary<long, HashSet<long>> individualsCache = new Dictionary<long, HashSet<long>>();
 
             //owl:SymmetricProperty
             IEnumerator<RDFResource> symmetricPropertiesEnumerator = ontology.Model.PropertyModel.SymmetricPropertiesEnumerator;
@@ -34,24 +35,37 @@ namespace RDFSharp.Semantics
                 List<RDFResource> rangeClasses = ontology.Model.PropertyModel.GetRangeOf(symmetricPropertiesEnumerator.Current);
                 if (domainClasses.Any() || rangeClasses.Any())
                 {
+                    //Materialize cache of individuals belonging to domain/range classes
+                    foreach (RDFResource domainClass in domainClasses)
+                    {
+                        if (!individualsCache.ContainsKey(domainClass.PatternMemberID))
+                            individualsCache.Add(domainClass.PatternMemberID, new HashSet<long>(ontology.Data.GetIndividualsOf(ontology.Model, domainClass).Select(idv => idv.PatternMemberID)));
+                    }
+                    foreach (RDFResource rangeClass in rangeClasses)
+                    {
+                        if (!individualsCache.ContainsKey(rangeClass.PatternMemberID))
+                            individualsCache.Add(rangeClass.PatternMemberID, new HashSet<long>(ontology.Data.GetIndividualsOf(ontology.Model, rangeClass).Select(idv => idv.PatternMemberID)));
+                    }
+
+                    //Analyze A-BOX object assertions using the current symmetric property
                     RDFGraph symmetricObjectAssertions = ontology.Data.ABoxGraph[null, symmetricPropertiesEnumerator.Current, null, null];
                     foreach (RDFTriple symmetricObjectAssertion in symmetricObjectAssertions)
                     {
-                        //In order to not generate inferences having inconsistent rdfs:domain, object of symmetric assertions should be compatible with specified rdfs:domain
-                        if (domainClasses.Any(domainClass => !ontology.Data.CheckIsIndividualOf(ontology.Model, (RDFResource)symmetricObjectAssertion.Object, domainClass)))
+                        //Object of symmetric assertions should be compatible with specified rdfs:domain
+                        if (domainClasses.Any(domainClass => individualsCache[domainClass.PatternMemberID].Count > 0 && !individualsCache[domainClass.PatternMemberID].Contains(symmetricObjectAssertion.Object.PatternMemberID)))
                             validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                                 OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
                                 nameof(OWLSymmetricPropertyRule),
                                 $"Violation of 'owl:SymmetricProperty' behavior on property '{symmetricPropertiesEnumerator.Current}'",
-                                "Revise your object assertions: fix symmetric property usage in order to not tamper domain/range constraints of the property"));
+                                "Revise your object assertions: fix symmetric property usage in order to not tamper rdfs:domain constraints of this property"));
 
-                        //In order to not generate inferences having inconsistent rdfs:range, subject of symmetric assertions should be compatible with specified rdfs:range
-                        if (rangeClasses.Any(rangeClass => !ontology.Data.CheckIsIndividualOf(ontology.Model, (RDFResource)symmetricObjectAssertion.Subject, rangeClass)))
+                        //Subject of symmetric property assertion should be compatible with specified rdfs:range
+                        if (rangeClasses.Any(rangeClass => individualsCache[rangeClass.PatternMemberID].Count > 0 && !individualsCache[rangeClass.PatternMemberID].Contains(symmetricObjectAssertion.Subject.PatternMemberID)))
                             validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                                 OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
                                 nameof(OWLSymmetricPropertyRule),
                                 $"Violation of 'owl:SymmetricProperty' behavior on property '{symmetricPropertiesEnumerator.Current}'",
-                                "Revise your object assertions: fix symmetric property usage in order to not tamper domain/range constraints of the property"));
+                                "Revise your object assertions: fix symmetric property usage in order to not tamper rdfs:range constraints of this property"));
                     }
                 }
             }
