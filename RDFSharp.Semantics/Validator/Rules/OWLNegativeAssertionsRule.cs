@@ -12,7 +12,6 @@
 */
 
 using RDFSharp.Model;
-using RDFSharp.Query;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -26,23 +25,31 @@ namespace RDFSharp.Semantics
         internal static OWLValidatorReport ExecuteRule(OWLOntology ontology)
         {
             OWLValidatorReport validatorRuleReport = new OWLValidatorReport();
+            Dictionary<long, List<RDFResource>> sameIndividualsCache = new Dictionary<long, List<RDFResource>>();
+            Dictionary<long, List<RDFResource>> compatiblePropertiesCache = new Dictionary<long, List<RDFResource>>();
 
             //owl:NegativeObjectProperty
             RDFGraph objectAssertions = OWLOntologyDataLoader.GetObjectAssertions(ontology, ontology.Data.ABoxGraph);
             foreach (RDFTriple negativeObjectAssertion in OWLOntologyDataLoader.GetNegativeObjectAssertions(ontology.Data.ABoxGraph))
             {
                 //Enlist the individuals which are compatible with negative assertion subject
-                List<RDFResource> compatibleSubjects = ontology.Data.GetSameIndividuals((RDFResource)negativeObjectAssertion.Subject)
+                if (!sameIndividualsCache.ContainsKey(negativeObjectAssertion.Subject.PatternMemberID))
+                    sameIndividualsCache.Add(negativeObjectAssertion.Subject.PatternMemberID, ontology.Data.GetSameIndividuals((RDFResource)negativeObjectAssertion.Subject));
+                List<RDFResource> compatibleSubjects = sameIndividualsCache[negativeObjectAssertion.Subject.PatternMemberID]
                                                         .Union(new List<RDFResource>() { (RDFResource)negativeObjectAssertion.Subject }).ToList();
 
                 //Enlist the object properties which are compatible with negative assertion predicate
-                List<RDFResource> compatibleProperties = ontology.Model.PropertyModel.GetEquivalentPropertiesOf((RDFResource)negativeObjectAssertion.Predicate)
-                                                          .Union(ontology.Model.PropertyModel.GetSubPropertiesOf((RDFResource)negativeObjectAssertion.Predicate))
+                if (!compatiblePropertiesCache.ContainsKey(negativeObjectAssertion.Predicate.PatternMemberID))
+                    compatiblePropertiesCache.Add(negativeObjectAssertion.Predicate.PatternMemberID, ontology.Model.PropertyModel.GetEquivalentPropertiesOf((RDFResource)negativeObjectAssertion.Predicate)
+                                                                                                        .Union(ontology.Model.PropertyModel.GetSubPropertiesOf((RDFResource)negativeObjectAssertion.Predicate)).ToList());
+                List<RDFResource> compatibleProperties = compatiblePropertiesCache[negativeObjectAssertion.Predicate.PatternMemberID]
                                                            .Union(new List<RDFResource>() { (RDFResource)negativeObjectAssertion.Predicate })
                                                             .ToList();
 
                 //Enlist the individuals which are compatible with negative assertion object
-                List<RDFResource> compatibleObjects = ontology.Data.GetSameIndividuals((RDFResource)negativeObjectAssertion.Object)
+                if (!sameIndividualsCache.ContainsKey(negativeObjectAssertion.Object.PatternMemberID))
+                    sameIndividualsCache.Add(negativeObjectAssertion.Object.PatternMemberID, ontology.Data.GetSameIndividuals((RDFResource)negativeObjectAssertion.Object));
+                List<RDFResource> compatibleObjects = sameIndividualsCache[negativeObjectAssertion.Object.PatternMemberID]
                                                        .Union(new List<RDFResource>() { (RDFResource)negativeObjectAssertion.Object }).ToList();
 
                 //There should not be any object assertion conflicting with negative object assertions
@@ -61,12 +68,16 @@ namespace RDFSharp.Semantics
             foreach (RDFTriple negativeDatatypeAssertion in OWLOntologyDataLoader.GetNegativeDatatypeAssertions(ontology.Data.ABoxGraph))
             {
                 //Enlist the individuals which are compatible with negative assertion subject
-                List<RDFResource> compatibleSubjects = ontology.Data.GetSameIndividuals((RDFResource)negativeDatatypeAssertion.Subject)
+                if (!sameIndividualsCache.ContainsKey(negativeDatatypeAssertion.Subject.PatternMemberID))
+                    sameIndividualsCache.Add(negativeDatatypeAssertion.Subject.PatternMemberID, ontology.Data.GetSameIndividuals((RDFResource)negativeDatatypeAssertion.Subject));
+                List<RDFResource> compatibleSubjects = sameIndividualsCache[negativeDatatypeAssertion.Subject.PatternMemberID]
                                                         .Union(new List<RDFResource>() { (RDFResource)negativeDatatypeAssertion.Subject }).ToList();
 
-                //Enlist the object properties which are compatible with negative assertion predicate
-                List<RDFResource> compatibleProperties = ontology.Model.PropertyModel.GetEquivalentPropertiesOf((RDFResource)negativeDatatypeAssertion.Predicate)
-                                                          .Union(ontology.Model.PropertyModel.GetSubPropertiesOf((RDFResource)negativeDatatypeAssertion.Predicate))
+                //Enlist the datatype properties which are compatible with negative assertion predicate
+                if (!compatiblePropertiesCache.ContainsKey(negativeDatatypeAssertion.Predicate.PatternMemberID))
+                    compatiblePropertiesCache.Add(negativeDatatypeAssertion.Predicate.PatternMemberID, ontology.Model.PropertyModel.GetEquivalentPropertiesOf((RDFResource)negativeDatatypeAssertion.Predicate)
+                                                                                                        .Union(ontology.Model.PropertyModel.GetSubPropertiesOf((RDFResource)negativeDatatypeAssertion.Predicate)).ToList());
+                List<RDFResource> compatibleProperties = compatiblePropertiesCache[negativeDatatypeAssertion.Predicate.PatternMemberID]
                                                            .Union(new List<RDFResource>() { (RDFResource)negativeDatatypeAssertion.Predicate }).ToList();
 
                 //There should not be any datatype assertion conflicting with negative datatype assertions
