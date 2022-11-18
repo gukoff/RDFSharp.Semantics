@@ -88,47 +88,25 @@ namespace RDFSharp.Semantics
         {
             List<RDFResource> result = new List<RDFResource>();
 
-            Dictionary<long, List<RDFResource>> classTypesCache = new Dictionary<long, List<RDFResource>>();
-
             //Enumerates (owl:oneOf)
             foreach (RDFResource enumerateClass in Ontology.Model.ClassModel.Where(cls => Ontology.Model.ClassModel.CheckHasEnumerateClass(cls)))
-            {
-                if (!classTypesCache.ContainsKey(enumerateClass.PatternMemberID))
-                    classTypesCache.Add(enumerateClass.PatternMemberID, Ontology.Data.GetIndividualsOf(Ontology.Model, enumerateClass));
-
-                if (classTypesCache[enumerateClass.PatternMemberID].Any(individual => individual.Equals(Individual)))
+                if (Ontology.Data.GetIndividualsOf(Ontology.Model, enumerateClass).Any(individual => individual.Equals(Individual)))
                     result.Add(enumerateClass);
-            }
 
             //Restrictions (owl:Restriction)
             foreach (RDFResource restrictionClass in Ontology.Model.ClassModel.Where(cls => Ontology.Model.ClassModel.CheckHasRestrictionClass(cls)))
-            {
-                if (!classTypesCache.ContainsKey(restrictionClass.PatternMemberID))
-                    classTypesCache.Add(restrictionClass.PatternMemberID, Ontology.Data.GetIndividualsOf(Ontology.Model, restrictionClass));
-
-                if (classTypesCache[restrictionClass.PatternMemberID].Any(individual => individual.Equals(Individual)))
+                if (Ontology.Data.GetIndividualsOf(Ontology.Model, restrictionClass).Any(individual => individual.Equals(Individual)))
                     result.Add(restrictionClass);
-            }
 
             //Classes (owl:Class)
             foreach (RDFResource simpleClass in Ontology.Model.ClassModel.Where(cls => Ontology.Model.ClassModel.CheckHasSimpleClass(cls)))
-            {
-                if (!classTypesCache.ContainsKey(simpleClass.PatternMemberID))
-                    classTypesCache.Add(simpleClass.PatternMemberID, Ontology.Data.GetIndividualsOf(Ontology.Model, simpleClass));
-
-                if (classTypesCache[simpleClass.PatternMemberID].Any(individual => individual.Equals(Individual)))
+                if (Ontology.Data.GetIndividualsOf(Ontology.Model, simpleClass).Any(individual => individual.Equals(Individual)))
                     result.Add(simpleClass);
-            }
 
             //Composites (owl:unionOf, owl:intersectionOf, owl:complementOf)
             foreach (RDFResource compositeClass in Ontology.Model.ClassModel.Where(cls => Ontology.Model.ClassModel.CheckHasCompositeClass(cls)))
-            {
-                if (!classTypesCache.ContainsKey(compositeClass.PatternMemberID))
-                    classTypesCache.Add(compositeClass.PatternMemberID, Ontology.Data.GetIndividualsOf(Ontology.Model, compositeClass));
-
-                if (classTypesCache[compositeClass.PatternMemberID].Any(individual => individual.Equals(Individual)))
+                if (Ontology.Data.GetIndividualsOf(Ontology.Model, compositeClass).Any(individual => individual.Equals(Individual)))
                     result.Add(compositeClass);
-            }
 
             return result;
         }
