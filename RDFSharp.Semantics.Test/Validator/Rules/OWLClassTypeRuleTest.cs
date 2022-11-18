@@ -39,8 +39,8 @@ namespace RDFSharp.Semantics.Validator.Test
             OWLValidatorReport validatorReport = OWLClassTypeRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(validatorReport);
-            Assert.IsTrue(validatorReport.EvidencesCount == 1);
-            Assert.IsTrue(validatorReport.SelectErrors().Count == 1);
+            Assert.IsTrue(validatorReport.EvidencesCount == 2);
+            Assert.IsTrue(validatorReport.SelectErrors().Count == 2);
             Assert.IsTrue(validatorReport.SelectWarnings().Count == 0);
         }
 
@@ -61,8 +61,8 @@ namespace RDFSharp.Semantics.Validator.Test
             OWLValidatorReport validatorReport = validator.ApplyToOntology(ontology);
 
             Assert.IsNotNull(validatorReport);
-            Assert.IsTrue(validatorReport.EvidencesCount == 1);
-            Assert.IsTrue(validatorReport.SelectErrors().Count == 1);
+            Assert.IsTrue(validatorReport.EvidencesCount == 2);
+            Assert.IsTrue(validatorReport.SelectErrors().Count == 2);
             Assert.IsTrue(validatorReport.SelectWarnings().Count == 0);
         }
         #endregion

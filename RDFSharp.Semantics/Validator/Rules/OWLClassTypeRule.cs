@@ -14,6 +14,7 @@
 using RDFSharp.Model;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 
 namespace RDFSharp.Semantics
 {
@@ -24,29 +25,34 @@ namespace RDFSharp.Semantics
     {
         internal static OWLValidatorReport ExecuteRule(OWLOntology ontology)
         {
-            #region CheckAreDisjointClassTypes
-            bool CheckAreDisjointClassTypes(RDFResource outerClassType, RDFResource innerClassType)
-                => !outerClassType.Equals(innerClassType) && ontology.Model.ClassModel.CheckIsDisjointClassWith(outerClassType, innerClassType);
-            #endregion
-
             OWLValidatorReport validatorRuleReport = new OWLValidatorReport();
-            OWLOntologyDataLens dataLens = new OWLOntologyDataLens(new RDFResource("ex:fakeIndividual"), ontology);
+            Dictionary<long, HashSet<long>> disjoinWithCache = new Dictionary<long, HashSet<long>>();
 
             //rdf:type
             IEnumerator<RDFResource> individualsEnumerator = ontology.Data.IndividualsEnumerator;
             while (individualsEnumerator.MoveNext())
             {
-                //Switch data lens to current individual and calculate its class types
-                dataLens.Individual = individualsEnumerator.Current;
-                List<RDFResource> classTypes = dataLens.ClassTypes();
+                //Extract classes assigned to the current individual
+                List<RDFResource> individualClasses = ontology.Data.ABoxGraph[individualsEnumerator.Current, RDFVocabulary.RDF.TYPE, null, null]
+                                                                   .Select(t => t.Object)
+                                                                   .OfType<RDFResource>()
+                                                                   .ToList();
 
-                //There should not be disjoint classes assigned as class types of the same individual
-                if (classTypes.Any(outerClassType => classTypes.Any(innerClassType => CheckAreDisjointClassTypes(outerClassType, innerClassType))))
-                    validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
-                        OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
-                        nameof(OWLClassTypeRule),
-                        $"Violation of 'rdf:type' relations on individual '{individualsEnumerator.Current}'",
-                        "Revise your class model: you have disjoint classes sharing an individual"));
+                //Iterate discovered classes to check for eventual 'owl:disjointWith' clashes
+                foreach (RDFResource individualClass in individualClasses)
+                {
+                    //Calculate disjoint classes of the current class
+                    if (!disjoinWithCache.ContainsKey(individualClass.PatternMemberID))
+                        disjoinWithCache.Add(individualClass.PatternMemberID, new HashSet<long>(ontology.Model.ClassModel.GetDisjointClassesWith(individualClass).Select(cls => cls.PatternMemberID)));
+
+                    //There should not be disjoint classes assigned as class types of the same individual
+                    if (individualClasses.Any(idvClass => !idvClass.Equals(individualClass) && disjoinWithCache[individualClass.PatternMemberID].Contains(idvClass.PatternMemberID)))
+                        validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
+                            OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
+                            nameof(OWLClassTypeRule),
+                            $"Violation of 'rdf:type' relations on individual '{individualsEnumerator.Current}'",
+                            "Revise your class model: you have disjoint classes to which this individual belongs at the same time!"));
+                }                
             }
 
             return validatorRuleReport;
