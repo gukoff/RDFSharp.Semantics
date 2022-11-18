@@ -457,7 +457,7 @@ namespace RDFSharp.Semantics
                         $"Declaration of property '{rangeTriple.Subject}' is not found in the model: it is required as subject of a 'rdfs:range' relation",
                         $"Declare '{rangeTriple.Subject}' property to the property model"));
 
-                if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)rangeTriple.Object))
+                if (!ontology.Model.ClassModel.CheckHasClass((RDFResource)rangeTriple.Object) && !((RDFResource)rangeTriple.Object).CheckReservedClass())
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
                         nameof(OWLTermDeclarationRule),
