@@ -7,3 +7,5 @@ This is an additional <a href="https://github.com/mdesalvo/RDFSharp">RDFSharp</a
     <li>Creating <b>OWL-DL/SWRL reasoners</b> with <b>forward-chaining</b> inference materialization capabilities</li>
     <li>Creating <b>SKOS schemes</b> (concepts, collections, relations, annotations, labels, ...)</li>
 </ul>
+
+Documentation of the library architecture and features is available <a href="https://github.com/mdesalvo/RDFSharp.Semantics/releases/download/v3.0.0/RDFSharp.Semantics-3.0.0.pdf">here</a>
