@@ -104,7 +104,11 @@ namespace RDFSharp.Semantics
             /// <summary>
             /// This OWL-DL rule checks for consistency of object and datatype properties
             /// </summary>
-            PropertyConsistency = 16
+            PropertyConsistency = 16,
+            /// <summary>
+            /// This OWL2 rule checks for consistency of owl:disjointUnionOf knowledge
+            /// </summary>
+            DisjointUnion = 17
         };
 
         /// <summary>

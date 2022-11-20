@@ -141,6 +141,9 @@ namespace RDFSharp.Semantics
                             case OWLSemanticsEnums.OWLValidatorStandardRules.PropertyConsistency:
                                 validatorRegistry[OWLSemanticsEnums.OWLValidatorStandardRules.PropertyConsistency.ToString()] = OWLPropertyConsistencyRule.ExecuteRule(ontology);
                                 break;
+                            case OWLSemanticsEnums.OWLValidatorStandardRules.DisjointUnion:
+                                validatorRegistry[OWLSemanticsEnums.OWLValidatorStandardRules.DisjointUnion.ToString()] = OWLDisjointUnionRule.ExecuteRule(ontology);
+                                break;
                         }
 
                         OWLSemanticsEvents.RaiseSemanticsInfo($"Completed standard validator rule '{standardRule}': found {validatorRegistry[standardRule.ToString()].EvidencesCount} evidences");
