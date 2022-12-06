@@ -696,7 +696,8 @@ namespace RDFSharp.Semantics
             bool OWLDLIntegrityChecks()
                 => !childClass.CheckReservedClass()
                       && !motherClass.CheckReservedClass()
-                        && this.CheckSubClassCompatibility(childClass, motherClass);
+                        && (OWLSemanticsOptions.IntelligenceLevel == OWLSemanticsEnums.OWLOntologyIntelligenceLevel.Smart
+                             || this.CheckSubClassCompatibility(childClass, motherClass));
             #endregion
 
             if (childClass == null)
@@ -724,7 +725,8 @@ namespace RDFSharp.Semantics
             bool OWLDLIntegrityChecks()
                 => !leftClass.CheckReservedClass()
                       && !rightClass.CheckReservedClass()
-                        && this.CheckEquivalentClassCompatibility(leftClass, rightClass);
+                        && (OWLSemanticsOptions.IntelligenceLevel == OWLSemanticsEnums.OWLOntologyIntelligenceLevel.Smart
+                             || this.CheckEquivalentClassCompatibility(leftClass, rightClass));
             #endregion
 
             if (leftClass == null)
@@ -757,7 +759,8 @@ namespace RDFSharp.Semantics
             bool OWLDLIntegrityChecks()
                 => !leftClass.CheckReservedClass()
                       && !rightClass.CheckReservedClass()
-                        && this.CheckDisjointWithCompatibility(leftClass, rightClass);
+                        && (OWLSemanticsOptions.IntelligenceLevel == OWLSemanticsEnums.OWLOntologyIntelligenceLevel.Smart
+                             || this.CheckDisjointWithCompatibility(leftClass, rightClass));
             #endregion
 
             if (leftClass == null)

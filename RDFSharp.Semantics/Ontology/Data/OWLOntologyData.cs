@@ -193,7 +193,8 @@ namespace RDFSharp.Semantics
         {
             #region OWL-DL Integrity Checks
             bool OWLDLIntegrityChecks()
-                => this.CheckSameAsCompatibility(leftIndividual, rightIndividual);
+                => OWLSemanticsOptions.IntelligenceLevel == OWLSemanticsEnums.OWLOntologyIntelligenceLevel.Smart 
+                    || this.CheckSameAsCompatibility(leftIndividual, rightIndividual);
             #endregion
 
             if (leftIndividual == null)
@@ -224,7 +225,8 @@ namespace RDFSharp.Semantics
         {
             #region OWL-DL Integrity Checks
             bool OWLDLIntegrityChecks()
-                => this.CheckDifferentFromCompatibility(leftIndividual, rightIndividual);
+                => OWLSemanticsOptions.IntelligenceLevel == OWLSemanticsEnums.OWLOntologyIntelligenceLevel.Smart
+                    || this.CheckDifferentFromCompatibility(leftIndividual, rightIndividual);
             #endregion
 
             if (leftIndividual == null)
