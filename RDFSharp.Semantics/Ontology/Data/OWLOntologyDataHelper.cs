@@ -19,7 +19,6 @@ using RDFSharp.Query;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace RDFSharp.Semantics
 {
@@ -161,11 +160,12 @@ namespace RDFSharp.Semantics
         }
 
         /// <summary>
-        /// Finds "DifferentFrom(owlIndividual, X)" relations to enlist the different individuals of the given owl:Individual
+        /// Finds "DifferentFrom(owlIndividual, X)" relations to enlist the different individuals of the given owl:Individual (influenced by IntelligenceLevel)
         /// </summary>
         internal static List<RDFResource> FindDifferentIndividuals(this OWLOntologyData data, RDFResource owlIndividual, Dictionary<long, RDFResource> visitContext)
         {
             List<RDFResource> differentIndividuals = new List<RDFResource>();
+            bool advancedIntelligenceLevel = OWLSemanticsOptions.IntelligenceLevel == OWLSemanticsEnums.OWLOntologyIntelligenceLevel.Advanced;
 
             #region VisitContext
             if (!visitContext.ContainsKey(owlIndividual.PatternMemberID))
@@ -205,8 +205,11 @@ namespace RDFSharp.Semantics
             }
 
             // Inference: SAMEAS(A,B) ^ DIFFERENTFROM(B,C) -> DIFFERENTFROM(A,C)
-            foreach (RDFResource sameAsIndividual in data.GetSameIndividuals(owlIndividual))
-                differentIndividuals.AddRange(data.FindDifferentIndividuals(sameAsIndividual, visitContext));
+            if (advancedIntelligenceLevel)
+            {
+                foreach (RDFResource sameAsIndividual in data.GetSameIndividuals(owlIndividual))
+                    differentIndividuals.AddRange(data.FindDifferentIndividuals(sameAsIndividual, visitContext));
+            }
             #endregion
 
             return differentIndividuals;
@@ -504,23 +507,24 @@ namespace RDFSharp.Semantics
         }
 
         /// <summary>
-        /// Finds "Type(X,owlRestriction)" relations to enlist the individuals of the given owl:HasValueRestriction
+        /// Finds "Type(X,owlRestriction)" relations to enlist the individuals of the given owl:HasValueRestriction (influenced by IntelligenceLevel)
         /// </summary>
         internal static List<RDFResource> FindIndividualsOfHasValueRestriction(this OWLOntologyData data, OWLOntologyModel model, RDFResource owlRestriction, RDFGraph assertionsGraph)
         {
             List<RDFResource> individuals = new List<RDFResource>();
+            bool advancedIntelligenceLevel = OWLSemanticsOptions.IntelligenceLevel == OWLSemanticsEnums.OWLOntologyIntelligenceLevel.Advanced;
 
             //Get owl:hasValue of the given owl:Restriction
             RDFPatternMember hasValue = model.ClassModel.TBoxGraph[owlRestriction, RDFVocabulary.OWL.HAS_VALUE, null, null].First().Object;
             if (hasValue is RDFResource hasValueIndividual)
             {
                 //Make the given owl:Restriction also work with same individuals of the given owl:hasValue individual
-                List<RDFResource> sameHasValueIndividuals = data.GetSameIndividuals(hasValueIndividual);
+                List<RDFResource> sameHasValueIndividuals = advancedIntelligenceLevel ? data.GetSameIndividuals(hasValueIndividual) : new List<RDFResource>();
 
                 //Find SPO assertions having object individual compatible with owl:hasValue individual
                 foreach (RDFTriple assertionTriple in assertionsGraph.Where(t => t.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPO))
                 {
-                    if (assertionTriple.Object.Equals(hasValue) || sameHasValueIndividuals.Any(sameHasValueIndividual => sameHasValueIndividual.Equals((RDFResource)assertionTriple.Object)))
+                    if (assertionTriple.Object.Equals(hasValueIndividual) || sameHasValueIndividuals.Any(sameHasValueIndividual => sameHasValueIndividual.Equals((RDFResource)assertionTriple.Object)))
                         individuals.Add((RDFResource)assertionTriple.Subject);
                 }
             }
@@ -636,16 +640,17 @@ namespace RDFSharp.Semantics
         }
 
         /// <summary>
-        /// Finds "Type(X,owlClass)" relations to enlist the individuals of the given owl:Class
+        /// Finds "Type(X,owlClass)" relations to enlist the individuals of the given owl:Class (influenced by IntelligenceLevel)
         /// </summary>
         internal static List<RDFResource> FindIndividualsOfClass(this OWLOntologyData data, OWLOntologyModel model, RDFResource owlClass)
         {
             List<RDFResource> classIndividuals = new List<RDFResource>();
+            bool advancedIntelligenceLevel = OWLSemanticsOptions.IntelligenceLevel == OWLSemanticsEnums.OWLOntologyIntelligenceLevel.Advanced;
 
             //Get the classes compatible with the given class
             List<RDFResource> compatibleClasses = new List<RDFResource>() { owlClass }
                                                     .Union(model.ClassModel.GetSubClassesOf(owlClass))
-                                                    .Union(model.ClassModel.GetEquivalentClassesOf(owlClass))
+                                                    .Union(advancedIntelligenceLevel ? model.ClassModel.GetEquivalentClassesOf(owlClass) : Enumerable.Empty<RDFResource>())
                                                     .ToList();
 
             //Get the individuals belonging to the compatible classes
@@ -657,10 +662,13 @@ namespace RDFSharp.Semantics
 
             //Add the individuals to the results
             classIndividuals.AddRange(compatibleIndividuals);
-            
+
             //Add the individuals to the results (exploit owl:sameAs relations)
-            foreach (RDFResource compatibleIndividual in compatibleIndividuals)
-                classIndividuals.AddRange(data.GetSameIndividuals(compatibleIndividual));
+            if (advancedIntelligenceLevel)
+            {
+                foreach (RDFResource compatibleIndividual in compatibleIndividuals)
+                    classIndividuals.AddRange(data.GetSameIndividuals(compatibleIndividual));
+            }   
 
             return classIndividuals;
         }
