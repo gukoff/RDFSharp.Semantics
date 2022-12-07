@@ -144,11 +144,12 @@ namespace RDFSharp.Semantics
             => childProperty != null && motherProperty != null && propertyModel != null && propertyModel.GetSuperPropertiesOf(childProperty).Any(prop => prop.Equals(motherProperty));
 
         /// <summary>
-        /// Analyzes "SubProperty(owlProperty, X)" relations of the model to answer the sub property of the given owl:Property
+        /// Analyzes "SubProperty(owlProperty, X)" relations of the model to answer the sub property of the given owl:Property (influenced by IntelligenceLevel)
         /// </summary>
         public static List<RDFResource> GetSubPropertiesOf(this OWLOntologyPropertyModel propertyModel, RDFResource owlProperty)
         {
             List<RDFResource> subProperties = new List<RDFResource>();
+            bool advancedIntelligenceLevel = OWLSemanticsOptions.IntelligenceLevel == OWLSemanticsEnums.OWLOntologyIntelligenceLevel.Advanced;
 
             if (propertyModel != null && owlProperty != null)
             {
@@ -156,8 +157,11 @@ namespace RDFSharp.Semantics
                 subProperties.AddRange(propertyModel.FindSubPropertiesOf(owlProperty));
 
                 //Reason on the equivalent properties
-                foreach (RDFResource equivalentProperty in propertyModel.GetEquivalentPropertiesOf(owlProperty))
-                    subProperties.AddRange(propertyModel.FindSubPropertiesOf(equivalentProperty));
+                if (advancedIntelligenceLevel)
+                {
+                    foreach (RDFResource equivalentProperty in propertyModel.GetEquivalentPropertiesOf(owlProperty))
+                        subProperties.AddRange(propertyModel.FindSubPropertiesOf(equivalentProperty));
+                }
 
                 //We don't want to also enlist the given owl:Property
                 subProperties.RemoveAll(prop => prop.Equals(owlProperty));
@@ -167,17 +171,22 @@ namespace RDFSharp.Semantics
         }
 
         /// <summary>
-        /// Finds "SubProperty(owlProperty, X)" relations to enlist the sub properties of the given owl:Property
+        /// Finds "SubProperty(owlProperty, X)" relations to enlist the sub properties of the given owl:Property (influenced by IntelligenceLevel)
         /// </summary>
         internal static List<RDFResource> FindSubPropertiesOf(this OWLOntologyPropertyModel propertyModel, RDFResource owlProperty)
         {
+            bool advancedIntelligenceLevel = OWLSemanticsOptions.IntelligenceLevel == OWLSemanticsEnums.OWLOntologyIntelligenceLevel.Advanced;
+
             //Direct subsumption of "rdfs:subPropertyOf" taxonomy
             List<RDFResource> subProperties = propertyModel.SubsumeSubPropertyHierarchy(owlProperty);
 
             //Enlist equivalent properties of subproperties
-            foreach (RDFResource subProperty in subProperties.ToList())
-                subProperties.AddRange(propertyModel.GetEquivalentPropertiesOf(subProperty)
-                                                    .Union(propertyModel.GetSubPropertiesOf(subProperty)));
+            if (advancedIntelligenceLevel)
+            {
+                foreach (RDFResource subProperty in subProperties.ToList())
+                    subProperties.AddRange(propertyModel.GetEquivalentPropertiesOf(subProperty)
+                                                        .Union(propertyModel.GetSubPropertiesOf(subProperty)));
+            }   
 
             return subProperties;
         }
@@ -206,11 +215,12 @@ namespace RDFSharp.Semantics
             => childProperty != null && motherProperty != null && propertyModel != null && propertyModel.GetSuperPropertiesOf(childProperty).Any(prop => prop.Equals(motherProperty));
 
         /// <summary>
-        /// Analyzes "SuperProperty(owlProperty, X)" relations of the model to answer the super properties of the given owl:Property
+        /// Analyzes "SuperProperty(owlProperty, X)" relations of the model to answer the super properties of the given owl:Property (influenced by IntelligenceLevel)
         /// </summary>
         public static List<RDFResource> GetSuperPropertiesOf(this OWLOntologyPropertyModel propertyModel, RDFResource owlProperty)
         {
             List<RDFResource> subProperties = new List<RDFResource>();
+            bool advancedIntelligenceLevel = OWLSemanticsOptions.IntelligenceLevel == OWLSemanticsEnums.OWLOntologyIntelligenceLevel.Advanced;
 
             if (propertyModel != null && owlProperty != null)
             {
@@ -218,8 +228,11 @@ namespace RDFSharp.Semantics
                 subProperties.AddRange(propertyModel.FindSuperPropertiesOf(owlProperty));
 
                 //Reason on the equivalent properties
-                foreach (RDFResource equivalentProperty in propertyModel.GetEquivalentPropertiesOf(owlProperty))
-                    subProperties.AddRange(propertyModel.FindSuperPropertiesOf(equivalentProperty));
+                if (advancedIntelligenceLevel)
+                {
+                    foreach (RDFResource equivalentProperty in propertyModel.GetEquivalentPropertiesOf(owlProperty))
+                        subProperties.AddRange(propertyModel.FindSuperPropertiesOf(equivalentProperty));
+                }
 
                 //We don't want to also enlist the given owl:Property
                 subProperties.RemoveAll(prop => prop.Equals(owlProperty));
@@ -229,17 +242,22 @@ namespace RDFSharp.Semantics
         }
 
         /// <summary>
-        /// Finds "SuperProperty(owlProperty, X)" relations to enlist the super properties of the given owl:Property
+        /// Finds "SuperProperty(owlProperty, X)" relations to enlist the super properties of the given owl:Property (influenced by IntelligenceLevel)
         /// </summary>
         internal static List<RDFResource> FindSuperPropertiesOf(this OWLOntologyPropertyModel propertyModel, RDFResource owlProperty)
         {
+            bool advancedIntelligenceLevel = OWLSemanticsOptions.IntelligenceLevel == OWLSemanticsEnums.OWLOntologyIntelligenceLevel.Advanced;
+
             //Direct subsumption of "rdfs:subPropertyOf" taxonomy
             List<RDFResource> superProperties = propertyModel.SubsumeSuperPropertyHierarchy(owlProperty);
 
             //Enlist equivalent classes of superclasses
-            foreach (RDFResource superProperty in superProperties.ToList())
-                superProperties.AddRange(propertyModel.GetEquivalentPropertiesOf(superProperty)
-                                                      .Union(propertyModel.GetSuperPropertiesOf(superProperty)));
+            if (advancedIntelligenceLevel)
+            {
+                foreach (RDFResource superProperty in superProperties.ToList())
+                    superProperties.AddRange(propertyModel.GetEquivalentPropertiesOf(superProperty)
+                                                          .Union(propertyModel.GetSuperPropertiesOf(superProperty)));
+            }   
 
             return superProperties;
         }
@@ -335,11 +353,12 @@ namespace RDFSharp.Semantics
         }
 
         /// <summary>
-        /// Finds "PropertyDisjointWith(owlProperty, X)" relations to enlist the disjoint properties of the given owl:Property [OWL2]
+        /// Finds "PropertyDisjointWith(owlProperty, X)" relations to enlist the disjoint properties of the given owl:Property (influenced by IntelligenceLevel) [OWL2]
         /// </summary>
         internal static List<RDFResource> FindDisjointPropertiesWith(this OWLOntologyPropertyModel propertyModel, RDFResource owlProperty, Dictionary<long, RDFResource> visitContext)
         {
             List<RDFResource> disjointProperties = new List<RDFResource>();
+            bool advancedIntelligenceLevel = OWLSemanticsOptions.IntelligenceLevel == OWLSemanticsEnums.OWLOntologyIntelligenceLevel.Advanced;
 
             #region VisitContext
             if (!visitContext.ContainsKey(owlProperty.PatternMemberID))
@@ -383,9 +402,12 @@ namespace RDFSharp.Semantics
                 disjointProperties.AddRange(propertyModel.FindSubPropertiesOf(disjointProperty));
 
             // Inference: EQUIVALENTPROPERTY(A,B) ^ PROPERTYDISJOINTWITH(B,C) -> PROPERTYDISJOINTWITH(A,C)
-            foreach (RDFResource compatibleClass in propertyModel.GetSuperPropertiesOf(owlProperty)
+            if (advancedIntelligenceLevel)
+            {
+                foreach (RDFResource compatibleClass in propertyModel.GetSuperPropertiesOf(owlProperty)
                                                                  .Union(propertyModel.GetEquivalentPropertiesOf(owlProperty)))
-                disjointProperties.AddRange(propertyModel.FindDisjointPropertiesWith(compatibleClass, visitContext));
+                    disjointProperties.AddRange(propertyModel.FindDisjointPropertiesWith(compatibleClass, visitContext));
+            }            
             #endregion
 
             return disjointProperties;
