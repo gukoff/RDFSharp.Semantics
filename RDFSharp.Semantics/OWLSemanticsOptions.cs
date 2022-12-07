@@ -19,13 +19,21 @@ namespace RDFSharp.Semantics
     /// <summary>
     /// OWLSemanticsOptions represents a collector of global options for customizing specific behaviors of the library
     /// </summary>
-    public static class OWLSemanticsOptions
+    public class OWLSemanticsOptions
     {
         #region Properties
         /// <summary>
-        /// Represents the level of runtime intelligence given to the ontology engine (default: Advanced)
+        /// Represents the level of runtime intelligence given to the ontology engine [default: Advanced]
         /// </summary>
-        public static OWLSemanticsEnums.OWLOntologyIntelligenceLevel IntelligenceLevel { get; set; } = OWLSemanticsEnums.OWLOntologyIntelligenceLevel.Advanced;
+        public static OWLSemanticsEnums.OWLOntologyIntelligenceLevel IntelligenceLevel { get; set; }
+        #endregion
+
+        #region Ctors
+        /// <summary>
+        /// Static-ctor to initialize global options
+        /// </summary>
+        static OWLSemanticsOptions()
+            => IntelligenceLevel = OWLSemanticsEnums.OWLOntologyIntelligenceLevel.Advanced;
         #endregion
     }
 }
