@@ -22,23 +22,6 @@ namespace RDFSharp.Semantics
     public static class OWLSemanticsEnums
     {
         /// <summary>
-        /// Represents an enumeration for possible levels of runtime intelligence which can be given to the ontology engine
-        /// </summary>
-        public enum OWLOntologyIntelligenceLevel
-        {
-            /// <summary>
-            /// Instructs the ontology engine to find a tradeoff between consumption of system resources and complexity of T-BOX/A-BOX analysis algorythms.<br/>
-            /// Although it will not work at its full semantic potential, the selected subset of reasoning proves to be adequate enough for most daily scenarios.
-            /// </summary>
-            Smart = 1,
-            /// <summary>
-            /// Instructs the ontology engine to make use of the entire set of built-in T-BOX/A-BOX analysis algorythms.<br/>
-            /// It will work at its full semantic potential and preserve ontology consistency, but will tend to consume more system resources.
-            /// </summary>
-            Advanced = 2
-        }
-
-        /// <summary>
         /// Represents an enumeration for possible categories of ontology validator evidence
         /// </summary>
         public enum OWLValidatorEvidenceCategory

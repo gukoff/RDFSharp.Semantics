@@ -587,8 +587,7 @@ namespace RDFSharp.Semantics
             bool OWLDLIntegrityChecks()
                 => !childProperty.CheckReservedProperty()
                       && !motherProperty.CheckReservedProperty()
-                        && (OWLSemanticsOptions.IntelligenceLevel == OWLSemanticsEnums.OWLOntologyIntelligenceLevel.Smart
-                             || this.CheckSubPropertyCompatibility(childProperty, motherProperty));
+                        && this.CheckSubPropertyCompatibility(childProperty, motherProperty);
             #endregion
 
             if (childProperty == null)
@@ -616,8 +615,7 @@ namespace RDFSharp.Semantics
             bool OWLDLIntegrityChecks()
                 => !leftProperty.CheckReservedProperty()
                       && !rightProperty.CheckReservedProperty()
-                        && (OWLSemanticsOptions.IntelligenceLevel == OWLSemanticsEnums.OWLOntologyIntelligenceLevel.Smart
-                             || this.CheckEquivalentPropertyCompatibility(leftProperty, rightProperty));
+                        && this.CheckEquivalentPropertyCompatibility(leftProperty, rightProperty);
             #endregion
 
             if (leftProperty == null)
@@ -650,8 +648,7 @@ namespace RDFSharp.Semantics
             bool OWLDLIntegrityChecks()
                 => !leftProperty.CheckReservedProperty()
                       && !rightProperty.CheckReservedProperty()
-                        && (OWLSemanticsOptions.IntelligenceLevel == OWLSemanticsEnums.OWLOntologyIntelligenceLevel.Smart
-                             || this.CheckDisjointPropertyCompatibility(leftProperty, rightProperty));
+                        && this.CheckDisjointPropertyCompatibility(leftProperty, rightProperty);
             #endregion
 
             if (leftProperty == null)
@@ -706,8 +703,7 @@ namespace RDFSharp.Semantics
             bool OWLDLIntegrityChecks()
                 => !leftProperty.CheckReservedProperty()
                       && !rightProperty.CheckReservedProperty()
-                        && (OWLSemanticsOptions.IntelligenceLevel == OWLSemanticsEnums.OWLOntologyIntelligenceLevel.Smart
-                             || this.CheckInversePropertyCompatibility(leftProperty, rightProperty));
+                        && this.CheckInversePropertyCompatibility(leftProperty, rightProperty);
             #endregion
 
             if (leftProperty == null)

@@ -221,12 +221,11 @@ namespace RDFSharp.Semantics
             => childClass != null && motherClass != null && classModel != null && classModel.GetSuperClassesOf(childClass).Any(cls => cls.Equals(motherClass));
 
         /// <summary>
-        /// Analyzes "SubClass(owlClass,X)" relations of the model to answer the sub classes of the given owl:Class (influenced by IntelligenceLevel)
+        /// Analyzes "SubClass(owlClass,X)" relations of the model to answer the sub classes of the given owl:Class
         /// </summary>
         public static List<RDFResource> GetSubClassesOf(this OWLOntologyClassModel classModel, RDFResource owlClass)
         {
             List<RDFResource> subClasses = new List<RDFResource>();
-            bool advancedIntelligenceLevel = OWLSemanticsOptions.IntelligenceLevel == OWLSemanticsEnums.OWLOntologyIntelligenceLevel.Advanced;
 
             if (classModel != null && owlClass != null)
             {
@@ -234,11 +233,8 @@ namespace RDFSharp.Semantics
                 subClasses.AddRange(classModel.FindSubClassesOf(owlClass));
 
                 //Reason on the equivalent classes
-                if (advancedIntelligenceLevel)
-                {
-                    foreach (RDFResource equivalentClass in classModel.GetEquivalentClassesOf(owlClass))
-                        subClasses.AddRange(classModel.FindSubClassesOf(equivalentClass));
-                }   
+                foreach (RDFResource equivalentClass in classModel.GetEquivalentClassesOf(owlClass))
+                    subClasses.AddRange(classModel.FindSubClassesOf(equivalentClass));   
 
                 //We don't want to also enlist the given owl:Class
                 subClasses.RemoveAll(cls => cls.Equals(owlClass));
@@ -248,22 +244,17 @@ namespace RDFSharp.Semantics
         }
 
         /// <summary>
-        /// Finds "SubClass(owlClass,X)" relations of the model to answer the sub classes of the given owl:Class (influenced by IntelligenceLevel)
+        /// Finds "SubClass(owlClass,X)" relations of the model to answer the sub classes of the given owl:Class
         /// </summary>
         internal static List<RDFResource> FindSubClassesOf(this OWLOntologyClassModel classModel, RDFResource owlClass)
         {
-            bool advancedIntelligenceLevel = OWLSemanticsOptions.IntelligenceLevel == OWLSemanticsEnums.OWLOntologyIntelligenceLevel.Advanced;
-
             //Direct subsumption of "rdfs:subClassOf" taxonomy
             List<RDFResource> subClasses = classModel.SubsumeSubClassHierarchy(owlClass);
 
             //Enlist equivalent classes of subclasses
-            if (advancedIntelligenceLevel)
-            {
-                foreach (RDFResource subClass in subClasses.ToList())
-                    subClasses.AddRange(classModel.GetEquivalentClassesOf(subClass)
-                                                  .Union(classModel.GetSubClassesOf(subClass)));
-            }   
+            foreach (RDFResource subClass in subClasses.ToList())
+                subClasses.AddRange(classModel.GetEquivalentClassesOf(subClass)
+                                              .Union(classModel.GetSubClassesOf(subClass)));   
 
             return subClasses;
         }
@@ -292,12 +283,11 @@ namespace RDFSharp.Semantics
             => childClass != null && motherClass != null && classModel != null && classModel.GetSubClassesOf(motherClass).Any(cls => cls.Equals(childClass));
 
         /// <summary>
-        /// Analyzes "SubClass(X,owlClass)" relations of the model to answer the super classes of the given owl:Class (influenced by IntelligenceLevel)
+        /// Analyzes "SubClass(X,owlClass)" relations of the model to answer the super classes of the given owl:Class
         /// </summary>
         public static List<RDFResource> GetSuperClassesOf(this OWLOntologyClassModel classModel, RDFResource owlClass)
         {
             List<RDFResource> subClasses = new List<RDFResource>();
-            bool advancedIntelligenceLevel = OWLSemanticsOptions.IntelligenceLevel == OWLSemanticsEnums.OWLOntologyIntelligenceLevel.Advanced;
 
             if (classModel != null && owlClass != null)
             {
@@ -305,11 +295,8 @@ namespace RDFSharp.Semantics
                 subClasses.AddRange(classModel.FindSuperClassesOf(owlClass));
 
                 //Reason on the equivalent classes
-                if (advancedIntelligenceLevel)
-                {
-                    foreach (RDFResource equivalentClass in classModel.GetEquivalentClassesOf(owlClass))
-                        subClasses.AddRange(classModel.FindSuperClassesOf(equivalentClass));
-                }
+                foreach (RDFResource equivalentClass in classModel.GetEquivalentClassesOf(owlClass))
+                    subClasses.AddRange(classModel.FindSuperClassesOf(equivalentClass));
 
                 //We don't want to also enlist the given owl:Class
                 subClasses.RemoveAll(cls => cls.Equals(owlClass));
@@ -319,22 +306,17 @@ namespace RDFSharp.Semantics
         }
 
         /// <summary>
-        /// Finds "SubClass(X,owlClass)" relations of the model to answer the super classes of the given owl:Class (influenced by IntelligenceLevel)
+        /// Finds "SubClass(X,owlClass)" relations of the model to answer the super classes of the given owl:Class
         /// </summary>
         internal static List<RDFResource> FindSuperClassesOf(this OWLOntologyClassModel classModel, RDFResource owlClass)
         {
-            bool advancedIntelligenceLevel = OWLSemanticsOptions.IntelligenceLevel == OWLSemanticsEnums.OWLOntologyIntelligenceLevel.Advanced;
-
             //Direct subsumption of "rdfs:subClassOf" taxonomy
             List<RDFResource> superClasses = classModel.SubsumeSuperClassHierarchy(owlClass);
 
             //Enlist equivalent classes of superclasses
-            if (advancedIntelligenceLevel)
-            {
-                foreach (RDFResource superClass in superClasses.ToList())
-                    superClasses.AddRange(classModel.GetEquivalentClassesOf(superClass)
-                                                    .Union(classModel.GetSuperClassesOf(superClass)));
-            }
+            foreach (RDFResource superClass in superClasses.ToList())
+                superClasses.AddRange(classModel.GetEquivalentClassesOf(superClass)
+                                                .Union(classModel.GetSuperClassesOf(superClass)));
 
             return superClasses;
         }
@@ -430,12 +412,11 @@ namespace RDFSharp.Semantics
         }
 
         /// <summary>
-        /// Finds "DisjointWith(owlClass,X)" relations to enlist the disjoint classes of the given owl:Class (influenced by IntelligenceLevel)
+        /// Finds "DisjointWith(owlClass,X)" relations to enlist the disjoint classes of the given owl:Class
         /// </summary>
         internal static List<RDFResource> FindDisjointClassesWith(this OWLOntologyClassModel classModel, RDFResource owlClass, Dictionary<long, RDFResource> visitContext)
         {
             List<RDFResource> disjointClasses = new List<RDFResource>();
-            bool advancedIntelligenceLevel = OWLSemanticsOptions.IntelligenceLevel == OWLSemanticsEnums.OWLOntologyIntelligenceLevel.Advanced;
 
             #region VisitContext
             if (!visitContext.ContainsKey(owlClass.PatternMemberID))
@@ -479,12 +460,9 @@ namespace RDFSharp.Semantics
                 disjointClasses.AddRange(classModel.FindSubClassesOf(disjointClass));
 
             // Inference: EQUIVALENTCLASS(A,B) ^ DISJOINTWITH(B,C) -> DISJOINTWITH(A,C)
-            if (advancedIntelligenceLevel)
-            {
-                foreach (RDFResource compatibleClass in classModel.GetSuperClassesOf(owlClass)
-                                                                  .Union(classModel.GetEquivalentClassesOf(owlClass)))
-                    disjointClasses.AddRange(classModel.FindDisjointClassesWith(compatibleClass, visitContext));
-            }            
+            foreach (RDFResource compatibleClass in classModel.GetSuperClassesOf(owlClass)
+                                                              .Union(classModel.GetEquivalentClassesOf(owlClass)))
+                disjointClasses.AddRange(classModel.FindDisjointClassesWith(compatibleClass, visitContext));            
             #endregion
 
             return disjointClasses;
