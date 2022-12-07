@@ -346,6 +346,7 @@ namespace RDFSharp.Semantics
         internal static List<RDFResource> FindIndividualsOfCardinalityRestriction(this OWLOntologyData data, OWLOntologyModel model, RDFResource owlRestriction, RDFGraph assertionsGraph, bool isQualified)
         {
             List<RDFResource> individuals = new List<RDFResource>();
+            List<RDFResource> onClassIndividuals = new List<RDFResource>();
 
             #region Parse
             int minCardinality = 0, maxCardinality = 0;
@@ -384,6 +385,9 @@ namespace RDFSharp.Semantics
                 onClass = model.ClassModel.TBoxGraph[owlRestriction, RDFVocabulary.OWL.ON_CLASS, null, null].FirstOrDefault()?.Object as RDFResource;
                 if (onClass == null)
                     throw new OWLSemanticsException($"Cannot find individuals of owl:[Min|Max]QualifiedCardinalityRestriction '{owlRestriction}' because required owl:onClass information is not declared in the model");
+
+                //Prefetch individuals of owl:onClass
+                onClassIndividuals = data.GetIndividualsOf(model, onClass);
             }
             #endregion
 
@@ -403,7 +407,7 @@ namespace RDFSharp.Semantics
                 {
                     //Since we have to qualify the object individual, we consider only SPO assertions
                     if (assertionTriple.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPO
-                          && data.CheckIsIndividualOf(model, (RDFResource)assertionTriple.Object, onClass))
+                          && onClassIndividuals.Any(idv => idv.Equals(assertionTriple.Object)))
                     {
                         long occurrencyCounter = cardinalityRestrictionRegistry[assertionTriple.Subject.PatternMemberID].Item2;
                         cardinalityRestrictionRegistry[assertionTriple.Subject.PatternMemberID] = (assertionTriple.Subject, occurrencyCounter + 1);
