@@ -27,11 +27,13 @@ namespace RDFSharp.Semantics
         public enum OWLOntologyIntelligenceLevel
         {
             /// <summary>
-            /// Indicates that the ontology engine will find a compromise between the goal of runtime performances and the goal of T-BOX/A-BOX integrity, working at an intermediate potential
+            /// Instructs the ontology engine to find a tradeoff between consumption of system resources and complexity of T-BOX/A-BOX analysis algorythms.<br/>
+            /// Although it will not work at its full semantic potential, the selected subset of reasoning proves to be adequate enough for most daily scenarios.
             /// </summary>
             Smart = 1,
             /// <summary>
-            /// Indicates that the ontology engine will prefer the goal of T-BOX/A-BOX integrity over the goal of runtime performances, working at its maximum potential
+            /// Instructs the ontology engine to make use of the entire set of built-in T-BOX/A-BOX analysis algorythms.<br/>
+            /// It will work at its full semantic potential and preserve ontology consistency, but will tend to consume more system resources.
             /// </summary>
             Advanced = 2
         }

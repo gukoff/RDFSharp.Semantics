@@ -23,7 +23,7 @@ namespace RDFSharp.Semantics
     {
         #region Properties
         /// <summary>
-        /// 
+        /// Represents the level of runtime intelligence given to the ontology engine (default: Advanced)
         /// </summary>
         public static OWLSemanticsEnums.OWLOntologyIntelligenceLevel IntelligenceLevel { get; set; } = OWLSemanticsEnums.OWLOntologyIntelligenceLevel.Advanced;
         #endregion
