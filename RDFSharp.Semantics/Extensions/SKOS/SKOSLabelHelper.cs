@@ -84,8 +84,8 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (annotationValue == null)
                 throw new OWLSemanticsException("Cannot annotate label because given \"annotationValue\" parameter is null");
 
-            //Add knowledge to the A-BOX
-            conceptScheme.Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosxlLabel, annotationProperty, annotationValue));
+            //Add knowledge to the O-BOX
+            conceptScheme.Ontology.Data.OBoxGraph.AddTriple(new RDFTriple(skosxlLabel, annotationProperty, annotationValue));
 
             return conceptScheme;
         }
@@ -106,8 +106,8 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (annotationValue == null)
                 throw new OWLSemanticsException("Cannot annotate label because given \"annotationValue\" parameter is null");
 
-            //Add knowledge to the A-BOX
-            conceptScheme.Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosxlLabel, annotationProperty, annotationValue));
+            //Add knowledge to the O-BOX
+            conceptScheme.Ontology.Data.OBoxGraph.AddTriple(new RDFTriple(skosxlLabel, annotationProperty, annotationValue));
 
             return conceptScheme;
         }
@@ -264,7 +264,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
                     .AddPattern(new RDFPattern(skosConcept, RDFVocabulary.SKOS.PREF_LABEL, new RDFVariable("?PREFLABEL")))
                     .AddFilter(new RDFIsLiteralFilter(new RDFVariable("?PREFLABEL")))
                     .AddFilter(new RDFLangMatchesFilter(new RDFVariable("?PREFLABEL"), preferredLabelValue.Language)));
-            RDFSelectQueryResult skosPrefLabelQueryResult = skosPrefLabelQuery.ApplyToGraph(conceptScheme.Ontology.Data.ABoxGraph);
+            RDFSelectQueryResult skosPrefLabelQueryResult = skosPrefLabelQuery.ApplyToGraph(conceptScheme.Ontology.Data.OBoxGraph);
             bool canAddPreferredLabel = skosPrefLabelQueryResult.SelectResultsCount == 0;
 
             //Check skosxl:prefLabel relation => no occurrences of the given value's language must be found (in order to accept the relation)
@@ -283,7 +283,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
 
             //Check pairwise disjointness with skos:hiddenLabel annotation => no occurrences of the given value must be found (in order to accept the annotation)
             if (canAddPreferredLabel)
-                canAddPreferredLabel = conceptScheme.Ontology.Data.ABoxGraph[skosConcept, RDFVocabulary.SKOS.HIDDEN_LABEL, null, preferredLabelValue].TriplesCount == 0;
+                canAddPreferredLabel = conceptScheme.Ontology.Data.OBoxGraph[skosConcept, RDFVocabulary.SKOS.HIDDEN_LABEL, null, preferredLabelValue].TriplesCount == 0;
 
             //Check pairwise disjointness with skosxl:hiddenLabel relation => no occurrences of the given value must be found (in order to accept the relation)
             if (canAddPreferredLabel)
@@ -308,7 +308,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         internal static bool CheckAlternativeLabelCompatibility(this SKOSConceptScheme conceptScheme, RDFResource skosConcept, RDFPlainLiteral alternativeLabelValue)
         {
             //Check pairwise disjointness with skos:prefLabel annotation => no occurrences of the given value must be found (in order to accept the annotation)
-            bool canAddAlternativeLabel = conceptScheme.Ontology.Data.ABoxGraph[skosConcept, RDFVocabulary.SKOS.PREF_LABEL, null, alternativeLabelValue].TriplesCount == 0;
+            bool canAddAlternativeLabel = conceptScheme.Ontology.Data.OBoxGraph[skosConcept, RDFVocabulary.SKOS.PREF_LABEL, null, alternativeLabelValue].TriplesCount == 0;
 
             //Check pairwise disjointness with skosxl:prefLabel relation => no occurrences of the given value must be found (in order to accept the relation)
             if (canAddAlternativeLabel)
@@ -326,7 +326,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
 
             //Check pairwise disjointness with skos:hiddenLabel annotation => no occurrences of the given value must be found (in order to accept the annotation)
             if (canAddAlternativeLabel)
-                canAddAlternativeLabel = conceptScheme.Ontology.Data.ABoxGraph[skosConcept, RDFVocabulary.SKOS.HIDDEN_LABEL, null, alternativeLabelValue].TriplesCount == 0;
+                canAddAlternativeLabel = conceptScheme.Ontology.Data.OBoxGraph[skosConcept, RDFVocabulary.SKOS.HIDDEN_LABEL, null, alternativeLabelValue].TriplesCount == 0;
 
             //Check pairwise disjointness with skosxl:hiddenLabel relation => no occurrences of the given value must be found (in order to accept the relation)
             if (canAddAlternativeLabel)
@@ -351,7 +351,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         internal static bool CheckHiddenLabelCompatibility(this SKOSConceptScheme conceptScheme, RDFResource skosConcept, RDFPlainLiteral hiddenLabelValue)
         {
             //Check pairwise disjointness with skos:prefLabel annotation => no occurrences of the given value must be found (in order to accept the annotation)
-            bool canAddAlternativeLabel = conceptScheme.Ontology.Data.ABoxGraph[skosConcept, RDFVocabulary.SKOS.PREF_LABEL, null, hiddenLabelValue].TriplesCount == 0;
+            bool canAddAlternativeLabel = conceptScheme.Ontology.Data.OBoxGraph[skosConcept, RDFVocabulary.SKOS.PREF_LABEL, null, hiddenLabelValue].TriplesCount == 0;
 
             //Check pairwise disjointness with skosxl:prefLabel relation => no occurrences of the given value must be found (in order to accept the relation)
             if (canAddAlternativeLabel)
@@ -369,7 +369,7 @@ namespace RDFSharp.Semantics.Extensions.SKOS
 
             //Check pairwise disjointness with skos:altLabel annotation => no occurrences of the given value must be found (in order to accept the annotation)
             if (canAddAlternativeLabel)
-                canAddAlternativeLabel = conceptScheme.Ontology.Data.ABoxGraph[skosConcept, RDFVocabulary.SKOS.ALT_LABEL, null, hiddenLabelValue].TriplesCount == 0;
+                canAddAlternativeLabel = conceptScheme.Ontology.Data.OBoxGraph[skosConcept, RDFVocabulary.SKOS.ALT_LABEL, null, hiddenLabelValue].TriplesCount == 0;
 
             //Check pairwise disjointness with skosxl:altLabel relation => no occurrences of the given value must be found (in order to accept the relation)
             if (canAddAlternativeLabel)

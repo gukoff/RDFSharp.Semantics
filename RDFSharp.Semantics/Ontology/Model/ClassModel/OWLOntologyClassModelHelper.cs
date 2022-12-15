@@ -204,13 +204,13 @@ namespace RDFSharp.Semantics
         /// Checks for the existence of the given owl:Class annotation within the model
         /// </summary>
         public static bool CheckHasAnnotation(this OWLOntologyClassModel classModel, RDFResource owlClass, RDFResource annotationProperty, RDFResource annotationValue)
-            => owlClass != null && annotationProperty != null && annotationValue != null && classModel != null && classModel.TBoxGraph.ContainsTriple(new RDFTriple(owlClass, annotationProperty, annotationValue));
+            => owlClass != null && annotationProperty != null && annotationValue != null && classModel != null && classModel.OBoxGraph.ContainsTriple(new RDFTriple(owlClass, annotationProperty, annotationValue));
 
         /// <summary>
         /// Checks for the existence of the given owl:Class annotation within the model
         /// </summary>
         public static bool CheckHasAnnotation(this OWLOntologyClassModel classModel, RDFResource owlClass, RDFResource annotationProperty, RDFLiteral annotationValue)
-            => owlClass != null && annotationProperty != null && annotationValue != null && classModel != null && classModel.TBoxGraph.ContainsTriple(new RDFTriple(owlClass, annotationProperty, annotationValue));
+            => owlClass != null && annotationProperty != null && annotationValue != null && classModel != null && classModel.OBoxGraph.ContainsTriple(new RDFTriple(owlClass, annotationProperty, annotationValue));
         #endregion
 
         #region Analyzer

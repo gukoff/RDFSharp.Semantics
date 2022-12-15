@@ -40,6 +40,8 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.RestrictionsCount == 0);
             Assert.IsNotNull(classModel.TBoxGraph);
             Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 0);
+            Assert.IsNotNull(classModel.OBoxGraph);
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
 
             int i = 0;
             IEnumerator<RDFResource> classesEnumerator = classModel.ClassesEnumerator;
@@ -92,7 +94,8 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.RestrictionsCount == 0);
             Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 1);
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:class1"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
-            
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+
             int i = 0;
             IEnumerator<RDFResource> classesEnumerator = classModel.ClassesEnumerator;
             while (classesEnumerator.MoveNext())
@@ -118,7 +121,8 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 2);
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:class1"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:class1"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.DEPRECATED_CLASS)));
-            
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+
             int i = 0;
             IEnumerator<RDFResource> classesEnumerator = classModel.ClassesEnumerator;
             while (classesEnumerator.MoveNext())
@@ -159,7 +163,8 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:avRestr"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.RESTRICTION)));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:avRestr"), RDFVocabulary.OWL.ON_PROPERTY, new RDFResource("ex:onProp"))));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:avRestr"), RDFVocabulary.OWL.ALL_VALUES_FROM, new RDFResource("ex:avClass"))));
-            
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+
             int i = 0;
             IEnumerator<RDFResource> restrictionsEnumerator = classModel.RestrictionsEnumerator;
             while (restrictionsEnumerator.MoveNext())
@@ -191,7 +196,8 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:svRestr"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.RESTRICTION)));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:svRestr"), RDFVocabulary.OWL.ON_PROPERTY, new RDFResource("ex:onProp"))));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:svRestr"), RDFVocabulary.OWL.SOME_VALUES_FROM, new RDFResource("ex:svClass"))));
-            
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+
             int i = 0;
             IEnumerator<RDFResource> restrictionsEnumerator = classModel.RestrictionsEnumerator;
             while (restrictionsEnumerator.MoveNext())
@@ -223,7 +229,9 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:hsRestr"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.RESTRICTION)));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:hsRestr"), RDFVocabulary.OWL.ON_PROPERTY, new RDFResource("ex:onProp"))));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:hsRestr"), RDFVocabulary.OWL.HAS_SELF, RDFTypedLiteral.True)));
-                        int i = 0;
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+
+            int i = 0;
             IEnumerator<RDFResource> restrictionsEnumerator = classModel.RestrictionsEnumerator;
             while (restrictionsEnumerator.MoveNext())
             {
@@ -250,7 +258,8 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:hsRestr"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.RESTRICTION)));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:hsRestr"), RDFVocabulary.OWL.ON_PROPERTY, new RDFResource("ex:onProp"))));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:hsRestr"), RDFVocabulary.OWL.HAS_SELF, RDFTypedLiteral.False)));
-            
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+
             int i = 0;
             IEnumerator<RDFResource> restrictionsEnumerator = classModel.RestrictionsEnumerator;
             while (restrictionsEnumerator.MoveNext())
@@ -278,7 +287,8 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:hvRestr"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.RESTRICTION)));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:hvRestr"), RDFVocabulary.OWL.ON_PROPERTY, new RDFResource("ex:onProp"))));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:hvRestr"), RDFVocabulary.OWL.HAS_VALUE, new RDFResource("ex:val"))));
-            
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+
             int i = 0;
             IEnumerator<RDFResource> restrictionsEnumerator = classModel.RestrictionsEnumerator;
             while (restrictionsEnumerator.MoveNext())
@@ -310,7 +320,8 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:hvRestr"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.RESTRICTION)));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:hvRestr"), RDFVocabulary.OWL.ON_PROPERTY, new RDFResource("ex:onProp"))));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:hvRestr"), RDFVocabulary.OWL.HAS_VALUE, new RDFPlainLiteral("val"))));
-            
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+
             int i = 0;
             IEnumerator<RDFResource> restrictionsEnumerator = classModel.RestrictionsEnumerator;
             while (restrictionsEnumerator.MoveNext())
@@ -342,7 +353,8 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.RESTRICTION)));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.OWL.ON_PROPERTY, new RDFResource("ex:onProp"))));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.OWL.CARDINALITY, new RDFTypedLiteral("1", RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER))));
-            
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+
             int i = 0;
             IEnumerator<RDFResource> restrictionsEnumerator = classModel.RestrictionsEnumerator;
             while (restrictionsEnumerator.MoveNext())
@@ -374,7 +386,8 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.RESTRICTION)));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.OWL.ON_PROPERTY, new RDFResource("ex:onProp"))));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.OWL.MIN_CARDINALITY, new RDFTypedLiteral("1", RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER))));
-            
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+
             int i = 0;
             IEnumerator<RDFResource> restrictionsEnumerator = classModel.RestrictionsEnumerator;
             while (restrictionsEnumerator.MoveNext())
@@ -406,7 +419,8 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.RESTRICTION)));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.OWL.ON_PROPERTY, new RDFResource("ex:onProp"))));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.OWL.MAX_CARDINALITY, new RDFTypedLiteral("1", RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER))));
-            
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+
             int i = 0;
             IEnumerator<RDFResource> restrictionsEnumerator = classModel.RestrictionsEnumerator;
             while (restrictionsEnumerator.MoveNext())
@@ -439,7 +453,8 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.OWL.ON_PROPERTY, new RDFResource("ex:onProp"))));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.OWL.MIN_CARDINALITY, new RDFTypedLiteral("1", RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER))));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.OWL.MAX_CARDINALITY, new RDFTypedLiteral("2", RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER))));
-            
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+
             int i = 0;
             IEnumerator<RDFResource> restrictionsEnumerator = classModel.RestrictionsEnumerator;
             while (restrictionsEnumerator.MoveNext())
@@ -480,7 +495,8 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.OWL.ON_PROPERTY, new RDFResource("ex:onProp"))));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.OWL.QUALIFIED_CARDINALITY, new RDFTypedLiteral("1", RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER))));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.OWL.ON_CLASS, new RDFResource("ex:onClass"))));
-            
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+
             int i = 0;
             IEnumerator<RDFResource> restrictionsEnumerator = classModel.RestrictionsEnumerator;
             while (restrictionsEnumerator.MoveNext())
@@ -517,7 +533,8 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.OWL.ON_PROPERTY, new RDFResource("ex:onProp"))));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.OWL.MIN_QUALIFIED_CARDINALITY, new RDFTypedLiteral("1", RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER))));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.OWL.ON_CLASS, new RDFResource("ex:onClass"))));
-            
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+
             int i = 0;
             IEnumerator<RDFResource> restrictionsEnumerator = classModel.RestrictionsEnumerator;
             while (restrictionsEnumerator.MoveNext())
@@ -554,7 +571,8 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.OWL.ON_PROPERTY, new RDFResource("ex:onProp"))));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.OWL.MAX_QUALIFIED_CARDINALITY, new RDFTypedLiteral("1", RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER))));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.OWL.ON_CLASS, new RDFResource("ex:onClass"))));
-            
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+
             int i = 0;
             IEnumerator<RDFResource> restrictionsEnumerator = classModel.RestrictionsEnumerator;
             while (restrictionsEnumerator.MoveNext())
@@ -592,7 +610,8 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.OWL.MIN_QUALIFIED_CARDINALITY, new RDFTypedLiteral("1", RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER))));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.OWL.MAX_QUALIFIED_CARDINALITY, new RDFTypedLiteral("2", RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER))));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.OWL.ON_CLASS, new RDFResource("ex:onClass"))));
-           
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+
             int i = 0;
             IEnumerator<RDFResource> restrictionsEnumerator = classModel.RestrictionsEnumerator;
             while (restrictionsEnumerator.MoveNext())
@@ -638,7 +657,8 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:indiv1"), null].TriplesCount == 1);
             Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:indiv2"), null].TriplesCount == 1);
             Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.REST, null, null].TriplesCount == 2);
-            
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+
             int i = 0;
             IEnumerator<RDFResource> enumeratesEnumerator = classModel.EnumeratesEnumerator;
             while (enumeratesEnumerator.MoveNext())
@@ -680,7 +700,8 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:class1"), null].TriplesCount == 1);
             Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:class2"), null].TriplesCount == 1);
             Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.REST, null, null].TriplesCount == 2);
-            
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+
             int i = 0;
             IEnumerator<RDFResource> compositesEnumerator = classModel.CompositesEnumerator;
             while (compositesEnumerator.MoveNext())
@@ -726,7 +747,8 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:class1"), null].TriplesCount == 1);
             Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:class2"), null].TriplesCount == 1);
             Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.REST, null, null].TriplesCount == 2);
-            
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+
             int i = 0;
             IEnumerator<RDFResource> compositesEnumerator = classModel.CompositesEnumerator;
             while (compositesEnumerator.MoveNext())
@@ -768,7 +790,8 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 2);
             Assert.IsTrue(classModel.TBoxGraph[new RDFResource("ex:complementClass"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS, null].TriplesCount == 1);
             Assert.IsTrue(classModel.TBoxGraph[new RDFResource("ex:complementClass"), RDFVocabulary.OWL.COMPLEMENT_OF, new RDFResource("ex:class"), null].TriplesCount == 1);
-            
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+
             int i = 0;
             IEnumerator<RDFResource> compositesEnumerator = classModel.CompositesEnumerator;
             while (compositesEnumerator.MoveNext())
@@ -810,7 +833,8 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:class1"), null].TriplesCount == 1);
             Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:class2"), null].TriplesCount == 1);
             Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.REST, null, null].TriplesCount == 2);
-                    }
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+        }
 
         [TestMethod]
         public void ShouldThrowExceptionOnDeclaringDisjointUnionClassBecauseNullClass()
@@ -844,7 +868,9 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:class1"), null].TriplesCount == 1);
             Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:class2"), null].TriplesCount == 1);
             Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.REST, null, null].TriplesCount == 2);
-            
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+
+
             int i = 0;
             IEnumerator<RDFResource> allDisjointClassesEnumerator = classModel.AllDisjointClassesEnumerator;
             while (allDisjointClassesEnumerator.MoveNext())
@@ -876,9 +902,10 @@ namespace RDFSharp.Semantics.Test
             classModel.AnnotateClass(new RDFResource("ex:classA"), RDFVocabulary.RDFS.SEE_ALSO, new RDFResource("ex:seealso")); //Will be discarded, since duplicate annotations are not allowed
 
             Assert.IsTrue(classModel.ClassesCount == 1);
-            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 2);
+            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 1);
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
-            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDFS.SEE_ALSO, new RDFResource("ex:seealso"))));
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 1);
+            Assert.IsTrue(classModel.OBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDFS.SEE_ALSO, new RDFResource("ex:seealso"))));
         }
 
         [TestMethod]
@@ -890,9 +917,10 @@ namespace RDFSharp.Semantics.Test
             classModel.AnnotateClass(new RDFResource("ex:classA"), RDFVocabulary.RDFS.LABEL, new RDFPlainLiteral("label")); //Will be discarded, since duplicate annotations are not allowed
 
             Assert.IsTrue(classModel.ClassesCount == 1);
-            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 2);
+            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 1);
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
-            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDFS.LABEL, new RDFPlainLiteral("label"))));
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 1);
+            Assert.IsTrue(classModel.OBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDFS.LABEL, new RDFPlainLiteral("label"))));
         }
 
         [TestMethod]
@@ -955,6 +983,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDFS.SUB_CLASS_OF, new RDFResource("ex:classB"))));
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
         }
 
         [TestMethod]
@@ -974,6 +1003,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.RDFS.SUB_CLASS_OF, new RDFResource("ex:classA"))));
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
         }
 
         [TestMethod]
@@ -1009,6 +1039,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.OWL.EQUIVALENT_CLASS, new RDFResource("ex:classB"))));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.OWL.EQUIVALENT_CLASS, new RDFResource("ex:classA"))));
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
         }
 
         [TestMethod]
@@ -1028,6 +1059,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDFS.SUB_CLASS_OF, new RDFResource("ex:classB"))));
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
         }
 
         [TestMethod]
@@ -1063,6 +1095,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.OWL.DISJOINT_WITH, new RDFResource("ex:classB"))));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.OWL.DISJOINT_WITH, new RDFResource("ex:classA"))));
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
         }
 
         [TestMethod]
@@ -1117,6 +1150,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.RDF.LIST, null].TriplesCount == 1);
             Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:dtProp"), null].TriplesCount == 1);
             Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.REST, null, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
         }
 
         [TestMethod]
@@ -1147,6 +1181,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:restr"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:restr"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.RESTRICTION)));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:restr"), RDFVocabulary.OWL.ON_PROPERTY, new RDFResource("ex:onProp"))));
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
 
             int i = 0;
             IEnumerator<RDFResource> restrictionsEnumerator = classModel.RestrictionsEnumerator;

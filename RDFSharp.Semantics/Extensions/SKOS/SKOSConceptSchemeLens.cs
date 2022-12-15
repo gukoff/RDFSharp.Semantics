@@ -234,15 +234,15 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             List<(RDFResource, RDFLiteral)> result = new List<(RDFResource, RDFLiteral)>();
 
             //skos:PrefLabel
-            foreach (RDFTriple prefLabelTriple in Scheme.Ontology.Data.ABoxGraph[Concept, RDFVocabulary.SKOS.PREF_LABEL, null, null])
+            foreach (RDFTriple prefLabelTriple in Scheme.Ontology.Data.OBoxGraph[Concept, RDFVocabulary.SKOS.PREF_LABEL, null, null])
                 result.Add((RDFVocabulary.SKOS.PREF_LABEL, (RDFLiteral)prefLabelTriple.Object));
 
             //skos:AltLabel
-            foreach (RDFTriple altLabelTriple in Scheme.Ontology.Data.ABoxGraph[Concept, RDFVocabulary.SKOS.ALT_LABEL, null, null])
+            foreach (RDFTriple altLabelTriple in Scheme.Ontology.Data.OBoxGraph[Concept, RDFVocabulary.SKOS.ALT_LABEL, null, null])
                 result.Add((RDFVocabulary.SKOS.ALT_LABEL, (RDFLiteral)altLabelTriple.Object));
 
             //skos:HiddenLabel
-            foreach (RDFTriple hiddenLabelTriple in Scheme.Ontology.Data.ABoxGraph[Concept, RDFVocabulary.SKOS.HIDDEN_LABEL, null, null])
+            foreach (RDFTriple hiddenLabelTriple in Scheme.Ontology.Data.OBoxGraph[Concept, RDFVocabulary.SKOS.HIDDEN_LABEL, null, null])
                 result.Add((RDFVocabulary.SKOS.HIDDEN_LABEL, (RDFLiteral)hiddenLabelTriple.Object));
 
             return result;
@@ -262,31 +262,31 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             List<(RDFResource, RDFLiteral)> result = new List<(RDFResource, RDFLiteral)>();
 
             //skos:Note
-            foreach (RDFTriple noteTriple in Scheme.Ontology.Data.ABoxGraph[Concept, RDFVocabulary.SKOS.NOTE, null, null])
+            foreach (RDFTriple noteTriple in Scheme.Ontology.Data.OBoxGraph[Concept, RDFVocabulary.SKOS.NOTE, null, null])
                 result.Add((RDFVocabulary.SKOS.NOTE, (RDFLiteral)noteTriple.Object));
 
             //skos:ChangeNote
-            foreach (RDFTriple changeNoteTriple in Scheme.Ontology.Data.ABoxGraph[Concept, RDFVocabulary.SKOS.CHANGE_NOTE, null, null])
+            foreach (RDFTriple changeNoteTriple in Scheme.Ontology.Data.OBoxGraph[Concept, RDFVocabulary.SKOS.CHANGE_NOTE, null, null])
                 result.Add((RDFVocabulary.SKOS.CHANGE_NOTE, (RDFLiteral)changeNoteTriple.Object));
 
             //skos:EditorialNote
-            foreach (RDFTriple editorialNoteTriple in Scheme.Ontology.Data.ABoxGraph[Concept, RDFVocabulary.SKOS.EDITORIAL_NOTE, null, null])
+            foreach (RDFTriple editorialNoteTriple in Scheme.Ontology.Data.OBoxGraph[Concept, RDFVocabulary.SKOS.EDITORIAL_NOTE, null, null])
                 result.Add((RDFVocabulary.SKOS.EDITORIAL_NOTE, (RDFLiteral)editorialNoteTriple.Object));
 
             //skos:HistoryNote
-            foreach (RDFTriple historyNoteTriple in Scheme.Ontology.Data.ABoxGraph[Concept, RDFVocabulary.SKOS.HISTORY_NOTE, null, null])
+            foreach (RDFTriple historyNoteTriple in Scheme.Ontology.Data.OBoxGraph[Concept, RDFVocabulary.SKOS.HISTORY_NOTE, null, null])
                 result.Add((RDFVocabulary.SKOS.HISTORY_NOTE, (RDFLiteral)historyNoteTriple.Object));
 
             //skos:ScopeNote
-            foreach (RDFTriple scopeNoteTriple in Scheme.Ontology.Data.ABoxGraph[Concept, RDFVocabulary.SKOS.SCOPE_NOTE, null, null])
+            foreach (RDFTriple scopeNoteTriple in Scheme.Ontology.Data.OBoxGraph[Concept, RDFVocabulary.SKOS.SCOPE_NOTE, null, null])
                 result.Add((RDFVocabulary.SKOS.SCOPE_NOTE, (RDFLiteral)scopeNoteTriple.Object));
 
             //skos:Definition
-            foreach (RDFTriple definitionTriple in Scheme.Ontology.Data.ABoxGraph[Concept, RDFVocabulary.SKOS.DEFINITION, null, null])
+            foreach (RDFTriple definitionTriple in Scheme.Ontology.Data.OBoxGraph[Concept, RDFVocabulary.SKOS.DEFINITION, null, null])
                 result.Add((RDFVocabulary.SKOS.DEFINITION, (RDFLiteral)definitionTriple.Object));
 
             //skos:Example
-            foreach (RDFTriple exampleTriple in Scheme.Ontology.Data.ABoxGraph[Concept, RDFVocabulary.SKOS.EXAMPLE, null, null])
+            foreach (RDFTriple exampleTriple in Scheme.Ontology.Data.OBoxGraph[Concept, RDFVocabulary.SKOS.EXAMPLE, null, null])
                 result.Add((RDFVocabulary.SKOS.EXAMPLE, (RDFLiteral)exampleTriple.Object));
 
             return result;

@@ -135,7 +135,7 @@ namespace RDFSharp.Semantics
         {
             List<RDFTriple> result = new List<RDFTriple>();
 
-            result.AddRange(Ontology.Model.ClassModel.TBoxGraph.Where(ann => ann.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPO
+            result.AddRange(Ontology.Model.ClassModel.OBoxGraph.Where(ann => ann.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPO
                                                                                 && Ontology.Model.PropertyModel.CheckHasAnnotationProperty((RDFResource)ann.Predicate)
                                                                                     && ann.Subject.Equals(Class)));
 
@@ -155,7 +155,7 @@ namespace RDFSharp.Semantics
         {
             List<RDFTriple> result = new List<RDFTriple>();
 
-            result.AddRange(Ontology.Model.ClassModel.TBoxGraph.Where(ann => ann.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPL
+            result.AddRange(Ontology.Model.ClassModel.OBoxGraph.Where(ann => ann.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPL
                                                                                 && Ontology.Model.PropertyModel.CheckHasAnnotationProperty((RDFResource)ann.Predicate)
                                                                                     && ann.Subject.Equals(Class)));
 

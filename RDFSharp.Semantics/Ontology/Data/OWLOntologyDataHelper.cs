@@ -38,13 +38,13 @@ namespace RDFSharp.Semantics
         /// Checks for the existence of the given owl:NamedIndividual annotation within the data
         /// </summary>
         public static bool CheckHasAnnotation(this OWLOntologyData data, RDFResource owlIndividual, RDFResource annotationProperty, RDFResource annotationValue)
-            => owlIndividual != null && annotationProperty != null && annotationValue != null && data != null && data.ABoxGraph.ContainsTriple(new RDFTriple(owlIndividual, annotationProperty, annotationValue));
+            => owlIndividual != null && annotationProperty != null && annotationValue != null && data != null && data.OBoxGraph.ContainsTriple(new RDFTriple(owlIndividual, annotationProperty, annotationValue));
 
         /// <summary>
         /// Checks for the existence of the given owl:NamedIndividual annotation within the data
         /// </summary>
         public static bool CheckHasAnnotation(this OWLOntologyData data, RDFResource owlIndividual, RDFResource annotationProperty, RDFLiteral annotationValue)
-            => owlIndividual != null && annotationProperty != null && annotationValue != null && data != null && data.ABoxGraph.ContainsTriple(new RDFTriple(owlIndividual, annotationProperty, annotationValue));
+            => owlIndividual != null && annotationProperty != null && annotationValue != null && data != null && data.OBoxGraph.ContainsTriple(new RDFTriple(owlIndividual, annotationProperty, annotationValue));
 
         /// <summary>
         /// Checks for the existence of the given "ObjectProperty(leftIndividual,rightIndividual)" assertion within the data

@@ -114,13 +114,13 @@ namespace RDFSharp.Semantics
         /// Checks for the existence of the given owl:Property annotation within the model
         /// </summary>
         public static bool CheckHasAnnotation(this OWLOntologyPropertyModel propertyModel, RDFResource owlProperty, RDFResource annotationProperty, RDFResource annotationValue)
-            => owlProperty != null && annotationProperty != null && annotationValue != null && propertyModel != null && propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(owlProperty, annotationProperty, annotationValue));
+            => owlProperty != null && annotationProperty != null && annotationValue != null && propertyModel != null && propertyModel.OBoxGraph.ContainsTriple(new RDFTriple(owlProperty, annotationProperty, annotationValue));
 
         /// <summary>
         /// Checks for the existence of the given owl:Property annotation within the model
         /// </summary>
         public static bool CheckHasAnnotation(this OWLOntologyPropertyModel propertyModel, RDFResource owlProperty, RDFResource annotationProperty, RDFLiteral annotationValue)
-            => owlProperty != null && annotationProperty != null && annotationValue != null && propertyModel != null && propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(owlProperty, annotationProperty, annotationValue));
+            => owlProperty != null && annotationProperty != null && annotationValue != null && propertyModel != null && propertyModel.OBoxGraph.ContainsTriple(new RDFTriple(owlProperty, annotationProperty, annotationValue));
 
         /// <summary>
         /// Checks for the existence of the given owl:propertyChainAxiom declaration within the model [OWL2]

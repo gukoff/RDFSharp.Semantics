@@ -72,6 +72,11 @@ namespace RDFSharp.Semantics
         /// A-BOX knowledge available to the data
         /// </summary>
         internal RDFGraph ABoxGraph { get; set; }
+
+        /// <summary>
+        /// A-BOX knowledge annotating the data
+        /// </summary>
+        internal RDFGraph OBoxGraph { get; set; }
         #endregion
 
         #region Ctors
@@ -82,6 +87,7 @@ namespace RDFSharp.Semantics
         {
             Individuals = new Dictionary<long, RDFResource>();
             ABoxGraph = new RDFGraph();
+            OBoxGraph = new RDFGraph();
         }
         #endregion
 
@@ -134,8 +140,8 @@ namespace RDFSharp.Semantics
             if (annotationValue == null)
                 throw new OWLSemanticsException("Cannot annotate individual because given \"annotationValue\" parameter is null");
 
-            //Add knowledge to the A-BOX
-            ABoxGraph.AddTriple(new RDFTriple(owlIndividual, annotationProperty, annotationValue));
+            //Add knowledge to the O-BOX
+            OBoxGraph.AddTriple(new RDFTriple(owlIndividual, annotationProperty, annotationValue));
 
             return this;
         }
@@ -154,8 +160,8 @@ namespace RDFSharp.Semantics
             if (annotationValue == null)
                 throw new OWLSemanticsException("Cannot annotate individual because given \"annotationValue\" parameter is null");
 
-            //Add knowledge to the A-BOX
-            ABoxGraph.AddTriple(new RDFTriple(owlIndividual, annotationProperty, annotationValue));
+            //Add knowledge to the O-BOX
+            OBoxGraph.AddTriple(new RDFTriple(owlIndividual, annotationProperty, annotationValue));
 
             return this;
         }
@@ -404,7 +410,7 @@ namespace RDFSharp.Semantics
         /// Gets a graph representation of the data
         /// </summary>
         public RDFGraph ToRDFGraph()
-            => ABoxGraph;
+            => ABoxGraph.UnionWith(OBoxGraph);
 
         /// <summary>
         /// Asynchronously gets a graph representation of the data

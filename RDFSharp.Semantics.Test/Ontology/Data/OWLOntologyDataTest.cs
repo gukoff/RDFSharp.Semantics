@@ -37,6 +37,8 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(data.AllDifferentCount == 0);
             Assert.IsNotNull(data.ABoxGraph);
             Assert.IsTrue(data.ABoxGraph.TriplesCount == 0);
+            Assert.IsNotNull(data.OBoxGraph);
+            Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
 
             int i = 0;
             IEnumerator<RDFResource> individualsEnumerator = data.IndividualsEnumerator;
@@ -62,7 +64,8 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(data.AllDifferentCount == 0);
             Assert.IsTrue(data.ABoxGraph.TriplesCount == 1);
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
-            
+            Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
+
             int i = 0;
             IEnumerator<RDFResource> individualsEnumerator = data.IndividualsEnumerator;
             while (individualsEnumerator.MoveNext())
@@ -90,9 +93,10 @@ namespace RDFSharp.Semantics.Test
 
             Assert.IsTrue(data.IndividualsCount == 1);
             Assert.IsTrue(data.AllDifferentCount == 0);
-            Assert.IsTrue(data.ABoxGraph.TriplesCount == 2);
+            Assert.IsTrue(data.ABoxGraph.TriplesCount == 1);
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
-            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDFS.SEE_ALSO, new RDFResource("ex:seealso"))));
+            Assert.IsTrue(data.OBoxGraph.TriplesCount == 1);
+            Assert.IsTrue(data.OBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDFS.SEE_ALSO, new RDFResource("ex:seealso"))));
         }
 
         [TestMethod]
@@ -105,9 +109,10 @@ namespace RDFSharp.Semantics.Test
 
             Assert.IsTrue(data.IndividualsCount == 1);
             Assert.IsTrue(data.AllDifferentCount == 0);
-            Assert.IsTrue(data.ABoxGraph.TriplesCount == 2);
+            Assert.IsTrue(data.ABoxGraph.TriplesCount == 1);
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
-            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDFS.LABEL, new RDFPlainLiteral("label"))));
+            Assert.IsTrue(data.OBoxGraph.TriplesCount == 1);
+            Assert.IsTrue(data.OBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDFS.LABEL, new RDFPlainLiteral("label"))));
         }
 
         [TestMethod]
@@ -168,6 +173,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(data.ABoxGraph.TriplesCount == 2);
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, new RDFResource("ex:classA"))));
+            Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
         }
 
         [TestMethod]
@@ -184,6 +190,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(warningMsg.IndexOf("Type relation between individual 'ex:indivA' and class 'http://www.w3.org/2000/01/rdf-schema#Resource' cannot be declared to the data because it would violate OWL-DL integrity") > -1);
             Assert.IsTrue(data.ABoxGraph.TriplesCount == 1);
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
+            Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
         }
 
         [TestMethod]
@@ -211,6 +218,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.OWL.SAME_AS, new RDFResource("ex:indivB"))));
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.OWL.SAME_AS, new RDFResource("ex:indivA"))));
+            Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
         }
 
         [TestMethod]
@@ -230,6 +238,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.OWL.DIFFERENT_FROM, new RDFResource("ex:indivB"))));
+            Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
         }
 
         [TestMethod]
@@ -265,6 +274,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.OWL.DIFFERENT_FROM, new RDFResource("ex:indivB"))));
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.OWL.DIFFERENT_FROM, new RDFResource("ex:indivA"))));
+            Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
         }
 
         [TestMethod]
@@ -284,6 +294,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.OWL.SAME_AS, new RDFResource("ex:indivB"))));
+            Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
         }
 
         [TestMethod]
@@ -322,6 +333,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:indivB"), null].Any());
             Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:indivC"), null].Any());
             Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.RDF.REST, null, null].TriplesCount == 3);
+            Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
 
             int j = 0;
             IEnumerator<RDFResource> allDifferentEnumerator = data.AllDifferentEnumerator;
@@ -356,6 +368,7 @@ namespace RDFSharp.Semantics.Test
 
             Assert.IsTrue(data.ABoxGraph.TriplesCount == 1);
             Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivA"), RDFVocabulary.FOAF.KNOWS, new RDFResource("ex:indivB"), null].Any());
+            Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
         }
 
         [TestMethod]
@@ -390,6 +403,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsNotNull(warningMsg);
             Assert.IsTrue(warningMsg.IndexOf("ObjectAssertion relation between individual 'ex:indivA' and individual 'ex:indivB' through property 'http://www.w3.org/2000/01/rdf-schema#seeAlso' cannot be declared to the data because it would violate OWL-DL integrity") > -1);
             Assert.IsTrue(data.ABoxGraph.TriplesCount == 0);
+            Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
         }
 
         [TestMethod]
@@ -409,6 +423,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.SOURCE_INDIVIDUAL, new RDFResource("ex:indivA"), null].Any());
             Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.ASSERTION_PROPERTY, new RDFResource("ex:objProp"), null].Any());
             Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.TARGET_INDIVIDUAL, new RDFResource("ex:indivB"), null].Any());
+            Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
         }
 
         [TestMethod]
@@ -419,6 +434,7 @@ namespace RDFSharp.Semantics.Test
 
             Assert.IsTrue(data.ABoxGraph.TriplesCount == 1);
             Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivA"), RDFVocabulary.FOAF.NAME, null, new RDFPlainLiteral("name")].Any());
+            Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
         }
 
         [TestMethod]
@@ -453,6 +469,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsNotNull(warningMsg);
             Assert.IsTrue(warningMsg.IndexOf("DatatypeAssertion relation between individual 'ex:indivA' and value 'name' through property 'http://www.w3.org/2000/01/rdf-schema#seeAlso' cannot be declared to the data because it would violate OWL-DL integrity") > -1);
             Assert.IsTrue(data.ABoxGraph.TriplesCount == 0);
+            Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
         }
 
         [TestMethod]
@@ -472,6 +489,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.SOURCE_INDIVIDUAL, new RDFResource("ex:indivA"), null].Any());
             Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.ASSERTION_PROPERTY, new RDFResource("ex:dtProp"), null].Any());
             Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.TARGET_VALUE, null, new RDFPlainLiteral("name")].Any());
+            Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
         }
 
         [TestMethod]
@@ -485,6 +503,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.SOURCE_INDIVIDUAL, new RDFResource("ex:indivA"), null].Any());
             Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.ASSERTION_PROPERTY, RDFVocabulary.FOAF.KNOWS, null].Any());
             Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.TARGET_INDIVIDUAL, new RDFResource("ex:indivB"), null].Any());
+            Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
         }
 
         [TestMethod]
@@ -519,6 +538,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsNotNull(warningMsg);
             Assert.IsTrue(warningMsg.IndexOf("NegativeObjectAssertion relation between individual 'ex:indivA' and individual 'ex:indivB' through property 'http://www.w3.org/2000/01/rdf-schema#seeAlso' cannot be declared to the data because it would violate OWL-DL integrity") > -1);
             Assert.IsTrue(data.ABoxGraph.TriplesCount == 0);
+            Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
         }
 
         [TestMethod]
@@ -535,6 +555,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(warningMsg.IndexOf("NegativeObjectAssertion relation between individual 'ex:indivA' and individual 'ex:indivB' through property 'ex:objProp' cannot be declared to the data because it would violate OWL-DL integrity") > -1);
             Assert.IsTrue(data.ABoxGraph.TriplesCount == 1);
             Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivA"), new RDFResource("ex:objProp"), new RDFResource("ex:indivB"), null].Any());
+            Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
         }
 
         [TestMethod]
@@ -548,6 +569,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.SOURCE_INDIVIDUAL, new RDFResource("ex:indivA"), null].Any());
             Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.ASSERTION_PROPERTY, RDFVocabulary.FOAF.NAME, null].Any());
             Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.TARGET_VALUE, null, new RDFPlainLiteral("name")].Any());
+            Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
         }
 
         [TestMethod]
@@ -582,6 +604,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsNotNull(warningMsg);
             Assert.IsTrue(warningMsg.IndexOf("NegativeDatatypeAssertion relation between individual 'ex:indivA' and value 'name' through property 'http://www.w3.org/2000/01/rdf-schema#seeAlso' cannot be declared to the data because it would violate OWL-DL integrity") > -1);
             Assert.IsTrue(data.ABoxGraph.TriplesCount == 0);
+            Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
         }
 
         [TestMethod]
@@ -598,6 +621,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(warningMsg.IndexOf("NegativeDatatypeAssertion relation between individual 'ex:indivA' and value 'name' through property 'ex:dtProp' cannot be declared to the data because it would violate OWL-DL integrity") > -1);
             Assert.IsTrue(data.ABoxGraph.TriplesCount == 1);
             Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivA"), new RDFResource("ex:dtProp"), null, new RDFPlainLiteral("name")].Any());
+            Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
         }
         
         [TestMethod]

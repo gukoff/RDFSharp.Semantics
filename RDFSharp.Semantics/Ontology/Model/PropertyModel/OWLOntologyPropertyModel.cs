@@ -413,6 +413,11 @@ namespace RDFSharp.Semantics
         /// T-BOX knowledge describing properties
         /// </summary>
         internal RDFGraph TBoxGraph { get; set; }
+
+        /// <summary>
+        /// T-BOX knowledge annotating properties
+        /// </summary>
+        internal RDFGraph OBoxGraph { get; set; }
         #endregion
 
         #region Ctors
@@ -423,6 +428,7 @@ namespace RDFSharp.Semantics
         {
             Properties = new Dictionary<long, RDFResource>();
             TBoxGraph = new RDFGraph();
+            OBoxGraph = new RDFGraph();
         }
         #endregion
 
@@ -550,8 +556,8 @@ namespace RDFSharp.Semantics
             if (annotationValue == null)
                 throw new OWLSemanticsException("Cannot annotate owl property because given \"annotationValue\" parameter is null");
 
-            //Add knowledge to the T-BOX
-            TBoxGraph.AddTriple(new RDFTriple(owlProperty, annotationProperty, annotationValue));
+            //Add knowledge to the O-BOX
+            OBoxGraph.AddTriple(new RDFTriple(owlProperty, annotationProperty, annotationValue));
 
             return this;
         }
@@ -570,8 +576,8 @@ namespace RDFSharp.Semantics
             if (annotationValue == null)
                 throw new OWLSemanticsException("Cannot annotate owl property because given \"annotationValue\" parameter is null");
 
-            //Add knowledge to the T-BOX
-            TBoxGraph.AddTriple(new RDFTriple(owlProperty, annotationProperty, annotationValue));
+            //Add knowledge to the O-BOX
+            OBoxGraph.AddTriple(new RDFTriple(owlProperty, annotationProperty, annotationValue));
 
             return this;
         }
@@ -769,7 +775,7 @@ namespace RDFSharp.Semantics
         /// Gets a graph representation of the model
         /// </summary>
         public RDFGraph ToRDFGraph()
-            => TBoxGraph;
+            => TBoxGraph.UnionWith(OBoxGraph);
 
         /// <summary>
         /// Asynchronously gets a graph representation of the model

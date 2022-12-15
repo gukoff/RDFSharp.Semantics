@@ -236,8 +236,8 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (annotationValue == null)
                 throw new OWLSemanticsException("Cannot annotate concept scheme because given \"annotationValue\" parameter is null");
 
-            //Add knowledge to the A-BOX
-            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(this, annotationProperty, annotationValue));
+            //Add knowledge to the O-BOX
+            Ontology.Data.OBoxGraph.AddTriple(new RDFTriple(this, annotationProperty, annotationValue));
 
             return this;
         }
@@ -254,8 +254,8 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (annotationValue == null)
                 throw new OWLSemanticsException("Cannot annotate concept scheme because given \"annotationValue\" parameter is null");
 
-            //Add knowledge to the A-BOX
-            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(this, annotationProperty, annotationValue));
+            //Add knowledge to the O-BOX
+            Ontology.Data.OBoxGraph.AddTriple(new RDFTriple(this, annotationProperty, annotationValue));
 
             return this;
         }
@@ -274,8 +274,8 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (annotationValue == null)
                 throw new OWLSemanticsException("Cannot annotate concept because given \"annotationValue\" parameter is null");
 
-            //Add knowledge to the A-BOX
-            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, annotationProperty, annotationValue));
+            //Add knowledge to the O-BOX
+            Ontology.Data.OBoxGraph.AddTriple(new RDFTriple(skosConcept, annotationProperty, annotationValue));
 
             return this;
         }
@@ -294,8 +294,8 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (annotationValue == null)
                 throw new OWLSemanticsException("Cannot annotate concept because given \"annotationValue\" parameter is null");
 
-            //Add knowledge to the A-BOX
-            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, annotationProperty, annotationValue));
+            //Add knowledge to the O-BOX
+            Ontology.Data.OBoxGraph.AddTriple(new RDFTriple(skosConcept, annotationProperty, annotationValue));
 
             return this;
         }
@@ -314,8 +314,8 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (annotationValue == null)
                 throw new OWLSemanticsException("Cannot annotate collection because given \"annotationValue\" parameter is null");
 
-            //Add knowledge to the A-BOX
-            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosCollection, annotationProperty, annotationValue));
+            //Add knowledge to the O-BOX
+            Ontology.Data.OBoxGraph.AddTriple(new RDFTriple(skosCollection, annotationProperty, annotationValue));
 
             return this;
         }
@@ -334,8 +334,8 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (annotationValue == null)
                 throw new OWLSemanticsException("Cannot annotate collection because given \"annotationValue\" parameter is null");
 
-            //Add knowledge to the A-BOX
-            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosCollection, annotationProperty, annotationValue));
+            //Add knowledge to the O-BOX
+            Ontology.Data.OBoxGraph.AddTriple(new RDFTriple(skosCollection, annotationProperty, annotationValue));
 
             return this;
         }
@@ -354,8 +354,8 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (annotationValue == null)
                 throw new OWLSemanticsException("Cannot annotate ordered collection because given \"annotationValue\" parameter is null");
 
-            //Add knowledge to the A-BOX
-            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosOrderedCollection, annotationProperty, annotationValue));
+            //Add knowledge to the O-BOX
+            Ontology.Data.OBoxGraph.AddTriple(new RDFTriple(skosOrderedCollection, annotationProperty, annotationValue));
 
             return this;
         }
@@ -374,8 +374,8 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (annotationValue == null)
                 throw new OWLSemanticsException("Cannot annotate ordered collection because given \"annotationValue\" parameter is null");
 
-            //Add knowledge to the A-BOX
-            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosOrderedCollection, annotationProperty, annotationValue));
+            //Add knowledge to the O-BOX
+            Ontology.Data.OBoxGraph.AddTriple(new RDFTriple(skosOrderedCollection, annotationProperty, annotationValue));
 
             return this;
         }
@@ -390,8 +390,8 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (noteValue == null)
                 throw new OWLSemanticsException("Cannot declare skos:note annotation to the concept scheme because given \"noteValue\" parameter is null");
 
-            //Add knowledge to the A-BOX
-            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.NOTE, noteValue));
+            //Add knowledge to the O-BOX
+            Ontology.Data.OBoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.NOTE, noteValue));
 
             return this;
         }
@@ -406,8 +406,8 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (changeNoteValue == null)
                 throw new OWLSemanticsException("Cannot declare skos:changeNote annotation to the concept scheme because given \"changeNoteValue\" parameter is null");
 
-            //Add knowledge to the A-BOX
-            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.CHANGE_NOTE, changeNoteValue));
+            //Add knowledge to the O-BOX
+            Ontology.Data.OBoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.CHANGE_NOTE, changeNoteValue));
 
             return this;
         }
@@ -422,8 +422,8 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (editorialNoteValue == null)
                 throw new OWLSemanticsException("Cannot declare skos:editorialNote annotation to the concept scheme because given \"editorialNoteValue\" parameter is null");
 
-            //Add knowledge to the A-BOX
-            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.EDITORIAL_NOTE, editorialNoteValue));
+            //Add knowledge to the O-BOX
+            Ontology.Data.OBoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.EDITORIAL_NOTE, editorialNoteValue));
 
             return this;
         }
@@ -438,8 +438,8 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (historyNoteValue == null)
                 throw new OWLSemanticsException("Cannot declare skos:historyNote annotation to the concept scheme because given \"historyNoteValue\" parameter is null");
 
-            //Add knowledge to the A-BOX
-            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.HISTORY_NOTE, historyNoteValue));
+            //Add knowledge to the O-BOX
+            Ontology.Data.OBoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.HISTORY_NOTE, historyNoteValue));
 
             return this;
         }
@@ -454,8 +454,8 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (scopeNoteValue == null)
                 throw new OWLSemanticsException("Cannot declare skos:scopeNote annotation to the concept scheme because given \"scopeNoteValue\" parameter is null");
 
-            //Add knowledge to the A-BOX
-            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.SCOPE_NOTE, scopeNoteValue));
+            //Add knowledge to the O-BOX
+            Ontology.Data.OBoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.SCOPE_NOTE, scopeNoteValue));
 
             return this;
         }
@@ -470,8 +470,8 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (definitionValue == null)
                 throw new OWLSemanticsException("Cannot declare skos:definition annotation to the concept scheme because given \"definitionValue\" parameter is null");
 
-            //Add knowledge to the A-BOX
-            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.DEFINITION, definitionValue));
+            //Add knowledge to the O-BOX
+            Ontology.Data.OBoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.DEFINITION, definitionValue));
 
             return this;
         }
@@ -486,8 +486,8 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (exampleValue == null)
                 throw new OWLSemanticsException("Cannot declare skos:example annotation to the concept scheme because given \"exampleValue\" parameter is null");
 
-            //Add knowledge to the A-BOX
-            Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.EXAMPLE, exampleValue));
+            //Add knowledge to the O-BOX
+            Ontology.Data.OBoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.EXAMPLE, exampleValue));
 
             return this;
         }
@@ -507,11 +507,11 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (preferredLabelValue == null)
                 throw new OWLSemanticsException("Cannot declare skos:prefLabel relation to the concept scheme because given \"preferredLabelValue\" parameter is null");
 
-            //Add knowledge to the A-BOX (or raise warning if violations are detected)
+            //Add knowledge to the O-BOX (or raise warning if violations are detected)
             if (SKOSIntegrityChecks())
             {
-                //Add knowledge to the A-BOX
-                Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.PREF_LABEL, preferredLabelValue));
+                //Add knowledge to the O-BOX
+                Ontology.Data.OBoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.PREF_LABEL, preferredLabelValue));
             }
             else
                 OWLSemanticsEvents.RaiseSemanticsWarning(string.Format("PrefLabel relation between concept '{0}' and value '{1}' cannot be declared to the concept scheme because it would violate SKOS integrity", skosConcept, preferredLabelValue));
@@ -534,11 +534,11 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (alternativeLabelValue == null)
                 throw new OWLSemanticsException("Cannot declare skos:altLabel relation to the concept scheme because given \"alternativeLabelValue\" parameter is null");
 
-            //Add knowledge to the A-BOX (or raise warning if violations are detected)
+            //Add knowledge to the O-BOX (or raise warning if violations are detected)
             if (SKOSIntegrityChecks())
             {
-                //Add knowledge to the A-BOX
-                Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.ALT_LABEL, alternativeLabelValue));
+                //Add knowledge to the O-BOX
+                Ontology.Data.OBoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.ALT_LABEL, alternativeLabelValue));
             }
             else
                 OWLSemanticsEvents.RaiseSemanticsWarning(string.Format("AltLabel relation between concept '{0}' and value '{1}' cannot be declared to the concept scheme because it would violate SKOS integrity", skosConcept, alternativeLabelValue));
@@ -561,11 +561,11 @@ namespace RDFSharp.Semantics.Extensions.SKOS
             if (hiddenLabelValue == null)
                 throw new OWLSemanticsException("Cannot declare skos:hiddenLabel relation to the concept scheme because given \"hiddenLabelValue\" parameter is null");
 
-            //Add knowledge to the A-BOX (or raise warning if violations are detected)
+            //Add knowledge to the O-BOX (or raise warning if violations are detected)
             if (SKOSIntegrityChecks())
             {
-                //Add knowledge to the A-BOX
-                Ontology.Data.ABoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.HIDDEN_LABEL, hiddenLabelValue));
+                //Add knowledge to the O-BOX
+                Ontology.Data.OBoxGraph.AddTriple(new RDFTriple(skosConcept, RDFVocabulary.SKOS.HIDDEN_LABEL, hiddenLabelValue));
             }
             else
                 OWLSemanticsEvents.RaiseSemanticsWarning(string.Format("HiddenLabel relation between concept '{0}' and value '{1}' cannot be declared to the concept scheme because it would violate SKOS integrity", skosConcept, hiddenLabelValue));

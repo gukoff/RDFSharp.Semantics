@@ -47,6 +47,8 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(propertyModel.TransitivePropertiesCount == 0);
             Assert.IsNotNull(propertyModel.TBoxGraph);
             Assert.IsTrue(propertyModel.TBoxGraph.TriplesCount == 0);
+            Assert.IsNotNull(propertyModel.OBoxGraph);
+            Assert.IsTrue(propertyModel.OBoxGraph.TriplesCount == 0);
 
             int p = 0;
             IEnumerator<RDFResource> propertiesEnumerator = propertyModel.PropertiesEnumerator;
@@ -148,6 +150,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(propertyModel.TransitivePropertiesCount == 0);
             Assert.IsTrue(propertyModel.TBoxGraph.TriplesCount == 1);
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:annprop"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ANNOTATION_PROPERTY)));
+            Assert.IsTrue(propertyModel.OBoxGraph.TriplesCount == 0);
 
             int p = 0;
             IEnumerator<RDFResource> propertiesEnumerator = propertyModel.PropertiesEnumerator;
@@ -189,7 +192,8 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(propertyModel.TransitivePropertiesCount == 0);
             Assert.IsTrue(propertyModel.TBoxGraph.TriplesCount == 1);
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
-            
+            Assert.IsTrue(propertyModel.OBoxGraph.TriplesCount == 0);
+
             int p = 0;
             IEnumerator<RDFResource> propertiesEnumerator = propertyModel.PropertiesEnumerator;
             while (propertiesEnumerator.MoveNext())
@@ -231,7 +235,8 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(propertyModel.TBoxGraph.TriplesCount == 2);
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ASYMMETRIC_PROPERTY)));
-            
+            Assert.IsTrue(propertyModel.OBoxGraph.TriplesCount == 0);
+
             int p = 0;
             IEnumerator<RDFResource> propertiesEnumerator = propertyModel.PropertiesEnumerator;
             while (propertiesEnumerator.MoveNext())
@@ -282,7 +287,8 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(propertyModel.TBoxGraph.TriplesCount == 2);
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.FUNCTIONAL_PROPERTY)));
-            
+            Assert.IsTrue(propertyModel.OBoxGraph.TriplesCount == 0);
+
             int p = 0;
             IEnumerator<RDFResource> propertiesEnumerator = propertyModel.PropertiesEnumerator;
             while (propertiesEnumerator.MoveNext())
@@ -333,7 +339,8 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(propertyModel.TBoxGraph.TriplesCount == 2);
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.INVERSE_FUNCTIONAL_PROPERTY)));
-            
+            Assert.IsTrue(propertyModel.OBoxGraph.TriplesCount == 0);
+
             int p = 0;
             IEnumerator<RDFResource> propertiesEnumerator = propertyModel.PropertiesEnumerator;
             while (propertiesEnumerator.MoveNext())
@@ -384,7 +391,8 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(propertyModel.TBoxGraph.TriplesCount == 2);
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.IRREFLEXIVE_PROPERTY)));
-            
+            Assert.IsTrue(propertyModel.OBoxGraph.TriplesCount == 0);
+
             int p = 0;
             IEnumerator<RDFResource> propertiesEnumerator = propertyModel.PropertiesEnumerator;
             while (propertiesEnumerator.MoveNext())
@@ -435,7 +443,8 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(propertyModel.TBoxGraph.TriplesCount == 2);
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.REFLEXIVE_PROPERTY)));
-            
+            Assert.IsTrue(propertyModel.OBoxGraph.TriplesCount == 0);
+
             int p = 0;
             IEnumerator<RDFResource> propertiesEnumerator = propertyModel.PropertiesEnumerator;
             while (propertiesEnumerator.MoveNext())
@@ -486,7 +495,8 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(propertyModel.TBoxGraph.TriplesCount == 2);
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.SYMMETRIC_PROPERTY)));
-            
+            Assert.IsTrue(propertyModel.OBoxGraph.TriplesCount == 0);
+
             int p = 0;
             IEnumerator<RDFResource> propertiesEnumerator = propertyModel.PropertiesEnumerator;
             while (propertiesEnumerator.MoveNext())
@@ -537,7 +547,8 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(propertyModel.TBoxGraph.TriplesCount == 2);
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.TRANSITIVE_PROPERTY)));
-            
+            Assert.IsTrue(propertyModel.OBoxGraph.TriplesCount == 0);
+
             int p = 0;
             IEnumerator<RDFResource> propertiesEnumerator = propertyModel.PropertiesEnumerator;
             while (propertiesEnumerator.MoveNext())
@@ -592,7 +603,8 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(propertyModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:objprop1"), null].TriplesCount == 1);
             Assert.IsTrue(propertyModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:objprop2"), null].TriplesCount == 1);
             Assert.IsTrue(propertyModel.TBoxGraph[null, RDFVocabulary.RDF.REST, null, null].TriplesCount == 2);
-            
+            Assert.IsTrue(propertyModel.OBoxGraph.TriplesCount == 0);
+
             int adjp = 0;
             IEnumerator<RDFResource> allDisjointPropertiesEnumerator = propertyModel.AllDisjointPropertiesEnumerator;
             while (allDisjointPropertiesEnumerator.MoveNext())
@@ -637,7 +649,8 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(propertyModel.TBoxGraph.TriplesCount == 2);
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:objprop"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.DEPRECATED_PROPERTY)));
-            
+            Assert.IsTrue(propertyModel.OBoxGraph.TriplesCount == 0);
+
             int p = 0;
             IEnumerator<RDFResource> propertiesEnumerator = propertyModel.PropertiesEnumerator;
             while (propertiesEnumerator.MoveNext())
@@ -687,7 +700,8 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(propertyModel.TransitivePropertiesCount == 0);
             Assert.IsTrue(propertyModel.TBoxGraph.TriplesCount == 1);
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:dtprop"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.DATATYPE_PROPERTY)));
-            
+            Assert.IsTrue(propertyModel.OBoxGraph.TriplesCount == 0);
+
             int p = 0;
             IEnumerator<RDFResource> propertiesEnumerator = propertyModel.PropertiesEnumerator;
             while (propertiesEnumerator.MoveNext())
@@ -738,9 +752,10 @@ namespace RDFSharp.Semantics.Test
             propertyModel.AnnotateProperty(new RDFResource("ex:propertyA"), RDFVocabulary.RDFS.SEE_ALSO, new RDFResource("ex:seealso")); //Will be discarded, since duplicate annotations are not allowed
 
             Assert.IsTrue(propertyModel.PropertiesCount == 1);
-            Assert.IsTrue(propertyModel.TBoxGraph.TriplesCount == 2);
+            Assert.IsTrue(propertyModel.TBoxGraph.TriplesCount == 1);
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
-            Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.RDFS.SEE_ALSO, new RDFResource("ex:seealso"))));
+            Assert.IsTrue(propertyModel.OBoxGraph.TriplesCount == 1);
+            Assert.IsTrue(propertyModel.OBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.RDFS.SEE_ALSO, new RDFResource("ex:seealso"))));
         }
 
         [TestMethod]
@@ -752,9 +767,10 @@ namespace RDFSharp.Semantics.Test
             propertyModel.AnnotateProperty(new RDFResource("ex:propertyA"), RDFVocabulary.RDFS.LABEL, new RDFPlainLiteral("label")); //Will be discarded, since duplicate annotations are not allowed
 
             Assert.IsTrue(propertyModel.PropertiesCount == 1);
-            Assert.IsTrue(propertyModel.TBoxGraph.TriplesCount == 2);
+            Assert.IsTrue(propertyModel.TBoxGraph.TriplesCount == 1);
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
-            Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.RDFS.LABEL, new RDFPlainLiteral("label"))));
+            Assert.IsTrue(propertyModel.OBoxGraph.TriplesCount == 1);
+            Assert.IsTrue(propertyModel.OBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.RDFS.LABEL, new RDFPlainLiteral("label"))));
         }
 
         [TestMethod]
@@ -816,6 +832,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.RDFS.SUB_PROPERTY_OF, new RDFResource("ex:propertyB"))));
+            Assert.IsTrue(propertyModel.OBoxGraph.TriplesCount == 0);
         }
 
         [TestMethod]
@@ -835,6 +852,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyB"), RDFVocabulary.RDFS.SUB_PROPERTY_OF, new RDFResource("ex:propertyA"))));
+            Assert.IsTrue(propertyModel.OBoxGraph.TriplesCount == 0);
         }
 
         [TestMethod]
@@ -870,6 +888,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.OWL.EQUIVALENT_PROPERTY, new RDFResource("ex:propertyB"))));
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyB"), RDFVocabulary.OWL.EQUIVALENT_PROPERTY, new RDFResource("ex:propertyA"))));
+            Assert.IsTrue(propertyModel.OBoxGraph.TriplesCount == 0);
         }
 
         [TestMethod]
@@ -889,6 +908,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.RDFS.SUB_PROPERTY_OF, new RDFResource("ex:propertyB"))));
+            Assert.IsTrue(propertyModel.OBoxGraph.TriplesCount == 0);
         }
 
         [TestMethod]
@@ -924,6 +944,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.OWL.PROPERTY_DISJOINT_WITH, new RDFResource("ex:propertyB"))));
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyB"), RDFVocabulary.OWL.PROPERTY_DISJOINT_WITH, new RDFResource("ex:propertyA"))));
+            Assert.IsTrue(propertyModel.OBoxGraph.TriplesCount == 0);
         }
 
         [TestMethod]
@@ -943,6 +964,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.RDFS.SUB_PROPERTY_OF, new RDFResource("ex:propertyB"))));
+            Assert.IsTrue(propertyModel.OBoxGraph.TriplesCount == 0);
         }
 
         [TestMethod]
@@ -978,6 +1000,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.OWL.INVERSE_OF, new RDFResource("ex:propertyB"))));
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyB"), RDFVocabulary.OWL.INVERSE_OF, new RDFResource("ex:propertyA"))));
+            Assert.IsTrue(propertyModel.OBoxGraph.TriplesCount == 0);
         }
 
         [TestMethod]
@@ -997,6 +1020,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.OBJECT_PROPERTY)));
             Assert.IsTrue(propertyModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:propertyA"), RDFVocabulary.RDFS.SUB_PROPERTY_OF, new RDFResource("ex:propertyB"))));
+            Assert.IsTrue(propertyModel.OBoxGraph.TriplesCount == 0);
         }
 
         [TestMethod]
@@ -1034,6 +1058,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(propertyModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:objprop1"), null].TriplesCount == 1);
             Assert.IsTrue(propertyModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:objprop2"), null].TriplesCount == 1);
             Assert.IsTrue(propertyModel.TBoxGraph[null, RDFVocabulary.RDF.REST, null, null].TriplesCount == 2);
+            Assert.IsTrue(propertyModel.OBoxGraph.TriplesCount == 0);
         }
 
         [TestMethod]
