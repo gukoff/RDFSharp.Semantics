@@ -127,7 +127,7 @@ namespace RDFSharp.Semantics
         /// </summary>
         public static bool CheckHasPropertyChainAxiom(this OWLOntologyPropertyModel propertyModel, RDFResource owlProperty)
             => CheckHasObjectProperty(propertyModel, owlProperty)
-                && propertyModel.TBoxGraph[owlProperty, RDFVocabulary.OWL.PROPERTY_CHAIN_AXIOM, null, null].Any();
+                && propertyModel.TBoxGraph[owlProperty, RDFVocabulary.OWL.PROPERTY_CHAIN_AXIOM, null, null].TriplesCount > 0;
 
         /// <summary>
         /// Checks for the existence of the given owl:AllDisjointProperties declaration within the model [OWL2]

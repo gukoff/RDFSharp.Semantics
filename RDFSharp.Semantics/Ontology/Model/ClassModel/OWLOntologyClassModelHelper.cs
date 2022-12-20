@@ -52,135 +52,134 @@ namespace RDFSharp.Semantics
         /// </summary>
         public static bool CheckHasEnumerateClass(this OWLOntologyClassModel classModel, RDFResource owlEnumerate)
             => CheckHasClass(classModel, owlEnumerate)
-                && classModel.TBoxGraph.Any(t => t.Subject.Equals(owlEnumerate) && t.Predicate.Equals(RDFVocabulary.OWL.ONE_OF));
+                && classModel.TBoxGraph[owlEnumerate, RDFVocabulary.OWL.ONE_OF, null, null].TriplesCount > 0;
 
         /// <summary>
         /// Checks for the existence of the given owl:[unionOf|intersectionOf|complementOf] declaration within the model
         /// </summary>
         public static bool CheckHasCompositeClass(this OWLOntologyClassModel classModel, RDFResource owlComposite)
             => CheckHasClass(classModel, owlComposite)
-                && classModel.TBoxGraph.Any(t => t.Subject.Equals(owlComposite) &&
-                                                    (t.Predicate.Equals(RDFVocabulary.OWL.UNION_OF) ||
-                                                     t.Predicate.Equals(RDFVocabulary.OWL.INTERSECTION_OF) ||
-                                                     t.Predicate.Equals(RDFVocabulary.OWL.COMPLEMENT_OF)));
+                && classModel.TBoxGraph[owlComposite, null, null, null].Any(t => t.Predicate.Equals(RDFVocabulary.OWL.UNION_OF)
+                                                                                  || t.Predicate.Equals(RDFVocabulary.OWL.INTERSECTION_OF)
+                                                                                   || t.Predicate.Equals(RDFVocabulary.OWL.COMPLEMENT_OF));
 
         /// <summary>
         /// Checks for the existence of the given owl:unionOf declaration within the model
         /// </summary>
         internal static bool CheckHasCompositeUnionClass(this OWLOntologyClassModel classModel, RDFResource owlComposite)
             => CheckHasCompositeClass(classModel, owlComposite)
-                && classModel.TBoxGraph.Any(t => t.Subject.Equals(owlComposite) && t.Predicate.Equals(RDFVocabulary.OWL.UNION_OF));
+                && classModel.TBoxGraph[owlComposite, RDFVocabulary.OWL.UNION_OF, null, null].TriplesCount > 0;
 
         /// <summary>
         /// Checks for the existence of the given owl:intersectionOf declaration within the model
         /// </summary>
         internal static bool CheckHasCompositeIntersectionClass(this OWLOntologyClassModel classModel, RDFResource owlComposite)
             => CheckHasCompositeClass(classModel, owlComposite)
-                && classModel.TBoxGraph.Any(t => t.Subject.Equals(owlComposite) && t.Predicate.Equals(RDFVocabulary.OWL.INTERSECTION_OF));
+                && classModel.TBoxGraph[owlComposite, RDFVocabulary.OWL.INTERSECTION_OF, null, null].TriplesCount > 0;
 
         /// <summary>
         /// Checks for the existence of the given owl:complementOf declaration within the model
         /// </summary>
         internal static bool CheckHasCompositeComplementClass(this OWLOntologyClassModel classModel, RDFResource owlComposite)
             => CheckHasCompositeClass(classModel, owlComposite)
-                && classModel.TBoxGraph.Any(t => t.Subject.Equals(owlComposite) && t.Predicate.Equals(RDFVocabulary.OWL.COMPLEMENT_OF));
+                && classModel.TBoxGraph[owlComposite, RDFVocabulary.OWL.COMPLEMENT_OF, null, null].TriplesCount > 0;
 
         /// <summary>
         /// Checks for the existence of the given owl:allValuesFromRestriction declaration within the model
         /// </summary>
         internal static bool CheckHasAllValuesFromRestrictionClass(this OWLOntologyClassModel classModel, RDFResource owlRestriction)
             => CheckHasRestrictionClass(classModel, owlRestriction)
-                && classModel.TBoxGraph.Any(t => t.Subject.Equals(owlRestriction) && t.Predicate.Equals(RDFVocabulary.OWL.ALL_VALUES_FROM));
+                && classModel.TBoxGraph[owlRestriction, RDFVocabulary.OWL.ALL_VALUES_FROM, null, null].TriplesCount > 0;
 
         /// <summary>
         /// Checks for the existence of the given owl:someValuesFromRestriction declaration within the model
         /// </summary>
         internal static bool CheckHasSomeValuesFromRestrictionClass(this OWLOntologyClassModel classModel, RDFResource owlRestriction)
             => CheckHasRestrictionClass(classModel, owlRestriction)
-                && classModel.TBoxGraph.Any(t => t.Subject.Equals(owlRestriction) && t.Predicate.Equals(RDFVocabulary.OWL.SOME_VALUES_FROM));
+                && classModel.TBoxGraph[owlRestriction, RDFVocabulary.OWL.SOME_VALUES_FROM, null, null].TriplesCount > 0;
 
         /// <summary>
         /// Checks for the existence of the given owl:hasValueRestriction declaration within the model
         /// </summary>
         internal static bool CheckHasValueRestrictionClass(this OWLOntologyClassModel classModel, RDFResource owlRestriction)
             => CheckHasRestrictionClass(classModel, owlRestriction)
-                && classModel.TBoxGraph.Any(t => t.Subject.Equals(owlRestriction) && t.Predicate.Equals(RDFVocabulary.OWL.HAS_VALUE));
+                && classModel.TBoxGraph[owlRestriction, RDFVocabulary.OWL.HAS_VALUE, null, null].TriplesCount > 0;
 
         /// <summary>
         /// Checks for the existence of the given owl:hasSelfRestriction declaration within the model [OWL2]
         /// </summary>
         internal static bool CheckHasSelfRestrictionClass(this OWLOntologyClassModel classModel, RDFResource owlRestriction)
             => CheckHasRestrictionClass(classModel, owlRestriction)
-                && classModel.TBoxGraph.Any(t => t.Subject.Equals(owlRestriction) && t.Predicate.Equals(RDFVocabulary.OWL.HAS_SELF));
+                && classModel.TBoxGraph[owlRestriction, RDFVocabulary.OWL.HAS_SELF, null, null].TriplesCount > 0;
 
         /// <summary>
         /// Checks for the existence of the given owl:CardinalityRestriction declaration within the model
         /// </summary>
         internal static bool CheckHasCardinalityRestrictionClass(this OWLOntologyClassModel classModel, RDFResource owlRestriction)
             => CheckHasRestrictionClass(classModel, owlRestriction)
-                && classModel.TBoxGraph.Any(t => t.Subject.Equals(owlRestriction) && t.Predicate.Equals(RDFVocabulary.OWL.CARDINALITY));
+                && classModel.TBoxGraph[owlRestriction, RDFVocabulary.OWL.CARDINALITY, null, null].TriplesCount > 0;
 
         /// <summary>
         /// Checks for the existence of the given owl:[Min]CardinalityRestriction declaration within the model
         /// </summary>
         internal static bool CheckHasMinCardinalityRestrictionClass(this OWLOntologyClassModel classModel, RDFResource owlRestriction)
             => CheckHasRestrictionClass(classModel, owlRestriction)
-                && classModel.TBoxGraph.Any(t => t.Subject.Equals(owlRestriction) && t.Predicate.Equals(RDFVocabulary.OWL.MIN_CARDINALITY))
-                && !classModel.TBoxGraph.Any(t => t.Subject.Equals(owlRestriction) && t.Predicate.Equals(RDFVocabulary.OWL.MAX_CARDINALITY));
+                && classModel.TBoxGraph[owlRestriction, RDFVocabulary.OWL.MIN_CARDINALITY, null, null].TriplesCount > 0
+                 && classModel.TBoxGraph[owlRestriction, RDFVocabulary.OWL.MAX_CARDINALITY, null, null].TriplesCount == 0;
 
         /// <summary>
         /// Checks for the existence of the given owl:[Max]CardinalityRestriction declaration within the model
         /// </summary>
         internal static bool CheckHasMaxCardinalityRestrictionClass(this OWLOntologyClassModel classModel, RDFResource owlRestriction)
             => CheckHasRestrictionClass(classModel, owlRestriction)
-                && classModel.TBoxGraph.Any(t => t.Subject.Equals(owlRestriction) && t.Predicate.Equals(RDFVocabulary.OWL.MAX_CARDINALITY))
-                && !classModel.TBoxGraph.Any(t => t.Subject.Equals(owlRestriction) && t.Predicate.Equals(RDFVocabulary.OWL.MIN_CARDINALITY));
+                && classModel.TBoxGraph[owlRestriction, RDFVocabulary.OWL.MAX_CARDINALITY, null, null].TriplesCount > 0
+                 && classModel.TBoxGraph[owlRestriction, RDFVocabulary.OWL.MIN_CARDINALITY, null, null].TriplesCount == 0;
 
         /// <summary>
         /// Checks for the existence of the given owl:[Min|Max]CardinalityRestriction declaration within the model
         /// </summary>
         internal static bool CheckHasMinMaxCardinalityRestrictionClass(this OWLOntologyClassModel classModel, RDFResource owlRestriction)
             => CheckHasRestrictionClass(classModel, owlRestriction)
-                && classModel.TBoxGraph.Any(t => t.Subject.Equals(owlRestriction) && t.Predicate.Equals(RDFVocabulary.OWL.MIN_CARDINALITY))
-                && classModel.TBoxGraph.Any(t => t.Subject.Equals(owlRestriction) && t.Predicate.Equals(RDFVocabulary.OWL.MAX_CARDINALITY));
+                && classModel.TBoxGraph[owlRestriction, RDFVocabulary.OWL.MIN_CARDINALITY, null, null].TriplesCount > 0
+                 && classModel.TBoxGraph[owlRestriction, RDFVocabulary.OWL.MAX_CARDINALITY, null, null].TriplesCount > 0;
 
         /// <summary>
         /// Checks for the existence of the given owl:QualifiedCardinalityRestriction declaration within the model [OWL2]
         /// </summary>
         internal static bool CheckHasQualifiedCardinalityRestrictionClass(this OWLOntologyClassModel classModel, RDFResource owlRestriction)
             => CheckHasRestrictionClass(classModel, owlRestriction)
-                && classModel.TBoxGraph.Any(t => t.Subject.Equals(owlRestriction) && t.Predicate.Equals(RDFVocabulary.OWL.QUALIFIED_CARDINALITY));
+                && classModel.TBoxGraph[owlRestriction, RDFVocabulary.OWL.QUALIFIED_CARDINALITY, null, null].TriplesCount > 0;
 
         /// <summary>
         /// Checks for the existence of the given owl:[Min]QualifiedCardinalityRestriction declaration within the model [OWL2]
         /// </summary>
         internal static bool CheckHasMinQualifiedCardinalityRestrictionClass(this OWLOntologyClassModel classModel, RDFResource owlRestriction)
             => CheckHasRestrictionClass(classModel, owlRestriction)
-                && classModel.TBoxGraph.Any(t => t.Subject.Equals(owlRestriction) && t.Predicate.Equals(RDFVocabulary.OWL.MIN_QUALIFIED_CARDINALITY))
-                && !classModel.TBoxGraph.Any(t => t.Subject.Equals(owlRestriction) && t.Predicate.Equals(RDFVocabulary.OWL.MAX_QUALIFIED_CARDINALITY));
+                && classModel.TBoxGraph[owlRestriction, RDFVocabulary.OWL.MIN_QUALIFIED_CARDINALITY, null, null].TriplesCount > 0
+                 && classModel.TBoxGraph[owlRestriction, RDFVocabulary.OWL.MAX_QUALIFIED_CARDINALITY, null, null].TriplesCount == 0;
 
         /// <summary>
         /// Checks for the existence of the given owl:[Max]QualifiedCardinalityRestriction declaration within the model [OWL2]
         /// </summary>
         internal static bool CheckHasMaxQualifiedCardinalityRestrictionClass(this OWLOntologyClassModel classModel, RDFResource owlRestriction)
             => CheckHasRestrictionClass(classModel, owlRestriction)
-                && classModel.TBoxGraph.Any(t => t.Subject.Equals(owlRestriction) && t.Predicate.Equals(RDFVocabulary.OWL.MAX_QUALIFIED_CARDINALITY))
-                && !classModel.TBoxGraph.Any(t => t.Subject.Equals(owlRestriction) && t.Predicate.Equals(RDFVocabulary.OWL.MIN_QUALIFIED_CARDINALITY));
+                && classModel.TBoxGraph[owlRestriction, RDFVocabulary.OWL.MAX_QUALIFIED_CARDINALITY, null, null].TriplesCount > 0
+                 && classModel.TBoxGraph[owlRestriction, RDFVocabulary.OWL.MIN_QUALIFIED_CARDINALITY, null, null].TriplesCount == 0;
 
         /// <summary>
         /// Checks for the existence of the given owl:[Min|Max]QualifiedCardinalityRestriction declaration within the model [OWL2]
         /// </summary>
         internal static bool CheckHasMinMaxQualifiedCardinalityRestrictionClass(this OWLOntologyClassModel classModel, RDFResource owlRestriction)
             => CheckHasRestrictionClass(classModel, owlRestriction)
-                && classModel.TBoxGraph.Any(t => t.Subject.Equals(owlRestriction) && t.Predicate.Equals(RDFVocabulary.OWL.MIN_QUALIFIED_CARDINALITY))
-                && classModel.TBoxGraph.Any(t => t.Subject.Equals(owlRestriction) && t.Predicate.Equals(RDFVocabulary.OWL.MAX_QUALIFIED_CARDINALITY));
+                && classModel.TBoxGraph[owlRestriction, RDFVocabulary.OWL.MIN_QUALIFIED_CARDINALITY, null, null].TriplesCount > 0
+                 && classModel.TBoxGraph[owlRestriction, RDFVocabulary.OWL.MAX_QUALIFIED_CARDINALITY, null, null].TriplesCount > 0;
 
         /// <summary>
         /// Checks for the existence of the given owl:disjointUnionOf declaration within the model [OWL2]
         /// </summary>
         public static bool CheckHasDisjointUnionClass(this OWLOntologyClassModel classModel, RDFResource owlClass)
             => CheckHasClass(classModel, owlClass)
-                && classModel.TBoxGraph.Any(t => t.Subject.Equals(owlClass) && t.Predicate.Equals(RDFVocabulary.OWL.DISJOINT_UNION_OF));
+                && classModel.TBoxGraph[owlClass, RDFVocabulary.OWL.DISJOINT_UNION_OF, null, null].TriplesCount > 0;
 
         /// <summary>
         /// Checks for the existence of the given owl:AllDisjointClasses declaration within the model [OWL2]
