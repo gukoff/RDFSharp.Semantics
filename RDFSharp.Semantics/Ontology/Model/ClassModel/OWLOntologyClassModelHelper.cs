@@ -228,12 +228,17 @@ namespace RDFSharp.Semantics
 
             if (classModel != null && owlClass != null)
             {
+                Dictionary<long, RDFResource> visitContext = new Dictionary<long, RDFResource>();
+
                 //Reason on the given class
-                subClasses.AddRange(classModel.FindSubClassesOf(owlClass));
+                subClasses.AddRange(classModel.FindSubClassesOf(owlClass, visitContext));
 
                 //Reason on the equivalent classes
-                foreach (RDFResource equivalentClass in classModel.GetEquivalentClassesOf(owlClass))
-                    subClasses.AddRange(classModel.FindSubClassesOf(equivalentClass));   
+                if (!OWLSemanticsOptions.DisableAdvancedReasoner)
+                {
+                    foreach (RDFResource equivalentClass in classModel.GetEquivalentClassesOf(owlClass))
+                        subClasses.AddRange(classModel.FindSubClassesOf(equivalentClass, visitContext));
+                }   
 
                 //We don't want to also enlist the given owl:Class
                 subClasses.RemoveAll(cls => cls.Equals(owlClass));
@@ -245,15 +250,17 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Finds "SubClass(owlClass,X)" relations of the model to answer the sub classes of the given owl:Class
         /// </summary>
-        internal static List<RDFResource> FindSubClassesOf(this OWLOntologyClassModel classModel, RDFResource owlClass)
+        internal static List<RDFResource> FindSubClassesOf(this OWLOntologyClassModel classModel, RDFResource owlClass, Dictionary<long, RDFResource> visitContext)
         {
             //Direct subsumption of "rdfs:subClassOf" taxonomy
-            List<RDFResource> subClasses = classModel.SubsumeSubClassHierarchy(owlClass);
+            List<RDFResource> subClasses = classModel.SubsumeSubClassHierarchy(owlClass, visitContext);
 
             //Enlist equivalent classes of subclasses
-            foreach (RDFResource subClass in subClasses.ToList())
-                subClasses.AddRange(classModel.GetEquivalentClassesOf(subClass)
-                                              .Union(classModel.GetSubClassesOf(subClass)));   
+            if (!OWLSemanticsOptions.DisableAdvancedReasoner)
+            {
+                foreach (RDFResource subClass in subClasses.ToList())
+                    subClasses.AddRange(classModel.GetEquivalentClassesOf(subClass));
+            }      
 
             return subClasses;
         }
@@ -261,16 +268,23 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Subsume "SubClass(owlClass,X)" relations of the model to answer the sub classes of the given owl:Class
         /// </summary>
-        internal static List<RDFResource> SubsumeSubClassHierarchy(this OWLOntologyClassModel classModel, RDFResource owlClass)
+        internal static List<RDFResource> SubsumeSubClassHierarchy(this OWLOntologyClassModel classModel, RDFResource owlClass, Dictionary<long, RDFResource> visitContext)
         {
             List<RDFResource> subClasses = new List<RDFResource>();
 
+            #region VisitContext
+            if (!visitContext.ContainsKey(owlClass.PatternMemberID))
+                visitContext.Add(owlClass.PatternMemberID, owlClass);
+            else
+                return subClasses;
+            #endregion
+
             // SUBCLASS(A,B) ^ SUBCLASS(B,C) -> SUBCLASS(A,C)
-            foreach (RDFTriple subClassRelation in classModel.TBoxGraph[null, RDFVocabulary.RDFS.SUB_CLASS_OF, owlClass, null])
-            {
-                subClasses.Add((RDFResource)subClassRelation.Subject);
-                subClasses.AddRange(classModel.SubsumeSubClassHierarchy((RDFResource)subClassRelation.Subject));
-            }
+            subClasses.AddRange(classModel.TBoxGraph[null, RDFVocabulary.RDFS.SUB_CLASS_OF, owlClass, null]
+                                          .Select(t => t.Subject)
+                                          .OfType<RDFResource>());
+            foreach (RDFResource subClass in subClasses.ToList())
+                subClasses.AddRange(classModel.SubsumeSubClassHierarchy(subClass, visitContext));
 
             return subClasses;
         }
@@ -290,12 +304,17 @@ namespace RDFSharp.Semantics
 
             if (classModel != null && owlClass != null)
             {
+                Dictionary<long, RDFResource> visitContext = new Dictionary<long, RDFResource>();
+
                 //Reason on the given class
-                subClasses.AddRange(classModel.FindSuperClassesOf(owlClass));
+                subClasses.AddRange(classModel.FindSuperClassesOf(owlClass, visitContext));
 
                 //Reason on the equivalent classes
-                foreach (RDFResource equivalentClass in classModel.GetEquivalentClassesOf(owlClass))
-                    subClasses.AddRange(classModel.FindSuperClassesOf(equivalentClass));
+                if (!OWLSemanticsOptions.DisableAdvancedReasoner)
+                {
+                    foreach (RDFResource equivalentClass in classModel.GetEquivalentClassesOf(owlClass))
+                        subClasses.AddRange(classModel.FindSuperClassesOf(equivalentClass, visitContext));
+                }  
 
                 //We don't want to also enlist the given owl:Class
                 subClasses.RemoveAll(cls => cls.Equals(owlClass));
@@ -307,15 +326,17 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Finds "SubClass(X,owlClass)" relations of the model to answer the super classes of the given owl:Class
         /// </summary>
-        internal static List<RDFResource> FindSuperClassesOf(this OWLOntologyClassModel classModel, RDFResource owlClass)
+        internal static List<RDFResource> FindSuperClassesOf(this OWLOntologyClassModel classModel, RDFResource owlClass, Dictionary<long, RDFResource> visitContext)
         {
             //Direct subsumption of "rdfs:subClassOf" taxonomy
-            List<RDFResource> superClasses = classModel.SubsumeSuperClassHierarchy(owlClass);
+            List<RDFResource> superClasses = classModel.SubsumeSuperClassHierarchy(owlClass, visitContext);
 
             //Enlist equivalent classes of superclasses
-            foreach (RDFResource superClass in superClasses.ToList())
-                superClasses.AddRange(classModel.GetEquivalentClassesOf(superClass)
-                                                .Union(classModel.GetSuperClassesOf(superClass)));
+            if (!OWLSemanticsOptions.DisableAdvancedReasoner)
+            {
+                foreach (RDFResource superClass in superClasses.ToList())
+                    superClasses.AddRange(classModel.GetEquivalentClassesOf(superClass));
+            }                
 
             return superClasses;
         }
@@ -323,16 +344,23 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Subsumes "SubClass(X,owlClass)" relations of the model to answer the super classes of the given owl:Class
         /// </summary>
-        internal static List<RDFResource> SubsumeSuperClassHierarchy(this OWLOntologyClassModel classModel, RDFResource owlClass)
+        internal static List<RDFResource> SubsumeSuperClassHierarchy(this OWLOntologyClassModel classModel, RDFResource owlClass, Dictionary<long, RDFResource> visitContext)
         {
             List<RDFResource> superClasses = new List<RDFResource>();
 
+            #region VisitContext
+            if (!visitContext.ContainsKey(owlClass.PatternMemberID))
+                visitContext.Add(owlClass.PatternMemberID, owlClass);
+            else
+                return superClasses;
+            #endregion
+
             // SUBCLASS(A,B) ^ SUBCLASS(B,C) -> SUBCLASS(A,C)
-            foreach (RDFTriple subClassRelation in classModel.TBoxGraph[owlClass, RDFVocabulary.RDFS.SUB_CLASS_OF, null, null])
-            {
-                superClasses.Add((RDFResource)subClassRelation.Object);
-                superClasses.AddRange(classModel.SubsumeSuperClassHierarchy((RDFResource)subClassRelation.Object));
-            }
+            superClasses.AddRange(classModel.TBoxGraph[owlClass, RDFVocabulary.RDFS.SUB_CLASS_OF, null, null]
+                                            .Select(t => t.Object)
+                                            .OfType<RDFResource>());
+            foreach (RDFResource superClass in superClasses.ToList())
+                superClasses.AddRange(classModel.SubsumeSuperClassHierarchy(superClass, visitContext));
 
             return superClasses;
         }
@@ -455,13 +483,17 @@ namespace RDFSharp.Semantics
             }
 
             // Inference: DISJOINTWITH(A,B) ^ SUBCLASS(C,B) -> DISJOINTWITH(A,C)
+            Dictionary<long, RDFResource> scVisitContext = new Dictionary<long, RDFResource>();
             foreach (RDFResource disjointClass in disjointClasses.ToList())
-                disjointClasses.AddRange(classModel.FindSubClassesOf(disjointClass));
+                disjointClasses.AddRange(classModel.FindSubClassesOf(disjointClass, scVisitContext));
 
             // Inference: EQUIVALENTCLASS(A,B) ^ DISJOINTWITH(B,C) -> DISJOINTWITH(A,C)
-            foreach (RDFResource compatibleClass in classModel.GetSuperClassesOf(owlClass)
-                                                              .Union(classModel.GetEquivalentClassesOf(owlClass)))
-                disjointClasses.AddRange(classModel.FindDisjointClassesWith(compatibleClass, visitContext));            
+            if (!OWLSemanticsOptions.DisableAdvancedReasoner)
+            {
+                foreach (RDFResource compatibleClass in classModel.GetSuperClassesOf(owlClass)
+                                                                  .Union(classModel.GetEquivalentClassesOf(owlClass)))
+                    disjointClasses.AddRange(classModel.FindDisjointClassesWith(compatibleClass, visitContext));
+            }
             #endregion
 
             return disjointClasses;

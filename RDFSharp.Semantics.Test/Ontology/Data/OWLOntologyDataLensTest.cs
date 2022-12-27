@@ -120,6 +120,17 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
+        public void ShouldEnlistClassTypesWithSmartDiscovery()
+        {
+            List<RDFResource> classTypes = DataLens.ClassTypes(requireDeepDiscovery:false);
+
+            Assert.IsNotNull(classTypes);
+            Assert.IsTrue(classTypes.Count == 2);
+            Assert.IsTrue(classTypes.Any(cls => cls.Equals(new RDFResource("ex:class1"))));
+            Assert.IsTrue(classTypes.Any(cls => cls.Equals(RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
+        }
+
+        [TestMethod]
         public async Task ShouldEnlistClassTypesAsync()
         {
             List<RDFResource> classTypes = await DataLens.ClassTypesAsync();
@@ -130,6 +141,17 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classTypes.Any(cls => cls.Equals(new RDFResource("ex:enumClass"))));
             Assert.IsTrue(classTypes.Any(cls => cls.Equals(new RDFResource("ex:hvRestr"))));
             Assert.IsTrue(classTypes.Any(cls => cls.Equals(new RDFResource("ex:unionClass"))));
+        }
+
+        [TestMethod]
+        public async Task ShouldEnlistClassTypesWithSmartDiscoveryAsync()
+        {
+            List<RDFResource> classTypes = await DataLens.ClassTypesAsync(requireDeepDiscovery:false);
+
+            Assert.IsNotNull(classTypes);
+            Assert.IsTrue(classTypes.Count == 2);
+            Assert.IsTrue(classTypes.Any(cls => cls.Equals(new RDFResource("ex:class1"))));
+            Assert.IsTrue(classTypes.Any(cls => cls.Equals(RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
         }
 
         [TestMethod]

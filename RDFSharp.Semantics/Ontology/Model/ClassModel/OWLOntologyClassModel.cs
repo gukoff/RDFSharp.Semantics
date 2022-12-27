@@ -173,10 +173,9 @@ namespace RDFSharp.Semantics
                 IEnumerator<RDFResource> classes = ClassesEnumerator;
                 while (classes.MoveNext())
                 {
-                    if (TBoxGraph.Any(t => t.Subject.Equals(classes.Current) &&
-                                                (t.Predicate.Equals(RDFVocabulary.OWL.UNION_OF) || 
-                                                    t.Predicate.Equals(RDFVocabulary.OWL.INTERSECTION_OF) ||
-                                                        t.Predicate.Equals(RDFVocabulary.OWL.COMPLEMENT_OF))))
+                    if (TBoxGraph[classes.Current, null, null, null].Any(t => t.Predicate.Equals(RDFVocabulary.OWL.UNION_OF)
+                                                                               || t.Predicate.Equals(RDFVocabulary.OWL.INTERSECTION_OF)
+                                                                                || t.Predicate.Equals(RDFVocabulary.OWL.COMPLEMENT_OF)))
                         yield return classes.Current;
                 }
             }
@@ -702,7 +701,7 @@ namespace RDFSharp.Semantics
             bool OWLDLIntegrityChecks()
                 => !childClass.CheckReservedClass()
                       && !motherClass.CheckReservedClass()
-                        && this.CheckSubClassCompatibility(childClass, motherClass);
+                        && (OWLSemanticsOptions.DisableOntologyProtection || this.CheckSubClassCompatibility(childClass, motherClass));
             #endregion
 
             if (childClass == null)
@@ -714,7 +713,16 @@ namespace RDFSharp.Semantics
 
             //Add knowledge to the T-BOX (or raise warning if violations are detected)
             if (OWLDLIntegrityChecks())
+            {
+                //Handle automatic class declaration, if configured
+                if (OWLSemanticsOptions.EnableAutomaticClassDeclaration)
+                {
+                    DeclareClass(childClass);
+                    DeclareClass(motherClass);
+                }
+
                 TBoxGraph.AddTriple(new RDFTriple(childClass, RDFVocabulary.RDFS.SUB_CLASS_OF, motherClass));
+            }
             else
                 OWLSemanticsEvents.RaiseSemanticsWarning(string.Format("SubClass relation between class '{0}' and class '{1}' cannot be declared to the model because it would violate OWL-DL integrity", childClass, motherClass));
 
@@ -730,7 +738,7 @@ namespace RDFSharp.Semantics
             bool OWLDLIntegrityChecks()
                 => !leftClass.CheckReservedClass()
                       && !rightClass.CheckReservedClass()
-                        && this.CheckEquivalentClassCompatibility(leftClass, rightClass);
+                        && (OWLSemanticsOptions.DisableOntologyProtection || this.CheckEquivalentClassCompatibility(leftClass, rightClass));
             #endregion
 
             if (leftClass == null)
@@ -743,6 +751,13 @@ namespace RDFSharp.Semantics
             //Add knowledge to the T-BOX (or raise warning if violations are detected)
             if (OWLDLIntegrityChecks())
             {
+                //Handle automatic class declaration, if configured
+                if (OWLSemanticsOptions.EnableAutomaticClassDeclaration)
+                {
+                    DeclareClass(leftClass);
+                    DeclareClass(rightClass);
+                }
+
                 TBoxGraph.AddTriple(new RDFTriple(leftClass, RDFVocabulary.OWL.EQUIVALENT_CLASS, rightClass));
 
                 //Also add an automatic T-BOX inference exploiting symmetry of owl:equivalentClass relation
@@ -763,7 +778,7 @@ namespace RDFSharp.Semantics
             bool OWLDLIntegrityChecks()
                 => !leftClass.CheckReservedClass()
                       && !rightClass.CheckReservedClass()
-                        && this.CheckDisjointWithCompatibility(leftClass, rightClass);
+                        && (OWLSemanticsOptions.DisableOntologyProtection || this.CheckDisjointWithCompatibility(leftClass, rightClass));
             #endregion
 
             if (leftClass == null)
@@ -776,6 +791,13 @@ namespace RDFSharp.Semantics
             //Add knowledge to the T-BOX (or raise warning if violations are detected)
             if (OWLDLIntegrityChecks())
             {
+                //Handle automatic class declaration, if configured
+                if (OWLSemanticsOptions.EnableAutomaticClassDeclaration)
+                {
+                    DeclareClass(leftClass);
+                    DeclareClass(rightClass);
+                }
+
                 TBoxGraph.AddTriple(new RDFTriple(leftClass, RDFVocabulary.OWL.DISJOINT_WITH, rightClass));
 
                 //Also add an automatic T-BOX inference exploiting symmetry of owl:disjointWith relation
@@ -798,6 +820,10 @@ namespace RDFSharp.Semantics
                 throw new OWLSemanticsException("Cannot declare owl:hasKey relation to the model because given \"keyProperties\" parameter is null");
             if (keyProperties.Count == 0)
                 throw new OWLSemanticsException("Cannot declare owl:hasKey relation to the model because given \"keyProperties\" parameter is an empty list");
+
+            //Handle automatic class declaration, if configured
+            if (OWLSemanticsOptions.EnableAutomaticClassDeclaration)
+                DeclareClass(owlClass);
 
             //Add knowledge to the T-BOX
             RDFCollection keyPropertiesCollection = new RDFCollection(RDFModelEnums.RDFItemTypes.Resource);

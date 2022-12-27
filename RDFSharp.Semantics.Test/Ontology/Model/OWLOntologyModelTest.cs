@@ -56,9 +56,9 @@ namespace RDFSharp.Semantics.Test
             model.ClassModel.DeclareClass(new RDFResource("ex:classC"));
             model.ClassModel.DeclareClass(new RDFResource("ex:classD"));
             model.ClassModel.DeclareClass(new RDFResource("ex:classE"), new OWLOntologyClassBehavior() { Deprecated = true });
-            model.ClassModel.DeclareSubClasses(new RDFResource("ex:indivB"), new RDFResource("ex:classA"));
-            model.ClassModel.DeclareEquivalentClasses(new RDFResource("ex:indivA"), new RDFResource("ex:classC"));
-            model.ClassModel.DeclareDisjointClasses(new RDFResource("ex:indivC"), new RDFResource("ex:classD"));
+            model.ClassModel.DeclareSubClasses(new RDFResource("ex:classB"), new RDFResource("ex:classA"));
+            model.ClassModel.DeclareEquivalentClasses(new RDFResource("ex:classA"), new RDFResource("ex:classC"));
+            model.ClassModel.DeclareDisjointClasses(new RDFResource("ex:classC"), new RDFResource("ex:classD"));
             model.ClassModel.DeclareHasKey(new RDFResource("ex:classA"), new List<RDFResource>() { RDFVocabulary.FOAF.ACCOUNT });
             model.ClassModel.DeclareAllDisjointClasses(new RDFResource("ex:allDisjointClasses"), new List<RDFResource>() { new RDFResource("ex:classD"), new RDFResource("ex:classE") });
             model.ClassModel.DeclareDisjointUnionClass(new RDFResource("ex:disjointUnionClass"), new List<RDFResource>() { new RDFResource("ex:classD"), new RDFResource("ex:classE") });
@@ -101,9 +101,9 @@ namespace RDFSharp.Semantics.Test
             model.ClassModel.DeclareClass(new RDFResource("ex:classC"));
             model.ClassModel.DeclareClass(new RDFResource("ex:classD"));
             model.ClassModel.DeclareClass(new RDFResource("ex:classE"), new OWLOntologyClassBehavior() { Deprecated = true });
-            model.ClassModel.DeclareSubClasses(new RDFResource("ex:indivB"), new RDFResource("ex:classA"));
-            model.ClassModel.DeclareEquivalentClasses(new RDFResource("ex:indivA"), new RDFResource("ex:classC"));
-            model.ClassModel.DeclareDisjointClasses(new RDFResource("ex:indivC"), new RDFResource("ex:classD"));
+            model.ClassModel.DeclareSubClasses(new RDFResource("ex:classB"), new RDFResource("ex:classA"));
+            model.ClassModel.DeclareEquivalentClasses(new RDFResource("ex:classA"), new RDFResource("ex:classC"));
+            model.ClassModel.DeclareDisjointClasses(new RDFResource("ex:classC"), new RDFResource("ex:classD"));
             model.ClassModel.DeclareHasKey(new RDFResource("ex:classA"), new List<RDFResource>() { RDFVocabulary.FOAF.ACCOUNT });
             model.ClassModel.DeclareAllDisjointClasses(new RDFResource("ex:allDisjointClasses"), new List<RDFResource>() { new RDFResource("ex:classD"), new RDFResource("ex:classE") });
             model.ClassModel.DeclareDisjointUnionClass(new RDFResource("ex:disjointUnionClass"), new List<RDFResource>() { new RDFResource("ex:classD"), new RDFResource("ex:classE") });

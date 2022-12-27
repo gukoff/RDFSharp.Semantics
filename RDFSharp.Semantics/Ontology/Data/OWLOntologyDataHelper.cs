@@ -204,8 +204,11 @@ namespace RDFSharp.Semantics
             }
 
             // Inference: SAMEAS(A,B) ^ DIFFERENTFROM(B,C) -> DIFFERENTFROM(A,C)
-            foreach (RDFResource sameAsIndividual in data.GetSameIndividuals(owlIndividual))
-                differentIndividuals.AddRange(data.FindDifferentIndividuals(sameAsIndividual, visitContext));
+            if (!OWLSemanticsOptions.DisableAdvancedReasoner)
+            {
+                foreach (RDFResource sameAsIndividual in data.GetSameIndividuals(owlIndividual))
+                    differentIndividuals.AddRange(data.FindDifferentIndividuals(sameAsIndividual, visitContext));
+            }   
             #endregion
 
             return differentIndividuals;
@@ -301,7 +304,8 @@ namespace RDFSharp.Semantics
 
             //Make the given owl:Restriction also work with sub properties and equivalent properties of the given owl:onProperty
             List<RDFResource> compatibleProperties = model.PropertyModel.GetSubPropertiesOf(onProperty)
-                                                       .Union(model.PropertyModel.GetEquivalentPropertiesOf(onProperty)).ToList();
+                                                       .Union(OWLSemanticsOptions.DisableAdvancedReasoner ? Enumerable.Empty<RDFResource>()
+                                                                                                          : model.PropertyModel.GetEquivalentPropertiesOf(onProperty)).ToList();
 
             //Compute graph of assertions impacted by restricted properties
             RDFGraph assertionsGraph = data.ABoxGraph[null, onProperty, null, null];
@@ -514,7 +518,8 @@ namespace RDFSharp.Semantics
             if (hasValue is RDFResource hasValueIndividual)
             {
                 //Make the given owl:Restriction also work with same individuals of the given owl:hasValue individual
-                List<RDFResource> sameHasValueIndividuals = data.GetSameIndividuals(hasValueIndividual);
+                List<RDFResource> sameHasValueIndividuals = OWLSemanticsOptions.DisableAdvancedReasoner ? new List<RDFResource>() 
+                                                                                                        : data.GetSameIndividuals(hasValueIndividual);
 
                 //Find SPO assertions having object individual compatible with owl:hasValue individual
                 foreach (RDFTriple assertionTriple in assertionsGraph.Where(t => t.TripleFlavor == RDFModelEnums.RDFTripleFlavors.SPO))
@@ -644,7 +649,8 @@ namespace RDFSharp.Semantics
             //Get the classes compatible with the given class
             List<RDFResource> compatibleClasses = new List<RDFResource>() { owlClass }
                                                     .Union(model.ClassModel.GetSubClassesOf(owlClass))
-                                                    .Union(model.ClassModel.GetEquivalentClassesOf(owlClass))
+                                                    .Union(OWLSemanticsOptions.DisableAdvancedReasoner ? Enumerable.Empty<RDFResource>() 
+                                                                                                       : model.ClassModel.GetEquivalentClassesOf(owlClass))
                                                     .ToList();
 
             //Get the individuals belonging to the compatible classes
@@ -658,8 +664,11 @@ namespace RDFSharp.Semantics
             classIndividuals.AddRange(compatibleIndividuals);
 
             //Add the individuals to the results (exploit owl:sameAs relations)
-            foreach (RDFResource compatibleIndividual in compatibleIndividuals)
-                classIndividuals.AddRange(data.GetSameIndividuals(compatibleIndividual));   
+            if (!OWLSemanticsOptions.DisableAdvancedReasoner)
+            {
+                foreach (RDFResource compatibleIndividual in compatibleIndividuals)
+                    classIndividuals.AddRange(data.GetSameIndividuals(compatibleIndividual));
+            }
 
             return classIndividuals;
         }

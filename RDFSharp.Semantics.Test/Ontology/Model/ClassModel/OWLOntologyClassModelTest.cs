@@ -1210,9 +1210,9 @@ namespace RDFSharp.Semantics.Test
             classModel.DeclareClass(new RDFResource("ex:classC"));
             classModel.DeclareClass(new RDFResource("ex:classD"));
             classModel.DeclareClass(new RDFResource("ex:classE"), new OWLOntologyClassBehavior() { Deprecated = true });
-            classModel.DeclareSubClasses(new RDFResource("ex:indivB"), new RDFResource("ex:classA"));
-            classModel.DeclareEquivalentClasses(new RDFResource("ex:indivA"), new RDFResource("ex:classC"));
-            classModel.DeclareDisjointClasses(new RDFResource("ex:indivC"), new RDFResource("ex:classD"));
+            classModel.DeclareSubClasses(new RDFResource("ex:classB"), new RDFResource("ex:classA"));
+            classModel.DeclareEquivalentClasses(new RDFResource("ex:classA"), new RDFResource("ex:classC"));
+            classModel.DeclareDisjointClasses(new RDFResource("ex:classC"), new RDFResource("ex:classD"));
             classModel.DeclareHasKey(new RDFResource("ex:classA"), new List<RDFResource>() { RDFVocabulary.FOAF.ACCOUNT });
             classModel.DeclareAllDisjointClasses(new RDFResource("ex:allDisjointClasses"), new List<RDFResource>() { new RDFResource("ex:classD"), new RDFResource("ex:classE") });
             classModel.DeclareDisjointUnionClass(new RDFResource("ex:disjointUnionClass"), new List<RDFResource>() { new RDFResource("ex:classD"), new RDFResource("ex:classE") });
@@ -1232,9 +1232,9 @@ namespace RDFSharp.Semantics.Test
             classModel.DeclareClass(new RDFResource("ex:classB"));
             classModel.DeclareClass(new RDFResource("ex:classC"));
             classModel.DeclareClass(new RDFResource("ex:classD"));
-            classModel.DeclareSubClasses(new RDFResource("ex:indivB"), new RDFResource("ex:classA"));
-            classModel.DeclareEquivalentClasses(new RDFResource("ex:indivA"), new RDFResource("ex:classC"));
-            classModel.DeclareDisjointClasses(new RDFResource("ex:indivC"), new RDFResource("ex:classD"));
+            classModel.DeclareSubClasses(new RDFResource("ex:classB"), new RDFResource("ex:classA"));
+            classModel.DeclareEquivalentClasses(new RDFResource("ex:classA"), new RDFResource("ex:classC"));
+            classModel.DeclareDisjointClasses(new RDFResource("ex:classC"), new RDFResource("ex:classD"));
             classModel.DeclareHasKey(new RDFResource("ex:classA"), new List<RDFResource>() { RDFVocabulary.FOAF.ACCOUNT });
             classModel.AnnotateClass(new RDFResource("ex:classA"), RDFVocabulary.RDFS.COMMENT, new RDFPlainLiteral("comment"));
             classModel.AnnotateClass(new RDFResource("ex:classB"), RDFVocabulary.DC.DESCRIPTION, new RDFPlainLiteral("title"));

@@ -82,40 +82,38 @@ namespace RDFSharp.Semantics
             => Task.Run(() => DifferentIndividuals());
 
         /// <summary>
-        /// Enlists the classes to which the lens individual belongs by rdf:type
+        /// Enlists the classes to which the lens individual belongs
         /// </summary>
-        public List<RDFResource> ClassTypes()
+        public List<RDFResource> ClassTypes(bool requireDeepDiscovery=true)
         {
             List<RDFResource> result = new List<RDFResource>();
 
-            //Enumerates (owl:oneOf)
-            foreach (RDFResource enumerateClass in Ontology.Model.ClassModel.Where(cls => Ontology.Model.ClassModel.CheckHasEnumerateClass(cls)))
-                if (Ontology.Data.GetIndividualsOf(Ontology.Model, enumerateClass).Any(individual => individual.Equals(Individual)))
-                    result.Add(enumerateClass);
+            //DeepDiscovery => every class of the model will be analyzed (including restrictions, composites and enumerates)
+            if (requireDeepDiscovery)
+                foreach (RDFResource owlClass in Ontology.Model.ClassModel)
+                {
+                    if (Ontology.Data.CheckIsIndividualOf(Ontology.Model, Individual, owlClass))
+                        result.Add(owlClass);
+                }
 
-            //Restrictions (owl:Restriction)
-            foreach (RDFResource restrictionClass in Ontology.Model.ClassModel.Where(cls => Ontology.Model.ClassModel.CheckHasRestrictionClass(cls)))
-                if (Ontology.Data.GetIndividualsOf(Ontology.Model, restrictionClass).Any(individual => individual.Equals(Individual)))
-                    result.Add(restrictionClass);
+            //SmartDiscovery => only classes related to the individual by rdf:type will be analyzed
+            else
+                foreach (RDFResource classType in Ontology.Data.ABoxGraph[Individual, RDFVocabulary.RDF.TYPE, null, null]
+                                                               .Select(t => t.Object)
+                                                               .OfType<RDFResource>())
+                {
+                    result.Add(classType);
+                    result.AddRange(Ontology.Model.ClassModel.GetSuperClassesOf(classType));
+                }
 
-            //Classes (owl:Class)
-            foreach (RDFResource simpleClass in Ontology.Model.ClassModel.Where(cls => Ontology.Model.ClassModel.CheckHasSimpleClass(cls)))
-                if (Ontology.Data.GetIndividualsOf(Ontology.Model, simpleClass).Any(individual => individual.Equals(Individual)))
-                    result.Add(simpleClass);
-
-            //Composites (owl:unionOf, owl:intersectionOf, owl:complementOf)
-            foreach (RDFResource compositeClass in Ontology.Model.ClassModel.Where(cls => Ontology.Model.ClassModel.CheckHasCompositeClass(cls)))
-                if (Ontology.Data.GetIndividualsOf(Ontology.Model, compositeClass).Any(individual => individual.Equals(Individual)))
-                    result.Add(compositeClass);
-
-            return result;
+            return RDFQueryUtilities.RemoveDuplicates(result);
         }
 
         /// <summary>
-        /// Asynchronously enlists the classes to which the lens individual belongs by rdf:type
+        /// Asynchronously enlists the classes to which the lens individual belongs
         /// </summary>
-        public Task<List<RDFResource>> ClassTypesAsync()
-            => Task.Run(() => ClassTypes());
+        public Task<List<RDFResource>> ClassTypesAsync(bool requireDeepDiscovery=true)
+            => Task.Run(() => ClassTypes(requireDeepDiscovery));
 
         /// <summary>
         /// Enlists the object assertions to which the lens individual is related as subject or object

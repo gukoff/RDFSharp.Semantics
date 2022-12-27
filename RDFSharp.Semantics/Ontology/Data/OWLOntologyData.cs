@@ -185,7 +185,13 @@ namespace RDFSharp.Semantics
 
             //Add knowledge to the A-BOX (or raise warning if violations are detected)
             if (OWLDLIntegrityChecks())
+            {
+                //Handle automatic individual declaration, if configured
+                if (OWLSemanticsOptions.EnableAutomaticIndividualDeclaration)
+                    DeclareIndividual(owlIndividual);
+
                 ABoxGraph.AddTriple(new RDFTriple(owlIndividual, RDFVocabulary.RDF.TYPE, owlClass));
+            }   
             else
                 OWLSemanticsEvents.RaiseSemanticsWarning(string.Format("Type relation between individual '{0}' and class '{1}' cannot be declared to the data because it would violate OWL-DL integrity", owlIndividual, owlClass));
 
@@ -199,7 +205,7 @@ namespace RDFSharp.Semantics
         {
             #region OWL-DL Integrity Checks
             bool OWLDLIntegrityChecks()
-                => this.CheckSameAsCompatibility(leftIndividual, rightIndividual);
+                => OWLSemanticsOptions.DisableOntologyProtection || this.CheckSameAsCompatibility(leftIndividual, rightIndividual);
             #endregion
 
             if (leftIndividual == null)
@@ -212,6 +218,13 @@ namespace RDFSharp.Semantics
             //Add knowledge to the A-BOX (or raise warning if violations are detected)
             if (OWLDLIntegrityChecks())
             {
+                //Handle automatic individual declaration, if configured
+                if (OWLSemanticsOptions.EnableAutomaticIndividualDeclaration)
+                {
+                    DeclareIndividual(leftIndividual);
+                    DeclareIndividual(rightIndividual);
+                }
+
                 ABoxGraph.AddTriple(new RDFTriple(leftIndividual, RDFVocabulary.OWL.SAME_AS, rightIndividual));
 
                 //Also add an automatic A-BOX inference exploiting symmetry of owl:sameAs relation
@@ -230,7 +243,7 @@ namespace RDFSharp.Semantics
         {
             #region OWL-DL Integrity Checks
             bool OWLDLIntegrityChecks()
-                => this.CheckDifferentFromCompatibility(leftIndividual, rightIndividual);
+                => OWLSemanticsOptions.DisableOntologyProtection || this.CheckDifferentFromCompatibility(leftIndividual, rightIndividual);
             #endregion
 
             if (leftIndividual == null)
@@ -243,6 +256,13 @@ namespace RDFSharp.Semantics
             //Add knowledge to the A-BOX (or raise warning if violations are detected)
             if (OWLDLIntegrityChecks())
             {
+                //Handle automatic individual declaration, if configured
+                if (OWLSemanticsOptions.EnableAutomaticIndividualDeclaration)
+                {
+                    DeclareIndividual(leftIndividual);
+                    DeclareIndividual(rightIndividual);
+                }
+
                 ABoxGraph.AddTriple(new RDFTriple(leftIndividual, RDFVocabulary.OWL.DIFFERENT_FROM, rightIndividual));
 
                 //Also add an automatic A-BOX inference exploiting symmetry of owl:differentFrom relation
@@ -266,6 +286,10 @@ namespace RDFSharp.Semantics
             if (differentIndividuals.Count == 0)
                 throw new OWLSemanticsException("Cannot declare owl:AllDifferent class to the data because given \"differentIndividuals\" parameter is an empty list");
 
+            //Handle automatic individual declaration, if configured
+            if (OWLSemanticsOptions.EnableAutomaticIndividualDeclaration)
+                differentIndividuals.ForEach(idv => DeclareIndividual(idv));
+
             //Add knowledge to the A-BOX
             RDFCollection allDifferentIndividualsCollection = new RDFCollection(RDFModelEnums.RDFItemTypes.Resource);
             differentIndividuals.ForEach(differentIndividual => allDifferentIndividualsCollection.AddItem(differentIndividual));
@@ -284,7 +308,7 @@ namespace RDFSharp.Semantics
             #region OWL-DL Integrity Checks
             bool OWLDLIntegrityChecks()
                 => !objectProperty.CheckReservedProperty()
-                     && this.CheckObjectAssertionCompatibility(leftIndividual, objectProperty, rightIndividual);
+                     && (OWLSemanticsOptions.DisableOntologyProtection || this.CheckObjectAssertionCompatibility(leftIndividual, objectProperty, rightIndividual));
             #endregion
 
             if (leftIndividual == null)
@@ -298,7 +322,16 @@ namespace RDFSharp.Semantics
 
             //Add knowledge to the A-BOX (or raise warning if violations are detected)
             if (OWLDLIntegrityChecks())
+            {
+                //Handle automatic individual declaration, if configured
+                if (OWLSemanticsOptions.EnableAutomaticIndividualDeclaration)
+                {
+                    DeclareIndividual(leftIndividual);
+                    DeclareIndividual(rightIndividual);
+                }
+
                 ABoxGraph.AddTriple(new RDFTriple(leftIndividual, objectProperty, rightIndividual));
+            }
             else
                 OWLSemanticsEvents.RaiseSemanticsWarning(string.Format("ObjectAssertion relation between individual '{0}' and individual '{1}' through property '{2}' cannot be declared to the data because it would violate OWL-DL integrity", leftIndividual, rightIndividual, objectProperty));
 
@@ -313,7 +346,7 @@ namespace RDFSharp.Semantics
             #region OWL-DL Integrity Checks
             bool OWLDLIntegrityChecks()
                 => !datatypeProperty.CheckReservedProperty()
-                     && this.CheckDatatypeAssertionCompatibility(individual, datatypeProperty, value);
+                     && (OWLSemanticsOptions.DisableOntologyProtection || this.CheckDatatypeAssertionCompatibility(individual, datatypeProperty, value));
             #endregion
 
             if (individual == null)
@@ -327,7 +360,13 @@ namespace RDFSharp.Semantics
 
             //Add knowledge to the A-BOX (or raise warning if violations are detected)
             if (OWLDLIntegrityChecks())
+            {
+                //Handle automatic individual declaration, if configured
+                if (OWLSemanticsOptions.EnableAutomaticIndividualDeclaration)
+                    DeclareIndividual(individual);
+
                 ABoxGraph.AddTriple(new RDFTriple(individual, datatypeProperty, value));
+            }   
             else
                 OWLSemanticsEvents.RaiseSemanticsWarning(string.Format("DatatypeAssertion relation between individual '{0}' and value '{1}' through property '{2}' cannot be declared to the data because it would violate OWL-DL integrity", individual, value, datatypeProperty));
 
@@ -342,7 +381,7 @@ namespace RDFSharp.Semantics
             #region OWL-DL Integrity Checks
             bool OWLDLIntegrityChecks()
                 => !objectProperty.CheckReservedProperty()
-                     && this.CheckNegativeObjectAssertionCompatibility(leftIndividual, objectProperty, rightIndividual);
+                     && (OWLSemanticsOptions.DisableOntologyProtection || this.CheckNegativeObjectAssertionCompatibility(leftIndividual, objectProperty, rightIndividual));
             #endregion
 
             if (leftIndividual == null)
@@ -357,6 +396,13 @@ namespace RDFSharp.Semantics
             //Add knowledge to the A-BOX (or raise warning if violations are detected)
             if (OWLDLIntegrityChecks())
             {
+                //Handle automatic individual declaration, if configured
+                if (OWLSemanticsOptions.EnableAutomaticIndividualDeclaration)
+                {
+                    DeclareIndividual(leftIndividual);
+                    DeclareIndividual(rightIndividual);
+                }
+
                 RDFTriple negativeObjectAssertion = new RDFTriple(leftIndividual, objectProperty, rightIndividual);
                 ABoxGraph.AddTriple(new RDFTriple(negativeObjectAssertion.ReificationSubject, RDFVocabulary.OWL.SOURCE_INDIVIDUAL, leftIndividual));
                 ABoxGraph.AddTriple(new RDFTriple(negativeObjectAssertion.ReificationSubject, RDFVocabulary.OWL.ASSERTION_PROPERTY, objectProperty));
@@ -377,7 +423,7 @@ namespace RDFSharp.Semantics
             #region OWL-DL Integrity Checks
             bool OWLDLIntegrityChecks()
                 => !datatypeProperty.CheckReservedProperty()
-                     && this.CheckNegativeDatatypeAssertionCompatibility(individual, datatypeProperty, value);
+                     && (OWLSemanticsOptions.DisableOntologyProtection || this.CheckNegativeDatatypeAssertionCompatibility(individual, datatypeProperty, value));
             #endregion
 
             if (individual == null)
@@ -392,6 +438,10 @@ namespace RDFSharp.Semantics
             //Add knowledge to the A-BOX (or raise warning if violations are detected)
             if (OWLDLIntegrityChecks())
             {
+                //Handle automatic individual declaration, if configured
+                if (OWLSemanticsOptions.EnableAutomaticIndividualDeclaration)
+                    DeclareIndividual(individual);
+
                 RDFTriple negativeDatatypeAssertion = new RDFTriple(individual, datatypeProperty, value);
                 ABoxGraph.AddTriple(new RDFTriple(negativeDatatypeAssertion.ReificationSubject, RDFVocabulary.OWL.SOURCE_INDIVIDUAL, individual));
                 ABoxGraph.AddTriple(new RDFTriple(negativeDatatypeAssertion.ReificationSubject, RDFVocabulary.OWL.ASSERTION_PROPERTY, datatypeProperty));

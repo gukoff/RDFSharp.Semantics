@@ -152,12 +152,17 @@ namespace RDFSharp.Semantics
 
             if (propertyModel != null && owlProperty != null)
             {
+                Dictionary<long, RDFResource> visitContext = new Dictionary<long, RDFResource>();
+
                 //Reason on the given property
-                subProperties.AddRange(propertyModel.FindSubPropertiesOf(owlProperty));
+                subProperties.AddRange(propertyModel.FindSubPropertiesOf(owlProperty, visitContext));
 
                 //Reason on the equivalent properties
-                foreach (RDFResource equivalentProperty in propertyModel.GetEquivalentPropertiesOf(owlProperty))
-                    subProperties.AddRange(propertyModel.FindSubPropertiesOf(equivalentProperty));
+                if (!OWLSemanticsOptions.DisableAdvancedReasoner)
+                {
+                    foreach (RDFResource equivalentProperty in propertyModel.GetEquivalentPropertiesOf(owlProperty))
+                        subProperties.AddRange(propertyModel.FindSubPropertiesOf(equivalentProperty, visitContext));
+                }   
 
                 //We don't want to also enlist the given owl:Property
                 subProperties.RemoveAll(prop => prop.Equals(owlProperty));
@@ -169,15 +174,17 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Finds "SubProperty(owlProperty, X)" relations to enlist the sub properties of the given owl:Property
         /// </summary>
-        internal static List<RDFResource> FindSubPropertiesOf(this OWLOntologyPropertyModel propertyModel, RDFResource owlProperty)
+        internal static List<RDFResource> FindSubPropertiesOf(this OWLOntologyPropertyModel propertyModel, RDFResource owlProperty, Dictionary<long, RDFResource> visitContext)
         {
             //Direct subsumption of "rdfs:subPropertyOf" taxonomy
-            List<RDFResource> subProperties = propertyModel.SubsumeSubPropertyHierarchy(owlProperty);
+            List<RDFResource> subProperties = propertyModel.SubsumeSubPropertyHierarchy(owlProperty, visitContext);
 
             //Enlist equivalent properties of subproperties
-            foreach (RDFResource subProperty in subProperties.ToList())
-                subProperties.AddRange(propertyModel.GetEquivalentPropertiesOf(subProperty)
-                                                    .Union(propertyModel.GetSubPropertiesOf(subProperty)));  
+            if (!OWLSemanticsOptions.DisableAdvancedReasoner)
+            {
+                foreach (RDFResource subProperty in subProperties.ToList())
+                    subProperties.AddRange(propertyModel.GetEquivalentPropertiesOf(subProperty));
+            }
 
             return subProperties;
         }
@@ -185,16 +192,23 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Subsume "SubProperty(owlProperty,X)" relations of the model to answer the sub properties of the given owl:Property
         /// </summary>
-        internal static List<RDFResource> SubsumeSubPropertyHierarchy(this OWLOntologyPropertyModel propertyModel, RDFResource owlProperty)
+        internal static List<RDFResource> SubsumeSubPropertyHierarchy(this OWLOntologyPropertyModel propertyModel, RDFResource owlProperty, Dictionary<long, RDFResource> visitContext)
         {
             List<RDFResource> subProperties = new List<RDFResource>();
 
+            #region VisitContext
+            if (!visitContext.ContainsKey(owlProperty.PatternMemberID))
+                visitContext.Add(owlProperty.PatternMemberID, owlProperty);
+            else
+                return subProperties;
+            #endregion
+
             // SUBPROPERTY(A,B) ^ SUBPROPERTY(B,C) -> SUBPROPERTY(A,C)
-            foreach (RDFTriple subPropertyRelation in propertyModel.TBoxGraph[null, RDFVocabulary.RDFS.SUB_PROPERTY_OF, owlProperty, null])
-            {
-                subProperties.Add((RDFResource)subPropertyRelation.Subject);
-                subProperties.AddRange(propertyModel.SubsumeSubPropertyHierarchy((RDFResource)subPropertyRelation.Subject));
-            }
+            subProperties.AddRange(propertyModel.TBoxGraph[null, RDFVocabulary.RDFS.SUB_PROPERTY_OF, owlProperty, null]
+                                                .Select(t => t.Subject)
+                                                .OfType<RDFResource>());
+            foreach (RDFResource subProperty in subProperties.ToList())
+                subProperties.AddRange(propertyModel.SubsumeSubPropertyHierarchy(subProperty, visitContext));
 
             return subProperties;
         }
@@ -214,12 +228,17 @@ namespace RDFSharp.Semantics
 
             if (propertyModel != null && owlProperty != null)
             {
+                Dictionary<long, RDFResource> visitContext = new Dictionary<long, RDFResource>();
+
                 //Reason on the given property
-                subProperties.AddRange(propertyModel.FindSuperPropertiesOf(owlProperty));
+                subProperties.AddRange(propertyModel.FindSuperPropertiesOf(owlProperty, visitContext));
 
                 //Reason on the equivalent properties
-                foreach (RDFResource equivalentProperty in propertyModel.GetEquivalentPropertiesOf(owlProperty))
-                    subProperties.AddRange(propertyModel.FindSuperPropertiesOf(equivalentProperty));
+                if (!OWLSemanticsOptions.DisableAdvancedReasoner)
+                {
+                    foreach (RDFResource equivalentProperty in propertyModel.GetEquivalentPropertiesOf(owlProperty))
+                        subProperties.AddRange(propertyModel.FindSuperPropertiesOf(equivalentProperty, visitContext));
+                }   
 
                 //We don't want to also enlist the given owl:Property
                 subProperties.RemoveAll(prop => prop.Equals(owlProperty));
@@ -231,15 +250,17 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Finds "SuperProperty(owlProperty, X)" relations to enlist the super properties of the given owl:Property
         /// </summary>
-        internal static List<RDFResource> FindSuperPropertiesOf(this OWLOntologyPropertyModel propertyModel, RDFResource owlProperty)
+        internal static List<RDFResource> FindSuperPropertiesOf(this OWLOntologyPropertyModel propertyModel, RDFResource owlProperty, Dictionary<long, RDFResource> visitContext)
         {
             //Direct subsumption of "rdfs:subPropertyOf" taxonomy
-            List<RDFResource> superProperties = propertyModel.SubsumeSuperPropertyHierarchy(owlProperty);
+            List<RDFResource> superProperties = propertyModel.SubsumeSuperPropertyHierarchy(owlProperty, visitContext);
 
             //Enlist equivalent classes of superclasses
-            foreach (RDFResource superProperty in superProperties.ToList())
-                superProperties.AddRange(propertyModel.GetEquivalentPropertiesOf(superProperty)
-                                                          .Union(propertyModel.GetSuperPropertiesOf(superProperty)));  
+            if (!OWLSemanticsOptions.DisableAdvancedReasoner)
+            {
+                foreach (RDFResource superProperty in superProperties.ToList())
+                    superProperties.AddRange(propertyModel.GetEquivalentPropertiesOf(superProperty));
+            }   
 
             return superProperties;
         }
@@ -247,16 +268,23 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Subsumes "SubProperty(X,owlProperty)" relations of the model to answer the super properties of the given owl:Property
         /// </summary>
-        internal static List<RDFResource> SubsumeSuperPropertyHierarchy(this OWLOntologyPropertyModel propertyModel, RDFResource owlProperty)
+        internal static List<RDFResource> SubsumeSuperPropertyHierarchy(this OWLOntologyPropertyModel propertyModel, RDFResource owlProperty, Dictionary<long, RDFResource> visitContext)
         {
             List<RDFResource> superProperties = new List<RDFResource>();
 
+            #region VisitContext
+            if (!visitContext.ContainsKey(owlProperty.PatternMemberID))
+                visitContext.Add(owlProperty.PatternMemberID, owlProperty);
+            else
+                return superProperties;
+            #endregion
+
             // SUBPROPERTY(A,B) ^ SUBPROPERTY(B,C) -> SUBPROPERTY(A,C)
-            foreach (RDFTriple subPropertyRelation in propertyModel.TBoxGraph[owlProperty, RDFVocabulary.RDFS.SUB_PROPERTY_OF, null, null])
-            {
-                superProperties.Add((RDFResource)subPropertyRelation.Object);
-                superProperties.AddRange(propertyModel.SubsumeSuperPropertyHierarchy((RDFResource)subPropertyRelation.Object));
-            }
+            superProperties.AddRange(propertyModel.TBoxGraph[owlProperty, RDFVocabulary.RDFS.SUB_PROPERTY_OF, null, null]
+                                                  .Select(t => t.Object)
+                                                  .OfType<RDFResource>());
+            foreach (RDFResource superProperty in superProperties.ToList())
+                superProperties.AddRange(propertyModel.SubsumeSuperPropertyHierarchy(superProperty, visitContext));
 
             return superProperties;
         }
@@ -379,13 +407,17 @@ namespace RDFSharp.Semantics
             }
 
             // Inference: PROPERTYDISJOINTWITH(A,B) ^ SUBPROPERTY(C,B) -> PROPERTYDISJOINTWITH(A,C)
+            Dictionary<long, RDFResource> spVisitContext = new Dictionary<long, RDFResource>();
             foreach (RDFResource disjointProperty in disjointProperties.ToList())
-                disjointProperties.AddRange(propertyModel.FindSubPropertiesOf(disjointProperty));
+                disjointProperties.AddRange(propertyModel.FindSubPropertiesOf(disjointProperty, spVisitContext));
 
             // Inference: EQUIVALENTPROPERTY(A,B) ^ PROPERTYDISJOINTWITH(B,C) -> PROPERTYDISJOINTWITH(A,C)
-            foreach (RDFResource compatibleClass in propertyModel.GetSuperPropertiesOf(owlProperty)
-                                                                 .Union(propertyModel.GetEquivalentPropertiesOf(owlProperty)))
-                disjointProperties.AddRange(propertyModel.FindDisjointPropertiesWith(compatibleClass, visitContext));           
+            if (!OWLSemanticsOptions.DisableAdvancedReasoner)
+            {
+                foreach (RDFResource compatibleClass in propertyModel.GetSuperPropertiesOf(owlProperty)
+                                                                     .Union(propertyModel.GetEquivalentPropertiesOf(owlProperty)))
+                    disjointProperties.AddRange(propertyModel.FindDisjointPropertiesWith(compatibleClass, visitContext));
+            }
             #endregion
 
             return disjointProperties;
@@ -442,9 +474,7 @@ namespace RDFSharp.Semantics
 
             if (propertyModel != null && owlProperty != null)
             {
-                //DIRECT
-                RDFGraph domainGraph = propertyModel.TBoxGraph[owlProperty, RDFVocabulary.RDFS.DOMAIN, null, null];
-                foreach (RDFTriple domainTriple in domainGraph)
+                foreach (RDFTriple domainTriple in propertyModel.TBoxGraph[owlProperty, RDFVocabulary.RDFS.DOMAIN, null, null])
                     domainClasses.Add((RDFResource)domainTriple.Object);
             }
 
@@ -460,9 +490,7 @@ namespace RDFSharp.Semantics
 
             if (propertyModel != null && owlProperty != null)
             {
-                //DIRECT
-                RDFGraph rangeGraph = propertyModel.TBoxGraph[owlProperty, RDFVocabulary.RDFS.RANGE, null, null];
-                foreach (RDFTriple rangeTriple in rangeGraph)
+                foreach (RDFTriple rangeTriple in propertyModel.TBoxGraph[owlProperty, RDFVocabulary.RDFS.RANGE, null, null])
                     rangeClasses.Add((RDFResource)rangeTriple.Object);
             }
 
