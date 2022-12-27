@@ -234,11 +234,8 @@ namespace RDFSharp.Semantics
                 subClasses.AddRange(classModel.FindSubClassesOf(owlClass, visitContext));
 
                 //Reason on the equivalent classes
-                if (!OWLSemanticsOptions.DisableAdvancedReasoner)
-                {
-                    foreach (RDFResource equivalentClass in classModel.GetEquivalentClassesOf(owlClass))
-                        subClasses.AddRange(classModel.FindSubClassesOf(equivalentClass, visitContext));
-                }   
+                foreach (RDFResource equivalentClass in classModel.GetEquivalentClassesOf(owlClass))
+                    subClasses.AddRange(classModel.FindSubClassesOf(equivalentClass, visitContext));
 
                 //We don't want to also enlist the given owl:Class
                 subClasses.RemoveAll(cls => cls.Equals(owlClass));
@@ -256,11 +253,8 @@ namespace RDFSharp.Semantics
             List<RDFResource> subClasses = classModel.SubsumeSubClassHierarchy(owlClass, visitContext);
 
             //Enlist equivalent classes of subclasses
-            if (!OWLSemanticsOptions.DisableAdvancedReasoner)
-            {
-                foreach (RDFResource subClass in subClasses.ToList())
-                    subClasses.AddRange(classModel.GetEquivalentClassesOf(subClass));
-            }      
+            foreach (RDFResource subClass in subClasses.ToList())
+                subClasses.AddRange(classModel.GetEquivalentClassesOf(subClass));
 
             return subClasses;
         }
@@ -310,11 +304,8 @@ namespace RDFSharp.Semantics
                 subClasses.AddRange(classModel.FindSuperClassesOf(owlClass, visitContext));
 
                 //Reason on the equivalent classes
-                if (!OWLSemanticsOptions.DisableAdvancedReasoner)
-                {
-                    foreach (RDFResource equivalentClass in classModel.GetEquivalentClassesOf(owlClass))
-                        subClasses.AddRange(classModel.FindSuperClassesOf(equivalentClass, visitContext));
-                }  
+                foreach (RDFResource equivalentClass in classModel.GetEquivalentClassesOf(owlClass))
+                    subClasses.AddRange(classModel.FindSuperClassesOf(equivalentClass, visitContext));
 
                 //We don't want to also enlist the given owl:Class
                 subClasses.RemoveAll(cls => cls.Equals(owlClass));
@@ -332,11 +323,8 @@ namespace RDFSharp.Semantics
             List<RDFResource> superClasses = classModel.SubsumeSuperClassHierarchy(owlClass, visitContext);
 
             //Enlist equivalent classes of superclasses
-            if (!OWLSemanticsOptions.DisableAdvancedReasoner)
-            {
-                foreach (RDFResource superClass in superClasses.ToList())
-                    superClasses.AddRange(classModel.GetEquivalentClassesOf(superClass));
-            }                
+            foreach (RDFResource superClass in superClasses.ToList())
+                superClasses.AddRange(classModel.GetEquivalentClassesOf(superClass));
 
             return superClasses;
         }
@@ -488,12 +476,9 @@ namespace RDFSharp.Semantics
                 disjointClasses.AddRange(classModel.FindSubClassesOf(disjointClass, scVisitContext));
 
             // Inference: EQUIVALENTCLASS(A,B) ^ DISJOINTWITH(B,C) -> DISJOINTWITH(A,C)
-            if (!OWLSemanticsOptions.DisableAdvancedReasoner)
-            {
-                foreach (RDFResource compatibleClass in classModel.GetSuperClassesOf(owlClass)
-                                                                  .Union(classModel.GetEquivalentClassesOf(owlClass)))
-                    disjointClasses.AddRange(classModel.FindDisjointClassesWith(compatibleClass, visitContext));
-            }
+            foreach (RDFResource compatibleClass in classModel.GetSuperClassesOf(owlClass)
+                                                              .Union(classModel.GetEquivalentClassesOf(owlClass)))
+                disjointClasses.AddRange(classModel.FindDisjointClassesWith(compatibleClass, visitContext));
             #endregion
 
             return disjointClasses;

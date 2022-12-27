@@ -158,11 +158,8 @@ namespace RDFSharp.Semantics
                 subProperties.AddRange(propertyModel.FindSubPropertiesOf(owlProperty, visitContext));
 
                 //Reason on the equivalent properties
-                if (!OWLSemanticsOptions.DisableAdvancedReasoner)
-                {
-                    foreach (RDFResource equivalentProperty in propertyModel.GetEquivalentPropertiesOf(owlProperty))
-                        subProperties.AddRange(propertyModel.FindSubPropertiesOf(equivalentProperty, visitContext));
-                }   
+                foreach (RDFResource equivalentProperty in propertyModel.GetEquivalentPropertiesOf(owlProperty))
+                    subProperties.AddRange(propertyModel.FindSubPropertiesOf(equivalentProperty, visitContext));   
 
                 //We don't want to also enlist the given owl:Property
                 subProperties.RemoveAll(prop => prop.Equals(owlProperty));
@@ -180,11 +177,8 @@ namespace RDFSharp.Semantics
             List<RDFResource> subProperties = propertyModel.SubsumeSubPropertyHierarchy(owlProperty, visitContext);
 
             //Enlist equivalent properties of subproperties
-            if (!OWLSemanticsOptions.DisableAdvancedReasoner)
-            {
-                foreach (RDFResource subProperty in subProperties.ToList())
-                    subProperties.AddRange(propertyModel.GetEquivalentPropertiesOf(subProperty));
-            }
+            foreach (RDFResource subProperty in subProperties.ToList())
+                subProperties.AddRange(propertyModel.GetEquivalentPropertiesOf(subProperty));
 
             return subProperties;
         }
@@ -234,11 +228,8 @@ namespace RDFSharp.Semantics
                 subProperties.AddRange(propertyModel.FindSuperPropertiesOf(owlProperty, visitContext));
 
                 //Reason on the equivalent properties
-                if (!OWLSemanticsOptions.DisableAdvancedReasoner)
-                {
-                    foreach (RDFResource equivalentProperty in propertyModel.GetEquivalentPropertiesOf(owlProperty))
-                        subProperties.AddRange(propertyModel.FindSuperPropertiesOf(equivalentProperty, visitContext));
-                }   
+                foreach (RDFResource equivalentProperty in propertyModel.GetEquivalentPropertiesOf(owlProperty))
+                    subProperties.AddRange(propertyModel.FindSuperPropertiesOf(equivalentProperty, visitContext));
 
                 //We don't want to also enlist the given owl:Property
                 subProperties.RemoveAll(prop => prop.Equals(owlProperty));
@@ -256,11 +247,8 @@ namespace RDFSharp.Semantics
             List<RDFResource> superProperties = propertyModel.SubsumeSuperPropertyHierarchy(owlProperty, visitContext);
 
             //Enlist equivalent classes of superclasses
-            if (!OWLSemanticsOptions.DisableAdvancedReasoner)
-            {
-                foreach (RDFResource superProperty in superProperties.ToList())
-                    superProperties.AddRange(propertyModel.GetEquivalentPropertiesOf(superProperty));
-            }   
+            foreach (RDFResource superProperty in superProperties.ToList())
+                superProperties.AddRange(propertyModel.GetEquivalentPropertiesOf(superProperty));
 
             return superProperties;
         }
@@ -412,12 +400,9 @@ namespace RDFSharp.Semantics
                 disjointProperties.AddRange(propertyModel.FindSubPropertiesOf(disjointProperty, spVisitContext));
 
             // Inference: EQUIVALENTPROPERTY(A,B) ^ PROPERTYDISJOINTWITH(B,C) -> PROPERTYDISJOINTWITH(A,C)
-            if (!OWLSemanticsOptions.DisableAdvancedReasoner)
-            {
-                foreach (RDFResource compatibleClass in propertyModel.GetSuperPropertiesOf(owlProperty)
-                                                                     .Union(propertyModel.GetEquivalentPropertiesOf(owlProperty)))
-                    disjointProperties.AddRange(propertyModel.FindDisjointPropertiesWith(compatibleClass, visitContext));
-            }
+            foreach (RDFResource compatibleClass in propertyModel.GetSuperPropertiesOf(owlProperty)
+                                                                 .Union(propertyModel.GetEquivalentPropertiesOf(owlProperty)))
+                disjointProperties.AddRange(propertyModel.FindDisjointPropertiesWith(compatibleClass, visitContext));
             #endregion
 
             return disjointProperties;

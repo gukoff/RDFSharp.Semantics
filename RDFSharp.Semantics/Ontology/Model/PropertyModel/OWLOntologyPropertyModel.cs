@@ -593,7 +593,7 @@ namespace RDFSharp.Semantics
             bool OWLDLIntegrityChecks()
                 => !childProperty.CheckReservedProperty()
                       && !motherProperty.CheckReservedProperty()
-                        && (OWLSemanticsOptions.DisableOntologyProtection || this.CheckSubPropertyCompatibility(childProperty, motherProperty));
+                        && this.CheckSubPropertyCompatibility(childProperty, motherProperty);
             #endregion
 
             if (childProperty == null)
@@ -605,16 +605,7 @@ namespace RDFSharp.Semantics
 
             //Add knowledge to the T-BOX (or raise warning if violations are detected)
             if (OWLDLIntegrityChecks())
-            {
-                //Handle automatic property declaration, if configured
-                if (OWLSemanticsOptions.EnableAutomaticPropertyDeclaration)
-                {
-                    DeclareObjectProperty(childProperty);
-                    DeclareObjectProperty(motherProperty);
-                }
-
                 TBoxGraph.AddTriple(new RDFTriple(childProperty, RDFVocabulary.RDFS.SUB_PROPERTY_OF, motherProperty));
-            }   
             else
                 OWLSemanticsEvents.RaiseSemanticsWarning(string.Format("SubProperty relation between property '{0}' and property '{1}' cannot be declared to the model because it would violate OWL-DL integrity", childProperty, motherProperty));
 
@@ -630,7 +621,7 @@ namespace RDFSharp.Semantics
             bool OWLDLIntegrityChecks()
                 => !leftProperty.CheckReservedProperty()
                       && !rightProperty.CheckReservedProperty()
-                        && (OWLSemanticsOptions.DisableOntologyProtection || this.CheckEquivalentPropertyCompatibility(leftProperty, rightProperty));
+                        && this.CheckEquivalentPropertyCompatibility(leftProperty, rightProperty);
             #endregion
 
             if (leftProperty == null)
@@ -643,13 +634,6 @@ namespace RDFSharp.Semantics
             //Add knowledge to the T-BOX (or raise warning if violations are detected)
             if (OWLDLIntegrityChecks())
             {
-                //Handle automatic property declaration, if configured
-                if (OWLSemanticsOptions.EnableAutomaticPropertyDeclaration)
-                {
-                    DeclareObjectProperty(leftProperty);
-                    DeclareObjectProperty(rightProperty);
-                }
-
                 TBoxGraph.AddTriple(new RDFTriple(leftProperty, RDFVocabulary.OWL.EQUIVALENT_PROPERTY, rightProperty));
 
                 //Also add an automatic T-BOX inference exploiting symmetry of owl:equivalentProperty relation
@@ -670,7 +654,7 @@ namespace RDFSharp.Semantics
             bool OWLDLIntegrityChecks()
                 => !leftProperty.CheckReservedProperty()
                       && !rightProperty.CheckReservedProperty()
-                        && (OWLSemanticsOptions.DisableOntologyProtection || this.CheckDisjointPropertyCompatibility(leftProperty, rightProperty));
+                        && this.CheckDisjointPropertyCompatibility(leftProperty, rightProperty);
             #endregion
 
             if (leftProperty == null)
@@ -683,13 +667,6 @@ namespace RDFSharp.Semantics
             //Add knowledge to the T-BOX (or raise warning if violations are detected)
             if (OWLDLIntegrityChecks())
             {
-                //Handle automatic property declaration, if configured
-                if (OWLSemanticsOptions.EnableAutomaticPropertyDeclaration)
-                {
-                    DeclareObjectProperty(leftProperty);
-                    DeclareObjectProperty(rightProperty);
-                }
-
                 TBoxGraph.AddTriple(new RDFTriple(leftProperty, RDFVocabulary.OWL.PROPERTY_DISJOINT_WITH, rightProperty));
 
                 //Also add an automatic T-BOX inference exploiting symmetry of owl:propertyDisjointWith relation
@@ -713,10 +690,6 @@ namespace RDFSharp.Semantics
             if (disjointProperties.Count == 0)
                 throw new OWLSemanticsException("Cannot declare owl:AllDisjointProperties class to the model because given \"disjointProperties\" parameter is an empty list");
 
-            //Handle automatic property declaration, if configured
-            if (OWLSemanticsOptions.EnableAutomaticPropertyDeclaration)
-                disjointProperties.ForEach(p => DeclareObjectProperty(p));
-
             //Add knowledge to the T-BOX
             RDFCollection allDisjointPropertiesCollection = new RDFCollection(RDFModelEnums.RDFItemTypes.Resource);
             disjointProperties.ForEach(disjointProperty => allDisjointPropertiesCollection.AddItem(disjointProperty));
@@ -736,7 +709,7 @@ namespace RDFSharp.Semantics
             bool OWLDLIntegrityChecks()
                 => !leftProperty.CheckReservedProperty()
                       && !rightProperty.CheckReservedProperty()
-                        && (OWLSemanticsOptions.DisableOntologyProtection || this.CheckInversePropertyCompatibility(leftProperty, rightProperty));
+                        && this.CheckInversePropertyCompatibility(leftProperty, rightProperty);
             #endregion
 
             if (leftProperty == null)
@@ -749,13 +722,6 @@ namespace RDFSharp.Semantics
             //Add knowledge to the T-BOX (or raise warning if violations are detected)
             if (OWLDLIntegrityChecks())
             {
-                //Handle automatic property declaration, if configured
-                if (OWLSemanticsOptions.EnableAutomaticPropertyDeclaration)
-                {
-                    DeclareObjectProperty(leftProperty);
-                    DeclareObjectProperty(rightProperty);
-                }
-
                 TBoxGraph.AddTriple(new RDFTriple(leftProperty, RDFVocabulary.OWL.INVERSE_OF, rightProperty));
 
                 //Also add an automatic T-BOX inference exploiting symmetry of owl:inverseProperty relation
@@ -791,10 +757,6 @@ namespace RDFSharp.Semantics
             {
                 //PropertyChainAxiom can be safely declared as owl:ObjectProperty
                 DeclareObjectProperty(owlProperty);
-
-                //Handle automatic property declaration, if configured
-                if (OWLSemanticsOptions.EnableAutomaticPropertyDeclaration)
-                    chainProperties.ForEach(p => DeclareObjectProperty(p));
 
                 RDFCollection chainPropertiesCollection = new RDFCollection(RDFModelEnums.RDFItemTypes.Resource);
                 chainProperties.ForEach(chainProperty => chainPropertiesCollection.AddItem(chainProperty));
