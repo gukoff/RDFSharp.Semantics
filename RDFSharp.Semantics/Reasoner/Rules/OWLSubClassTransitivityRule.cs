@@ -21,7 +21,7 @@ namespace RDFSharp.Semantics
     /// </summary>
     internal static class OWLSubClassTransitivityRule
     {
-        internal static OWLReasonerReport ExecuteRule(OWLOntology ontology, OWLOntologyLoaderOptions loaderOptions)
+        internal static OWLReasonerReport ExecuteRule(OWLOntology ontology)
         {
             #region RuleBody
             void InferSuperClasses(RDFResource currentClass, OWLReasonerReport report)

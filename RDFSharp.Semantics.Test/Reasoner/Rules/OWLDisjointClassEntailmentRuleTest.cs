@@ -36,7 +36,7 @@ namespace RDFSharp.Semantics.Reasoner.Test
             ontology.Model.ClassModel.DeclareEquivalentClasses(new RDFResource("ex:classB"), new RDFResource("ex:classC"));
             ontology.Model.ClassModel.DeclareEquivalentClasses(new RDFResource("ex:classC"), new RDFResource("ex:classD"));
 
-            OWLReasonerReport reasonerReport = OWLDisjointClassEntailmentRule.ExecuteRule(ontology, OWLOntologyLoaderOptions.DefaultOptions);
+            OWLReasonerReport reasonerReport = OWLDisjointClassEntailmentRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(reasonerReport);
             Assert.IsTrue(reasonerReport.EvidencesCount == 4);
@@ -55,7 +55,7 @@ namespace RDFSharp.Semantics.Reasoner.Test
             ontology.Model.ClassModel.DeclareEquivalentClasses(new RDFResource("ex:classB"), new RDFResource("ex:classC"));
             ontology.Model.ClassModel.DeclareEquivalentClasses(new RDFResource("ex:classC"), new RDFResource("ex:classD"));
 
-            OWLReasonerReport reasonerReport = OWLDisjointClassEntailmentRule.ExecuteRule(ontology, OWLOntologyLoaderOptions.DefaultOptions);
+            OWLReasonerReport reasonerReport = OWLDisjointClassEntailmentRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(reasonerReport);
             Assert.IsTrue(reasonerReport.EvidencesCount == 6);

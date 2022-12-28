@@ -22,7 +22,7 @@ namespace RDFSharp.Semantics
     /// </summary>
     internal static class OWLReflexivePropertyEntailmentRule
     {
-        internal static OWLReasonerReport ExecuteRule(OWLOntology ontology, OWLOntologyLoaderOptions loaderOptions)
+        internal static OWLReasonerReport ExecuteRule(OWLOntology ontology)
         {
             #region RuleBody
             void SwitchReflexiveObjectAssertions(RDFResource currentProperty, OWLReasonerReport report)

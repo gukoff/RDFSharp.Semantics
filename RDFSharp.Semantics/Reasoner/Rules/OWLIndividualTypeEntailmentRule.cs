@@ -21,7 +21,7 @@ namespace RDFSharp.Semantics
     /// </summary>
     internal static class OWLIndividualTypeEntailmentRule
     {
-        internal static OWLReasonerReport ExecuteRule(OWLOntology ontology, OWLOntologyLoaderOptions loaderOptions)
+        internal static OWLReasonerReport ExecuteRule(OWLOntology ontology)
         {
             #region RuleBody
             void InferClassIndividuals(RDFResource currentClass, List<RDFResource> classIndividuals, OWLReasonerReport report)
@@ -44,7 +44,7 @@ namespace RDFSharp.Semantics
             IEnumerator<RDFResource> classesEnumerator = ontology.Model.ClassModel.ClassesEnumerator;
             while (classesEnumerator.MoveNext())
             {
-                List<RDFResource> individuals = ontology.Data.GetIndividualsOf(ontology.Model, classesEnumerator.Current, loaderOptions);
+                List<RDFResource> individuals = ontology.Data.GetIndividualsOf(ontology.Model, classesEnumerator.Current);
                 InferClassIndividuals(classesEnumerator.Current, individuals, reasonerRuleReport);
             }
 

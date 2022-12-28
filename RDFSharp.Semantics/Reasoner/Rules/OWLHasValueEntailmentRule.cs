@@ -23,7 +23,7 @@ namespace RDFSharp.Semantics
     /// </summary>
     internal static class OWLHasValueEntailmentRule
     {
-        internal static OWLReasonerReport ExecuteRule(OWLOntology ontology, OWLOntologyLoaderOptions loaderOptions)
+        internal static OWLReasonerReport ExecuteRule(OWLOntology ontology)
         {
             #region RuleBody
             void InferAssertionsFromHasValueRestriction(RDFResource currentHVRestriction, OWLReasonerReport report)
@@ -40,7 +40,7 @@ namespace RDFSharp.Semantics
                     foreach (RDFResource subClassOfHVRestriction in subClassesOfHVRestriction)
                     {
                         //Calculate individuals of the current subclass
-                        List<RDFResource> subClassOfHVRestrictionMembers = ontology.Data.GetIndividualsOf(ontology.Model, subClassOfHVRestriction, loaderOptions);
+                        List<RDFResource> subClassOfHVRestrictionMembers = ontology.Data.GetIndividualsOf(ontology.Model, subClassOfHVRestriction);
                         foreach (RDFResource subClassOfHVRestrictionMember in subClassOfHVRestrictionMembers)
                         {
                             //Create the inference

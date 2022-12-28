@@ -22,7 +22,7 @@ namespace RDFSharp.Semantics
     /// </summary>
     internal static class OWLDomainEntailmentRule
     {
-        internal static OWLReasonerReport ExecuteRule(OWLOntology ontology, OWLOntologyLoaderOptions loaderOptions)
+        internal static OWLReasonerReport ExecuteRule(OWLOntology ontology)
         {
             #region RuleBody
             void InferIndividualTypesFromDomainClass(RDFResource currentProperty, OWLReasonerReport report)

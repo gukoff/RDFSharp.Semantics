@@ -42,7 +42,7 @@ namespace RDFSharp.Semantics.Reasoner.Test
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:father"), new RDFResource("ex:hasFather"), new RDFResource("ex:grandFather"));
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:grandFather"), new RDFResource("ex:hasBrother"), new RDFResource("ex:grandUncle"));
 
-            OWLReasonerReport reasonerReport = OWLPropertyChainEntailmentRule.ExecuteRule(ontology, OWLOntologyLoaderOptions.DefaultOptions);
+            OWLReasonerReport reasonerReport = OWLPropertyChainEntailmentRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(reasonerReport);
             Assert.IsTrue(reasonerReport.EvidencesCount == 2);

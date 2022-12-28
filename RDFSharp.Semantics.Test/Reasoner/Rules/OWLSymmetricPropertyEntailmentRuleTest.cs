@@ -32,7 +32,7 @@ namespace RDFSharp.Semantics.Reasoner.Test
             ontology.Data.DeclareIndividual(new RDFResource("ex:indiv2"));
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objprop"), new RDFResource("ex:indiv2"));
 
-            OWLReasonerReport reasonerReport = OWLSymmetricPropertyEntailmentRule.ExecuteRule(ontology, OWLOntologyLoaderOptions.DefaultOptions);
+            OWLReasonerReport reasonerReport = OWLSymmetricPropertyEntailmentRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(reasonerReport);
             Assert.IsTrue(reasonerReport.EvidencesCount == 1);

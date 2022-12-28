@@ -35,7 +35,7 @@ namespace RDFSharp.Semantics.Reasoner.Test
             ontology.Model.PropertyModel.DeclareEquivalentProperties(new RDFResource("ex:objpropB"), new RDFResource("ex:objpropC"));
             ontology.Model.PropertyModel.DeclareEquivalentProperties(new RDFResource("ex:objpropC"), new RDFResource("ex:objpropD"));
 
-            OWLReasonerReport reasonerReport = OWLEquivalentPropertyTransitivityRule.ExecuteRule(ontology, OWLOntologyLoaderOptions.DefaultOptions);
+            OWLReasonerReport reasonerReport = OWLEquivalentPropertyTransitivityRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(reasonerReport);
             Assert.IsTrue(reasonerReport.EvidencesCount == 6);
@@ -72,7 +72,7 @@ namespace RDFSharp.Semantics.Reasoner.Test
             ontology.Model.PropertyModel.DeclareEquivalentProperties(new RDFResource("ex:dtpropB"), new RDFResource("ex:dtpropC"));
             ontology.Model.PropertyModel.DeclareEquivalentProperties(new RDFResource("ex:dtpropC"), new RDFResource("ex:dtpropD"));
 
-            OWLReasonerReport reasonerReport = OWLEquivalentPropertyTransitivityRule.ExecuteRule(ontology, OWLOntologyLoaderOptions.DefaultOptions);
+            OWLReasonerReport reasonerReport = OWLEquivalentPropertyTransitivityRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(reasonerReport);
             Assert.IsTrue(reasonerReport.EvidencesCount == 6);

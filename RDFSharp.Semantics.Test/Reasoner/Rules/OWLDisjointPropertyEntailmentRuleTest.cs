@@ -36,7 +36,7 @@ namespace RDFSharp.Semantics.Reasoner.Test
             ontology.Model.PropertyModel.DeclareEquivalentProperties(new RDFResource("ex:objpropB"), new RDFResource("ex:objpropC"));
             ontology.Model.PropertyModel.DeclareEquivalentProperties(new RDFResource("ex:objpropC"), new RDFResource("ex:objpropD"));
 
-            OWLReasonerReport reasonerReport = OWLDisjointPropertyEntailmentRule.ExecuteRule(ontology, OWLOntologyLoaderOptions.DefaultOptions);
+            OWLReasonerReport reasonerReport = OWLDisjointPropertyEntailmentRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(reasonerReport);
             Assert.IsTrue(reasonerReport.EvidencesCount == 4);
@@ -55,7 +55,7 @@ namespace RDFSharp.Semantics.Reasoner.Test
             ontology.Model.PropertyModel.DeclareEquivalentProperties(new RDFResource("ex:objpropB"), new RDFResource("ex:objpropC"));
             ontology.Model.PropertyModel.DeclareEquivalentProperties(new RDFResource("ex:objpropC"), new RDFResource("ex:objpropD"));
 
-            OWLReasonerReport reasonerReport = OWLDisjointPropertyEntailmentRule.ExecuteRule(ontology, OWLOntologyLoaderOptions.DefaultOptions);
+            OWLReasonerReport reasonerReport = OWLDisjointPropertyEntailmentRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(reasonerReport);
             Assert.IsTrue(reasonerReport.EvidencesCount == 6);
@@ -92,7 +92,7 @@ namespace RDFSharp.Semantics.Reasoner.Test
             ontology.Model.PropertyModel.DeclareEquivalentProperties(new RDFResource("ex:dtpropB"), new RDFResource("ex:dtpropC"));
             ontology.Model.PropertyModel.DeclareEquivalentProperties(new RDFResource("ex:dtpropC"), new RDFResource("ex:dtpropD"));
 
-            OWLReasonerReport reasonerReport = OWLDisjointPropertyEntailmentRule.ExecuteRule(ontology, OWLOntologyLoaderOptions.DefaultOptions);
+            OWLReasonerReport reasonerReport = OWLDisjointPropertyEntailmentRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(reasonerReport);
             Assert.IsTrue(reasonerReport.EvidencesCount == 4);
@@ -111,7 +111,7 @@ namespace RDFSharp.Semantics.Reasoner.Test
             ontology.Model.PropertyModel.DeclareEquivalentProperties(new RDFResource("ex:dtpropB"), new RDFResource("ex:dtpropC"));
             ontology.Model.PropertyModel.DeclareEquivalentProperties(new RDFResource("ex:dtpropC"), new RDFResource("ex:dtpropD"));
 
-            OWLReasonerReport reasonerReport = OWLDisjointPropertyEntailmentRule.ExecuteRule(ontology, OWLOntologyLoaderOptions.DefaultOptions);
+            OWLReasonerReport reasonerReport = OWLDisjointPropertyEntailmentRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(reasonerReport);
             Assert.IsTrue(reasonerReport.EvidencesCount == 6);

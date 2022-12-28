@@ -36,7 +36,7 @@ namespace RDFSharp.Semantics.Reasoner.Test
             ontology.Data.DeclareSameIndividuals(new RDFResource("ex:indivB"), new RDFResource("ex:indivC"));
             ontology.Data.DeclareSameIndividuals(new RDFResource("ex:indivC"), new RDFResource("ex:indivD"));
 
-            OWLReasonerReport reasonerReport = OWLDifferentFromEntailmentRule.ExecuteRule(ontology,null);
+            OWLReasonerReport reasonerReport = OWLDifferentFromEntailmentRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(reasonerReport);
             Assert.IsTrue(reasonerReport.EvidencesCount == 4);
@@ -55,7 +55,7 @@ namespace RDFSharp.Semantics.Reasoner.Test
             ontology.Data.DeclareSameIndividuals(new RDFResource("ex:indivB"), new RDFResource("ex:indivC"));
             ontology.Data.DeclareSameIndividuals(new RDFResource("ex:indivC"), new RDFResource("ex:indivD"));
 
-            OWLReasonerReport reasonerReport = OWLDifferentFromEntailmentRule.ExecuteRule(ontology, OWLOntologyLoaderOptions.DefaultOptions);
+            OWLReasonerReport reasonerReport = OWLDifferentFromEntailmentRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(reasonerReport);
             Assert.IsTrue(reasonerReport.EvidencesCount == 6);

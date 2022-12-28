@@ -103,12 +103,6 @@ namespace RDFSharp.Semantics
         public bool EnableTaxonomyProtection { get; set; } = true;
 
         /// <summary>
-        /// Tells the ontology loader to activate OWL-DL analyzers on ontology taxonomies, in addition to the standard RDFS analyzers<br/>
-        /// Default: TRUE
-        /// </summary>
-        public bool EnableOWLDLAnalyzer { get; set; } = true;
-
-        /// <summary>
         /// Tells the ontology loader to try declaring classes, properties and individuals when not explicitly declared<br/>
         /// Default: FALSE
         /// </summary>

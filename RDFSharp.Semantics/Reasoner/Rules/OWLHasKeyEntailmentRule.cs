@@ -23,7 +23,7 @@ namespace RDFSharp.Semantics
     /// </summary>
     internal static class OWLHasKeyEntailmentRule
     {
-        internal static OWLReasonerReport ExecuteRule(OWLOntology ontology, OWLOntologyLoaderOptions loaderOptions)
+        internal static OWLReasonerReport ExecuteRule(OWLOntology ontology)
         {
             #region RuleBody
             Dictionary<string, List<RDFResource>> GetKeyValuesOfClass(RDFResource currentClass, List<RDFResource> keyProperties)
@@ -31,7 +31,7 @@ namespace RDFSharp.Semantics
                 Dictionary<string, List<RDFResource>> keyValueRegister = new Dictionary<string, List<RDFResource>>();
 
                 //Iterate individuals of the current class in order to calculate their key values
-                foreach (RDFResource classIndividual in ontology.Data.GetIndividualsOf(ontology.Model, currentClass, loaderOptions))
+                foreach (RDFResource classIndividual in ontology.Data.GetIndividualsOf(ontology.Model, currentClass))
                 {
                     //Calculate the key values of the current individual
                     StringBuilder sb = new StringBuilder();

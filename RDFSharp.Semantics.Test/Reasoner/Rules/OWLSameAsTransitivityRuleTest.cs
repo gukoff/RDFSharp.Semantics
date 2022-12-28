@@ -35,7 +35,7 @@ namespace RDFSharp.Semantics.Reasoner.Test
             ontology.Data.DeclareSameIndividuals(new RDFResource("ex:indivB"), new RDFResource("ex:indivC"));
             ontology.Data.DeclareSameIndividuals(new RDFResource("ex:indivC"), new RDFResource("ex:indivD"));
 
-            OWLReasonerReport reasonerReport = OWLSameAsTransitivityRule.ExecuteRule(ontology, OWLOntologyLoaderOptions.DefaultOptions);
+            OWLReasonerReport reasonerReport = OWLSameAsTransitivityRule.ExecuteRule(ontology);
 
             Assert.IsNotNull(reasonerReport);
             Assert.IsTrue(reasonerReport.EvidencesCount == 6);

@@ -21,7 +21,7 @@ namespace RDFSharp.Semantics
     /// </summary>
     internal static class OWLDisjointPropertyEntailmentRule
     {
-        internal static OWLReasonerReport ExecuteRule(OWLOntology ontology, OWLOntologyLoaderOptions loaderOptions)
+        internal static OWLReasonerReport ExecuteRule(OWLOntology ontology)
         {
             #region RuleBody
             void InferDisjointProperties(RDFResource currentProperty, OWLReasonerReport report)

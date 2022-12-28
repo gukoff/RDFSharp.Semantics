@@ -22,7 +22,7 @@ namespace RDFSharp.Semantics
     /// </summary>
     internal static class OWLHasSelfEntailmentRule
     {
-        internal static OWLReasonerReport ExecuteRule(OWLOntology ontology, OWLOntologyLoaderOptions loaderOptions)
+        internal static OWLReasonerReport ExecuteRule(OWLOntology ontology)
         {
             #region RuleBody
             void InferAssertionsFromHasSelfRestriction(RDFResource currentHSRestriction, OWLReasonerReport report)

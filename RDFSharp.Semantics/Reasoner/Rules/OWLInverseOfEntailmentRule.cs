@@ -22,7 +22,7 @@ namespace RDFSharp.Semantics
     /// </summary>
     internal static class OWLInverseOfEntailmentRule
     {
-        internal static OWLReasonerReport ExecuteRule(OWLOntology ontology, OWLOntologyLoaderOptions loaderOptions)
+        internal static OWLReasonerReport ExecuteRule(OWLOntology ontology)
         {
             #region RuleBody
             void InferInverseObjectAssertions(RDFResource currentProperty, OWLReasonerReport report)
