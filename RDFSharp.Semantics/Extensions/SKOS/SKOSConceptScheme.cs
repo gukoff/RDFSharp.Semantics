@@ -966,14 +966,14 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         /// <summary>
         /// Gets a concept scheme representation from the given graph
         /// </summary>
-        public static SKOSConceptScheme FromRDFGraph(RDFGraph graph)
-            => SKOSConceptSchemeLoader.FromRDFGraph(graph);
+        public static SKOSConceptScheme FromRDFGraph(RDFGraph graph, OWLOntologyLoaderOptions loaderOptions=null)
+            => SKOSConceptSchemeLoader.FromRDFGraph(graph, loaderOptions);
 
         /// <summary>
         /// Asynchronously gets a concept scheme representation from the given graph
         /// </summary>
-        public static Task<SKOSConceptScheme> FromRDFGraphAsync(RDFGraph graph)
-            => Task.Run(() => FromRDFGraph(graph));
+        public static Task<SKOSConceptScheme> FromRDFGraphAsync(RDFGraph graph, OWLOntologyLoaderOptions loaderOptions=null)
+            => Task.Run(() => FromRDFGraph(graph, loaderOptions));
         #endregion
     }
 }

@@ -32,7 +32,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets an ontology class model representation of the given graph
         /// </summary>
-        internal static void LoadClassModel(this OWLOntology ontology, RDFGraph graph, Action<OWLOntology,RDFGraph> classModelExtensionPoint=null)
+        internal static void LoadClassModel(this OWLOntology ontology, RDFGraph graph, OWLOntologyLoaderOptions loaderOptions, Action<OWLOntology,RDFGraph> classModelExtensionPoint=null)
         {
             if (graph == null)
                 throw new OWLSemanticsException("Cannot get ontology class model from RDFGraph because given \"graph\" parameter is null");
@@ -53,11 +53,11 @@ namespace RDFSharp.Semantics
 
             //Restriction
             foreach (RDFResource owlRestriction in GetRestrictionDeclarations(graph))
-                ontology.LoadRestriction(owlRestriction, graph);
+                ontology.LoadRestriction(owlRestriction, graph, loaderOptions);
 
             //Enumerate
             foreach (RDFResource owlEnumerate in GetEnumerateDeclarations(graph))
-                ontology.LoadEnumerateClass(owlEnumerate, graph);
+                ontology.LoadEnumerateClass(owlEnumerate, graph, loaderOptions);
 
             //Composite
             List<RDFResource> composites = GetCompositeUnionDeclarations(graph)
@@ -65,11 +65,11 @@ namespace RDFSharp.Semantics
                                              .Union(GetCompositeComplementDeclarations(graph))
                                               .ToList();
             foreach (RDFResource owlComposite in composites)
-                ontology.LoadCompositeClass(owlComposite, graph);
+                ontology.LoadCompositeClass(owlComposite, graph, loaderOptions);
 
             //DisjointUnion [OWL2]
             foreach (RDFResource owlDisjointUnion in GetDisjointUnionDeclarations(graph))
-                ontology.LoadDisjointUnionClass(owlDisjointUnion, graph);
+                ontology.LoadDisjointUnionClass(owlDisjointUnion, graph, loaderOptions);
             #endregion
 
             #region Taxonomies
@@ -84,15 +84,15 @@ namespace RDFSharp.Semantics
 
             //rdfs:subClassOf
             foreach (RDFTriple subClassRelation in graph[null, RDFVocabulary.RDFS.SUB_CLASS_OF, null, null])
-                ontology.Model.ClassModel.DeclareSubClasses((RDFResource)subClassRelation.Subject, (RDFResource)subClassRelation.Object);
+                ontology.Model.ClassModel.DeclareSubClasses((RDFResource)subClassRelation.Subject, (RDFResource)subClassRelation.Object, loaderOptions);
 
             //owl:equivalentClass
             foreach (RDFTriple equivalentClassRelation in graph[null, RDFVocabulary.OWL.EQUIVALENT_CLASS, null, null])
-                ontology.Model.ClassModel.DeclareEquivalentClasses((RDFResource)equivalentClassRelation.Subject, (RDFResource)equivalentClassRelation.Object);
+                ontology.Model.ClassModel.DeclareEquivalentClasses((RDFResource)equivalentClassRelation.Subject, (RDFResource)equivalentClassRelation.Object, loaderOptions);
 
             //owl:disjointWith
             foreach (RDFTriple disjointClassRelation in graph[null, RDFVocabulary.OWL.DISJOINT_WITH, null, null])
-                ontology.Model.ClassModel.DeclareDisjointClasses((RDFResource)disjointClassRelation.Subject, (RDFResource)disjointClassRelation.Object);
+                ontology.Model.ClassModel.DeclareDisjointClasses((RDFResource)disjointClassRelation.Subject, (RDFResource)disjointClassRelation.Object, loaderOptions);
 
             //owl:hasKey [OWL2]
             foreach (RDFTriple hasKeyRelation in graph[null, RDFVocabulary.OWL.HAS_KEY, null, null])
@@ -101,7 +101,7 @@ namespace RDFSharp.Semantics
                 RDFCollection keyPropertiesCollection = RDFModelUtilities.DeserializeCollectionFromGraph(graph, (RDFResource)hasKeyRelation.Object, RDFModelEnums.RDFTripleFlavors.SPO);
                 foreach (RDFPatternMember keyProperty in keyPropertiesCollection)
                     keyProperties.Add((RDFResource)keyProperty);
-                ontology.Model.ClassModel.DeclareHasKey((RDFResource)hasKeyRelation.Subject, keyProperties);
+                ontology.Model.ClassModel.DeclareHasKey((RDFResource)hasKeyRelation.Subject, keyProperties, loaderOptions);
             }
 
             //owl:disjointUnionOf [OWL2]
@@ -111,7 +111,7 @@ namespace RDFSharp.Semantics
                 RDFCollection disjointClassesCollection = RDFModelUtilities.DeserializeCollectionFromGraph(graph, (RDFResource)disjointUnion.Object, RDFModelEnums.RDFTripleFlavors.SPO);
                 foreach (RDFPatternMember disjointClass in disjointClassesCollection)
                     disjointClasses.Add((RDFResource)disjointClass);
-                ontology.Model.ClassModel.DeclareDisjointUnionClass((RDFResource)disjointUnion.Subject, disjointClasses);
+                ontology.Model.ClassModel.DeclareDisjointUnionClass((RDFResource)disjointUnion.Subject, disjointClasses, loaderOptions);
             }
 
             //owl:AllDisjointClasses [OWL2]
@@ -122,7 +122,7 @@ namespace RDFSharp.Semantics
                     RDFCollection disjointClassesCollection = RDFModelUtilities.DeserializeCollectionFromGraph(graph, (RDFResource)allDisjointClassesMembers.Object, RDFModelEnums.RDFTripleFlavors.SPO);
                     foreach (RDFPatternMember disjointClass in disjointClassesCollection)
                         disjointClasses.Add((RDFResource)disjointClass);
-                    ontology.Model.ClassModel.DeclareAllDisjointClasses(allDisjointClasses, disjointClasses);
+                    ontology.Model.ClassModel.DeclareAllDisjointClasses(allDisjointClasses, disjointClasses, loaderOptions);
                 }
 
             //Extension point (e.g.: SKOS)
@@ -310,7 +310,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Loads the definition of the given restriction class
         /// </summary>
-        internal static void LoadRestriction(this OWLOntology ontology, RDFResource owlRestriction, RDFGraph graph)
+        internal static void LoadRestriction(this OWLOntology ontology, RDFResource owlRestriction, RDFGraph graph, OWLOntologyLoaderOptions loaderOptions)
         {
             //Get mandatory owl:onProperty information
             RDFResource onProperty = GetRestrictionProperty(graph, owlRestriction);
@@ -318,43 +318,43 @@ namespace RDFSharp.Semantics
                 throw new OWLSemanticsException($"Cannot load Restriction '{owlRestriction}' from graph because it does not have required owl:onProperty information");
 
             //Try load the given restriction as instance of owl:[all|some]ValuesFrom
-            if (TryLoadAllValuesFromRestriction(ontology, owlRestriction, onProperty, graph)
-                 || TryLoadSomeValuesFromRestriction(ontology, owlRestriction, onProperty, graph))
+            if (TryLoadAllValuesFromRestriction(ontology, owlRestriction, onProperty, graph, loaderOptions)
+                 || TryLoadSomeValuesFromRestriction(ontology, owlRestriction, onProperty, graph, loaderOptions))
                 return;
 
             //Try load the given restriction as instance of owl:hasValue
-            if (TryLoadHasValueRestriction(ontology, owlRestriction, onProperty, graph))
+            if (TryLoadHasValueRestriction(ontology, owlRestriction, onProperty, graph, loaderOptions))
                 return;
 
             //Try load the given restriction as instance of owl:hasSelf [OWL2]
-            if (TryLoadHasSelfRestriction(ontology, owlRestriction, onProperty, graph))
+            if (TryLoadHasSelfRestriction(ontology, owlRestriction, onProperty, graph, loaderOptions))
                 return;
 
             //Try load the given restriction as instance of owl:cardinality
-            if (TryLoadCardinalityRestriction(ontology, owlRestriction, onProperty, graph))
+            if (TryLoadCardinalityRestriction(ontology, owlRestriction, onProperty, graph, loaderOptions))
                 return;
 
             //Try load the given restriction as instance of owl:[min|max]Cardinality
-            if (TryLoadMinMaxCardinalityRestriction(ontology, owlRestriction, onProperty, graph))
+            if (TryLoadMinMaxCardinalityRestriction(ontology, owlRestriction, onProperty, graph, loaderOptions))
                 return;
 
             //Try load the given restriction as instance of owl:qualifiedCardinality [OWL2]
-            if (TryLoadQualifiedCardinalityRestriction(ontology, owlRestriction, onProperty, graph))
+            if (TryLoadQualifiedCardinalityRestriction(ontology, owlRestriction, onProperty, graph, loaderOptions))
                 return;
 
             //Try load the given restriction as instance of owl:[min|max]QualifiedCardinality [OWL2]
-            TryLoadMinMaxQualifiedCardinalityRestriction(ontology, owlRestriction, onProperty, graph);
+            TryLoadMinMaxQualifiedCardinalityRestriction(ontology, owlRestriction, onProperty, graph, loaderOptions);
         }
 
         /// <summary>
         /// Tries to load the given owl:Restriction as instance of owl:allValuesFrom restriction
         /// </summary>
-        internal static bool TryLoadAllValuesFromRestriction(this OWLOntology ontology, RDFResource owlRestriction, RDFResource onProperty, RDFGraph graph)
+        internal static bool TryLoadAllValuesFromRestriction(this OWLOntology ontology, RDFResource owlRestriction, RDFResource onProperty, RDFGraph graph, OWLOntologyLoaderOptions loaderOptions)
         {
             RDFResource allValuesFromClass = GetRestrictionAllValuesFromClass(graph, owlRestriction);
             if (allValuesFromClass != null)
             {
-                ontology.Model.ClassModel.DeclareAllValuesFromRestriction(owlRestriction, onProperty, allValuesFromClass);
+                ontology.Model.ClassModel.DeclareAllValuesFromRestriction(owlRestriction, onProperty, allValuesFromClass, loaderOptions);
                 return true;
             }
             return false;
@@ -363,12 +363,12 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Tries to load the given owl:Restriction as instance of owl:someValuesFrom restriction
         /// </summary>
-        internal static bool TryLoadSomeValuesFromRestriction(this OWLOntology ontology, RDFResource owlRestriction, RDFResource onProperty, RDFGraph graph)
+        internal static bool TryLoadSomeValuesFromRestriction(this OWLOntology ontology, RDFResource owlRestriction, RDFResource onProperty, RDFGraph graph, OWLOntologyLoaderOptions loaderOptions)
         {
             RDFResource someValuesFromClass = GetRestrictionSomeValuesFromClass(graph, owlRestriction);
             if (someValuesFromClass != null)
             {
-                ontology.Model.ClassModel.DeclareSomeValuesFromRestriction(owlRestriction, onProperty, someValuesFromClass);
+                ontology.Model.ClassModel.DeclareSomeValuesFromRestriction(owlRestriction, onProperty, someValuesFromClass, loaderOptions);
                 return true;
             }
             return false;
@@ -377,15 +377,15 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Tries to load the given owl:Restriction as instance of owl:hasValue restriction
         /// </summary>
-        internal static bool TryLoadHasValueRestriction(this OWLOntology ontology, RDFResource owlRestriction, RDFResource onProperty, RDFGraph graph)
+        internal static bool TryLoadHasValueRestriction(this OWLOntology ontology, RDFResource owlRestriction, RDFResource onProperty, RDFGraph graph, OWLOntologyLoaderOptions loaderOptions)
         {
             RDFPatternMember hasValue = GetRestrictionHasValue(graph, owlRestriction);
             if (hasValue != null)
             {
                 if (hasValue is RDFResource)
-                    ontology.Model.ClassModel.DeclareHasValueRestriction(owlRestriction, onProperty, (RDFResource)hasValue);
+                    ontology.Model.ClassModel.DeclareHasValueRestriction(owlRestriction, onProperty, (RDFResource)hasValue, loaderOptions);
                 else
-                    ontology.Model.ClassModel.DeclareHasValueRestriction(owlRestriction, onProperty, (RDFLiteral)hasValue);
+                    ontology.Model.ClassModel.DeclareHasValueRestriction(owlRestriction, onProperty, (RDFLiteral)hasValue, loaderOptions);
                 return true;
             }
             return false;
@@ -394,19 +394,19 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Tries to load the given owl:Restriction as instance of owl:hasSelf restriction [OWL2]
         /// </summary>
-        internal static bool TryLoadHasSelfRestriction(this OWLOntology ontology, RDFResource owlRestriction, RDFResource onProperty, RDFGraph graph)
+        internal static bool TryLoadHasSelfRestriction(this OWLOntology ontology, RDFResource owlRestriction, RDFResource onProperty, RDFGraph graph, OWLOntologyLoaderOptions loaderOptions)
         {
             RDFTypedLiteral hasSelf = GetRestrictionHasSelf(graph, owlRestriction);
             if (hasSelf != null)
             {
                 if (hasSelf.Equals(RDFTypedLiteral.True))
                 {
-                    ontology.Model.ClassModel.DeclareHasSelfRestriction(owlRestriction, onProperty, true);
+                    ontology.Model.ClassModel.DeclareHasSelfRestriction(owlRestriction, onProperty, true, loaderOptions);
                     return true;
                 }
                 else if (hasSelf.Equals(RDFTypedLiteral.False))
                 {
-                    ontology.Model.ClassModel.DeclareHasSelfRestriction(owlRestriction, onProperty, false);
+                    ontology.Model.ClassModel.DeclareHasSelfRestriction(owlRestriction, onProperty, false, loaderOptions);
                     return true;
                 }
             }
@@ -416,14 +416,14 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Tries to load the given owl:Restriction as instance of owl:cardinality restriction
         /// </summary>
-        internal static bool TryLoadCardinalityRestriction(this OWLOntology ontology, RDFResource owlRestriction, RDFResource onProperty, RDFGraph graph)
+        internal static bool TryLoadCardinalityRestriction(this OWLOntology ontology, RDFResource owlRestriction, RDFResource onProperty, RDFGraph graph, OWLOntologyLoaderOptions loaderOptions)
         {
             RDFTypedLiteral cardinality = GetRestrictionCardinality(graph, owlRestriction);
             if (cardinality != null && cardinality.HasDecimalDatatype())
             {
                 if (uint.TryParse(cardinality.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out uint cardinalityValue))
                 {
-                    ontology.Model.ClassModel.DeclareCardinalityRestriction(owlRestriction, onProperty, cardinalityValue);
+                    ontology.Model.ClassModel.DeclareCardinalityRestriction(owlRestriction, onProperty, cardinalityValue, loaderOptions);
                     return true;
                 }
             }
@@ -433,7 +433,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Tries to load the given owl:Restriction as instance of owl:[min|max]Cardinality restriction
         /// </summary>
-        internal static bool TryLoadMinMaxCardinalityRestriction(this OWLOntology ontology, RDFResource owlRestriction, RDFResource onProperty, RDFGraph graph)
+        internal static bool TryLoadMinMaxCardinalityRestriction(this OWLOntology ontology, RDFResource owlRestriction, RDFResource onProperty, RDFGraph graph, OWLOntologyLoaderOptions loaderOptions)
         {
             //Try detect owl:minCardinality
             uint minCardinalityValue = 0;
@@ -451,17 +451,17 @@ namespace RDFSharp.Semantics
 
             if (hasMinCardinality && !hasMaxCardinality)
             {
-                ontology.Model.ClassModel.DeclareMinCardinalityRestriction(owlRestriction, onProperty, minCardinalityValue);
+                ontology.Model.ClassModel.DeclareMinCardinalityRestriction(owlRestriction, onProperty, minCardinalityValue, loaderOptions);
                 return true;
             }
             else if (!hasMinCardinality && hasMaxCardinality)
             {
-                ontology.Model.ClassModel.DeclareMaxCardinalityRestriction(owlRestriction, onProperty, maxCardinalityValue);
+                ontology.Model.ClassModel.DeclareMaxCardinalityRestriction(owlRestriction, onProperty, maxCardinalityValue, loaderOptions);
                 return true;
             }
             else if (hasMinCardinality && hasMaxCardinality)
             {
-                ontology.Model.ClassModel.DeclareMinMaxCardinalityRestriction(owlRestriction, onProperty, minCardinalityValue, maxCardinalityValue);
+                ontology.Model.ClassModel.DeclareMinMaxCardinalityRestriction(owlRestriction, onProperty, minCardinalityValue, maxCardinalityValue, loaderOptions);
                 return true;
             }
             return false;
@@ -470,7 +470,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Tries to load the given owl:Restriction as instance of owl:qualifiedCardinality restriction [OWL2]
         /// </summary>
-        internal static bool TryLoadQualifiedCardinalityRestriction(this OWLOntology ontology, RDFResource owlRestriction, RDFResource onProperty, RDFGraph graph)
+        internal static bool TryLoadQualifiedCardinalityRestriction(this OWLOntology ontology, RDFResource owlRestriction, RDFResource onProperty, RDFGraph graph, OWLOntologyLoaderOptions loaderOptions)
         {
             //Get mandatory owl:onClass information
             RDFResource onClass = GetRestrictionClass(graph, owlRestriction);
@@ -482,7 +482,7 @@ namespace RDFSharp.Semantics
             {
                 if (uint.TryParse(qualifiedCardinality.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out uint qualifiedCardinalityValue))
                 {
-                    ontology.Model.ClassModel.DeclareQualifiedCardinalityRestriction(owlRestriction, onProperty, qualifiedCardinalityValue, onClass);
+                    ontology.Model.ClassModel.DeclareQualifiedCardinalityRestriction(owlRestriction, onProperty, qualifiedCardinalityValue, onClass, loaderOptions);
                     return true;
                 }
             }
@@ -492,7 +492,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Tries to load the given owl:Restriction as instance of owl:[min|max]QualifiedCardinality restriction [OWL2]
         /// </summary>
-        internal static bool TryLoadMinMaxQualifiedCardinalityRestriction(this OWLOntology ontology, RDFResource owlRestriction, RDFResource onProperty, RDFGraph graph)
+        internal static bool TryLoadMinMaxQualifiedCardinalityRestriction(this OWLOntology ontology, RDFResource owlRestriction, RDFResource onProperty, RDFGraph graph, OWLOntologyLoaderOptions loaderOptions)
         {
             //Get mandatory owl:onClass information
             RDFResource onClass = GetRestrictionClass(graph, owlRestriction);
@@ -515,17 +515,17 @@ namespace RDFSharp.Semantics
 
             if (hasMinQualifiedCardinality && !hasMaxQualifiedCardinality)
             {
-                ontology.Model.ClassModel.DeclareMinQualifiedCardinalityRestriction(owlRestriction, onProperty, minQualifiedCardinalityValue, onClass);
+                ontology.Model.ClassModel.DeclareMinQualifiedCardinalityRestriction(owlRestriction, onProperty, minQualifiedCardinalityValue, onClass, loaderOptions);
                 return true;
             }
             else if (!hasMinQualifiedCardinality && hasMaxQualifiedCardinality)
             {
-                ontology.Model.ClassModel.DeclareMaxQualifiedCardinalityRestriction(owlRestriction, onProperty, maxQualifiedCardinalityValue, onClass);
+                ontology.Model.ClassModel.DeclareMaxQualifiedCardinalityRestriction(owlRestriction, onProperty, maxQualifiedCardinalityValue, onClass, loaderOptions);
                 return true;
             }
             else if (hasMinQualifiedCardinality && hasMaxQualifiedCardinality)
             {
-                ontology.Model.ClassModel.DeclareMinMaxQualifiedCardinalityRestriction(owlRestriction, onProperty, minQualifiedCardinalityValue, maxQualifiedCardinalityValue, onClass);
+                ontology.Model.ClassModel.DeclareMinMaxQualifiedCardinalityRestriction(owlRestriction, onProperty, minQualifiedCardinalityValue, maxQualifiedCardinalityValue, onClass, loaderOptions);
                 return true;
             }
             return false;
@@ -534,7 +534,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Loads the definition of the given enumerate class
         /// </summary>
-        internal static void LoadEnumerateClass(this OWLOntology ontology, RDFResource owlEnumerate, RDFGraph graph)
+        internal static void LoadEnumerateClass(this OWLOntology ontology, RDFResource owlEnumerate, RDFGraph graph, OWLOntologyLoaderOptions loaderOptions)
         {
             RDFResource oneOfRepresentative = graph[owlEnumerate, RDFVocabulary.OWL.ONE_OF, null, null].FirstOrDefault()?.Object as RDFResource;
             if (oneOfRepresentative != null)
@@ -543,14 +543,14 @@ namespace RDFSharp.Semantics
                 RDFCollection oneOfMembersCollection = RDFModelUtilities.DeserializeCollectionFromGraph(graph, oneOfRepresentative, RDFModelEnums.RDFTripleFlavors.SPO);
                 foreach (RDFPatternMember oneOfMember in oneOfMembersCollection)
                     oneOfMembers.Add((RDFResource)oneOfMember);
-                ontology.Model.ClassModel.DeclareEnumerateClass(owlEnumerate, oneOfMembers);
+                ontology.Model.ClassModel.DeclareEnumerateClass(owlEnumerate, oneOfMembers, loaderOptions);
             }
         }
 
         /// <summary>
         /// Loads the definition of the given composite class
         /// </summary>
-        internal static void LoadCompositeClass(this OWLOntology ontology, RDFResource owlComposite, RDFGraph graph)
+        internal static void LoadCompositeClass(this OWLOntology ontology, RDFResource owlComposite, RDFGraph graph, OWLOntologyLoaderOptions loaderOptions)
         {
             #region owl:unionOf
             RDFResource unionRepresentative = graph[owlComposite, RDFVocabulary.OWL.UNION_OF, null, null].FirstOrDefault()?.Object as RDFResource;
@@ -560,7 +560,7 @@ namespace RDFSharp.Semantics
                 RDFCollection unionMembersCollection = RDFModelUtilities.DeserializeCollectionFromGraph(graph, unionRepresentative, RDFModelEnums.RDFTripleFlavors.SPO);
                 foreach (RDFPatternMember unionMember in unionMembersCollection)
                     unionMembers.Add((RDFResource)unionMember);
-                ontology.Model.ClassModel.DeclareUnionClass(owlComposite, unionMembers);
+                ontology.Model.ClassModel.DeclareUnionClass(owlComposite, unionMembers, loaderOptions);
                 return;
             }
             #endregion
@@ -573,7 +573,7 @@ namespace RDFSharp.Semantics
                 RDFCollection intersectionMembersCollection = RDFModelUtilities.DeserializeCollectionFromGraph(graph, intersectionRepresentative, RDFModelEnums.RDFTripleFlavors.SPO);
                 foreach (RDFPatternMember intersectionMember in intersectionMembersCollection)
                     intersectionMembers.Add((RDFResource)intersectionMember);
-                ontology.Model.ClassModel.DeclareIntersectionClass(owlComposite, intersectionMembers);
+                ontology.Model.ClassModel.DeclareIntersectionClass(owlComposite, intersectionMembers, loaderOptions);
                 return;
             }
             #endregion
@@ -581,14 +581,14 @@ namespace RDFSharp.Semantics
             #region owl:complementOf
             RDFResource complementClass = graph[owlComposite, RDFVocabulary.OWL.COMPLEMENT_OF, null, null].FirstOrDefault()?.Object as RDFResource;
             if (complementClass != null)
-                ontology.Model.ClassModel.DeclareComplementClass(owlComposite, complementClass);
+                ontology.Model.ClassModel.DeclareComplementClass(owlComposite, complementClass, loaderOptions);
             #endregion
         }
 
         /// <summary>
         /// Loads the definition of the given disjoint union class [OWL2]
         /// </summary>
-        internal static void LoadDisjointUnionClass(this OWLOntology ontology, RDFResource owlDisjointUnion, RDFGraph graph)
+        internal static void LoadDisjointUnionClass(this OWLOntology ontology, RDFResource owlDisjointUnion, RDFGraph graph, OWLOntologyLoaderOptions loaderOptions)
         {
             RDFResource disjointUnionRepresentative = graph[owlDisjointUnion, RDFVocabulary.OWL.DISJOINT_UNION_OF, null, null].FirstOrDefault()?.Object as RDFResource;
             if (disjointUnionRepresentative != null)
@@ -597,7 +597,7 @@ namespace RDFSharp.Semantics
                 RDFCollection disjointUnionMembersCollection = RDFModelUtilities.DeserializeCollectionFromGraph(graph, disjointUnionRepresentative, RDFModelEnums.RDFTripleFlavors.SPO);
                 foreach (RDFPatternMember disjointUnionMember in disjointUnionMembersCollection)
                     disjointUnionMembers.Add((RDFResource)disjointUnionMember);
-                ontology.Model.ClassModel.DeclareDisjointUnionClass(owlDisjointUnion, disjointUnionMembers);
+                ontology.Model.ClassModel.DeclareDisjointUnionClass(owlDisjointUnion, disjointUnionMembers, loaderOptions);
             }
         }
         #endregion

@@ -70,7 +70,7 @@ namespace RDFSharp.Semantics.Test
         public void ShouldCheckHasRestrictionClass()
         {
             OWLOntologyClassModel classModel = new OWLOntologyClassModel();
-            classModel.DeclareRestriction(new RDFResource("ex:restr"), new RDFResource("ex:onprop"));
+            classModel.DeclareRestriction(new RDFResource("ex:restr"), new RDFResource("ex:onprop"), null);
 
             Assert.IsTrue(classModel.CheckHasRestrictionClass(new RDFResource("ex:restr")));
         }
@@ -79,7 +79,7 @@ namespace RDFSharp.Semantics.Test
         public void ShouldCheckHasNotRestrictionClass()
         {
             OWLOntologyClassModel classModel = new OWLOntologyClassModel();
-            classModel.DeclareRestriction(new RDFResource("ex:restr"), new RDFResource("ex:onprop"));
+            classModel.DeclareRestriction(new RDFResource("ex:restr"), new RDFResource("ex:onprop"), null);
 
             Assert.IsFalse(classModel.CheckHasRestrictionClass(new RDFResource("ex:restr2")));
             Assert.IsFalse(classModel.CheckHasRestrictionClass(null));
@@ -531,7 +531,7 @@ namespace RDFSharp.Semantics.Test
         public void ShouldCheckHasNotSimpleClassBecauseRestriction()
         {
             OWLOntologyClassModel classModel = new OWLOntologyClassModel();
-            classModel.DeclareRestriction(new RDFResource("ex:classA"), new RDFResource("ex:onprop"));
+            classModel.DeclareRestriction(new RDFResource("ex:classA"), new RDFResource("ex:onprop"), null);
 
             Assert.IsFalse(classModel.CheckHasSimpleClass(new RDFResource("ex:classA")));
         }

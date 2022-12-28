@@ -30,15 +30,17 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets an ontology representation of the given graph
         /// </summary>
-        internal static OWLOntology FromRDFGraph(RDFGraph graph, Action<OWLOntology,RDFGraph> classModelExtensionPoint=null, Action<OWLOntology,RDFGraph> propertyModelExtensionPoint=null, Action<OWLOntology,RDFGraph> dataExtensionPoint=null)
+        internal static OWLOntology FromRDFGraph(RDFGraph graph, OWLOntologyLoaderOptions loaderOptions, Action<OWLOntology,RDFGraph> classModelExtensionPoint=null, Action<OWLOntology,RDFGraph> propertyModelExtensionPoint=null, Action<OWLOntology,RDFGraph> dataExtensionPoint=null)
         {
             if (graph == null)
                 throw new OWLSemanticsException("Cannot get ontology from RDFGraph because given \"graph\" parameter is null");
+            if (loaderOptions == null)
+                loaderOptions = OWLOntologyLoaderOptions.DefaultOptions;
 
             OWLSemanticsEvents.RaiseSemanticsInfo(string.Format("Graph '{0}' is going to be parsed as Ontology...", graph.Context));
             LoadOntology(graph, out OWLOntology ontology);
-            ontology.LoadModel(graph, classModelExtensionPoint, propertyModelExtensionPoint);
-            ontology.LoadData(graph, dataExtensionPoint);
+            ontology.LoadModel(graph, loaderOptions, classModelExtensionPoint, propertyModelExtensionPoint);
+            ontology.LoadData(graph, loaderOptions, dataExtensionPoint);
             OWLSemanticsEvents.RaiseSemanticsInfo(string.Format("Graph '{0}' has been parsed as Ontology", graph.Context));
 
             return ontology;
@@ -80,6 +82,37 @@ namespace RDFSharp.Semantics
                     ontology.Annotate((RDFResource)ontologyAnnotation.Predicate, (RDFLiteral)ontologyAnnotation.Object);
             }
         }
+        #endregion
+    }
+
+    /// <summary>
+    /// OWLOntologyLoaderOptions instructs an ontology loader to customize specific behavior aspects involving the graph->ontology build process
+    /// </summary>
+    public class OWLOntologyLoaderOptions
+    {
+        #region Properties
+        /// <summary>
+        /// Gives an object representing default loader options
+        /// </summary>
+        internal static OWLOntologyLoaderOptions DefaultOptions => new OWLOntologyLoaderOptions();
+
+        /// <summary>
+        /// Tells the ontology loader to do its best to preserve ontology taxonomies from modeling errors, inconsistencies and contraddictions<br/>
+        /// Default: TRUE
+        /// </summary>
+        public bool EnableTaxonomyProtection { get; set; } = true;
+
+        /// <summary>
+        /// Tells the ontology loader to activate OWL-DL analyzers on ontology taxonomies in addition to the standard RDFS T-BOX/A-BOX analyzers<br/>
+        /// Default: TRUE
+        /// </summary>
+        public bool EnableOWLDLAnalyzer { get; set; } = true;
+
+        /// <summary>
+        /// Tells the ontology loader to try declaring classes, properties and individuals even when not explicitly declared<br/>
+        /// Default: FALSE
+        /// </summary>
+        public bool EnableAutomaticEntityDeclaration { get; set; } = false;
         #endregion
     }
 }

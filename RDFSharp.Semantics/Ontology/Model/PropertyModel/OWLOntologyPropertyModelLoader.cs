@@ -31,7 +31,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets an ontology property model representation of the given graph
         /// </summary>
-        internal static void LoadPropertyModel(this OWLOntology ontology, RDFGraph graph, Action<OWLOntology,RDFGraph> propertyModelExtensionPoint=null)
+        internal static void LoadPropertyModel(this OWLOntology ontology, RDFGraph graph, OWLOntologyLoaderOptions loaderOptions, Action<OWLOntology,RDFGraph> propertyModelExtensionPoint=null)
         {
             if (graph == null)
                 throw new OWLSemanticsException("Cannot get ontology property model from RDFGraph because given \"graph\" parameter is null");
@@ -76,19 +76,19 @@ namespace RDFSharp.Semantics
 
             //rdfs:subPropertyOf
             foreach (RDFTriple subPropertyRelation in graph[null, RDFVocabulary.RDFS.SUB_PROPERTY_OF, null, null])
-                ontology.Model.PropertyModel.DeclareSubProperties((RDFResource)subPropertyRelation.Subject, (RDFResource)subPropertyRelation.Object);
+                ontology.Model.PropertyModel.DeclareSubProperties((RDFResource)subPropertyRelation.Subject, (RDFResource)subPropertyRelation.Object, loaderOptions);
 
             //owl:equivalentProperty
             foreach (RDFTriple equivalentPropertyRelation in graph[null, RDFVocabulary.OWL.EQUIVALENT_PROPERTY, null, null])
-                ontology.Model.PropertyModel.DeclareEquivalentProperties((RDFResource)equivalentPropertyRelation.Subject, (RDFResource)equivalentPropertyRelation.Object);
+                ontology.Model.PropertyModel.DeclareEquivalentProperties((RDFResource)equivalentPropertyRelation.Subject, (RDFResource)equivalentPropertyRelation.Object, loaderOptions);
 
             //owl:propertyDisjointWith [OWL2]
             foreach (RDFTriple disjointPropertyRelation in graph[null, RDFVocabulary.OWL.PROPERTY_DISJOINT_WITH, null, null])
-                ontology.Model.PropertyModel.DeclareDisjointProperties((RDFResource)disjointPropertyRelation.Subject, (RDFResource)disjointPropertyRelation.Object);
+                ontology.Model.PropertyModel.DeclareDisjointProperties((RDFResource)disjointPropertyRelation.Subject, (RDFResource)disjointPropertyRelation.Object, loaderOptions);
 
             //owl:inverseOf
             foreach (RDFTriple inversePropertyRelation in graph[null, RDFVocabulary.OWL.INVERSE_OF, null, null])
-                ontology.Model.PropertyModel.DeclareInverseProperties((RDFResource)inversePropertyRelation.Subject, (RDFResource)inversePropertyRelation.Object);
+                ontology.Model.PropertyModel.DeclareInverseProperties((RDFResource)inversePropertyRelation.Subject, (RDFResource)inversePropertyRelation.Object, loaderOptions);
 
             //owl:propertyChainAxiom [OWL2]
             foreach (RDFTriple propertyChainAxiom in graph[null, RDFVocabulary.OWL.PROPERTY_CHAIN_AXIOM, null, null])
@@ -97,7 +97,7 @@ namespace RDFSharp.Semantics
                 RDFCollection chainAxiomPropertiesCollection = RDFModelUtilities.DeserializeCollectionFromGraph(graph, (RDFResource)propertyChainAxiom.Object, RDFModelEnums.RDFTripleFlavors.SPO);
                 foreach (RDFPatternMember chainAxiomProperty in chainAxiomPropertiesCollection)
                     chainAxiomProperties.Add((RDFResource)chainAxiomProperty);
-                ontology.Model.PropertyModel.DeclarePropertyChainAxiom((RDFResource)propertyChainAxiom.Subject, chainAxiomProperties);
+                ontology.Model.PropertyModel.DeclarePropertyChainAxiom((RDFResource)propertyChainAxiom.Subject, chainAxiomProperties, loaderOptions);
             }
 
             //owl:AllDisjointProperties [OWL2]
@@ -108,7 +108,7 @@ namespace RDFSharp.Semantics
                     RDFCollection disjointPropertiesCollection = RDFModelUtilities.DeserializeCollectionFromGraph(graph, (RDFResource)allDisjointPropertiesMembers.Object, RDFModelEnums.RDFTripleFlavors.SPO);
                     foreach (RDFPatternMember disjointProperty in disjointPropertiesCollection)
                         disjointProperties.Add((RDFResource)disjointProperty);
-                    ontology.Model.PropertyModel.DeclareAllDisjointProperties(allDisjointProperties, disjointProperties);
+                    ontology.Model.PropertyModel.DeclareAllDisjointProperties(allDisjointProperties, disjointProperties, loaderOptions);
                 }
 
             //Extension point (e.g.: SKOS)

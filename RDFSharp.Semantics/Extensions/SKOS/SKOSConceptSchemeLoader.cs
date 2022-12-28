@@ -29,13 +29,13 @@ namespace RDFSharp.Semantics.Extensions.SKOS
         /// <summary>
         /// Gets a concept scheme representation of the given graph
         /// </summary>
-        internal static SKOSConceptScheme FromRDFGraph(RDFGraph graph)
+        internal static SKOSConceptScheme FromRDFGraph(RDFGraph graph, OWLOntologyLoaderOptions loaderOptions)
         {
             if (graph == null)
                 throw new OWLSemanticsException("Cannot get concept scheme from RDFGraph because given \"graph\" parameter is null");
 
             //Get OWL ontology with SKOS extension points
-            OWLOntology ontology = OWLOntologyLoader.FromRDFGraph(graph,
+            OWLOntology ontology = OWLOntologyLoader.FromRDFGraph(graph, loaderOptions,
                classModelExtensionPoint: SKOSClassModelExtensionPoint,
                propertyModelExtensionPoint: SKOSPropertyModelExtensionPoint,
                dataExtensionPoint: SKOSDataExtensionPoint);

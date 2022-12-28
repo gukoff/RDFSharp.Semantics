@@ -32,7 +32,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets an ontology data representation of the given graph
         /// </summary>
-        internal static void LoadData(this OWLOntology ontology, RDFGraph graph, Action<OWLOntology,RDFGraph> dataExtensionPoint=null)
+        internal static void LoadData(this OWLOntology ontology, RDFGraph graph, OWLOntologyLoaderOptions loaderOptions, Action<OWLOntology,RDFGraph> dataExtensionPoint=null)
         {
             if (graph == null)
                 throw new OWLSemanticsException("Cannot get ontology data from RDFGraph because given \"graph\" parameter is null");
@@ -54,7 +54,7 @@ namespace RDFSharp.Semantics
                 foreach (RDFTriple type in graph[null, RDFVocabulary.RDF.TYPE, owlClass, null])
                 {
                     ontology.Data.DeclareIndividual((RDFResource)type.Subject);
-                    ontology.Data.DeclareIndividualType((RDFResource)type.Subject, owlClass);
+                    ontology.Data.DeclareIndividualType((RDFResource)type.Subject, owlClass, loaderOptions);
                 }
             #endregion
 
@@ -70,23 +70,23 @@ namespace RDFSharp.Semantics
 
             //owl:sameAs
             foreach (RDFTriple sameAsRelation in graph[null, RDFVocabulary.OWL.SAME_AS, null, null])
-                ontology.Data.DeclareSameIndividuals((RDFResource)sameAsRelation.Subject, (RDFResource)sameAsRelation.Object);
+                ontology.Data.DeclareSameIndividuals((RDFResource)sameAsRelation.Subject, (RDFResource)sameAsRelation.Object, loaderOptions);
 
             //owl:differentFrom
             foreach (RDFTriple differentFromRelation in graph[null, RDFVocabulary.OWL.DIFFERENT_FROM, null, null])
-                ontology.Data.DeclareDifferentIndividuals((RDFResource)differentFromRelation.Subject, (RDFResource)differentFromRelation.Object);
+                ontology.Data.DeclareDifferentIndividuals((RDFResource)differentFromRelation.Subject, (RDFResource)differentFromRelation.Object, loaderOptions);
 
             //owl:NegativePropertyAssertion [OWL2]
             foreach (RDFTriple negativeObjectAssertion in GetNegativeObjectAssertions(graph))
-                ontology.Data.DeclareNegativeObjectAssertion((RDFResource)negativeObjectAssertion.Subject, (RDFResource)negativeObjectAssertion.Predicate, (RDFResource)negativeObjectAssertion.Object);
+                ontology.Data.DeclareNegativeObjectAssertion((RDFResource)negativeObjectAssertion.Subject, (RDFResource)negativeObjectAssertion.Predicate, (RDFResource)negativeObjectAssertion.Object, loaderOptions);
             foreach (RDFTriple negativeDatatypeAssertion in GetNegativeDatatypeAssertions(graph))
-                ontology.Data.DeclareNegativeDatatypeAssertion((RDFResource)negativeDatatypeAssertion.Subject, (RDFResource)negativeDatatypeAssertion.Predicate, (RDFLiteral)negativeDatatypeAssertion.Object);
+                ontology.Data.DeclareNegativeDatatypeAssertion((RDFResource)negativeDatatypeAssertion.Subject, (RDFResource)negativeDatatypeAssertion.Predicate, (RDFLiteral)negativeDatatypeAssertion.Object, loaderOptions);
 
             //owl:[Object|Datatype]PropertyAssertion
             foreach (RDFTriple objectAssertion in GetObjectAssertions(ontology, graph))
-                ontology.Data.DeclareObjectAssertion((RDFResource)objectAssertion.Subject, (RDFResource)objectAssertion.Predicate, (RDFResource)objectAssertion.Object);
+                ontology.Data.DeclareObjectAssertion((RDFResource)objectAssertion.Subject, (RDFResource)objectAssertion.Predicate, (RDFResource)objectAssertion.Object, loaderOptions);
             foreach (RDFTriple datatypeAssertion in GetDatatypeAssertions(ontology, graph))
-                ontology.Data.DeclareDatatypeAssertion((RDFResource)datatypeAssertion.Subject, (RDFResource)datatypeAssertion.Predicate, (RDFLiteral)datatypeAssertion.Object);
+                ontology.Data.DeclareDatatypeAssertion((RDFResource)datatypeAssertion.Subject, (RDFResource)datatypeAssertion.Predicate, (RDFLiteral)datatypeAssertion.Object, loaderOptions);
 
             //owl:AllDifferent [OWL2]
             foreach (RDFResource allDifferent in GetAllDifferentDeclarations(graph))
@@ -96,7 +96,7 @@ namespace RDFSharp.Semantics
                     RDFCollection differentIndividualsCollection = RDFModelUtilities.DeserializeCollectionFromGraph(graph, (RDFResource)allDifferentMembers.Object, RDFModelEnums.RDFTripleFlavors.SPO);
                     foreach (RDFPatternMember differentIndividual in differentIndividualsCollection)
                         differentIndividuals.Add((RDFResource)differentIndividual);
-                    ontology.Data.DeclareAllDifferentIndividuals(allDifferent, differentIndividuals);
+                    ontology.Data.DeclareAllDifferentIndividuals(allDifferent, differentIndividuals, loaderOptions);
                 }
 
             //Extension point (e.g.: SKOS)
