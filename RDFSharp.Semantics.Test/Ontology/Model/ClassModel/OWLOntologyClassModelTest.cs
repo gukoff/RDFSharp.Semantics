@@ -204,6 +204,47 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
+        public void ShouldDeclareAllValuesFromRestrictionWithAutomaticDeclaration()
+        {
+            OWLOntologyClassModel classModel = new OWLOntologyClassModel();
+            classModel.DeclareAllValuesFromRestriction(new RDFResource("ex:avRestr"), new RDFResource("ex:onProp"), new RDFResource("ex:avClass"),
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true });
+
+            Assert.IsTrue(classModel.ClassesCount == 2);
+            Assert.IsTrue(classModel.AllDisjointClassesCount == 0);
+            Assert.IsTrue(classModel.CompositesCount == 0);
+            Assert.IsTrue(classModel.DeprecatedClassesCount == 0);
+            Assert.IsTrue(classModel.SimpleClassesCount == 1);
+            Assert.IsTrue(classModel.EnumeratesCount == 0);
+            Assert.IsTrue(classModel.RestrictionsCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 5);
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:avRestr"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:avRestr"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.RESTRICTION)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:avRestr"), RDFVocabulary.OWL.ON_PROPERTY, new RDFResource("ex:onProp"))));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:avRestr"), RDFVocabulary.OWL.ALL_VALUES_FROM, new RDFResource("ex:avClass"))));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:avClass"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+
+            int i = 0;
+            IEnumerator<RDFResource> restrictionsEnumerator = classModel.RestrictionsEnumerator;
+            while (restrictionsEnumerator.MoveNext())
+            {
+                Assert.IsTrue(restrictionsEnumerator.Current.Equals(new RDFResource("ex:avRestr")));
+                i++;
+            }
+            Assert.IsTrue(i == 1);
+
+            int v = 0;
+            IEnumerator<RDFResource> simpleClassesEnumerator = classModel.SimpleClassesEnumerator;
+            while (simpleClassesEnumerator.MoveNext())
+            {
+                Assert.IsTrue(simpleClassesEnumerator.Current.Equals(new RDFResource("ex:avClass")));
+                v++;
+            }
+            Assert.IsTrue(v == 1);
+        }
+
+        [TestMethod]
         public void ShouldThrowExceptionOnDeclaringAllValuesFromRestrictionBecauseNullClass()
             => Assert.ThrowsException<OWLSemanticsException>(() => new OWLOntologyClassModel().DeclareAllValuesFromRestriction(new RDFResource("ex:avRestr"), new RDFResource("ex:onProp"), null));
 
@@ -235,6 +276,47 @@ namespace RDFSharp.Semantics.Test
                 i++;
             }
             Assert.IsTrue(i == 1);
+        }
+
+        [TestMethod]
+        public void ShouldDeclareSomeValuesFromRestrictionWithAutomaticDeclaration()
+        {
+            OWLOntologyClassModel classModel = new OWLOntologyClassModel();
+            classModel.DeclareSomeValuesFromRestriction(new RDFResource("ex:svRestr"), new RDFResource("ex:onProp"), new RDFResource("ex:svClass"),
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true });
+
+            Assert.IsTrue(classModel.ClassesCount == 2);
+            Assert.IsTrue(classModel.AllDisjointClassesCount == 0);
+            Assert.IsTrue(classModel.CompositesCount == 0);
+            Assert.IsTrue(classModel.DeprecatedClassesCount == 0);
+            Assert.IsTrue(classModel.SimpleClassesCount == 1);
+            Assert.IsTrue(classModel.EnumeratesCount == 0);
+            Assert.IsTrue(classModel.RestrictionsCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 5);
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:svRestr"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:svRestr"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.RESTRICTION)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:svRestr"), RDFVocabulary.OWL.ON_PROPERTY, new RDFResource("ex:onProp"))));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:svRestr"), RDFVocabulary.OWL.SOME_VALUES_FROM, new RDFResource("ex:svClass"))));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:svClass"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+
+            int i = 0;
+            IEnumerator<RDFResource> restrictionsEnumerator = classModel.RestrictionsEnumerator;
+            while (restrictionsEnumerator.MoveNext())
+            {
+                Assert.IsTrue(restrictionsEnumerator.Current.Equals(new RDFResource("ex:svRestr")));
+                i++;
+            }
+            Assert.IsTrue(i == 1);
+
+            int v = 0;
+            IEnumerator<RDFResource> simpleClassesEnumerator = classModel.SimpleClassesEnumerator;
+            while (simpleClassesEnumerator.MoveNext())
+            {
+                Assert.IsTrue(simpleClassesEnumerator.Current.Equals(new RDFResource("ex:svClass")));
+                v++;
+            }
+            Assert.IsTrue(v == 1);
         }
 
         [TestMethod]
@@ -546,6 +628,48 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
+        public void ShouldDeclareQualifiedCardinalityRestrictionWithAutomaticDeclaration()
+        {
+            OWLOntologyClassModel classModel = new OWLOntologyClassModel();
+            classModel.DeclareQualifiedCardinalityRestriction(new RDFResource("ex:cRestr"), new RDFResource("ex:onProp"), 1, new RDFResource("ex:onClass"),
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true });
+
+            Assert.IsTrue(classModel.ClassesCount == 2);
+            Assert.IsTrue(classModel.AllDisjointClassesCount == 0);
+            Assert.IsTrue(classModel.CompositesCount == 0);
+            Assert.IsTrue(classModel.DeprecatedClassesCount == 0);
+            Assert.IsTrue(classModel.SimpleClassesCount == 1);
+            Assert.IsTrue(classModel.EnumeratesCount == 0);
+            Assert.IsTrue(classModel.RestrictionsCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 6);
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.RESTRICTION)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.OWL.ON_PROPERTY, new RDFResource("ex:onProp"))));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.OWL.QUALIFIED_CARDINALITY, new RDFTypedLiteral("1", RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER))));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.OWL.ON_CLASS, new RDFResource("ex:onClass"))));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:onClass"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+
+            int i = 0;
+            IEnumerator<RDFResource> restrictionsEnumerator = classModel.RestrictionsEnumerator;
+            while (restrictionsEnumerator.MoveNext())
+            {
+                Assert.IsTrue(restrictionsEnumerator.Current.Equals(new RDFResource("ex:cRestr")));
+                i++;
+            }
+            Assert.IsTrue(i == 1);
+
+            int v = 0;
+            IEnumerator<RDFResource> simpleClassesEnumerator = classModel.SimpleClassesEnumerator;
+            while (simpleClassesEnumerator.MoveNext())
+            {
+                Assert.IsTrue(simpleClassesEnumerator.Current.Equals(new RDFResource("ex:onClass")));
+                v++;
+            }
+            Assert.IsTrue(v == 1);
+        }
+
+        [TestMethod]
         public void ShouldThrowExceptionOnDeclaringQualifiedCardinalityRestrictionBecauseZero()
             => Assert.ThrowsException<OWLSemanticsException>(() => new OWLOntologyClassModel().DeclareQualifiedCardinalityRestriction(new RDFResource("ex:cRestr"), new RDFResource("ex:onProp"), 0, new RDFResource("ex:onClass")));
 
@@ -582,6 +706,48 @@ namespace RDFSharp.Semantics.Test
                 i++;
             }
             Assert.IsTrue(i == 1);
+        }
+
+        [TestMethod]
+        public void ShouldDeclareMinQualifiedCardinalityRestrictionWithAutomaticDeclaration()
+        {
+            OWLOntologyClassModel classModel = new OWLOntologyClassModel();
+            classModel.DeclareMinQualifiedCardinalityRestriction(new RDFResource("ex:cRestr"), new RDFResource("ex:onProp"), 1, new RDFResource("ex:onClass"),
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true });
+
+            Assert.IsTrue(classModel.ClassesCount == 2);
+            Assert.IsTrue(classModel.AllDisjointClassesCount == 0);
+            Assert.IsTrue(classModel.CompositesCount == 0);
+            Assert.IsTrue(classModel.DeprecatedClassesCount == 0);
+            Assert.IsTrue(classModel.SimpleClassesCount == 1);
+            Assert.IsTrue(classModel.EnumeratesCount == 0);
+            Assert.IsTrue(classModel.RestrictionsCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 6);
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.RESTRICTION)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.OWL.ON_PROPERTY, new RDFResource("ex:onProp"))));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.OWL.MIN_QUALIFIED_CARDINALITY, new RDFTypedLiteral("1", RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER))));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.OWL.ON_CLASS, new RDFResource("ex:onClass"))));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:onClass"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+
+            int i = 0;
+            IEnumerator<RDFResource> restrictionsEnumerator = classModel.RestrictionsEnumerator;
+            while (restrictionsEnumerator.MoveNext())
+            {
+                Assert.IsTrue(restrictionsEnumerator.Current.Equals(new RDFResource("ex:cRestr")));
+                i++;
+            }
+            Assert.IsTrue(i == 1);
+
+            int v = 0;
+            IEnumerator<RDFResource> simpleClassesEnumerator = classModel.SimpleClassesEnumerator;
+            while (simpleClassesEnumerator.MoveNext())
+            {
+                Assert.IsTrue(simpleClassesEnumerator.Current.Equals(new RDFResource("ex:onClass")));
+                v++;
+            }
+            Assert.IsTrue(v == 1);
         }
 
         [TestMethod]
@@ -624,6 +790,48 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
+        public void ShouldDeclareMaxQualifiedCardinalityRestrictionWithAutomaticDeclaration()
+        {
+            OWLOntologyClassModel classModel = new OWLOntologyClassModel();
+            classModel.DeclareMaxQualifiedCardinalityRestriction(new RDFResource("ex:cRestr"), new RDFResource("ex:onProp"), 1, new RDFResource("ex:onClass"),
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true });
+
+            Assert.IsTrue(classModel.ClassesCount == 2);
+            Assert.IsTrue(classModel.AllDisjointClassesCount == 0);
+            Assert.IsTrue(classModel.CompositesCount == 0);
+            Assert.IsTrue(classModel.DeprecatedClassesCount == 0);
+            Assert.IsTrue(classModel.SimpleClassesCount == 1);
+            Assert.IsTrue(classModel.EnumeratesCount == 0);
+            Assert.IsTrue(classModel.RestrictionsCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 6);
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.RESTRICTION)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.OWL.ON_PROPERTY, new RDFResource("ex:onProp"))));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.OWL.MAX_QUALIFIED_CARDINALITY, new RDFTypedLiteral("1", RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER))));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.OWL.ON_CLASS, new RDFResource("ex:onClass"))));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:onClass"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+
+            int i = 0;
+            IEnumerator<RDFResource> restrictionsEnumerator = classModel.RestrictionsEnumerator;
+            while (restrictionsEnumerator.MoveNext())
+            {
+                Assert.IsTrue(restrictionsEnumerator.Current.Equals(new RDFResource("ex:cRestr")));
+                i++;
+            }
+            Assert.IsTrue(i == 1);
+
+            int v = 0;
+            IEnumerator<RDFResource> simpleClassesEnumerator = classModel.SimpleClassesEnumerator;
+            while (simpleClassesEnumerator.MoveNext())
+            {
+                Assert.IsTrue(simpleClassesEnumerator.Current.Equals(new RDFResource("ex:onClass")));
+                v++;
+            }
+            Assert.IsTrue(v == 1);
+        }
+
+        [TestMethod]
         public void ShouldThrowExceptionOnDeclaringMaxQualifiedCardinalityRestrictionBecauseZero()
             => Assert.ThrowsException<OWLSemanticsException>(() => new OWLOntologyClassModel().DeclareMaxQualifiedCardinalityRestriction(new RDFResource("ex:cRestr"), new RDFResource("ex:onProp"), 0, new RDFResource("ex:onClass")));
 
@@ -661,6 +869,49 @@ namespace RDFSharp.Semantics.Test
                 i++;
             }
             Assert.IsTrue(i == 1);
+        }
+
+        [TestMethod]
+        public void ShouldDeclareMinMaxQualifiedCardinalityRestrictionWithAutomaticDeclaration()
+        {
+            OWLOntologyClassModel classModel = new OWLOntologyClassModel();
+            classModel.DeclareMinMaxQualifiedCardinalityRestriction(new RDFResource("ex:cRestr"), new RDFResource("ex:onProp"), 1, 2, new RDFResource("ex:onClass"),
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true });
+
+            Assert.IsTrue(classModel.ClassesCount == 2);
+            Assert.IsTrue(classModel.AllDisjointClassesCount == 0);
+            Assert.IsTrue(classModel.CompositesCount == 0);
+            Assert.IsTrue(classModel.DeprecatedClassesCount == 0);
+            Assert.IsTrue(classModel.SimpleClassesCount == 1);
+            Assert.IsTrue(classModel.EnumeratesCount == 0);
+            Assert.IsTrue(classModel.RestrictionsCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 7);
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.RESTRICTION)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.OWL.ON_PROPERTY, new RDFResource("ex:onProp"))));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.OWL.MIN_QUALIFIED_CARDINALITY, new RDFTypedLiteral("1", RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER))));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.OWL.MAX_QUALIFIED_CARDINALITY, new RDFTypedLiteral("2", RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER))));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:cRestr"), RDFVocabulary.OWL.ON_CLASS, new RDFResource("ex:onClass"))));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:onClass"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+
+            int i = 0;
+            IEnumerator<RDFResource> restrictionsEnumerator = classModel.RestrictionsEnumerator;
+            while (restrictionsEnumerator.MoveNext())
+            {
+                Assert.IsTrue(restrictionsEnumerator.Current.Equals(new RDFResource("ex:cRestr")));
+                i++;
+            }
+            Assert.IsTrue(i == 1);
+
+            int v = 0;
+            IEnumerator<RDFResource> simpleClassesEnumerator = classModel.SimpleClassesEnumerator;
+            while (simpleClassesEnumerator.MoveNext())
+            {
+                Assert.IsTrue(simpleClassesEnumerator.Current.Equals(new RDFResource("ex:onClass")));
+                v++;
+            }
+            Assert.IsTrue(v == 1);
         }
 
         [TestMethod]
@@ -756,6 +1007,41 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
+        public void ShouldDeclareUnionClassWithAutomaticDeclaration()
+        {
+            OWLOntologyClassModel classModel = new OWLOntologyClassModel();
+            classModel.DeclareUnionClass(new RDFResource("ex:unionClass"), new List<RDFResource>() { new RDFResource("ex:class1"), new RDFResource("ex:class2") },
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true });
+
+            Assert.IsTrue(classModel.ClassesCount == 3);
+            Assert.IsTrue(classModel.AllDisjointClassesCount == 0);
+            Assert.IsTrue(classModel.CompositesCount == 1);
+            Assert.IsTrue(classModel.DeprecatedClassesCount == 0);
+            Assert.IsTrue(classModel.SimpleClassesCount == 2);
+            Assert.IsTrue(classModel.EnumeratesCount == 0);
+            Assert.IsTrue(classModel.RestrictionsCount == 0);
+            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 10);
+            Assert.IsTrue(classModel.TBoxGraph[new RDFResource("ex:unionClass"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[new RDFResource("ex:unionClass"), RDFVocabulary.OWL.UNION_OF, null, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.RDF.LIST, null].TriplesCount == 2);
+            Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:class1"), null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:class2"), null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.REST, null, null].TriplesCount == 2);
+            Assert.IsTrue(classModel.TBoxGraph[new RDFResource("ex:class1"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[new RDFResource("ex:class2"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+
+            int i = 0;
+            IEnumerator<RDFResource> compositesEnumerator = classModel.CompositesEnumerator;
+            while (compositesEnumerator.MoveNext())
+            {
+                Assert.IsTrue(compositesEnumerator.Current.Equals(new RDFResource("ex:unionClass")));
+                i++;
+            }
+            Assert.IsTrue(i == 1);
+        }
+
+        [TestMethod]
         public void ShouldThrowExceptionOnDeclaringUnionClassBecauseNullClass()
             => Assert.ThrowsException<OWLSemanticsException>(() => new OWLOntologyClassModel().DeclareUnionClass(null, new List<RDFResource>() { new RDFResource("ex:class1") }));
 
@@ -791,6 +1077,41 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:class1"), null].TriplesCount == 1);
             Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:class2"), null].TriplesCount == 1);
             Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.REST, null, null].TriplesCount == 2);
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+
+            int i = 0;
+            IEnumerator<RDFResource> compositesEnumerator = classModel.CompositesEnumerator;
+            while (compositesEnumerator.MoveNext())
+            {
+                Assert.IsTrue(compositesEnumerator.Current.Equals(new RDFResource("ex:intersectionClass")));
+                i++;
+            }
+            Assert.IsTrue(i == 1);
+        }
+
+        [TestMethod]
+        public void ShouldDeclareIntersectionClassWithAutomaticDeclaration()
+        {
+            OWLOntologyClassModel classModel = new OWLOntologyClassModel();
+            classModel.DeclareIntersectionClass(new RDFResource("ex:intersectionClass"), new List<RDFResource>() { new RDFResource("ex:class1"), new RDFResource("ex:class2") },
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true });
+
+            Assert.IsTrue(classModel.ClassesCount == 3);
+            Assert.IsTrue(classModel.AllDisjointClassesCount == 0);
+            Assert.IsTrue(classModel.CompositesCount == 1);
+            Assert.IsTrue(classModel.DeprecatedClassesCount == 0);
+            Assert.IsTrue(classModel.SimpleClassesCount == 2);
+            Assert.IsTrue(classModel.EnumeratesCount == 0);
+            Assert.IsTrue(classModel.RestrictionsCount == 0);
+            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 10);
+            Assert.IsTrue(classModel.TBoxGraph[new RDFResource("ex:intersectionClass"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[new RDFResource("ex:intersectionClass"), RDFVocabulary.OWL.INTERSECTION_OF, null, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.RDF.LIST, null].TriplesCount == 2);
+            Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:class1"), null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:class2"), null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.REST, null, null].TriplesCount == 2);
+            Assert.IsTrue(classModel.TBoxGraph[new RDFResource("ex:class1"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[new RDFResource("ex:class2"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS, null].TriplesCount == 1);
             Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
 
             int i = 0;
@@ -848,6 +1169,36 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
+        public void ShouldDeclareComplementClassWithAutomaticDeclaration()
+        {
+            OWLOntologyClassModel classModel = new OWLOntologyClassModel();
+            classModel.DeclareComplementClass(new RDFResource("ex:complementClass"), new RDFResource("ex:class"),
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true });
+
+            Assert.IsTrue(classModel.ClassesCount == 2);
+            Assert.IsTrue(classModel.AllDisjointClassesCount == 0);
+            Assert.IsTrue(classModel.CompositesCount == 1);
+            Assert.IsTrue(classModel.DeprecatedClassesCount == 0);
+            Assert.IsTrue(classModel.SimpleClassesCount == 1);
+            Assert.IsTrue(classModel.EnumeratesCount == 0);
+            Assert.IsTrue(classModel.RestrictionsCount == 0);
+            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 3);
+            Assert.IsTrue(classModel.TBoxGraph[new RDFResource("ex:complementClass"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[new RDFResource("ex:complementClass"), RDFVocabulary.OWL.COMPLEMENT_OF, new RDFResource("ex:class"), null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[new RDFResource("ex:class"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+
+            int i = 0;
+            IEnumerator<RDFResource> compositesEnumerator = classModel.CompositesEnumerator;
+            while (compositesEnumerator.MoveNext())
+            {
+                Assert.IsTrue(compositesEnumerator.Current.Equals(new RDFResource("ex:complementClass")));
+                i++;
+            }
+            Assert.IsTrue(i == 1);
+        }
+
+        [TestMethod]
         public void ShouldThrowExceptionOnDeclaringComplementClassBecauseNullClass()
             => Assert.ThrowsException<OWLSemanticsException>(() => new OWLOntologyClassModel().DeclareComplementClass(null, new RDFResource("ex:class1")));
 
@@ -879,6 +1230,32 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:class1"), null].TriplesCount == 1);
             Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:class2"), null].TriplesCount == 1);
             Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.REST, null, null].TriplesCount == 2);
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+        }
+
+        [TestMethod]
+        public void ShouldDeclareDisjointUnionClassWithAutomaticDeclaration()
+        {
+            OWLOntologyClassModel classModel = new OWLOntologyClassModel();
+            classModel.DeclareDisjointUnionClass(new RDFResource("ex:disjointUnionClass"), new List<RDFResource>() { new RDFResource("ex:class1"), new RDFResource("ex:class2") },
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true });
+
+            Assert.IsTrue(classModel.ClassesCount == 3);
+            Assert.IsTrue(classModel.AllDisjointClassesCount == 0);
+            Assert.IsTrue(classModel.CompositesCount == 0);
+            Assert.IsTrue(classModel.DeprecatedClassesCount == 0);
+            Assert.IsTrue(classModel.SimpleClassesCount == 2);
+            Assert.IsTrue(classModel.EnumeratesCount == 0);
+            Assert.IsTrue(classModel.RestrictionsCount == 0);
+            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 10);
+            Assert.IsTrue(classModel.TBoxGraph[new RDFResource("ex:disjointUnionClass"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[new RDFResource("ex:disjointUnionClass"), RDFVocabulary.OWL.DISJOINT_UNION_OF, null, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.RDF.LIST, null].TriplesCount == 2);
+            Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:class1"), null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:class2"), null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.REST, null, null].TriplesCount == 2);
+            Assert.IsTrue(classModel.TBoxGraph[new RDFResource("ex:class1"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[new RDFResource("ex:class2"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS, null].TriplesCount == 1);
             Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
         }
 
@@ -915,6 +1292,43 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:class1"), null].TriplesCount == 1);
             Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:class2"), null].TriplesCount == 1);
             Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.REST, null, null].TriplesCount == 2);
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+
+
+            int i = 0;
+            IEnumerator<RDFResource> allDisjointClassesEnumerator = classModel.AllDisjointClassesEnumerator;
+            while (allDisjointClassesEnumerator.MoveNext())
+            {
+                Assert.IsTrue(allDisjointClassesEnumerator.Current.Equals(new RDFResource("ex:allDisjointClasses")));
+                i++;
+            }
+            Assert.IsTrue(i == 1);
+        }
+
+        [TestMethod]
+        public void ShouldDeclareAllDisjointClassesWithAutomaticDeclaration()
+        {
+            OWLOntologyClassModel classModel = new OWLOntologyClassModel();
+            classModel.DeclareAllDisjointClasses(new RDFResource("ex:allDisjointClasses"), new List<RDFResource>() { new RDFResource("ex:class1"), new RDFResource("ex:class2") },
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true });
+
+            Assert.IsTrue(classModel.ClassesCount == 3);
+            Assert.IsTrue(classModel.AllDisjointClassesCount == 1);
+            Assert.IsTrue(classModel.CompositesCount == 0);
+            Assert.IsTrue(classModel.DeprecatedClassesCount == 0);
+            Assert.IsTrue(classModel.SimpleClassesCount == 2);
+            Assert.IsTrue(classModel.EnumeratesCount == 0);
+            Assert.IsTrue(classModel.RestrictionsCount == 0);
+            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 11);
+            Assert.IsTrue(classModel.TBoxGraph[new RDFResource("ex:allDisjointClasses"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[new RDFResource("ex:allDisjointClasses"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ALL_DISJOINT_CLASSES, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[new RDFResource("ex:allDisjointClasses"), RDFVocabulary.OWL.MEMBERS, null, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.RDF.LIST, null].TriplesCount == 2);
+            Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:class1"), null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:class2"), null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.REST, null, null].TriplesCount == 2);
+            Assert.IsTrue(classModel.TBoxGraph[new RDFResource("ex:class1"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[new RDFResource("ex:class2"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS, null].TriplesCount == 1);
             Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
 
 
@@ -1034,6 +1448,20 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
+        public void ShouldDeclareSubClassesWithAutomaticDeclaration()
+        {
+            OWLOntologyClassModel classModel = new OWLOntologyClassModel();
+            classModel.DeclareSubClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"),
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true });
+
+            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 3);
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDFS.SUB_CLASS_OF, new RDFResource("ex:classB"))));
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+        }
+
+        [TestMethod]
         public void ShouldEmitWarningOnDeclaringSubClassesBecauseIncompatibleClasses()
         {
             string warningMsg = null;
@@ -1050,6 +1478,26 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.RDFS.SUB_CLASS_OF, new RDFResource("ex:classA"))));
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+        }
+
+        [TestMethod]
+        public void ShouldAcceptDeclaringIncompatibleSubClassesBecauseDisabledTaxonomyProtection()
+        {
+            string warningMsg = null;
+            OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            OWLOntologyClassModel classModel = new OWLOntologyClassModel();
+            classModel.DeclareSubClasses(new RDFResource("ex:classB"), new RDFResource("ex:classA"), 
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true, EnableTaxonomyProtection = false });
+            classModel.DeclareSubClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"), 
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true, EnableTaxonomyProtection = false });  //OWL-DL contraddiction
+
+            Assert.IsNull(warningMsg);
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.RDFS.SUB_CLASS_OF, new RDFResource("ex:classA"))));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDFS.SUB_CLASS_OF, new RDFResource("ex:classB"))));
             Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
         }
 
@@ -1090,6 +1538,21 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
+        public void ShouldDeclareEquivalentClassesWithAutomaticDeclaration()
+        {
+            OWLOntologyClassModel classModel = new OWLOntologyClassModel();
+            classModel.DeclareEquivalentClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"),
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true });
+
+            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 4);
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.OWL.EQUIVALENT_CLASS, new RDFResource("ex:classB"))));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.OWL.EQUIVALENT_CLASS, new RDFResource("ex:classA"))));
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+        }
+
+        [TestMethod]
         public void ShouldEmitWarningOnDeclaringEquivalentClassesBecauseIncompatibleClasses()
         {
             string warningMsg = null;
@@ -1106,6 +1569,27 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDFS.SUB_CLASS_OF, new RDFResource("ex:classB"))));
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+        }
+
+        [TestMethod]
+        public void ShouldAcceptDeclaringIncompatibleEquivalentClassesBecauseDisabledTaxonomyProtection()
+        {
+            string warningMsg = null;
+            OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            OWLOntologyClassModel classModel = new OWLOntologyClassModel();
+            classModel.DeclareSubClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"), 
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true, EnableTaxonomyProtection = false });
+            classModel.DeclareEquivalentClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"), 
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true, EnableTaxonomyProtection = false });  //OWL-DL contraddiction
+
+            Assert.IsNull(warningMsg);
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDFS.SUB_CLASS_OF, new RDFResource("ex:classB"))));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.OWL.EQUIVALENT_CLASS, new RDFResource("ex:classB"))));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.OWL.EQUIVALENT_CLASS, new RDFResource("ex:classA"))));
             Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
         }
 
@@ -1146,6 +1630,21 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
+        public void ShouldDeclareDisjointClassesWithAutomaticDeclaration()
+        {
+            OWLOntologyClassModel classModel = new OWLOntologyClassModel();
+            classModel.DeclareDisjointClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"),
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true });
+
+            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 4);
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.OWL.DISJOINT_WITH, new RDFResource("ex:classB"))));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.OWL.DISJOINT_WITH, new RDFResource("ex:classA"))));
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+        }
+
+        [TestMethod]
         public void ShouldEmitWarningOnDeclaringDisjointClassesBecauseIncompatibleClasses()
         {
             string warningMsg = null;
@@ -1162,6 +1661,26 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
             Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDFS.SUB_CLASS_OF, new RDFResource("ex:classB"))));
+        }
+
+        [TestMethod]
+        public void ShouldAcceptDeclaringIncompatibleDisjointClassesBecauseDisabledTaxonomyProtection()
+        {
+            string warningMsg = null;
+            OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            OWLOntologyClassModel classModel = new OWLOntologyClassModel();
+            classModel.DeclareSubClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"),
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true, EnableTaxonomyProtection = false });
+            classModel.DeclareDisjointClasses(new RDFResource("ex:classA"), new RDFResource("ex:classB"),
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true, EnableTaxonomyProtection = false });  //OWL-DL contraddiction
+
+            Assert.IsNull(warningMsg);
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS)));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.RDFS.SUB_CLASS_OF, new RDFResource("ex:classB"))));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classA"), RDFVocabulary.OWL.DISJOINT_WITH, new RDFResource("ex:classB"))));
+            Assert.IsTrue(classModel.TBoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:classB"), RDFVocabulary.OWL.DISJOINT_WITH, new RDFResource("ex:classA"))));
         }
 
         [TestMethod]
@@ -1190,6 +1709,22 @@ namespace RDFSharp.Semantics.Test
             OWLOntologyClassModel classModel = new OWLOntologyClassModel();
             classModel.DeclareClass(new RDFResource("ex:classA"));
             classModel.DeclareHasKey(new RDFResource("ex:classA"), new List<RDFResource>() { new RDFResource("ex:dtProp") });
+
+            Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 5);
+            Assert.IsTrue(classModel.TBoxGraph[new RDFResource("ex:classA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[new RDFResource("ex:classA"), RDFVocabulary.OWL.HAS_KEY, null, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.RDF.LIST, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:dtProp"), null].TriplesCount == 1);
+            Assert.IsTrue(classModel.TBoxGraph[null, RDFVocabulary.RDF.REST, null, null].TriplesCount == 1);
+            Assert.IsTrue(classModel.OBoxGraph.TriplesCount == 0);
+        }
+
+        [TestMethod]
+        public void ShouldDeclareKeysWithAutomaticDeclaration()
+        {
+            OWLOntologyClassModel classModel = new OWLOntologyClassModel();
+            classModel.DeclareHasKey(new RDFResource("ex:classA"), new List<RDFResource>() { new RDFResource("ex:dtProp") },
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true });
 
             Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 5);
             Assert.IsTrue(classModel.TBoxGraph[new RDFResource("ex:classA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.CLASS, null].TriplesCount == 1);

@@ -300,6 +300,10 @@ namespace RDFSharp.Semantics
             //Declare restriction to the model
             DeclareRestriction(owlRestriction, onProperty, loaderOptions);
 
+            //If instructed, we have to automatically declare entities
+            if (loaderOptions.EnableAutomaticEntityDeclaration)
+                DeclareClass(allValuesFromClass);
+
             //Add knowledge to the T-BOX
             TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.ALL_VALUES_FROM, allValuesFromClass));
 
@@ -318,6 +322,10 @@ namespace RDFSharp.Semantics
 
             //Declare restriction to the model
             DeclareRestriction(owlRestriction, onProperty, loaderOptions);
+
+            //If instructed, we have to automatically declare entities
+            if (loaderOptions.EnableAutomaticEntityDeclaration)
+                DeclareClass(someValuesFromClass);
 
             //Add knowledge to the T-BOX
             TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.SOME_VALUES_FROM, someValuesFromClass));
@@ -475,6 +483,10 @@ namespace RDFSharp.Semantics
             //Declare restriction to the model
             DeclareRestriction(owlRestriction, onProperty, loaderOptions);
 
+            //If instructed, we have to automatically declare entities
+            if (loaderOptions.EnableAutomaticEntityDeclaration)
+                DeclareClass(onClass);
+
             //Add knowledge to the T-BOX
             TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.QUALIFIED_CARDINALITY, new RDFTypedLiteral(cardinality.ToString(), RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER)));
             TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.ON_CLASS, onClass));
@@ -497,6 +509,10 @@ namespace RDFSharp.Semantics
             //Declare restriction to the model
             DeclareRestriction(owlRestriction, onProperty, loaderOptions);
 
+            //If instructed, we have to automatically declare entities
+            if (loaderOptions.EnableAutomaticEntityDeclaration)
+                DeclareClass(onClass);
+
             //Add knowledge to the T-BOX
             TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.MIN_QUALIFIED_CARDINALITY, new RDFTypedLiteral(minCardinality.ToString(), RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER)));
             TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.ON_CLASS, onClass));
@@ -518,6 +534,10 @@ namespace RDFSharp.Semantics
 
             //Declare restriction to the model
             DeclareRestriction(owlRestriction, onProperty, loaderOptions);
+
+            //If instructed, we have to automatically declare entities
+            if (loaderOptions.EnableAutomaticEntityDeclaration)
+                DeclareClass(onClass);
 
             //Add knowledge to the T-BOX
             TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.MAX_QUALIFIED_CARDINALITY, new RDFTypedLiteral(maxCardinality.ToString(), RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER)));
@@ -544,6 +564,10 @@ namespace RDFSharp.Semantics
 
             //Declare restriction to the model
             DeclareRestriction(owlRestriction, onProperty, loaderOptions);
+
+            //If instructed, we have to automatically declare entities
+            if (loaderOptions.EnableAutomaticEntityDeclaration)
+                DeclareClass(onClass);
 
             //Add knowledge to the T-BOX
             TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.MIN_QUALIFIED_CARDINALITY, new RDFTypedLiteral(minCardinality.ToString(), RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER)));
