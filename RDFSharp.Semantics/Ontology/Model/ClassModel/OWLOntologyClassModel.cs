@@ -50,6 +50,21 @@ namespace RDFSharp.Semantics
         }
 
         /// <summary>
+        /// Count of the simple classes
+        /// </summary>
+        public long SimpleClassesCount
+        {
+            get
+            {
+                long count = 0;
+                IEnumerator<RDFResource> simpleClasses = SimpleClassesEnumerator;
+                while (simpleClasses.MoveNext())
+                    count++;
+                return count;
+            }
+        }
+
+        /// <summary>
         /// Count of the restrictions
         /// </summary>
         public long RestrictionsCount
@@ -126,6 +141,22 @@ namespace RDFSharp.Semantics
                 while (classes.MoveNext())
                 {
                     if (TBoxGraph[classes.Current, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.DEPRECATED_CLASS, null].Any())
+                        yield return classes.Current;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the enumerator on the simple classes for iteration
+        /// </summary>
+        public IEnumerator<RDFResource> SimpleClassesEnumerator
+        {
+            get
+            {
+                IEnumerator<RDFResource> classes = ClassesEnumerator;
+                while (classes.MoveNext())
+                {
+                    if (this.CheckHasSimpleClass(classes.Current))
                         yield return classes.Current;
                 }
             }

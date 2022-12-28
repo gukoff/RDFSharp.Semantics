@@ -33,6 +33,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsNotNull(classModel);
             Assert.IsNotNull(classModel.Classes);
             Assert.IsTrue(classModel.ClassesCount == 0);
+            Assert.IsTrue(classModel.SimpleClassesCount == 0);
             Assert.IsTrue(classModel.AllDisjointClassesCount == 0);
             Assert.IsTrue(classModel.CompositesCount == 0);
             Assert.IsTrue(classModel.DeprecatedClassesCount == 0);
@@ -67,6 +68,12 @@ namespace RDFSharp.Semantics.Test
                 n++;
             Assert.IsTrue(n == 0);
 
+            int v = 0;
+            IEnumerator<RDFResource> simpleClassesEnumerator = classModel.SimpleClassesEnumerator;
+            while (simpleClassesEnumerator.MoveNext())
+                v++;
+            Assert.IsTrue(v == 0);
+
             int k = 0;
             IEnumerator<RDFResource> enumerateClassesEnumerator = classModel.EnumeratesEnumerator;
             while (enumerateClassesEnumerator.MoveNext())
@@ -90,6 +97,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.AllDisjointClassesCount == 0);
             Assert.IsTrue(classModel.CompositesCount == 0);
             Assert.IsTrue(classModel.DeprecatedClassesCount == 0);
+            Assert.IsTrue(classModel.SimpleClassesCount == 1);
             Assert.IsTrue(classModel.EnumeratesCount == 0);
             Assert.IsTrue(classModel.RestrictionsCount == 0);
             Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 1);
@@ -104,6 +112,15 @@ namespace RDFSharp.Semantics.Test
                 i++;
             }                
             Assert.IsTrue(i == 1);
+
+            int v = 0;
+            IEnumerator<RDFResource> simpleClassesEnumerator = classModel.SimpleClassesEnumerator;
+            while (simpleClassesEnumerator.MoveNext())
+            {
+                Assert.IsTrue(simpleClassesEnumerator.Current.Equals(new RDFResource("ex:class1")));
+                v++;
+            }
+            Assert.IsTrue(v == 1);
         }
 
         [TestMethod]
@@ -116,6 +133,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.AllDisjointClassesCount == 0);
             Assert.IsTrue(classModel.CompositesCount == 0);
             Assert.IsTrue(classModel.DeprecatedClassesCount == 1);
+            Assert.IsTrue(classModel.SimpleClassesCount == 1);
             Assert.IsTrue(classModel.EnumeratesCount == 0);
             Assert.IsTrue(classModel.RestrictionsCount == 0);
             Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 2);
@@ -140,6 +158,15 @@ namespace RDFSharp.Semantics.Test
                 j++;
             }
             Assert.IsTrue(j == 1);
+
+            int v = 0;
+            IEnumerator<RDFResource> simpleClassesEnumerator = classModel.SimpleClassesEnumerator;
+            while (simpleClassesEnumerator.MoveNext())
+            {
+                Assert.IsTrue(simpleClassesEnumerator.Current.Equals(new RDFResource("ex:class1")));
+                v++;
+            }
+            Assert.IsTrue(v == 1);
         }
 
         [TestMethod]
@@ -156,6 +183,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.AllDisjointClassesCount == 0);
             Assert.IsTrue(classModel.CompositesCount == 0);
             Assert.IsTrue(classModel.DeprecatedClassesCount == 0);
+            Assert.IsTrue(classModel.SimpleClassesCount == 0);
             Assert.IsTrue(classModel.EnumeratesCount == 0);
             Assert.IsTrue(classModel.RestrictionsCount == 1);
             Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 4);
@@ -189,6 +217,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.AllDisjointClassesCount == 0);
             Assert.IsTrue(classModel.CompositesCount == 0);
             Assert.IsTrue(classModel.DeprecatedClassesCount == 0);
+            Assert.IsTrue(classModel.SimpleClassesCount == 0);
             Assert.IsTrue(classModel.EnumeratesCount == 0);
             Assert.IsTrue(classModel.RestrictionsCount == 1);
             Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 4);
@@ -222,6 +251,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.AllDisjointClassesCount == 0);
             Assert.IsTrue(classModel.CompositesCount == 0);
             Assert.IsTrue(classModel.DeprecatedClassesCount == 0);
+            Assert.IsTrue(classModel.SimpleClassesCount == 0);
             Assert.IsTrue(classModel.EnumeratesCount == 0);
             Assert.IsTrue(classModel.RestrictionsCount == 1);
             Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 4);
@@ -251,6 +281,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.AllDisjointClassesCount == 0);
             Assert.IsTrue(classModel.CompositesCount == 0);
             Assert.IsTrue(classModel.DeprecatedClassesCount == 0);
+            Assert.IsTrue(classModel.SimpleClassesCount == 0);
             Assert.IsTrue(classModel.EnumeratesCount == 0);
             Assert.IsTrue(classModel.RestrictionsCount == 1);
             Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 4);
@@ -280,6 +311,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.AllDisjointClassesCount == 0);
             Assert.IsTrue(classModel.CompositesCount == 0);
             Assert.IsTrue(classModel.DeprecatedClassesCount == 0);
+            Assert.IsTrue(classModel.SimpleClassesCount == 0);
             Assert.IsTrue(classModel.EnumeratesCount == 0);
             Assert.IsTrue(classModel.RestrictionsCount == 1);
             Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 4);
@@ -313,6 +345,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.AllDisjointClassesCount == 0);
             Assert.IsTrue(classModel.CompositesCount == 0);
             Assert.IsTrue(classModel.DeprecatedClassesCount == 0);
+            Assert.IsTrue(classModel.SimpleClassesCount == 0);
             Assert.IsTrue(classModel.EnumeratesCount == 0);
             Assert.IsTrue(classModel.RestrictionsCount == 1);
             Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 4);
@@ -346,6 +379,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.AllDisjointClassesCount == 0);
             Assert.IsTrue(classModel.CompositesCount == 0);
             Assert.IsTrue(classModel.DeprecatedClassesCount == 0);
+            Assert.IsTrue(classModel.SimpleClassesCount == 0);
             Assert.IsTrue(classModel.EnumeratesCount == 0);
             Assert.IsTrue(classModel.RestrictionsCount == 1);
             Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 4);
@@ -379,6 +413,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.AllDisjointClassesCount == 0);
             Assert.IsTrue(classModel.CompositesCount == 0);
             Assert.IsTrue(classModel.DeprecatedClassesCount == 0);
+            Assert.IsTrue(classModel.SimpleClassesCount == 0);
             Assert.IsTrue(classModel.EnumeratesCount == 0);
             Assert.IsTrue(classModel.RestrictionsCount == 1);
             Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 4);
@@ -412,6 +447,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.AllDisjointClassesCount == 0);
             Assert.IsTrue(classModel.CompositesCount == 0);
             Assert.IsTrue(classModel.DeprecatedClassesCount == 0);
+            Assert.IsTrue(classModel.SimpleClassesCount == 0);
             Assert.IsTrue(classModel.EnumeratesCount == 0);
             Assert.IsTrue(classModel.RestrictionsCount == 1);
             Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 4);
@@ -445,6 +481,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.AllDisjointClassesCount == 0);
             Assert.IsTrue(classModel.CompositesCount == 0);
             Assert.IsTrue(classModel.DeprecatedClassesCount == 0);
+            Assert.IsTrue(classModel.SimpleClassesCount == 0);
             Assert.IsTrue(classModel.EnumeratesCount == 0);
             Assert.IsTrue(classModel.RestrictionsCount == 1);
             Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 5);
@@ -487,6 +524,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.AllDisjointClassesCount == 0);
             Assert.IsTrue(classModel.CompositesCount == 0);
             Assert.IsTrue(classModel.DeprecatedClassesCount == 0);
+            Assert.IsTrue(classModel.SimpleClassesCount == 0);
             Assert.IsTrue(classModel.EnumeratesCount == 0);
             Assert.IsTrue(classModel.RestrictionsCount == 1);
             Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 5);
@@ -525,6 +563,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.AllDisjointClassesCount == 0);
             Assert.IsTrue(classModel.CompositesCount == 0);
             Assert.IsTrue(classModel.DeprecatedClassesCount == 0);
+            Assert.IsTrue(classModel.SimpleClassesCount == 0);
             Assert.IsTrue(classModel.EnumeratesCount == 0);
             Assert.IsTrue(classModel.RestrictionsCount == 1);
             Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 5);
@@ -563,6 +602,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.AllDisjointClassesCount == 0);
             Assert.IsTrue(classModel.CompositesCount == 0);
             Assert.IsTrue(classModel.DeprecatedClassesCount == 0);
+            Assert.IsTrue(classModel.SimpleClassesCount == 0);
             Assert.IsTrue(classModel.EnumeratesCount == 0);
             Assert.IsTrue(classModel.RestrictionsCount == 1);
             Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 5);
@@ -601,6 +641,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.AllDisjointClassesCount == 0);
             Assert.IsTrue(classModel.CompositesCount == 0);
             Assert.IsTrue(classModel.DeprecatedClassesCount == 0);
+            Assert.IsTrue(classModel.SimpleClassesCount == 0);
             Assert.IsTrue(classModel.EnumeratesCount == 0);
             Assert.IsTrue(classModel.RestrictionsCount == 1);
             Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 6);
@@ -648,6 +689,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.AllDisjointClassesCount == 0);
             Assert.IsTrue(classModel.CompositesCount == 0);
             Assert.IsTrue(classModel.DeprecatedClassesCount == 0);
+            Assert.IsTrue(classModel.SimpleClassesCount == 0);
             Assert.IsTrue(classModel.EnumeratesCount == 1);
             Assert.IsTrue(classModel.RestrictionsCount == 0);
             Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 8);
@@ -691,6 +733,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.AllDisjointClassesCount == 0);
             Assert.IsTrue(classModel.CompositesCount == 1);
             Assert.IsTrue(classModel.DeprecatedClassesCount == 0);
+            Assert.IsTrue(classModel.SimpleClassesCount == 0);
             Assert.IsTrue(classModel.EnumeratesCount == 0);
             Assert.IsTrue(classModel.RestrictionsCount == 0);
             Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 8);
@@ -738,6 +781,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.AllDisjointClassesCount == 0);
             Assert.IsTrue(classModel.CompositesCount == 1);
             Assert.IsTrue(classModel.DeprecatedClassesCount == 0);
+            Assert.IsTrue(classModel.SimpleClassesCount == 0);
             Assert.IsTrue(classModel.EnumeratesCount == 0);
             Assert.IsTrue(classModel.RestrictionsCount == 0);
             Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 8);
@@ -785,6 +829,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.AllDisjointClassesCount == 0);
             Assert.IsTrue(classModel.CompositesCount == 1);
             Assert.IsTrue(classModel.DeprecatedClassesCount == 0);
+            Assert.IsTrue(classModel.SimpleClassesCount == 0);
             Assert.IsTrue(classModel.EnumeratesCount == 0);
             Assert.IsTrue(classModel.RestrictionsCount == 0);
             Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 2);
@@ -824,6 +869,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.AllDisjointClassesCount == 0);
             Assert.IsTrue(classModel.CompositesCount == 0);
             Assert.IsTrue(classModel.DeprecatedClassesCount == 0);
+            Assert.IsTrue(classModel.SimpleClassesCount == 0);
             Assert.IsTrue(classModel.EnumeratesCount == 0);
             Assert.IsTrue(classModel.RestrictionsCount == 0);
             Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 8);
@@ -858,6 +904,7 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(classModel.AllDisjointClassesCount == 1);
             Assert.IsTrue(classModel.CompositesCount == 0);
             Assert.IsTrue(classModel.DeprecatedClassesCount == 0);
+            Assert.IsTrue(classModel.SimpleClassesCount == 0);
             Assert.IsTrue(classModel.EnumeratesCount == 0);
             Assert.IsTrue(classModel.RestrictionsCount == 0);
             Assert.IsTrue(classModel.TBoxGraph.TriplesCount == 9);
