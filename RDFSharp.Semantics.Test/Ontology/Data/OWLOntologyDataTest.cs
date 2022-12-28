@@ -222,6 +222,21 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
+        public void ShouldDeclareSameIndividualsWithAutomaticDeclaration()
+        {
+            OWLOntologyData data = new OWLOntologyData();
+            data.DeclareSameIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB"),
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true });
+
+            Assert.IsTrue(data.ABoxGraph.TriplesCount == 4);
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.OWL.SAME_AS, new RDFResource("ex:indivB"))));
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.OWL.SAME_AS, new RDFResource("ex:indivA"))));
+            Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
+        }
+
+        [TestMethod]
         public void ShouldEmitWarningOnDeclaringSameIndividualsBecauseIncompatibleIndividuals()
         {
             string warningMsg = null;
@@ -238,6 +253,27 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.OWL.DIFFERENT_FROM, new RDFResource("ex:indivB"))));
+            Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
+        }
+
+        [TestMethod]
+        public void ShouldAcceptDeclaringIncompatibleSameIndividualsBecauseDisabledTaxonomyProtection()
+        {
+            string warningMsg = null;
+            OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            OWLOntologyData data = new OWLOntologyData();
+            data.DeclareDifferentIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB"),
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true, EnableTaxonomyProtection = false });
+            data.DeclareSameIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB"),
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true, EnableTaxonomyProtection = false });  //OWL-DL contraddiction
+
+            Assert.IsNull(warningMsg);
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.OWL.DIFFERENT_FROM, new RDFResource("ex:indivB"))));
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.OWL.SAME_AS, new RDFResource("ex:indivB"))));
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.OWL.SAME_AS, new RDFResource("ex:indivA"))));
             Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
         }
 
@@ -278,6 +314,21 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
+        public void ShouldDeclareDifferentIndividualsWithAutomaticDeclaration()
+        {
+            OWLOntologyData data = new OWLOntologyData();
+            data.DeclareDifferentIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB"),
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true });
+
+            Assert.IsTrue(data.ABoxGraph.TriplesCount == 4);
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.OWL.DIFFERENT_FROM, new RDFResource("ex:indivB"))));
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.OWL.DIFFERENT_FROM, new RDFResource("ex:indivA"))));
+            Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
+        }
+
+        [TestMethod]
         public void ShouldEmitWarningOnDeclaringDifferentIndividualsBecauseIncompatibleIndividuals()
         {
             string warningMsg = null;
@@ -294,6 +345,27 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
             Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.OWL.SAME_AS, new RDFResource("ex:indivB"))));
+            Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
+        }
+
+        [TestMethod]
+        public void ShouldAcceptDeclaringIncompatibleDifferentIndividualsBecauseDisabledTaxonomyProtection()
+        {
+            string warningMsg = null;
+            OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            OWLOntologyData data = new OWLOntologyData();
+            data.DeclareSameIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB"),
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true, EnableTaxonomyProtection = false });
+            data.DeclareDifferentIndividuals(new RDFResource("ex:indivA"), new RDFResource("ex:indivB"),
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true, EnableTaxonomyProtection = false });  //OWL-DL contraddiction
+
+            Assert.IsNull(warningMsg);
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL)));
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.OWL.SAME_AS, new RDFResource("ex:indivB"))));
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivA"), RDFVocabulary.OWL.DIFFERENT_FROM, new RDFResource("ex:indivB"))));
+            Assert.IsTrue(data.ABoxGraph.ContainsTriple(new RDFTriple(new RDFResource("ex:indivB"), RDFVocabulary.OWL.DIFFERENT_FROM, new RDFResource("ex:indivA"))));
             Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
         }
 
@@ -324,6 +396,7 @@ namespace RDFSharp.Semantics.Test
             data.DeclareAllDifferentIndividuals(new RDFResource("ex:allDiff"), new List<RDFResource>() {
                 new RDFResource("ex:indivA"), new RDFResource("ex:indivB"), new RDFResource("ex:indivC") });
 
+            Assert.IsTrue(data.IndividualsCount == 0);
             Assert.IsTrue(data.AllDifferentCount == 1);
             Assert.IsTrue(data.ABoxGraph.TriplesCount == 11);
             Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:allDiff"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ALL_DIFFERENT, null].Any());
@@ -333,6 +406,35 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:indivB"), null].Any());
             Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:indivC"), null].Any());
             Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.RDF.REST, null, null].TriplesCount == 3);
+            Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
+
+            int j = 0;
+            IEnumerator<RDFResource> allDifferentEnumerator = data.AllDifferentEnumerator;
+            while (allDifferentEnumerator.MoveNext())
+                j++;
+            Assert.IsTrue(j == 1);
+        }
+
+        [TestMethod]
+        public void ShouldDeclareAllDifferentIndividualsWithAutomaticDeclaration()
+        {
+            OWLOntologyData data = new OWLOntologyData();
+            data.DeclareAllDifferentIndividuals(new RDFResource("ex:allDiff"), new List<RDFResource>() {
+                new RDFResource("ex:indivA"), new RDFResource("ex:indivB"), new RDFResource("ex:indivC") }, new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true });
+
+            Assert.IsTrue(data.IndividualsCount == 3);
+            Assert.IsTrue(data.AllDifferentCount == 1);
+            Assert.IsTrue(data.ABoxGraph.TriplesCount == 14);
+            Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:allDiff"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ALL_DIFFERENT, null].Any());
+            Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:allDiff"), RDFVocabulary.OWL.DISTINCT_MEMBERS, null, null].Any());
+            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.RDF.LIST, null].TriplesCount == 3);
+            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:indivA"), null].Any());
+            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:indivB"), null].Any());
+            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.RDF.FIRST, new RDFResource("ex:indivC"), null].Any());
+            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.RDF.REST, null, null].TriplesCount == 3);
+            Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL, null].Any());
+            Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL, null].Any());
+            Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivC"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL, null].Any());
             Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
 
             int j = 0;
@@ -366,8 +468,24 @@ namespace RDFSharp.Semantics.Test
             OWLOntologyData data = new OWLOntologyData();
             data.DeclareObjectAssertion(new RDFResource("ex:indivA"), RDFVocabulary.FOAF.KNOWS, new RDFResource("ex:indivB"));
 
+            Assert.IsTrue(data.IndividualsCount == 0);
             Assert.IsTrue(data.ABoxGraph.TriplesCount == 1);
             Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivA"), RDFVocabulary.FOAF.KNOWS, new RDFResource("ex:indivB"), null].Any());
+            Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
+        }
+
+        [TestMethod]
+        public void ShouldDeclareObjectAssertionWithAutomaticDeclaration()
+        {
+            OWLOntologyData data = new OWLOntologyData();
+            data.DeclareObjectAssertion(new RDFResource("ex:indivA"), RDFVocabulary.FOAF.KNOWS, new RDFResource("ex:indivB"),
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true });
+
+            Assert.IsTrue(data.IndividualsCount == 2);
+            Assert.IsTrue(data.ABoxGraph.TriplesCount == 3);
+            Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivA"), RDFVocabulary.FOAF.KNOWS, new RDFResource("ex:indivB"), null].Any());
+            Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL, null].Any());
+            Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL, null].Any());
             Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
         }
 
@@ -427,12 +545,51 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
+        public void ShouldAcceptDeclaringIncompatibleObjectAssertionBecauseDisabledTaxonomyProtection()
+        {
+            string warningMsg = null;
+            OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            OWLOntologyData data = new OWLOntologyData();
+            data.DeclareNegativeObjectAssertion(new RDFResource("ex:indivA"), new RDFResource("ex:objProp"), new RDFResource("ex:indivB"),
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true, EnableTaxonomyProtection = false });
+            data.DeclareObjectAssertion(new RDFResource("ex:indivA"), new RDFResource("ex:objProp"), new RDFResource("ex:indivB"),
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true, EnableTaxonomyProtection = false }); //OWL-DL contraddiction (not allowed by policy)
+
+            Assert.IsNull(warningMsg);
+            Assert.IsTrue(data.ABoxGraph.TriplesCount == 7);
+            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION, null].Any());
+            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.SOURCE_INDIVIDUAL, new RDFResource("ex:indivA"), null].Any());
+            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.ASSERTION_PROPERTY, new RDFResource("ex:objProp"), null].Any());
+            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.TARGET_INDIVIDUAL, new RDFResource("ex:indivB"), null].Any());
+            Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL, null].Any());
+            Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL, null].Any());
+            Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivA"), new RDFResource("ex:objProp"), new RDFResource("ex:indivB"), null].Any());
+            Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
+        }
+
+        [TestMethod]
         public void ShouldDeclareDatatypeAssertion()
         {
             OWLOntologyData data = new OWLOntologyData();
             data.DeclareDatatypeAssertion(new RDFResource("ex:indivA"), RDFVocabulary.FOAF.NAME, new RDFPlainLiteral("name"));
 
+            Assert.IsTrue(data.IndividualsCount == 0);
             Assert.IsTrue(data.ABoxGraph.TriplesCount == 1);
+            Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivA"), RDFVocabulary.FOAF.NAME, null, new RDFPlainLiteral("name")].Any());
+            Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
+        }
+
+        [TestMethod]
+        public void ShouldDeclareDatatypeAssertionWithAutomaticDeclaration()
+        {
+            OWLOntologyData data = new OWLOntologyData();
+            data.DeclareDatatypeAssertion(new RDFResource("ex:indivA"), RDFVocabulary.FOAF.NAME, new RDFPlainLiteral("name"),
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true });
+
+            Assert.IsTrue(data.IndividualsCount == 1);
+            Assert.IsTrue(data.ABoxGraph.TriplesCount == 2);
+            Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL, null].Any());
             Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivA"), RDFVocabulary.FOAF.NAME, null, new RDFPlainLiteral("name")].Any());
             Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
         }
@@ -493,16 +650,58 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
+        public void ShouldAcceptDeclaringIncompatibleDatatypeAssertionBecauseDisabledTaxonomyProtection()
+        {
+            string warningMsg = null;
+            OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            OWLOntologyData data = new OWLOntologyData();
+            data.DeclareNegativeDatatypeAssertion(new RDFResource("ex:indivA"), new RDFResource("ex:dtProp"), new RDFPlainLiteral("name"),
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true, EnableTaxonomyProtection = false });
+            data.DeclareDatatypeAssertion(new RDFResource("ex:indivA"), new RDFResource("ex:dtProp"), new RDFPlainLiteral("name"),
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true, EnableTaxonomyProtection = false }); //OWL-DL contraddiction (not allowed by policy)
+
+            Assert.IsNull(warningMsg);
+            Assert.IsTrue(data.ABoxGraph.TriplesCount == 6);
+            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION, null].Any());
+            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.SOURCE_INDIVIDUAL, new RDFResource("ex:indivA"), null].Any());
+            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.ASSERTION_PROPERTY, new RDFResource("ex:dtProp"), null].Any());
+            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.TARGET_VALUE, null, new RDFPlainLiteral("name")].Any());
+            Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL, null].Any());
+            Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivA"), new RDFResource("ex:dtProp"), null, new RDFPlainLiteral("name")].Any());
+            Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
+        }
+
+        [TestMethod]
         public void ShouldDeclareNegativeObjectAssertion()
         {
             OWLOntologyData data = new OWLOntologyData();
             data.DeclareNegativeObjectAssertion(new RDFResource("ex:indivA"), RDFVocabulary.FOAF.KNOWS, new RDFResource("ex:indivB"));
 
+            Assert.IsTrue(data.IndividualsCount == 0);
             Assert.IsTrue(data.ABoxGraph.TriplesCount == 4);
             Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION, null].Any());
             Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.SOURCE_INDIVIDUAL, new RDFResource("ex:indivA"), null].Any());
             Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.ASSERTION_PROPERTY, RDFVocabulary.FOAF.KNOWS, null].Any());
             Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.TARGET_INDIVIDUAL, new RDFResource("ex:indivB"), null].Any());
+            Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
+        }
+
+        [TestMethod]
+        public void ShouldDeclareNegativeObjectAssertionWithAutomaticDeclaration()
+        {
+            OWLOntologyData data = new OWLOntologyData();
+            data.DeclareNegativeObjectAssertion(new RDFResource("ex:indivA"), RDFVocabulary.FOAF.KNOWS, new RDFResource("ex:indivB"),
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true });
+
+            Assert.IsTrue(data.IndividualsCount == 2);
+            Assert.IsTrue(data.ABoxGraph.TriplesCount == 6);
+            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION, null].Any());
+            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.SOURCE_INDIVIDUAL, new RDFResource("ex:indivA"), null].Any());
+            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.ASSERTION_PROPERTY, RDFVocabulary.FOAF.KNOWS, null].Any());
+            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.TARGET_INDIVIDUAL, new RDFResource("ex:indivB"), null].Any());
+            Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL, null].Any());
+            Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL, null].Any());
             Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
         }
 
@@ -559,12 +758,54 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
+        public void ShouldAcceptDeclaringIncompatibleNegativeObjectAssertionBecauseDisabledTaxonomyProtection()
+        {
+            string warningMsg = null;
+            OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            OWLOntologyData data = new OWLOntologyData();
+            data.DeclareObjectAssertion(new RDFResource("ex:indivA"), new RDFResource("ex:objProp"), new RDFResource("ex:indivB"),
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true, EnableTaxonomyProtection = false });
+            data.DeclareNegativeObjectAssertion(new RDFResource("ex:indivA"), new RDFResource("ex:objProp"), new RDFResource("ex:indivB"),
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true, EnableTaxonomyProtection = false }); //OWL-DL contraddiction (not allowed by policy)
+
+            Assert.IsNull(warningMsg);
+            Assert.IsTrue(data.ABoxGraph.TriplesCount == 7);
+            Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivA"), new RDFResource("ex:objProp"), new RDFResource("ex:indivB"), null].Any());
+            Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL, null].Any());
+            Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivB"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL, null].Any());
+            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION, null].Any());
+            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.SOURCE_INDIVIDUAL, new RDFResource("ex:indivA"), null].Any());
+            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.ASSERTION_PROPERTY, new RDFResource("ex:objProp"), null].Any());
+            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.TARGET_INDIVIDUAL, new RDFResource("ex:indivB"), null].Any());
+            Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
+        }
+
+        [TestMethod]
         public void ShouldDeclareNegativeDatatypeAssertion()
         {
             OWLOntologyData data = new OWLOntologyData();
             data.DeclareNegativeDatatypeAssertion(new RDFResource("ex:indivA"), RDFVocabulary.FOAF.NAME, new RDFPlainLiteral("name"));
 
+            Assert.IsTrue(data.IndividualsCount == 0);
             Assert.IsTrue(data.ABoxGraph.TriplesCount == 4);
+            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION, null].Any());
+            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.SOURCE_INDIVIDUAL, new RDFResource("ex:indivA"), null].Any());
+            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.ASSERTION_PROPERTY, RDFVocabulary.FOAF.NAME, null].Any());
+            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.TARGET_VALUE, null, new RDFPlainLiteral("name")].Any());
+            Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
+        }
+
+        [TestMethod]
+        public void ShouldDeclareNegativeDatatypeAssertionWithAutomaticDeclaration()
+        {
+            OWLOntologyData data = new OWLOntologyData();
+            data.DeclareNegativeDatatypeAssertion(new RDFResource("ex:indivA"), RDFVocabulary.FOAF.NAME, new RDFPlainLiteral("name"),
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true });
+
+            Assert.IsTrue(data.IndividualsCount == 1);
+            Assert.IsTrue(data.ABoxGraph.TriplesCount == 5);
+            Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL, null].Any());
             Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION, null].Any());
             Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.SOURCE_INDIVIDUAL, new RDFResource("ex:indivA"), null].Any());
             Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.ASSERTION_PROPERTY, RDFVocabulary.FOAF.NAME, null].Any());
@@ -623,7 +864,30 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivA"), new RDFResource("ex:dtProp"), null, new RDFPlainLiteral("name")].Any());
             Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
         }
-        
+
+        [TestMethod]
+        public void ShouldAcceptDeclaringIncompatibleNegativeDatatypeAssertionBecauseDisabledTaxonomyProtection()
+        {
+            string warningMsg = null;
+            OWLSemanticsEvents.OnSemanticsWarning += (string msg) => { warningMsg = msg; };
+
+            OWLOntologyData data = new OWLOntologyData();
+            data.DeclareDatatypeAssertion(new RDFResource("ex:indivA"), new RDFResource("ex:dtProp"), new RDFPlainLiteral("name"),
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true, EnableTaxonomyProtection = false });
+            data.DeclareNegativeDatatypeAssertion(new RDFResource("ex:indivA"), new RDFResource("ex:dtProp"), new RDFPlainLiteral("name"),
+                new OWLOntologyLoaderOptions() { EnableAutomaticEntityDeclaration = true, EnableTaxonomyProtection = false }); //OWL-DL contraddiction (not allowed by policy)
+
+            Assert.IsNull(warningMsg);
+            Assert.IsTrue(data.ABoxGraph.TriplesCount == 6);
+            Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivA"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NAMED_INDIVIDUAL, null].Any());
+            Assert.IsTrue(data.ABoxGraph[new RDFResource("ex:indivA"), new RDFResource("ex:dtProp"), null, new RDFPlainLiteral("name")].Any());
+            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.NEGATIVE_PROPERTY_ASSERTION, null].Any());
+            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.SOURCE_INDIVIDUAL, new RDFResource("ex:indivA"), null].Any());
+            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.ASSERTION_PROPERTY, new RDFResource("ex:dtProp"), null].Any());
+            Assert.IsTrue(data.ABoxGraph[null, RDFVocabulary.OWL.TARGET_VALUE, null, new RDFPlainLiteral("name")].Any());
+            Assert.IsTrue(data.OBoxGraph.TriplesCount == 0);
+        }
+
         [TestMethod]
         public void ShouldExportToGraph()
         {
