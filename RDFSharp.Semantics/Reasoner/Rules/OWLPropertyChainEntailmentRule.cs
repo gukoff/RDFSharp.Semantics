@@ -23,7 +23,7 @@ namespace RDFSharp.Semantics
     /// </summary>
     internal static class OWLPropertyChainEntailmentRule
     {
-        internal static OWLReasonerReport ExecuteRule(OWLOntology ontology)
+        internal static OWLReasonerReport ExecuteRule(OWLOntology ontology, OWLOntologyLoaderOptions loaderOptions)
         {
             #region RuleBody
             void InferAssertionsFromChainAxiomProperty(RDFResource currentProperty, List<RDFResource> chainProperties, OWLReasonerReport report)

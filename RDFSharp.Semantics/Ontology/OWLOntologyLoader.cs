@@ -86,7 +86,7 @@ namespace RDFSharp.Semantics
     }
 
     /// <summary>
-    /// OWLOntologyLoaderOptions instructs an ontology loader to customize specific behavior aspects involving the graph->ontology build process
+    /// OWLOntologyLoaderOptions permits to locally customize certain aspects of ontology management
     /// </summary>
     public class OWLOntologyLoaderOptions
     {
@@ -97,19 +97,19 @@ namespace RDFSharp.Semantics
         internal static OWLOntologyLoaderOptions DefaultOptions => new OWLOntologyLoaderOptions();
 
         /// <summary>
-        /// Tells the ontology loader to do its best to preserve ontology taxonomies from modeling errors, inconsistencies and contraddictions<br/>
+        /// Tells the ontology loader to do its best for preserving ontology taxonomies from modeling errors, inconsistencies and contraddictions<br/>
         /// Default: TRUE
         /// </summary>
         public bool EnableTaxonomyProtection { get; set; } = true;
 
         /// <summary>
-        /// Tells the ontology loader to activate OWL-DL analyzers on ontology taxonomies in addition to the standard RDFS T-BOX/A-BOX analyzers<br/>
+        /// Tells the ontology loader to activate OWL-DL analyzers on ontology taxonomies, in addition to the standard RDFS analyzers<br/>
         /// Default: TRUE
         /// </summary>
         public bool EnableOWLDLAnalyzer { get; set; } = true;
 
         /// <summary>
-        /// Tells the ontology loader to try declaring classes, properties and individuals even when not explicitly declared<br/>
+        /// Tells the ontology loader to try declaring classes, properties and individuals when not explicitly declared<br/>
         /// Default: FALSE
         /// </summary>
         public bool EnableAutomaticEntityDeclaration { get; set; } = false;

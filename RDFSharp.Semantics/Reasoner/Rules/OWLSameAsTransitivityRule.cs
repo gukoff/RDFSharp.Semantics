@@ -21,12 +21,12 @@ namespace RDFSharp.Semantics
     /// </summary>
     internal static class OWLSameAsTransitivityRule
     {
-        internal static OWLReasonerReport ExecuteRule(OWLOntology ontology)
+        internal static OWLReasonerReport ExecuteRule(OWLOntology ontology, OWLOntologyLoaderOptions loaderOptions)
         {
             #region RuleBody
             void InferSameIndividuals(RDFResource currentIndividual, OWLReasonerReport report)
             {
-                List<RDFResource> sameIndividuals = ontology.Data.GetSameIndividuals(currentIndividual);
+                List<RDFResource> sameIndividuals = ontology.Data.GetSameIndividuals(currentIndividual, loaderOptions);
                 foreach (RDFResource sameIndividual in sameIndividuals)
                 {
                     //Create the inferences

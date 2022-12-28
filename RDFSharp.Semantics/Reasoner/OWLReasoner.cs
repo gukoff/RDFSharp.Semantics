@@ -70,7 +70,7 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Applies the reasoner on the given ontology
         /// </summary>
-        public OWLReasonerReport ApplyToOntology(OWLOntology ontology)
+        public OWLReasonerReport ApplyToOntology(OWLOntology ontology, OWLOntologyLoaderOptions loaderOptions=null)
         {
             OWLReasonerReport reasonerReport = new OWLReasonerReport();
 
@@ -94,67 +94,67 @@ namespace RDFSharp.Semantics
                         switch (standardRule)
                         {
                             case OWLSemanticsEnums.OWLReasonerStandardRules.SubClassTransitivity:
-                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.SubClassTransitivity.ToString()] = OWLSubClassTransitivityRule.ExecuteRule(ontology);
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.SubClassTransitivity.ToString()] = OWLSubClassTransitivityRule.ExecuteRule(ontology, loaderOptions ?? OWLOntologyLoaderOptions.DefaultOptions);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.SubPropertyTransitivity:
-                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.SubPropertyTransitivity.ToString()] = OWLSubPropertyTransitivityRule.ExecuteRule(ontology);
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.SubPropertyTransitivity.ToString()] = OWLSubPropertyTransitivityRule.ExecuteRule(ontology, loaderOptions ?? OWLOntologyLoaderOptions.DefaultOptions);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.EquivalentClassTransitivity:
-                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.EquivalentClassTransitivity.ToString()] = OWLEquivalentClassTransitivityRule.ExecuteRule(ontology);
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.EquivalentClassTransitivity.ToString()] = OWLEquivalentClassTransitivityRule.ExecuteRule(ontology, loaderOptions ?? OWLOntologyLoaderOptions.DefaultOptions);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.EquivalentPropertyTransitivity:
-                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.EquivalentPropertyTransitivity.ToString()] = OWLEquivalentPropertyTransitivityRule.ExecuteRule(ontology);
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.EquivalentPropertyTransitivity.ToString()] = OWLEquivalentPropertyTransitivityRule.ExecuteRule(ontology, loaderOptions ?? OWLOntologyLoaderOptions.DefaultOptions);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.DisjointClassEntailment:
-                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.DisjointClassEntailment.ToString()] = OWLDisjointClassEntailmentRule.ExecuteRule(ontology);
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.DisjointClassEntailment.ToString()] = OWLDisjointClassEntailmentRule.ExecuteRule(ontology, loaderOptions ?? OWLOntologyLoaderOptions.DefaultOptions);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.DisjointPropertyEntailment:
-                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.DisjointPropertyEntailment.ToString()] = OWLDisjointPropertyEntailmentRule.ExecuteRule(ontology);
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.DisjointPropertyEntailment.ToString()] = OWLDisjointPropertyEntailmentRule.ExecuteRule(ontology, loaderOptions ?? OWLOntologyLoaderOptions.DefaultOptions);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.DomainEntailment:
-                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.DomainEntailment.ToString()] = OWLDomainEntailmentRule.ExecuteRule(ontology);
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.DomainEntailment.ToString()] = OWLDomainEntailmentRule.ExecuteRule(ontology, loaderOptions ?? OWLOntologyLoaderOptions.DefaultOptions);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.RangeEntailment:
-                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.RangeEntailment.ToString()] = OWLRangeEntailmentRule.ExecuteRule(ontology);
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.RangeEntailment.ToString()] = OWLRangeEntailmentRule.ExecuteRule(ontology, loaderOptions ?? OWLOntologyLoaderOptions.DefaultOptions);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.SameAsTransitivity:
-                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.SameAsTransitivity.ToString()] = OWLSameAsTransitivityRule.ExecuteRule(ontology);
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.SameAsTransitivity.ToString()] = OWLSameAsTransitivityRule.ExecuteRule(ontology, loaderOptions ?? OWLOntologyLoaderOptions.DefaultOptions);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.DifferentFromEntailment:
-                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.DifferentFromEntailment.ToString()] = OWLDifferentFromEntailmentRule.ExecuteRule(ontology);
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.DifferentFromEntailment.ToString()] = OWLDifferentFromEntailmentRule.ExecuteRule(ontology, loaderOptions ?? OWLOntologyLoaderOptions.DefaultOptions);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.IndividualTypeEntailment:
-                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.IndividualTypeEntailment.ToString()] = OWLIndividualTypeEntailmentRule.ExecuteRule(ontology);
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.IndividualTypeEntailment.ToString()] = OWLIndividualTypeEntailmentRule.ExecuteRule(ontology, loaderOptions ?? OWLOntologyLoaderOptions.DefaultOptions);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.SymmetricPropertyEntailment:
-                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.SymmetricPropertyEntailment.ToString()] = OWLSymmetricPropertyEntailmentRule.ExecuteRule(ontology);
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.SymmetricPropertyEntailment.ToString()] = OWLSymmetricPropertyEntailmentRule.ExecuteRule(ontology, loaderOptions ?? OWLOntologyLoaderOptions.DefaultOptions);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.TransitivePropertyEntailment:
-                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.TransitivePropertyEntailment.ToString()] = OWLTransitivePropertyEntailmentRule.ExecuteRule(ontology);
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.TransitivePropertyEntailment.ToString()] = OWLTransitivePropertyEntailmentRule.ExecuteRule(ontology, loaderOptions ?? OWLOntologyLoaderOptions.DefaultOptions);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.ReflexivePropertyEntailment:
-                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.ReflexivePropertyEntailment.ToString()] = OWLReflexivePropertyEntailmentRule.ExecuteRule(ontology);
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.ReflexivePropertyEntailment.ToString()] = OWLReflexivePropertyEntailmentRule.ExecuteRule(ontology, loaderOptions ?? OWLOntologyLoaderOptions.DefaultOptions);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.InverseOfEntailment:
-                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.InverseOfEntailment.ToString()] = OWLInverseOfEntailmentRule.ExecuteRule(ontology);
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.InverseOfEntailment.ToString()] = OWLInverseOfEntailmentRule.ExecuteRule(ontology, loaderOptions ?? OWLOntologyLoaderOptions.DefaultOptions);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.PropertyEntailment:
-                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.PropertyEntailment.ToString()] = OWLPropertyEntailmentRule.ExecuteRule(ontology);
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.PropertyEntailment.ToString()] = OWLPropertyEntailmentRule.ExecuteRule(ontology, loaderOptions ?? OWLOntologyLoaderOptions.DefaultOptions);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.SameAsEntailment:
-                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.SameAsEntailment.ToString()] = OWLSameAsEntailmentRule.ExecuteRule(ontology);
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.SameAsEntailment.ToString()] = OWLSameAsEntailmentRule.ExecuteRule(ontology, loaderOptions ?? OWLOntologyLoaderOptions.DefaultOptions);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.HasValueEntailment:
-                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.HasValueEntailment.ToString()] = OWLHasValueEntailmentRule.ExecuteRule(ontology);
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.HasValueEntailment.ToString()] = OWLHasValueEntailmentRule.ExecuteRule(ontology, loaderOptions ?? OWLOntologyLoaderOptions.DefaultOptions);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.HasSelfEntailment:
-                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.HasSelfEntailment.ToString()] = OWLHasSelfEntailmentRule.ExecuteRule(ontology);
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.HasSelfEntailment.ToString()] = OWLHasSelfEntailmentRule.ExecuteRule(ontology, loaderOptions ?? OWLOntologyLoaderOptions.DefaultOptions);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.HasKeyEntailment:
-                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.HasKeyEntailment.ToString()] = OWLHasKeyEntailmentRule.ExecuteRule(ontology);
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.HasKeyEntailment.ToString()] = OWLHasKeyEntailmentRule.ExecuteRule(ontology, loaderOptions ?? OWLOntologyLoaderOptions.DefaultOptions);
                                 break;
                             case OWLSemanticsEnums.OWLReasonerStandardRules.PropertyChainEntailment:
-                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.PropertyChainEntailment.ToString()] = OWLPropertyChainEntailmentRule.ExecuteRule(ontology);
+                                inferenceRegistry[OWLSemanticsEnums.OWLReasonerStandardRules.PropertyChainEntailment.ToString()] = OWLPropertyChainEntailmentRule.ExecuteRule(ontology, loaderOptions ?? OWLOntologyLoaderOptions.DefaultOptions);
                                 break;
                         }
 
@@ -185,8 +185,8 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Asynchronously applies the reasoner on the given ontology
         /// </summary>
-        public Task<OWLReasonerReport> ApplyToOntologyAsync(OWLOntology ontology)
-            => Task.Run(() => ApplyToOntology(ontology));
+        public Task<OWLReasonerReport> ApplyToOntologyAsync(OWLOntology ontology, OWLOntologyLoaderOptions loaderOptions=null)
+            => Task.Run(() => ApplyToOntology(ontology, loaderOptions));
         #endregion
     }
 }

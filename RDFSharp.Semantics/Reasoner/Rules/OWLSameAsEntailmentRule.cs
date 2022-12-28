@@ -22,12 +22,12 @@ namespace RDFSharp.Semantics
     /// </summary>
     internal static class OWLSameAsEntailmentRule
     {
-        internal static OWLReasonerReport ExecuteRule(OWLOntology ontology)
+        internal static OWLReasonerReport ExecuteRule(OWLOntology ontology, OWLOntologyLoaderOptions loaderOptions)
         {
             #region RuleBody
             void InferSameIndividualsAssertions(RDFResource currentIndividual, OWLReasonerReport report)
             {
-                List<RDFResource> sameIndividuals = ontology.Data.GetSameIndividuals(currentIndividual);
+                List<RDFResource> sameIndividuals = ontology.Data.GetSameIndividuals(currentIndividual, loaderOptions);
                 if (sameIndividuals.Any())
                 {
                     //Consider assertions having the current individual as SUBJECT

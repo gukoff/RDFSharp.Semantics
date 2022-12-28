@@ -36,7 +36,7 @@ namespace RDFSharp.Semantics.Reasoner.Test
             ontology.Data.DeclareIndividual(new RDFResource("ex:valentine"));
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:mark"), new RDFResource("ex:loves"), new RDFResource("ex:valentine"));
 
-            OWLReasonerReport reasonerReport = OWLPropertyEntailmentRule.ExecuteRule(ontology);
+            OWLReasonerReport reasonerReport = OWLPropertyEntailmentRule.ExecuteRule(ontology, OWLOntologyLoaderOptions.DefaultOptions);
 
             Assert.IsNotNull(reasonerReport);
             Assert.IsTrue(reasonerReport.EvidencesCount == 2);
@@ -75,7 +75,7 @@ namespace RDFSharp.Semantics.Reasoner.Test
             ontology.Data.DeclareIndividual(new RDFResource("ex:mark"));
             ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:mark"), new RDFResource("ex:loves"), new RDFPlainLiteral("valentine", "en-US"));
 
-            OWLReasonerReport reasonerReport = OWLPropertyEntailmentRule.ExecuteRule(ontology);
+            OWLReasonerReport reasonerReport = OWLPropertyEntailmentRule.ExecuteRule(ontology, OWLOntologyLoaderOptions.DefaultOptions);
 
             Assert.IsNotNull(reasonerReport);
             Assert.IsTrue(reasonerReport.EvidencesCount == 2);

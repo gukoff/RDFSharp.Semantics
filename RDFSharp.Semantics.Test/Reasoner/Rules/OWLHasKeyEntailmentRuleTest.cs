@@ -41,7 +41,7 @@ namespace RDFSharp.Semantics.Reasoner.Test
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv2"), new RDFResource("ex:objprop"), new RDFResource("ex:keyval"));
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objprop"), new RDFResource("ex:keyval2"));
 
-            OWLReasonerReport reasonerReport = OWLHasKeyEntailmentRule.ExecuteRule(ontology);
+            OWLReasonerReport reasonerReport = OWLHasKeyEntailmentRule.ExecuteRule(ontology, OWLOntologyLoaderOptions.DefaultOptions);
 
             Assert.IsNotNull(reasonerReport);
             Assert.IsTrue(reasonerReport.EvidencesCount == 2);
@@ -67,7 +67,7 @@ namespace RDFSharp.Semantics.Reasoner.Test
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv2"), new RDFResource("ex:objprop2"), new RDFResource("ex:keyval2"));
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objprop"), new RDFResource("ex:keyval"));
 
-            OWLReasonerReport reasonerReport = OWLHasKeyEntailmentRule.ExecuteRule(ontology);
+            OWLReasonerReport reasonerReport = OWLHasKeyEntailmentRule.ExecuteRule(ontology, OWLOntologyLoaderOptions.DefaultOptions);
 
             Assert.IsNotNull(reasonerReport);
             Assert.IsTrue(reasonerReport.EvidencesCount == 2);
@@ -90,7 +90,7 @@ namespace RDFSharp.Semantics.Reasoner.Test
             ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:indiv2"), new RDFResource("ex:dtprop"), new RDFPlainLiteral("keyval"));
             ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:dtprop"), new RDFPlainLiteral("keyval2"));
 
-            OWLReasonerReport reasonerReport = OWLHasKeyEntailmentRule.ExecuteRule(ontology);
+            OWLReasonerReport reasonerReport = OWLHasKeyEntailmentRule.ExecuteRule(ontology, OWLOntologyLoaderOptions.DefaultOptions);
 
             Assert.IsNotNull(reasonerReport);
             Assert.IsTrue(reasonerReport.EvidencesCount == 2);
@@ -116,7 +116,7 @@ namespace RDFSharp.Semantics.Reasoner.Test
             ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:indiv2"), new RDFResource("ex:dtprop2"), new RDFPlainLiteral("keyval2"));
             ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:dtprop"), new RDFPlainLiteral("keyval"));
 
-            OWLReasonerReport reasonerReport = OWLHasKeyEntailmentRule.ExecuteRule(ontology);
+            OWLReasonerReport reasonerReport = OWLHasKeyEntailmentRule.ExecuteRule(ontology, OWLOntologyLoaderOptions.DefaultOptions);
 
             Assert.IsNotNull(reasonerReport);
             Assert.IsTrue(reasonerReport.EvidencesCount == 2);

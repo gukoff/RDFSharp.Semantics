@@ -36,7 +36,7 @@ namespace RDFSharp.Semantics.Reasoner.Test
             ontology.Data.DeclareIndividual(new RDFResource("ex:indiv"));
             ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv"), new RDFResource("ex:class3"));
 
-            OWLReasonerReport reasonerReport = OWLIndividualTypeEntailmentRule.ExecuteRule(ontology);
+            OWLReasonerReport reasonerReport = OWLIndividualTypeEntailmentRule.ExecuteRule(ontology, OWLOntologyLoaderOptions.DefaultOptions);
 
             Assert.IsNotNull(reasonerReport);
             Assert.IsTrue(reasonerReport.EvidencesCount == 2);
@@ -52,7 +52,7 @@ namespace RDFSharp.Semantics.Reasoner.Test
             ontology.Data.DeclareIndividual(new RDFResource("ex:indiv2"));
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objprop"), new RDFResource("ex:indiv2"));
 
-            OWLReasonerReport reasonerReport = OWLIndividualTypeEntailmentRule.ExecuteRule(ontology);
+            OWLReasonerReport reasonerReport = OWLIndividualTypeEntailmentRule.ExecuteRule(ontology, OWLOntologyLoaderOptions.DefaultOptions);
 
             Assert.IsNotNull(reasonerReport);
             Assert.IsTrue(reasonerReport.EvidencesCount == 1);
@@ -71,7 +71,7 @@ namespace RDFSharp.Semantics.Reasoner.Test
             ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv2"), new RDFResource("ex:simpleClass"));
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objprop"), new RDFResource("ex:indiv2"));
 
-            OWLReasonerReport reasonerReport = OWLIndividualTypeEntailmentRule.ExecuteRule(ontology);
+            OWLReasonerReport reasonerReport = OWLIndividualTypeEntailmentRule.ExecuteRule(ontology, OWLOntologyLoaderOptions.DefaultOptions);
 
             Assert.IsNotNull(reasonerReport);
             Assert.IsTrue(reasonerReport.EvidencesCount == 3); // 2 evidences from union class, 1 evidence from restriction class
@@ -85,7 +85,7 @@ namespace RDFSharp.Semantics.Reasoner.Test
             ontology.Data.DeclareIndividual(new RDFResource("ex:indiv1"));
             ontology.Data.DeclareIndividual(new RDFResource("ex:indiv2"));
 
-            OWLReasonerReport reasonerReport = OWLIndividualTypeEntailmentRule.ExecuteRule(ontology);
+            OWLReasonerReport reasonerReport = OWLIndividualTypeEntailmentRule.ExecuteRule(ontology, OWLOntologyLoaderOptions.DefaultOptions);
 
             Assert.IsNotNull(reasonerReport);
             Assert.IsTrue(reasonerReport.EvidencesCount == 2);

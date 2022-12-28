@@ -34,7 +34,7 @@ namespace RDFSharp.Semantics.Reasoner.Test
             ontology.Data.DeclareIndividual(new RDFResource("ex:indiv"));
             ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv"), new RDFResource("ex:class"));
 
-            OWLReasonerReport reasonerReport = OWLHasSelfEntailmentRule.ExecuteRule(ontology);
+            OWLReasonerReport reasonerReport = OWLHasSelfEntailmentRule.ExecuteRule(ontology, OWLOntologyLoaderOptions.DefaultOptions);
 
             Assert.IsNotNull(reasonerReport);
             Assert.IsTrue(reasonerReport.EvidencesCount == 1);

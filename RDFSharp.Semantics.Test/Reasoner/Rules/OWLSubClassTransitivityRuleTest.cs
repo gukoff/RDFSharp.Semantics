@@ -35,7 +35,7 @@ namespace RDFSharp.Semantics.Reasoner.Test
             ontology.Model.ClassModel.DeclareSubClasses(new RDFResource("ex:classB"), new RDFResource("ex:classC"));
             ontology.Model.ClassModel.DeclareEquivalentClasses(new RDFResource("ex:classC"), new RDFResource("ex:classD"));
 
-            OWLReasonerReport reasonerReport = OWLSubClassTransitivityRule.ExecuteRule(ontology);
+            OWLReasonerReport reasonerReport = OWLSubClassTransitivityRule.ExecuteRule(ontology, OWLOntologyLoaderOptions.DefaultOptions);
 
             Assert.IsNotNull(reasonerReport);
             Assert.IsTrue(reasonerReport.EvidencesCount == 3);

@@ -36,7 +36,7 @@ namespace RDFSharp.Semantics.Reasoner.Test
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objpropA"), new RDFResource("ex:indiv2"));
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv2"), new RDFResource("ex:objpropA"), new RDFResource("ex:indiv3"));
 
-            OWLReasonerReport reasonerReport = OWLRangeEntailmentRule.ExecuteRule(ontology);
+            OWLReasonerReport reasonerReport = OWLRangeEntailmentRule.ExecuteRule(ontology, OWLOntologyLoaderOptions.DefaultOptions);
 
             Assert.IsNotNull(reasonerReport);
             Assert.IsTrue(reasonerReport.EvidencesCount == 2);

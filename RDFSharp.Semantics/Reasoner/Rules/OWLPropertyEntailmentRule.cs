@@ -22,7 +22,7 @@ namespace RDFSharp.Semantics
     /// </summary>
     internal static class OWLPropertyEntailmentRule
     {
-        internal static OWLReasonerReport ExecuteRule(OWLOntology ontology)
+        internal static OWLReasonerReport ExecuteRule(OWLOntology ontology, OWLOntologyLoaderOptions loaderOptions)
         {
             #region RuleBody
             void InferAssertionsFromPropertyHierarchy(RDFResource currentProperty, OWLReasonerReport report)
@@ -32,7 +32,8 @@ namespace RDFSharp.Semantics
 
                 //Calculate properties compatible with the current properties
                 List<RDFResource> compatibleProperties = ontology.Model.PropertyModel.GetSuperPropertiesOf(currentProperty)
-                                                            .Union(ontology.Model.PropertyModel.GetEquivalentPropertiesOf(currentProperty)).ToList();
+                                                            .Union(loaderOptions.EnableOWLDLAnalyzer ? ontology.Model.PropertyModel.GetEquivalentPropertiesOf(currentProperty)
+                                                                                                     : Enumerable.Empty<RDFResource>()).ToList();
 
                 //Extend current property assertions to each of the compatible properties
                 foreach (RDFResource compatibleProperty in compatibleProperties)

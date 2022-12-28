@@ -40,7 +40,7 @@ namespace RDFSharp.Semantics.Reasoner.Test
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv4"), new RDFResource("ex:objprop"), new RDFResource("ex:indiv5"));
             ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv5"), new RDFResource("ex:objprop"), new RDFResource("ex:indiv6"));
 
-            OWLReasonerReport reasonerReport = OWLTransitivePropertyEntailmentRule.ExecuteRule(ontology);
+            OWLReasonerReport reasonerReport = OWLTransitivePropertyEntailmentRule.ExecuteRule(ontology, OWLOntologyLoaderOptions.DefaultOptions);
 
             Assert.IsNotNull(reasonerReport);
             Assert.IsTrue(reasonerReport.EvidencesCount == 4);

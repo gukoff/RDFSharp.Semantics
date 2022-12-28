@@ -21,12 +21,12 @@ namespace RDFSharp.Semantics
     /// </summary>
     internal static class OWLDifferentFromEntailmentRule
     {
-        internal static OWLReasonerReport ExecuteRule(OWLOntology ontology)
+        internal static OWLReasonerReport ExecuteRule(OWLOntology ontology, OWLOntologyLoaderOptions loaderOptions)
         {
             #region RuleBody
             void InferDifferentIndividuals(RDFResource currentIndividual, OWLReasonerReport report)
             {
-                List<RDFResource> differentIndividuals = ontology.Data.GetDifferentIndividuals(currentIndividual);
+                List<RDFResource> differentIndividuals = ontology.Data.GetDifferentIndividuals(currentIndividual, loaderOptions);
                 foreach (RDFResource differentIndividual in differentIndividuals)
                 {
                     //Create the inferences

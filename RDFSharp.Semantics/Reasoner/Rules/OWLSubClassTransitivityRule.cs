@@ -13,7 +13,6 @@
 
 using RDFSharp.Model;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace RDFSharp.Semantics
 {
@@ -22,7 +21,7 @@ namespace RDFSharp.Semantics
     /// </summary>
     internal static class OWLSubClassTransitivityRule
     {
-        internal static OWLReasonerReport ExecuteRule(OWLOntology ontology)
+        internal static OWLReasonerReport ExecuteRule(OWLOntology ontology, OWLOntologyLoaderOptions loaderOptions)
         {
             #region RuleBody
             void InferSuperClasses(RDFResource currentClass, OWLReasonerReport report)

@@ -35,7 +35,7 @@ namespace RDFSharp.Semantics.Reasoner.Test
             ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv"), new RDFResource("ex:class"));
             ontology.Data.DeclareIndividual(new RDFResource("ex:hvRestrictionValue"));
 
-            OWLReasonerReport reasonerReport = OWLHasValueEntailmentRule.ExecuteRule(ontology);
+            OWLReasonerReport reasonerReport = OWLHasValueEntailmentRule.ExecuteRule(ontology, OWLOntologyLoaderOptions.DefaultOptions);
 
             Assert.IsNotNull(reasonerReport);
             Assert.IsTrue(reasonerReport.EvidencesCount == 1);
@@ -52,7 +52,7 @@ namespace RDFSharp.Semantics.Reasoner.Test
             ontology.Data.DeclareIndividual(new RDFResource("ex:indiv"));
             ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv"), new RDFResource("ex:class"));
 
-            OWLReasonerReport reasonerReport = OWLHasValueEntailmentRule.ExecuteRule(ontology);
+            OWLReasonerReport reasonerReport = OWLHasValueEntailmentRule.ExecuteRule(ontology, OWLOntologyLoaderOptions.DefaultOptions);
 
             Assert.IsNotNull(reasonerReport);
             Assert.IsTrue(reasonerReport.EvidencesCount == 1);

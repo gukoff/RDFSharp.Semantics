@@ -21,7 +21,7 @@ namespace RDFSharp.Semantics
     /// </summary>
     internal static class OWLIndividualTypeEntailmentRule
     {
-        internal static OWLReasonerReport ExecuteRule(OWLOntology ontology)
+        internal static OWLReasonerReport ExecuteRule(OWLOntology ontology, OWLOntologyLoaderOptions loaderOptions)
         {
             #region RuleBody
             void InferClassIndividuals(RDFResource currentClass, List<RDFResource> classIndividuals, OWLReasonerReport report)
@@ -44,37 +44,8 @@ namespace RDFSharp.Semantics
             IEnumerator<RDFResource> classesEnumerator = ontology.Model.ClassModel.ClassesEnumerator;
             while (classesEnumerator.MoveNext())
             {
-                //SimpleClass
-                if (ontology.Model.ClassModel.CheckHasSimpleClass(classesEnumerator.Current))
-                {
-                    List<RDFResource> simpleClassIndividuals = ontology.Data.FindIndividualsOfClass(ontology.Model, classesEnumerator.Current);
-                    InferClassIndividuals(classesEnumerator.Current, simpleClassIndividuals, reasonerRuleReport);
-                    continue;
-                }
-
-                //EnumerateClass
-                if (ontology.Model.ClassModel.CheckHasEnumerateClass(classesEnumerator.Current))
-                {
-                    List<RDFResource> enumerateClassIndividuals = ontology.Data.FindIndividualsOfEnumerate(ontology.Model, classesEnumerator.Current);
-                    InferClassIndividuals(classesEnumerator.Current, enumerateClassIndividuals, reasonerRuleReport);
-                    continue;
-                }
-
-                //RestrictionClass
-                if (ontology.Model.ClassModel.CheckHasRestrictionClass(classesEnumerator.Current))
-                {
-                    List<RDFResource> restrictionClassIndividuals = ontology.Data.FindIndividualsOfRestriction(ontology.Model, classesEnumerator.Current);
-                    InferClassIndividuals(classesEnumerator.Current, restrictionClassIndividuals, reasonerRuleReport);
-                    continue;
-                }
-
-                //CompositeClass
-                if (ontology.Model.ClassModel.CheckHasCompositeClass(classesEnumerator.Current))
-                {
-                    List<RDFResource> compositeClassIndividuals = ontology.Data.FindIndividualsOfComposite(ontology.Model, classesEnumerator.Current);
-                    InferClassIndividuals(classesEnumerator.Current, compositeClassIndividuals, reasonerRuleReport);
-                    continue;
-                }
+                List<RDFResource> individuals = ontology.Data.GetIndividualsOf(ontology.Model, classesEnumerator.Current, loaderOptions);
+                InferClassIndividuals(classesEnumerator.Current, individuals, reasonerRuleReport);
             }
 
             return reasonerRuleReport;
