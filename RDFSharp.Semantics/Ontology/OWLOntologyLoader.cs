@@ -91,20 +91,17 @@ namespace RDFSharp.Semantics
     public class OWLOntologyLoaderOptions
     {
         #region Properties
-        /// <summary>
-        /// Gives an object representing default loader options
-        /// </summary>
         internal static OWLOntologyLoaderOptions DefaultOptions => new OWLOntologyLoaderOptions();
 
         /// <summary>
         /// Tells the ontology loader to do its best for preserving ontology taxonomies from modeling errors, inconsistencies and contraddictions<br/>
-        /// Default: TRUE
+        /// [Default: True]
         /// </summary>
         public bool EnableTaxonomyProtection { get; set; } = true;
 
         /// <summary>
-        /// Tells the ontology loader to try declaring classes, properties and individuals when not explicitly declared<br/>
-        /// Default: FALSE
+        /// Tells the ontology loader to try declaring entities (classes as simple classes, properties as object properties, individuals) when not explicitly declared<br/>
+        /// [Default: False]
         /// </summary>
         public bool EnableAutomaticEntityDeclaration { get; set; } = false;
         #endregion
