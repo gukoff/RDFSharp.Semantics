@@ -14,6 +14,7 @@
    limitations under the License.
 */
 
+using System;
 using System.Threading.Tasks;
 using RDFSharp.Model;
 
@@ -22,7 +23,7 @@ namespace RDFSharp.Semantics
     /// <summary>
     /// OWLOntologyModel represents the T-BOX of the application domain formalized by the ontology
     /// </summary>
-    public class OWLOntologyModel
+    public class OWLOntologyModel: IDisposable
     {
         #region Properties
         /// <summary>
@@ -34,6 +35,11 @@ namespace RDFSharp.Semantics
         /// Model of the properties linking the entities of the application domain
         /// </summary>
         public OWLOntologyPropertyModel PropertyModel { get; internal set; }
+
+        /// <summary>
+        /// Flag indicating that the ontology model has already been disposed
+        /// </summary>
+        internal bool Disposed { get; set; }
         #endregion
 
         #region Ctors
@@ -53,6 +59,41 @@ namespace RDFSharp.Semantics
         {
             ClassModel = classModel ?? new OWLOntologyClassModel();
             PropertyModel = propertyModel ?? new OWLOntologyPropertyModel();
+        }
+
+        /// <summary>
+        /// Destroys the ontology model instance
+        /// </summary>
+        ~OWLOntologyModel() => Dispose(false);
+        #endregion
+
+        #region Interfaces
+        /// <summary>
+        /// Disposes the ontology model (IDisposable)
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Disposes the ontology model 
+        /// </summary>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (Disposed)
+                return;
+
+            if (disposing)
+            {
+                ClassModel.Dispose();
+                PropertyModel.Dispose();
+                ClassModel = null;
+                PropertyModel = null;
+            }
+
+            Disposed = true;
         }
         #endregion
 

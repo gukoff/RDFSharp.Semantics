@@ -54,6 +54,23 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
+        public void ShouldDisposeDataWithUsing()
+        {
+            OWLOntologyData data;
+            using (data = new OWLOntologyData())
+            {
+                Assert.IsFalse(data.Disposed);
+                Assert.IsNotNull(data.Individuals);
+                Assert.IsNotNull(data.ABoxGraph);
+                Assert.IsNotNull(data.OBoxGraph);
+            };
+            Assert.IsTrue(data.Disposed);
+            Assert.IsNull(data.Individuals);
+            Assert.IsNull(data.ABoxGraph);
+            Assert.IsNull(data.OBoxGraph);
+        }
+
+        [TestMethod]
         public void ShouldDeclareIndividual()
         {
             OWLOntologyData data = new OWLOntologyData();

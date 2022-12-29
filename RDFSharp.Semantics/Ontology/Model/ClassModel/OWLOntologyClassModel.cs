@@ -14,6 +14,7 @@
    limitations under the License.
 */
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace RDFSharp.Semantics
     /// <summary>
     /// OWLOntologyClassModel represents the T-BOX of application domain entities (classes)
     /// </summary>
-    public class OWLOntologyClassModel : IEnumerable<RDFResource>
+    public class OWLOntologyClassModel : IEnumerable<RDFResource>, IDisposable
     {
         #region Properties
         /// <summary>
@@ -234,6 +235,11 @@ namespace RDFSharp.Semantics
         /// T-BOX knowledge annotating classes
         /// </summary>
         internal RDFGraph OBoxGraph { get; set; }
+
+        /// <summary>
+        /// Flag indicating that the ontology class model has already been disposed
+        /// </summary>
+        internal bool Disposed { get; set; }
         #endregion
 
         #region Ctors
@@ -246,6 +252,11 @@ namespace RDFSharp.Semantics
             TBoxGraph = new RDFGraph();
             OBoxGraph = new RDFGraph();
         }
+
+        /// <summary>
+        /// Destroys the ontology class model instance
+        /// </summary>
+        ~OWLOntologyClassModel() => Dispose(false);
         #endregion
 
         #region Interfaces
@@ -260,6 +271,37 @@ namespace RDFSharp.Semantics
         /// </summary>
         IEnumerator IEnumerable.GetEnumerator()
             => ClassesEnumerator;
+
+        /// <summary>
+        /// Disposes the ontology class model (IDisposable)
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Disposes the ontology class model 
+        /// </summary>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (Disposed)
+                return;
+
+            if (disposing)
+            {
+                Classes.Clear();
+                TBoxGraph.Dispose();
+                OBoxGraph.Dispose();
+
+                Classes = null;
+                TBoxGraph = null;
+                OBoxGraph = null;
+            }
+
+            Disposed = true;
+        }
         #endregion
 
         #region Methods

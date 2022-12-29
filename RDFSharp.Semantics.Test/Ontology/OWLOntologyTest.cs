@@ -15,6 +15,7 @@
 */
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -50,6 +51,23 @@ namespace RDFSharp.Semantics.Test
             Assert.IsNotNull(ontology.OBoxGraph);
             Assert.IsTrue(ontology.OBoxGraph.Context.Equals(new Uri("ex:ont")));
             Assert.IsTrue(ontology.OBoxGraph[new RDFResource("ex:ont"), RDFVocabulary.RDF.TYPE, RDFVocabulary.OWL.ONTOLOGY, null].Any());
+        }
+
+        [TestMethod]
+        public void ShouldDisposeOntologyWithUsing()
+        {
+            OWLOntology ontology;
+            using (ontology = new OWLOntology("ex:ont"))
+            {
+                Assert.IsFalse(ontology.Disposed);
+                Assert.IsNotNull(ontology.Model);
+                Assert.IsNotNull(ontology.Data);
+                Assert.IsNotNull(ontology.OBoxGraph);
+            };
+            Assert.IsTrue(ontology.Disposed);
+            Assert.IsNull(ontology.Model);
+            Assert.IsNull(ontology.Data);
+            Assert.IsNull(ontology.OBoxGraph);
         }
 
         [TestMethod]

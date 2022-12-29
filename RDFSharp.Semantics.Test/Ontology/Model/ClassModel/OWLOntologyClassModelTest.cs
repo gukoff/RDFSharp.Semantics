@@ -88,6 +88,23 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
+        public void ShouldDisposeClassModelWithUsing()
+        {
+            OWLOntologyClassModel model;
+            using (model = new OWLOntologyClassModel())
+            {
+                Assert.IsFalse(model.Disposed);
+                Assert.IsNotNull(model.Classes);
+                Assert.IsNotNull(model.TBoxGraph);
+                Assert.IsNotNull(model.OBoxGraph);
+            };
+            Assert.IsTrue(model.Disposed);
+            Assert.IsNull(model.Classes);
+            Assert.IsNull(model.TBoxGraph);
+            Assert.IsNull(model.OBoxGraph);
+        }
+
+        [TestMethod]
         public void ShouldDeclareClass()
         {
             OWLOntologyClassModel classModel = new OWLOntologyClassModel();

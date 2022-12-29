@@ -14,6 +14,7 @@
    limitations under the License.
 */
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace RDFSharp.Semantics
     /// <summary>
     /// OWLOntologyData represents the A-BOX available to an ontology from the application domain
     /// </summary>
-    public class OWLOntologyData : IEnumerable<RDFResource>
+    public class OWLOntologyData : IEnumerable<RDFResource>, IDisposable
     {
         #region Properties
         /// <summary>
@@ -77,6 +78,11 @@ namespace RDFSharp.Semantics
         /// A-BOX knowledge annotating the data
         /// </summary>
         internal RDFGraph OBoxGraph { get; set; }
+
+        /// <summary>
+        /// Flag indicating that the ontology data has already been disposed
+        /// </summary>
+        internal bool Disposed { get; set; }
         #endregion
 
         #region Ctors
@@ -89,6 +95,11 @@ namespace RDFSharp.Semantics
             ABoxGraph = new RDFGraph();
             OBoxGraph = new RDFGraph();
         }
+
+        /// <summary>
+        /// Destroys the ontology data instance
+        /// </summary>
+        ~OWLOntologyData() => Dispose(false);
         #endregion
 
         #region Interfaces
@@ -103,6 +114,37 @@ namespace RDFSharp.Semantics
         /// </summary>
         IEnumerator IEnumerable.GetEnumerator() 
             => IndividualsEnumerator;
+
+        /// <summary>
+        /// Disposes the ontology data (IDisposable)
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Disposes the ontology data
+        /// </summary>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (Disposed)
+                return;
+
+            if (disposing)
+            {
+                Individuals.Clear();
+                ABoxGraph.Dispose();
+                OBoxGraph.Dispose();
+
+                Individuals = null;
+                ABoxGraph = null;
+                OBoxGraph = null;
+            }
+
+            Disposed = true;
+        }
         #endregion
 
         #region Methods

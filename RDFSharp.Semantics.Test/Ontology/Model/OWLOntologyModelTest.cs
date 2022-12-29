@@ -46,6 +46,21 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
+        public void ShouldDisposeModelWithUsing()
+        {
+            OWLOntologyModel model;
+            using (model = new OWLOntologyModel())
+            {
+                Assert.IsFalse(model.Disposed);
+                Assert.IsNotNull(model.ClassModel);
+                Assert.IsNotNull(model.PropertyModel);
+            };
+            Assert.IsTrue(model.Disposed);
+            Assert.IsNull(model.ClassModel);
+            Assert.IsNull(model.PropertyModel);
+        }
+
+        [TestMethod]
         public void ShouldExportToGraph()
         {
             OWLOntologyModel model = new OWLOntologyModel();

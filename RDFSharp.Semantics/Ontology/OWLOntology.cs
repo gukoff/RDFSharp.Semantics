@@ -23,7 +23,7 @@ namespace RDFSharp.Semantics
     /// <summary>
     /// OWLOntology represents the formal description of an application domain in terms of T-BOX (Model) and A-BOX (Data)
     /// </summary>
-    public class OWLOntology : RDFResource
+    public class OWLOntology : RDFResource, IDisposable
     {
         #region Properties
         /// <summary>
@@ -40,6 +40,11 @@ namespace RDFSharp.Semantics
         /// Knowledge describing ontology itself (annotations)
         /// </summary>
         internal RDFGraph OBoxGraph { get; set; }
+
+        /// <summary>
+        /// Flag indicating that the ontology has already been disposed
+        /// </summary>
+        internal bool Disposed { get; set; }
         #endregion
 
         #region Ctors
@@ -63,6 +68,44 @@ namespace RDFSharp.Semantics
         {
             Model = model ?? new OWLOntologyModel();
             Data = data ?? new OWLOntologyData();
+        }
+
+        /// <summary>
+        /// Destroys the ontology instance
+        /// </summary>
+        ~OWLOntology() => Dispose(false);
+        #endregion
+
+        #region Interfaces
+        /// <summary>
+        /// Disposes the ontology (IDisposable)
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Disposes the ontology
+        /// </summary>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (Disposed)
+                return;
+
+            if (disposing)
+            {
+                Model.Dispose();
+                Data.Dispose();
+                OBoxGraph.Dispose();
+
+                Model = null;
+                Data = null;
+                OBoxGraph = null;
+            }
+
+            Disposed = true;
         }
         #endregion
 

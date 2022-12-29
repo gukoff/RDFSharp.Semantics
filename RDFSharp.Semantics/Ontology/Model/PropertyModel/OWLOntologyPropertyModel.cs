@@ -14,6 +14,7 @@
    limitations under the License.
 */
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace RDFSharp.Semantics
     /// <summary>
     /// OWLOntologyPropertyModel represents the T-BOX of application domain properties
     /// </summary>
-    public class OWLOntologyPropertyModel : IEnumerable<RDFResource>
+    public class OWLOntologyPropertyModel : IEnumerable<RDFResource>, IDisposable
     {
         #region Properties
         /// <summary>
@@ -418,6 +419,11 @@ namespace RDFSharp.Semantics
         /// T-BOX knowledge annotating properties
         /// </summary>
         internal RDFGraph OBoxGraph { get; set; }
+
+        /// <summary>
+        /// Flag indicating that the ontology property model has already been disposed
+        /// </summary>
+        internal bool Disposed { get; set; }
         #endregion
 
         #region Ctors
@@ -430,6 +436,11 @@ namespace RDFSharp.Semantics
             TBoxGraph = new RDFGraph();
             OBoxGraph = new RDFGraph();
         }
+
+        /// <summary>
+        /// Destroys the ontology property model instance
+        /// </summary>
+        ~OWLOntologyPropertyModel() => Dispose(false);
         #endregion
 
         #region Interfaces
@@ -444,6 +455,37 @@ namespace RDFSharp.Semantics
         /// </summary>
         IEnumerator IEnumerable.GetEnumerator()
             => PropertiesEnumerator;
+
+        /// <summary>
+        /// Disposes the ontology property model (IDisposable)
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Disposes the ontology property model 
+        /// </summary>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (Disposed)
+                return;
+
+            if (disposing)
+            {
+                Properties.Clear();
+                TBoxGraph.Dispose();
+                OBoxGraph.Dispose();
+
+                Properties = null;
+                TBoxGraph = null;
+                OBoxGraph = null;
+            }
+
+            Disposed = true;
+        }
         #endregion
 
         #region Methods

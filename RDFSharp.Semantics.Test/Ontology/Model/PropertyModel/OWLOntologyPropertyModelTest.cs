@@ -130,6 +130,23 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
+        public void ShouldDisposePropertyModelWithUsing()
+        {
+            OWLOntologyPropertyModel model;
+            using (model = new OWLOntologyPropertyModel())
+            {
+                Assert.IsFalse(model.Disposed);
+                Assert.IsNotNull(model.Properties);
+                Assert.IsNotNull(model.TBoxGraph);
+                Assert.IsNotNull(model.OBoxGraph);
+            };
+            Assert.IsTrue(model.Disposed);
+            Assert.IsNull(model.Properties);
+            Assert.IsNull(model.TBoxGraph);
+            Assert.IsNull(model.OBoxGraph);
+        }
+
+        [TestMethod]
         public void ShouldDeclareAnnotationProperty()
         {
             OWLOntologyPropertyModel propertyModel = new OWLOntologyPropertyModel();
