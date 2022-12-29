@@ -86,7 +86,7 @@ namespace RDFSharp.Semantics
     }
 
     /// <summary>
-    /// OWLOntologyLoaderOptions permits to locally customize certain aspects of ontology management
+    /// OWLOntologyLoaderOptions represents a configuration for customizing specific aspects of ontology loading
     /// </summary>
     public class OWLOntologyLoaderOptions
     {
