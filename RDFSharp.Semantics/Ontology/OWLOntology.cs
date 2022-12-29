@@ -120,13 +120,25 @@ namespace RDFSharp.Semantics
         /// <summary>
         /// Gets an ontology representation from the given graph
         /// </summary>
-        public static OWLOntology FromRDFGraph(RDFGraph graph, OWLOntologyLoaderOptions loaderOptions=null)
+        public static OWLOntology FromRDFGraph(RDFGraph graph)
+            => FromRDFGraph(graph, OWLOntologyLoaderOptions.DefaultOptions);
+
+        /// <summary>
+        /// Gets an ontology representation from the given graph (applying the given loader options)
+        /// </summary>
+        public static OWLOntology FromRDFGraph(RDFGraph graph, OWLOntologyLoaderOptions loaderOptions)
             => OWLOntologyLoader.FromRDFGraph(graph, loaderOptions);
 
         /// <summary>
         /// Asynchronously gets an ontology representation from the given graph
         /// </summary>
-        public static Task<OWLOntology> FromRDFGraphAsync(RDFGraph graph, OWLOntologyLoaderOptions loaderOptions=null)
+        public static Task<OWLOntology> FromRDFGraphAsync(RDFGraph graph)
+            => Task.Run(() => FromRDFGraph(graph));
+
+        /// <summary>
+        /// Asynchronously gets an ontology representation from the given graph (applying the given loader options)
+        /// </summary>
+        public static Task<OWLOntology> FromRDFGraphAsync(RDFGraph graph, OWLOntologyLoaderOptions loaderOptions)
             => Task.Run(() => FromRDFGraph(graph, loaderOptions));
         #endregion
     }
