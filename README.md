@@ -8,4 +8,4 @@ This is an additional <a href="https://github.com/mdesalvo/RDFSharp">RDFSharp</a
     <li>Creating <b>SKOS schemes</b> (concepts, collections, relations, annotations, labels, ...)</li>
 </ul>
 
-Documentation of the library architecture and features is available <a href="https://github.com/mdesalvo/RDFSharp.Semantics/releases/download/v3.0.0/RDFSharp.Semantics-3.0.0.pdf">here</a>
+Documentation of the library architecture and features is available <a href="https://github.com/mdesalvo/RDFSharp.Semantics/releases/download/v3.1.0/RDFSharp.Semantics-3.1.0.pdf">here</a>
