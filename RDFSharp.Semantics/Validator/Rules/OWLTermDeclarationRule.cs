@@ -27,6 +27,7 @@ namespace RDFSharp.Semantics
         internal static OWLValidatorReport ExecuteRule(OWLOntology ontology)
         {
             OWLValidatorReport validatorRuleReport = new OWLValidatorReport();
+            Dictionary<string, long> hashContext = new Dictionary<string, long>();
 
             #region ClassModel
             //rdfs:subClassOf
@@ -588,7 +589,7 @@ namespace RDFSharp.Semantics
             foreach (DataRow negativeObjectAssertion in negativeObjectAssertionQueryResult.SelectResults.Rows)
             {
                 string nasnSource = negativeObjectAssertion["?NASN_SOURCE"].ToString();
-                if (!ontology.Data.CheckHasIndividual(new RDFResource(nasnSource)))
+                if (!ontology.Data.CheckHasIndividual(new RDFResource(nasnSource, hashContext)))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
                         nameof(OWLTermDeclarationRule),
@@ -596,7 +597,7 @@ namespace RDFSharp.Semantics
                         $"Declare '{nasnSource}' individual to the data"));
 
                 string nasnProperty = negativeObjectAssertion["?NASN_PROPERTY"].ToString();
-                if (!ontology.Model.PropertyModel.CheckHasProperty(new RDFResource(nasnProperty)))
+                if (!ontology.Model.PropertyModel.CheckHasProperty(new RDFResource(nasnProperty, hashContext)))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
                         nameof(OWLTermDeclarationRule),
@@ -604,7 +605,7 @@ namespace RDFSharp.Semantics
                         $"Declare '{nasnProperty}' property to the property model"));
 
                 string nasnTarget = negativeObjectAssertion["?NASN_TARGET"].ToString();
-                if (!ontology.Data.CheckHasIndividual(new RDFResource(nasnTarget)))
+                if (!ontology.Data.CheckHasIndividual(new RDFResource(nasnTarget, hashContext)))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
                         nameof(OWLTermDeclarationRule),
@@ -628,7 +629,7 @@ namespace RDFSharp.Semantics
             foreach (DataRow negativeDatatypeAssertion in negativeDatatypeAssertionQueryResult.SelectResults.Rows)
             {
                 string nasnSource = negativeDatatypeAssertion["?NASN_SOURCE"].ToString();
-                if (!ontology.Data.CheckHasIndividual(new RDFResource(nasnSource)))
+                if (!ontology.Data.CheckHasIndividual(new RDFResource(nasnSource, hashContext)))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
                         nameof(OWLTermDeclarationRule),
@@ -636,7 +637,7 @@ namespace RDFSharp.Semantics
                         $"Declare '{nasnSource}' individual to the data"));
 
                 string nasnProperty = negativeDatatypeAssertion["?NASN_PROPERTY"].ToString();
-                if (!ontology.Model.PropertyModel.CheckHasProperty(new RDFResource(nasnProperty)))
+                if (!ontology.Model.PropertyModel.CheckHasProperty(new RDFResource(nasnProperty, hashContext)))
                     validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                         OWLSemanticsEnums.OWLValidatorEvidenceCategory.Warning,
                         nameof(OWLTermDeclarationRule),
