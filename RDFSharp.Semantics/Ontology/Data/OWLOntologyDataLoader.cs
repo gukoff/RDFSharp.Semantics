@@ -137,6 +137,8 @@ namespace RDFSharp.Semantics
         /// </summary>
         internal static RDFGraph GetNegativeObjectAssertions(RDFGraph graph)
         {
+            Dictionary<string, long> hashContext = new Dictionary<string, long>();
+
             //Perform a SPARQL query to fetch all negative object assertions
             RDFSelectQuery negativeObjectAssertionQuery = new RDFSelectQuery()
                 .AddPatternGroup(new RDFPatternGroup()
@@ -155,7 +157,7 @@ namespace RDFSharp.Semantics
             //Merge them into the results graph
             RDFGraph negativeObjectAssertionsGraph = new RDFGraph();
             foreach (DataRow negativeObjectAssertion in negativeObjectAssertionQueryResult.SelectResults.Rows)
-                negativeObjectAssertionsGraph.AddTriple(new RDFTriple(new RDFResource(negativeObjectAssertion["?NASN_SUBJECT"].ToString()), new RDFResource(negativeObjectAssertion["?NASN_PROPERTY"].ToString()), new RDFResource(negativeObjectAssertion["?NASN_TARGET"].ToString())));
+                negativeObjectAssertionsGraph.AddTriple(new RDFTriple(new RDFResource(negativeObjectAssertion["?NASN_SUBJECT"].ToString(), hashContext), new RDFResource(negativeObjectAssertion["?NASN_PROPERTY"].ToString(), hashContext), new RDFResource(negativeObjectAssertion["?NASN_TARGET"].ToString(), hashContext)));
 
             return negativeObjectAssertionsGraph;
         }
@@ -165,6 +167,8 @@ namespace RDFSharp.Semantics
         /// </summary>
         internal static RDFGraph GetNegativeDatatypeAssertions(RDFGraph graph)
         {
+            Dictionary<string, long> hashContext = new Dictionary<string, long>();
+
             //Perform a SPARQL query to fetch all negative datatype assertions
             RDFSelectQuery negativeDatatypeAssertionQuery = new RDFSelectQuery()
                 .AddPatternGroup(new RDFPatternGroup()
@@ -183,7 +187,7 @@ namespace RDFSharp.Semantics
             //Merge them into the results graph
             RDFGraph negativeDatatypeAssertionsGraph = new RDFGraph();
             foreach (DataRow negativeDatatypeAssertion in negativeDatatypeAssertionQueryResult.SelectResults.Rows)
-                negativeDatatypeAssertionsGraph.AddTriple(new RDFTriple(new RDFResource(negativeDatatypeAssertion["?NASN_SUBJECT"].ToString()), new RDFResource(negativeDatatypeAssertion["?NASN_PROPERTY"].ToString()), (RDFLiteral)RDFQueryUtilities.ParseRDFPatternMember(negativeDatatypeAssertion["?NASN_TARGET"].ToString())));
+                negativeDatatypeAssertionsGraph.AddTriple(new RDFTriple(new RDFResource(negativeDatatypeAssertion["?NASN_SUBJECT"].ToString(), hashContext), new RDFResource(negativeDatatypeAssertion["?NASN_PROPERTY"].ToString(), hashContext), (RDFLiteral)RDFQueryUtilities.ParseRDFPatternMember(negativeDatatypeAssertion["?NASN_TARGET"].ToString())));
 
             return negativeDatatypeAssertionsGraph;
         }
