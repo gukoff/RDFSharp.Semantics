@@ -12,7 +12,6 @@
 */
 
 using RDFSharp.Model;
-using RDFSharp.Query;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,8 +25,8 @@ namespace RDFSharp.Semantics
     {
         internal static OWLValidatorReport ExecuteRule(OWLOntology ontology)
         {
-            #region CheckArDifferentIndividuals
-            bool CheckArDifferentIndividuals(RDFResource outerIndividual, RDFResource innerIndividual)
+            #region CheckAreDifferentIndividuals
+            bool CheckAreDifferentIndividuals(RDFResource outerIndividual, RDFResource innerIndividual)
                 => !outerIndividual.Equals(innerIndividual) && ontology.Data.CheckIsDifferentIndividual(outerIndividual, innerIndividual);
             #endregion
 
@@ -70,7 +69,7 @@ namespace RDFSharp.Semantics
                 //There should not be individuals related by owl:differentFrom sharing the same key (this would mean they are the same individual)
                 foreach (KeyValuePair<string, (RDFResource, List<RDFResource>)> keyValue in keyValueRegister)
                 {
-                    if (keyValue.Value.Item2.Any(outerIndividual => keyValue.Value.Item2.Any(innerIndividual => CheckArDifferentIndividuals(outerIndividual, innerIndividual))))
+                    if (keyValue.Value.Item2.Any(outerIndividual => keyValue.Value.Item2.Any(innerIndividual => CheckAreDifferentIndividuals(outerIndividual, innerIndividual))))
                         validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                             OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
                             nameof(OWLClassKeyRule),
