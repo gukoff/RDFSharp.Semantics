@@ -968,5 +968,49 @@ namespace RDFSharp.Semantics.Test
                 }
             }
         }
+
+        [TestMethod]
+        public void ShouldLoadOntologyWithAnonymousProperty()
+        {
+            string ontString =
+@"
+@prefix : <http://example.com/owl/families/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+:clsA rdf:type owl:Class .
+:prpA rdf:type owl:ObjectProperty .
+:prpB rdf:type owl:ObjectProperty .
+:prpB owl:inverseOf :prpA .
+:svfRest rdf:type owl:Restriction ;
+     owl:onProperty [ owl:inverseOf  :prpB ] ; #this is an anonymous inline property expression (https://www.w3.org/2007/OWL/wiki/FullSemanticsInversePropertyExpressions)
+     owl:someValuesFrom  :clsA .
+:idv1 rdf:type :clsA .
+:idv2 rdf:type :clsA .
+:idv1 :prpA :idv2 .
+:idv2 :prpB :idv1 .
+";
+
+            using (MemoryStream stream = new MemoryStream())
+            {
+                using (StreamWriter writer = new StreamWriter(stream))
+                {
+                    writer.Write(ontString);
+                    writer.Flush();
+                    stream.Position = 0;
+
+                    using (RDFGraph graph = RDFGraph.FromStream(RDFModelEnums.RDFFormats.Turtle, stream))
+                    {
+                        using (OWLOntology ontology = OWLOntology.FromRDFGraph(graph))
+                        {
+                            List<RDFResource> svRestMembers = ontology.Data.GetIndividualsOf(ontology.Model, new RDFResource("http://example.com/owl/families/svfRest"));
+
+                            Assert.IsNotNull(svRestMembers);
+                            Assert.IsTrue(svRestMembers.Single().Equals(new RDFResource("http://example.com/owl/families/idv1")));
+                        }
+                    }
+                }
+            }
+        }
     }
 }

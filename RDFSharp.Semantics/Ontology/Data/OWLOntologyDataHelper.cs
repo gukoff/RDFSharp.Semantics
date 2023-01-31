@@ -300,6 +300,22 @@ namespace RDFSharp.Semantics
             //Get owl:onProperty of the given owl:Restriction
             RDFResource onProperty = (RDFResource)model.ClassModel.TBoxGraph[owlRestriction, RDFVocabulary.OWL.ON_PROPERTY, null, null].First().Object;
 
+            //Try handling OWL2-Full anonymous inline property expressions (https://www.w3.org/2007/OWL/wiki/FullSemanticsInversePropertyExpressions)
+            //ex:svfRest rdf:type owl:Restriction ;
+            //           owl:onProperty [ owl:inverseOf ex:propB ] ;
+            //           owl:someValuesFrom  ex:class .
+            //:propB owl:inverseOf :propA .
+            if (onProperty.IsBlank)
+            {
+                RDFResource inverseOfAnonymousInlineProperty = model.PropertyModel.GetInversePropertiesOf(onProperty).FirstOrDefault(); //ex:propB
+                if (inverseOfAnonymousInlineProperty != null)
+                {
+                    RDFResource effectiveOnProperty = model.PropertyModel.GetInversePropertiesOf(inverseOfAnonymousInlineProperty).FirstOrDefault(); //ex:propA
+                    if (effectiveOnProperty != null)
+                        onProperty = effectiveOnProperty;
+                }
+            }
+
             //Make the given owl:Restriction also work with sub properties and equivalent properties of the given owl:onProperty
             List<RDFResource> compatibleProperties = model.PropertyModel.GetSubPropertiesOf(onProperty)
                                                        .Union(model.PropertyModel.GetEquivalentPropertiesOf(onProperty)).ToList();
