@@ -71,7 +71,7 @@ namespace RDFSharp.Semantics.Extensions.GEO.Test
             Assert.IsTrue(geoOnt.Ontology.Data.CheckIsIndividualOf(geoOnt.Ontology.Model, new RDFResource("ex:Milan"), RDFVocabulary.GEOSPARQL.SPATIAL_OBJECT));
             Assert.IsTrue(geoOnt.Ontology.Data.CheckIsIndividualOf(geoOnt.Ontology.Model, new RDFResource("ex:Milan"), RDFVocabulary.GEOSPARQL.GEOMETRY));
             Assert.IsTrue(geoOnt.Ontology.Data.CheckIsIndividualOf(geoOnt.Ontology.Model, new RDFResource("ex:Milan"), RDFVocabulary.GEOSPARQL.SF.POINT));
-            Assert.IsTrue(geoOnt.Ontology.Data.CheckHasDatatypeAssertion(new RDFResource("ex:Milan"), RDFVocabulary.GEOSPARQL.AS_WKT, new RDFPlainLiteral($"POINT(45.4654219 9.1859243)^^{RDFVocabulary.GEOSPARQL.WKT_LITERAL}")));
+            Assert.IsTrue(geoOnt.Ontology.Data.CheckHasDatatypeAssertion(new RDFResource("ex:Milan"), RDFVocabulary.GEOSPARQL.AS_WKT, new RDFTypedLiteral("POINT (45.4654219 9.1859243)", RDFModelEnums.RDFDatatypes.GEOSPARQL_WKT)));
 
             //Test counters and enumerators
             Assert.IsTrue(geoOnt.SpatialObjectsCount == 1);

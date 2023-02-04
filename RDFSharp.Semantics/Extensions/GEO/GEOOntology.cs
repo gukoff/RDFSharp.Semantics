@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Collections;
 using System.Globalization;
+using NetTopologySuite.Geometries;
 
 namespace RDFSharp.Semantics.Extensions.GEO
 {
@@ -62,13 +63,15 @@ namespace RDFSharp.Semantics.Extensions.GEO
         /// Gets the enumerator on the spatial objects for iteration
         /// </summary>
         public IEnumerator<RDFResource> SpatialObjectsEnumerator
-            => Ontology.Data.FindIndividualsOfClass(Ontology.Model, RDFVocabulary.GEOSPARQL.SPATIAL_OBJECT).GetEnumerator();
+            => Ontology.Data.FindIndividualsOfClass(Ontology.Model, RDFVocabulary.GEOSPARQL.SPATIAL_OBJECT)
+                            .GetEnumerator();
 
         /// <summary>
         /// Gets the enumerator on the spatial objects of type sf:Point for iteration
         /// </summary>
         public IEnumerator<RDFResource> PointsEnumerator
-            => Ontology.Data.FindIndividualsOfClass(Ontology.Model, RDFVocabulary.GEOSPARQL.SF.POINT).GetEnumerator();
+            => Ontology.Data.FindIndividualsOfClass(Ontology.Model, RDFVocabulary.GEOSPARQL.SF.POINT)
+                            .GetEnumerator();
 
         /// <summary>
         /// Knowledge describing the spatial ontology
@@ -107,10 +110,13 @@ namespace RDFSharp.Semantics.Extensions.GEO
             if (pointUri == null)
                 throw new OWLSemanticsException("Cannot declare point instance to the concept scheme because given \"pointUri\" parameter is null");
 
+            //Build sf:Point instance
+            Point point = new Point(new Coordinate(latitude, longitude));
+
             //Add knowledge to the A-BOX
             Ontology.Data.DeclareIndividual(pointUri);
             Ontology.Data.DeclareIndividualType(pointUri, RDFVocabulary.GEOSPARQL.SF.POINT);
-            Ontology.Data.DeclareDatatypeAssertion(pointUri, RDFVocabulary.GEOSPARQL.AS_WKT, new RDFPlainLiteral($"POINT({latitude.ToString(CultureInfo.InvariantCulture)} {longitude.ToString(CultureInfo.InvariantCulture)})^^{RDFVocabulary.GEOSPARQL.WKT_LITERAL}"));
+            Ontology.Data.DeclareDatatypeAssertion(pointUri, RDFVocabulary.GEOSPARQL.AS_WKT, new RDFTypedLiteral(point.ToText(), RDFModelEnums.RDFDatatypes.GEOSPARQL_WKT));
 
             return this;
         }
