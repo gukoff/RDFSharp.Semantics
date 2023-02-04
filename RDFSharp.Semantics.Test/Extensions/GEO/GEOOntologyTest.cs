@@ -90,6 +90,10 @@ namespace RDFSharp.Semantics.Extensions.GEO.Test
             while (pointsEnumerator.MoveNext()) j++;
             Assert.IsTrue(j == 1);
         }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringPointBecauseNull()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new GEOOntology("ex:geoOnt").DeclarePoint(null, 0, 0));
         #endregion
     }
 }

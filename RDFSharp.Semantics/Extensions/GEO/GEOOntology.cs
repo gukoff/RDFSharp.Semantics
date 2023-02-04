@@ -107,7 +107,7 @@ namespace RDFSharp.Semantics.Extensions.GEO
 
         #region Methods
         /// <summary>
-        /// Declares the given point instance to the spatial ontology (coordinates should be expressed in EPSG:4326-WGS84)
+        /// Declares the given point instance to the spatial ontology. Coordinates must be expressed in EPSG:4326 system (WGS84)
         /// </summary>
         public GEOOntology DeclarePoint(RDFResource pointUri, double latitude, double longitude)
         {
