@@ -19,6 +19,7 @@ using Microsoft.Spatial;
 using System.Collections.Generic;
 using System.Linq;
 using System.Collections;
+using System.Globalization;
 
 namespace RDFSharp.Semantics.Extensions.GEO
 {
@@ -106,7 +107,7 @@ namespace RDFSharp.Semantics.Extensions.GEO
 
         #region Methods
         /// <summary>
-        /// Declares the given point instance to the spatial ontology (coordinates should be expressed in WGS84)
+        /// Declares the given point instance to the spatial ontology (coordinates should be expressed in EPSG:4326-WGS84)
         /// </summary>
         public GEOOntology DeclarePoint(RDFResource pointUri, double latitude, double longitude)
         {
@@ -115,13 +116,10 @@ namespace RDFSharp.Semantics.Extensions.GEO
 
             //Add knowledge to the A-BOX
             Ontology.Data.DeclareIndividual(pointUri);
+            Ontology.Data.DeclareIndividualType(pointUri, RDFVocabulary.GEOSPARQL.SPATIAL_OBJECT);
             Ontology.Data.DeclareIndividualType(pointUri, RDFVocabulary.GEOSPARQL.GEOMETRY);
             Ontology.Data.DeclareIndividualType(pointUri, new RDFResource("http://www.opengis.net/ont/sf#Point"));
-
-            //Create spatial point
-            GeographyPoint geoPoint = GeographyFactory.Point(latitude, longitude);
-            string wktPoint = WellKnownTextSqlFormatter.Create().Write(geoPoint);
-            Ontology.Data.DeclareDatatypeAssertion(pointUri, RDFVocabulary.GEOSPARQL.AS_WKT, new RDFPlainLiteral($"{wktPoint}^^{RDFVocabulary.GEOSPARQL.WKT_LITERAL}"));
+            Ontology.Data.DeclareDatatypeAssertion(pointUri, RDFVocabulary.GEOSPARQL.AS_WKT, new RDFPlainLiteral($"POINT({latitude.ToString(CultureInfo.InvariantCulture)} {longitude.ToString(CultureInfo.InvariantCulture)})^^{RDFVocabulary.GEOSPARQL.WKT_LITERAL}"));
 
             return this;
         }
