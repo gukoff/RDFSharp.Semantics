@@ -87,7 +87,7 @@ namespace RDFSharp.Semantics.Extensions.GEO.Test
             Assert.IsTrue(i1 == 1);
 
             int i2 = 0;
-            foreach (RDFResource skosConcept in geoOnt) i2++;
+            foreach (RDFResource spatialObject in geoOnt) i2++;
             Assert.IsTrue(i2 == 1);
 
             Assert.IsTrue(geoOnt.PointsCount == 1);
@@ -126,7 +126,7 @@ namespace RDFSharp.Semantics.Extensions.GEO.Test
             Assert.IsTrue(i1 == 1);
 
             int i2 = 0;
-            foreach (RDFResource skosConcept in geoOnt) i2++;
+            foreach (RDFResource spatialObject in geoOnt) i2++;
             Assert.IsTrue(i2 == 1);
 
             Assert.IsTrue(geoOnt.LinesCount == 1);
