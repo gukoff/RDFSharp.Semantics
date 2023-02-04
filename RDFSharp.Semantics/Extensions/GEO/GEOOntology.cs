@@ -15,7 +15,6 @@
 */
 
 using RDFSharp.Model;
-using Microsoft.Spatial;
 using System.Collections.Generic;
 using System.Linq;
 using System.Collections;
@@ -63,19 +62,13 @@ namespace RDFSharp.Semantics.Extensions.GEO
         /// Gets the enumerator on the spatial objects for iteration
         /// </summary>
         public IEnumerator<RDFResource> SpatialObjectsEnumerator
-            => Ontology.Data.ABoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.GEOSPARQL.SPATIAL_OBJECT, null]
-                            .Select(t => t.Subject)
-                            .OfType<RDFResource>()
-                            .GetEnumerator();
+            => Ontology.Data.FindIndividualsOfClass(Ontology.Model, RDFVocabulary.GEOSPARQL.SPATIAL_OBJECT).GetEnumerator();
 
         /// <summary>
         /// Gets the enumerator on the spatial objects of type sf:Point for iteration
         /// </summary>
         public IEnumerator<RDFResource> PointsEnumerator
-            => Ontology.Data.ABoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.GEOSPARQL.SF.POINT, null]
-                            .Select(t => t.Subject)
-                            .OfType<RDFResource>()
-                            .GetEnumerator();
+            => Ontology.Data.FindIndividualsOfClass(Ontology.Model, RDFVocabulary.GEOSPARQL.SF.POINT).GetEnumerator();
 
         /// <summary>
         /// Knowledge describing the spatial ontology
@@ -116,8 +109,6 @@ namespace RDFSharp.Semantics.Extensions.GEO
 
             //Add knowledge to the A-BOX
             Ontology.Data.DeclareIndividual(pointUri);
-            Ontology.Data.DeclareIndividualType(pointUri, RDFVocabulary.GEOSPARQL.SPATIAL_OBJECT);
-            Ontology.Data.DeclareIndividualType(pointUri, RDFVocabulary.GEOSPARQL.GEOMETRY);
             Ontology.Data.DeclareIndividualType(pointUri, RDFVocabulary.GEOSPARQL.SF.POINT);
             Ontology.Data.DeclareDatatypeAssertion(pointUri, RDFVocabulary.GEOSPARQL.AS_WKT, new RDFPlainLiteral($"POINT({latitude.ToString(CultureInfo.InvariantCulture)} {longitude.ToString(CultureInfo.InvariantCulture)})^^{RDFVocabulary.GEOSPARQL.WKT_LITERAL}"));
 
