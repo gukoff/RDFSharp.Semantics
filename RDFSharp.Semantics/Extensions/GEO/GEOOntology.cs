@@ -72,7 +72,7 @@ namespace RDFSharp.Semantics.Extensions.GEO
         /// Gets the enumerator on the spatial objects of type sf:Point for iteration
         /// </summary>
         public IEnumerator<RDFResource> PointsEnumerator
-            => Ontology.Data.ABoxGraph[null, RDFVocabulary.RDF.TYPE, new RDFResource("http://www.opengis.net/ont/sf#Point"), null]
+            => Ontology.Data.ABoxGraph[null, RDFVocabulary.RDF.TYPE, RDFVocabulary.GEOSPARQL.SF.POINT, null]
                             .Select(t => t.Subject)
                             .OfType<RDFResource>()
                             .GetEnumerator();
@@ -118,7 +118,7 @@ namespace RDFSharp.Semantics.Extensions.GEO
             Ontology.Data.DeclareIndividual(pointUri);
             Ontology.Data.DeclareIndividualType(pointUri, RDFVocabulary.GEOSPARQL.SPATIAL_OBJECT);
             Ontology.Data.DeclareIndividualType(pointUri, RDFVocabulary.GEOSPARQL.GEOMETRY);
-            Ontology.Data.DeclareIndividualType(pointUri, new RDFResource("http://www.opengis.net/ont/sf#Point"));
+            Ontology.Data.DeclareIndividualType(pointUri, RDFVocabulary.GEOSPARQL.SF.POINT);
             Ontology.Data.DeclareDatatypeAssertion(pointUri, RDFVocabulary.GEOSPARQL.AS_WKT, new RDFPlainLiteral($"POINT({latitude.ToString(CultureInfo.InvariantCulture)} {longitude.ToString(CultureInfo.InvariantCulture)})^^{RDFVocabulary.GEOSPARQL.WKT_LITERAL}"));
 
             return this;

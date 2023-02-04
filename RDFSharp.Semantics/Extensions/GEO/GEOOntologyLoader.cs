@@ -85,50 +85,50 @@ namespace RDFSharp.Semantics.Extensions.GEO
             classModel.DeclareDisjointClasses(RDFVocabulary.GEOSPARQL.GEOMETRY, RDFVocabulary.GEOSPARQL.FEATURE);
 
             //Simple Features (Geometry)
-            classModel.DeclareClass(new RDFResource("http://www.opengis.net/ont/sf#Point"));
-            classModel.DeclareClass(new RDFResource("http://www.opengis.net/ont/sf#Curve"));
-            classModel.DeclareClass(new RDFResource("http://www.opengis.net/ont/sf#Surface"));
-            classModel.DeclareClass(new RDFResource("http://www.opengis.net/ont/sf#Polygon"));
-            classModel.DeclareClass(new RDFResource("http://www.opengis.net/ont/sf#Triangle"));
-            classModel.DeclareClass(new RDFResource("http://www.opengis.net/ont/sf#LineString"));
-            classModel.DeclareClass(new RDFResource("http://www.opengis.net/ont/sf#LinearRing"));
-            classModel.DeclareClass(new RDFResource("http://www.opengis.net/ont/sf#Line"));
-            classModel.DeclareClass(new RDFResource("http://www.opengis.net/ont/sf#GeometryCollection"));
-            classModel.DeclareClass(new RDFResource("http://www.opengis.net/ont/sf#MultiPoint"));
-            classModel.DeclareClass(new RDFResource("http://www.opengis.net/ont/sf#MultiCurve"));
-            classModel.DeclareClass(new RDFResource("http://www.opengis.net/ont/sf#MultiSurface"));
-            classModel.DeclareClass(new RDFResource("http://www.opengis.net/ont/sf#MultiPolygon"));
-            classModel.DeclareClass(new RDFResource("http://www.opengis.net/ont/sf#MultiLineString"));
-            classModel.DeclareClass(new RDFResource("http://www.opengis.net/ont/sf#PolyhedralSurface"));
-            classModel.DeclareClass(new RDFResource("http://www.opengis.net/ont/sf#TIN"));
-            classModel.DeclareSubClasses(new RDFResource("http://www.opengis.net/ont/sf#Point"), RDFVocabulary.GEOSPARQL.GEOMETRY);
-            classModel.DeclareSubClasses(new RDFResource("http://www.opengis.net/ont/sf#Curve"), RDFVocabulary.GEOSPARQL.GEOMETRY);
-            classModel.DeclareSubClasses(new RDFResource("http://www.opengis.net/ont/sf#Surface"), RDFVocabulary.GEOSPARQL.GEOMETRY);
-            classModel.DeclareSubClasses(new RDFResource("http://www.opengis.net/ont/sf#Polygon"), RDFVocabulary.GEOSPARQL.GEOMETRY);
-            classModel.DeclareSubClasses(new RDFResource("http://www.opengis.net/ont/sf#Polygon"), new RDFResource("http://www.opengis.net/ont/sf#Surface"));
-            classModel.DeclareSubClasses(new RDFResource("http://www.opengis.net/ont/sf#Triangle"), RDFVocabulary.GEOSPARQL.GEOMETRY);
-            classModel.DeclareSubClasses(new RDFResource("http://www.opengis.net/ont/sf#Triangle"), new RDFResource("http://www.opengis.net/ont/sf#Polygon"));
-            classModel.DeclareSubClasses(new RDFResource("http://www.opengis.net/ont/sf#LineString"), RDFVocabulary.GEOSPARQL.GEOMETRY);
-            classModel.DeclareSubClasses(new RDFResource("http://www.opengis.net/ont/sf#LineString"), new RDFResource("http://www.opengis.net/ont/sf#Curve"));
-            classModel.DeclareSubClasses(new RDFResource("http://www.opengis.net/ont/sf#LinearRing"), RDFVocabulary.GEOSPARQL.GEOMETRY);
-            classModel.DeclareSubClasses(new RDFResource("http://www.opengis.net/ont/sf#LinearRing"), new RDFResource("http://www.opengis.net/ont/sf#LineString"));
-            classModel.DeclareSubClasses(new RDFResource("http://www.opengis.net/ont/sf#Line"), RDFVocabulary.GEOSPARQL.GEOMETRY);
-            classModel.DeclareSubClasses(new RDFResource("http://www.opengis.net/ont/sf#Line"), new RDFResource("http://www.opengis.net/ont/sf#LineString"));
-            classModel.DeclareSubClasses(new RDFResource("http://www.opengis.net/ont/sf#GeometryCollection"), RDFVocabulary.GEOSPARQL.GEOMETRY);
-            classModel.DeclareSubClasses(new RDFResource("http://www.opengis.net/ont/sf#MultiPoint"), RDFVocabulary.GEOSPARQL.GEOMETRY);
-            classModel.DeclareSubClasses(new RDFResource("http://www.opengis.net/ont/sf#MultiPoint"), new RDFResource("http://www.opengis.net/ont/sf#GeometryCollection"));
-            classModel.DeclareSubClasses(new RDFResource("http://www.opengis.net/ont/sf#MultiCurve"), RDFVocabulary.GEOSPARQL.GEOMETRY);
-            classModel.DeclareSubClasses(new RDFResource("http://www.opengis.net/ont/sf#MultiCurve"), new RDFResource("http://www.opengis.net/ont/sf#GeometryCollection"));
-            classModel.DeclareSubClasses(new RDFResource("http://www.opengis.net/ont/sf#MultiSurface"), RDFVocabulary.GEOSPARQL.GEOMETRY);
-            classModel.DeclareSubClasses(new RDFResource("http://www.opengis.net/ont/sf#MultiSurface"), new RDFResource("http://www.opengis.net/ont/sf#GeometryCollection"));
-            classModel.DeclareSubClasses(new RDFResource("http://www.opengis.net/ont/sf#MultiPolygon"), RDFVocabulary.GEOSPARQL.GEOMETRY);
-            classModel.DeclareSubClasses(new RDFResource("http://www.opengis.net/ont/sf#MultiPolygon"), new RDFResource("http://www.opengis.net/ont/sf#MultiSurface"));
-            classModel.DeclareSubClasses(new RDFResource("http://www.opengis.net/ont/sf#MultiLineString"), RDFVocabulary.GEOSPARQL.GEOMETRY);
-            classModel.DeclareSubClasses(new RDFResource("http://www.opengis.net/ont/sf#MultiLineString"), new RDFResource("http://www.opengis.net/ont/sf#MultiCurve"));
-            classModel.DeclareSubClasses(new RDFResource("http://www.opengis.net/ont/sf#PolyhedralSurface"), RDFVocabulary.GEOSPARQL.GEOMETRY);
-            classModel.DeclareSubClasses(new RDFResource("http://www.opengis.net/ont/sf#PolyhedralSurface"), new RDFResource("http://www.opengis.net/ont/sf#Surface"));
-            classModel.DeclareSubClasses(new RDFResource("http://www.opengis.net/ont/sf#TIN"), RDFVocabulary.GEOSPARQL.GEOMETRY);
-            classModel.DeclareSubClasses(new RDFResource("http://www.opengis.net/ont/sf#TIN"), new RDFResource("http://www.opengis.net/ont/sf#PolyhedralSurface"));
+            classModel.DeclareClass(RDFVocabulary.GEOSPARQL.SF.POINT);
+            classModel.DeclareClass(RDFVocabulary.GEOSPARQL.SF.CURVE);
+            classModel.DeclareClass(RDFVocabulary.GEOSPARQL.SF.SURFACE);
+            classModel.DeclareClass(RDFVocabulary.GEOSPARQL.SF.POLYGON);
+            classModel.DeclareClass(RDFVocabulary.GEOSPARQL.SF.TRIANGLE);
+            classModel.DeclareClass(RDFVocabulary.GEOSPARQL.SF.LINESTRING);
+            classModel.DeclareClass(RDFVocabulary.GEOSPARQL.SF.LINEAR_RING);
+            classModel.DeclareClass(RDFVocabulary.GEOSPARQL.SF.LINE);
+            classModel.DeclareClass(RDFVocabulary.GEOSPARQL.SF.GEOMETRY_COLLECTION);
+            classModel.DeclareClass(RDFVocabulary.GEOSPARQL.SF.MULTI_POINT);
+            classModel.DeclareClass(RDFVocabulary.GEOSPARQL.SF.MULTI_CURVE);
+            classModel.DeclareClass(RDFVocabulary.GEOSPARQL.SF.MULTI_SURFACE);
+            classModel.DeclareClass(RDFVocabulary.GEOSPARQL.SF.MULTI_POLYGON);
+            classModel.DeclareClass(RDFVocabulary.GEOSPARQL.SF.MULTI_LINESTRING);
+            classModel.DeclareClass(RDFVocabulary.GEOSPARQL.SF.POLYHEDRAL_SURFACE);
+            classModel.DeclareClass(RDFVocabulary.GEOSPARQL.SF.TIN);
+            classModel.DeclareSubClasses(RDFVocabulary.GEOSPARQL.SF.POINT, RDFVocabulary.GEOSPARQL.GEOMETRY);
+            classModel.DeclareSubClasses(RDFVocabulary.GEOSPARQL.SF.CURVE, RDFVocabulary.GEOSPARQL.GEOMETRY);
+            classModel.DeclareSubClasses(RDFVocabulary.GEOSPARQL.SF.SURFACE, RDFVocabulary.GEOSPARQL.GEOMETRY);
+            classModel.DeclareSubClasses(RDFVocabulary.GEOSPARQL.SF.POLYGON, RDFVocabulary.GEOSPARQL.GEOMETRY);
+            classModel.DeclareSubClasses(RDFVocabulary.GEOSPARQL.SF.POLYGON, RDFVocabulary.GEOSPARQL.SF.SURFACE);
+            classModel.DeclareSubClasses(RDFVocabulary.GEOSPARQL.SF.TRIANGLE, RDFVocabulary.GEOSPARQL.GEOMETRY);
+            classModel.DeclareSubClasses(RDFVocabulary.GEOSPARQL.SF.TRIANGLE, RDFVocabulary.GEOSPARQL.SF.POLYGON);
+            classModel.DeclareSubClasses(RDFVocabulary.GEOSPARQL.SF.LINESTRING, RDFVocabulary.GEOSPARQL.GEOMETRY);
+            classModel.DeclareSubClasses(RDFVocabulary.GEOSPARQL.SF.LINESTRING, RDFVocabulary.GEOSPARQL.SF.CURVE);
+            classModel.DeclareSubClasses(RDFVocabulary.GEOSPARQL.SF.LINEAR_RING, RDFVocabulary.GEOSPARQL.GEOMETRY);
+            classModel.DeclareSubClasses(RDFVocabulary.GEOSPARQL.SF.LINEAR_RING, RDFVocabulary.GEOSPARQL.SF.LINESTRING);
+            classModel.DeclareSubClasses(RDFVocabulary.GEOSPARQL.SF.LINE, RDFVocabulary.GEOSPARQL.GEOMETRY);
+            classModel.DeclareSubClasses(RDFVocabulary.GEOSPARQL.SF.LINE, RDFVocabulary.GEOSPARQL.SF.LINESTRING);
+            classModel.DeclareSubClasses(RDFVocabulary.GEOSPARQL.SF.GEOMETRY_COLLECTION, RDFVocabulary.GEOSPARQL.GEOMETRY);
+            classModel.DeclareSubClasses(RDFVocabulary.GEOSPARQL.SF.MULTI_POINT, RDFVocabulary.GEOSPARQL.GEOMETRY);
+            classModel.DeclareSubClasses(RDFVocabulary.GEOSPARQL.SF.MULTI_POINT, RDFVocabulary.GEOSPARQL.SF.GEOMETRY_COLLECTION);
+            classModel.DeclareSubClasses(RDFVocabulary.GEOSPARQL.SF.MULTI_CURVE, RDFVocabulary.GEOSPARQL.GEOMETRY);
+            classModel.DeclareSubClasses(RDFVocabulary.GEOSPARQL.SF.MULTI_CURVE, RDFVocabulary.GEOSPARQL.SF.GEOMETRY_COLLECTION);
+            classModel.DeclareSubClasses(RDFVocabulary.GEOSPARQL.SF.MULTI_SURFACE, RDFVocabulary.GEOSPARQL.GEOMETRY);
+            classModel.DeclareSubClasses(RDFVocabulary.GEOSPARQL.SF.MULTI_SURFACE, RDFVocabulary.GEOSPARQL.SF.GEOMETRY_COLLECTION);
+            classModel.DeclareSubClasses(RDFVocabulary.GEOSPARQL.SF.MULTI_POLYGON, RDFVocabulary.GEOSPARQL.GEOMETRY);
+            classModel.DeclareSubClasses(RDFVocabulary.GEOSPARQL.SF.MULTI_POLYGON, RDFVocabulary.GEOSPARQL.SF.MULTI_SURFACE);
+            classModel.DeclareSubClasses(RDFVocabulary.GEOSPARQL.SF.MULTI_LINESTRING, RDFVocabulary.GEOSPARQL.GEOMETRY);
+            classModel.DeclareSubClasses(RDFVocabulary.GEOSPARQL.SF.MULTI_LINESTRING, RDFVocabulary.GEOSPARQL.SF.MULTI_CURVE);
+            classModel.DeclareSubClasses(RDFVocabulary.GEOSPARQL.SF.POLYHEDRAL_SURFACE, RDFVocabulary.GEOSPARQL.GEOMETRY);
+            classModel.DeclareSubClasses(RDFVocabulary.GEOSPARQL.SF.POLYHEDRAL_SURFACE, RDFVocabulary.GEOSPARQL.SF.SURFACE);
+            classModel.DeclareSubClasses(RDFVocabulary.GEOSPARQL.SF.TIN, RDFVocabulary.GEOSPARQL.GEOMETRY);
+            classModel.DeclareSubClasses(RDFVocabulary.GEOSPARQL.SF.TIN, RDFVocabulary.GEOSPARQL.SF.SURFACE);
 
             return classModel;
         }
@@ -179,9 +179,6 @@ namespace RDFSharp.Semantics.Extensions.GEO
             propertyModel.DeclareSubProperties(RDFVocabulary.GEOSPARQL.AS_WKT, RDFVocabulary.GEOSPARQL.HAS_SERIALIZATION);
             propertyModel.DeclareSubProperties(RDFVocabulary.GEOSPARQL.AS_GML, RDFVocabulary.GEOSPARQL.HAS_SERIALIZATION);
             propertyModel.DeclareInverseProperties(RDFVocabulary.GEOSPARQL.EH_COVERS, RDFVocabulary.GEOSPARQL.EH_COVERED_BY);
-
-            //Simple Features (Geometry)
-
 
             return propertyModel;
         }
