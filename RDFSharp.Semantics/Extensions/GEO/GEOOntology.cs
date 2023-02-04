@@ -36,8 +36,8 @@ namespace RDFSharp.Semantics.Extensions.GEO
             get
             {
                 long count = 0;
-                IEnumerator<RDFResource> pointObjects = PointsEnumerator;
-                while (pointObjects.MoveNext())
+                IEnumerator<RDFResource> spatialObjects = SpatialObjectsEnumerator;
+                while (spatialObjects.MoveNext())
                     count++;
                 return count;
             }
@@ -51,8 +51,8 @@ namespace RDFSharp.Semantics.Extensions.GEO
             get
             {
                 long count = 0;
-                IEnumerator<RDFResource> spatialObjects = SpatialObjectsEnumerator;
-                while (spatialObjects.MoveNext())
+                IEnumerator<RDFResource> pointObjects = PointsEnumerator;
+                while (pointObjects.MoveNext())
                     count++;
                 return count;
             }
