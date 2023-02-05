@@ -50,10 +50,10 @@ namespace RDFSharp.Semantics.Extensions.GEO.Test
             Assert.IsTrue(so2 == 0);
 
             Assert.IsTrue(geoOnt.PointsCount == 0);
-            int p = 0;
+            int pt = 0;
             IEnumerator<RDFResource> pointsEnumerator = geoOnt.PointsEnumerator;
-            while (pointsEnumerator.MoveNext()) p++;
-            Assert.IsTrue(p == 0);
+            while (pointsEnumerator.MoveNext()) pt++;
+            Assert.IsTrue(pt == 0);
 
             Assert.IsTrue(geoOnt.LinesCount == 0);
             int l = 0;
@@ -66,6 +66,12 @@ namespace RDFSharp.Semantics.Extensions.GEO.Test
             IEnumerator<RDFResource> lineStringsEnumerator = geoOnt.LineStringsEnumerator;
             while (lineStringsEnumerator.MoveNext()) ls++;
             Assert.IsTrue(ls == 0);
+
+            Assert.IsTrue(geoOnt.PolygonsCount == 0);
+            int pl = 0;
+            IEnumerator<RDFResource> polygonsEnumerator = geoOnt.PolygonsEnumerator;
+            while (polygonsEnumerator.MoveNext()) pl++;
+            Assert.IsTrue(pl == 0);
         }
 
         [TestMethod]
@@ -97,10 +103,10 @@ namespace RDFSharp.Semantics.Extensions.GEO.Test
             Assert.IsTrue(so2 == 1);
 
             Assert.IsTrue(geoOnt.PointsCount == 1);
-            int p = 0;
+            int pt = 0;
             IEnumerator<RDFResource> pointsEnumerator = geoOnt.PointsEnumerator;
-            while (pointsEnumerator.MoveNext()) p++;
-            Assert.IsTrue(p == 1);
+            while (pointsEnumerator.MoveNext()) pt++;
+            Assert.IsTrue(pt == 1);
 
             Assert.IsTrue(geoOnt.LinesCount == 0);
             int l = 0;
@@ -113,6 +119,12 @@ namespace RDFSharp.Semantics.Extensions.GEO.Test
             IEnumerator<RDFResource> lineStringsEnumerator = geoOnt.LineStringsEnumerator;
             while (lineStringsEnumerator.MoveNext()) ls++;
             Assert.IsTrue(ls == 0);
+
+            Assert.IsTrue(geoOnt.PolygonsCount == 0);
+            int pl = 0;
+            IEnumerator<RDFResource> polygonsEnumerator = geoOnt.PolygonsEnumerator;
+            while (polygonsEnumerator.MoveNext()) pl++;
+            Assert.IsTrue(pl == 0);
         }
 
         [TestMethod]
@@ -148,10 +160,10 @@ namespace RDFSharp.Semantics.Extensions.GEO.Test
             Assert.IsTrue(so2 == 1);
 
             Assert.IsTrue(geoOnt.PointsCount == 0);
-            int p = 0;
+            int pt = 0;
             IEnumerator<RDFResource> pointsEnumerator = geoOnt.PointsEnumerator;
-            while (pointsEnumerator.MoveNext()) p++;
-            Assert.IsTrue(p == 0);
+            while (pointsEnumerator.MoveNext()) pt++;
+            Assert.IsTrue(pt == 0);
 
             Assert.IsTrue(geoOnt.LinesCount == 1);
             int l = 0;
@@ -164,6 +176,12 @@ namespace RDFSharp.Semantics.Extensions.GEO.Test
             IEnumerator<RDFResource> lineStringsEnumerator = geoOnt.LineStringsEnumerator;
             while (lineStringsEnumerator.MoveNext()) ls++;
             Assert.IsTrue(ls == 1);
+
+            Assert.IsTrue(geoOnt.PolygonsCount == 0);
+            int pl = 0;
+            IEnumerator<RDFResource> polygonsEnumerator = geoOnt.PolygonsEnumerator;
+            while (polygonsEnumerator.MoveNext()) pl++;
+            Assert.IsTrue(pl == 0);
         }
 
         [TestMethod]
@@ -199,10 +217,10 @@ namespace RDFSharp.Semantics.Extensions.GEO.Test
             Assert.IsTrue(so2 == 1);
 
             Assert.IsTrue(geoOnt.PointsCount == 0);
-            int p = 0;
+            int pt = 0;
             IEnumerator<RDFResource> pointsEnumerator = geoOnt.PointsEnumerator;
-            while (pointsEnumerator.MoveNext()) p++;
-            Assert.IsTrue(p == 0);
+            while (pointsEnumerator.MoveNext()) pt++;
+            Assert.IsTrue(pt == 0);
 
             Assert.IsTrue(geoOnt.LinesCount == 0);
             int l = 0;
@@ -215,6 +233,12 @@ namespace RDFSharp.Semantics.Extensions.GEO.Test
             IEnumerator<RDFResource> lineStringsEnumerator = geoOnt.LineStringsEnumerator;
             while (lineStringsEnumerator.MoveNext()) ls++;
             Assert.IsTrue(ls == 1);
+
+            Assert.IsTrue(geoOnt.PolygonsCount == 0);
+            int pl = 0;
+            IEnumerator<RDFResource> polygonsEnumerator = geoOnt.PolygonsEnumerator;
+            while (polygonsEnumerator.MoveNext()) pl++;
+            Assert.IsTrue(pl == 0);
         }
 
         [TestMethod]
@@ -226,8 +250,126 @@ namespace RDFSharp.Semantics.Extensions.GEO.Test
             => Assert.ThrowsException<OWLSemanticsException>(() => new GEOOntology("ex:geoOnt").DeclareLineString(new RDFResource("ex:lineString"), null));
 
         [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringLineStringBecauseOnlyOnePoint()
+        public void ShouldThrowExceptionOnDeclaringLineStringBecauseLessThan2Points()
             => Assert.ThrowsException<OWLSemanticsException>(() => new GEOOntology("ex:geoOnt").DeclareLineString(new RDFResource("ex:lineString"), new[] { (0d, 0d) }));
+
+        [TestMethod]
+        public void ShouldDeclareOpenPolygon()
+        {
+            GEOOntology geoOnt = new GEOOntology("ex:geoOnt");
+            geoOnt.DeclarePolygon(new RDFResource("ex:MilanToRomeToNaples"), new[] { (45.4654219, 9.1859243), (41.902784, 12.496366), (40.8517746, 14.2681244) });
+
+            //Test evolution of GEO knowledge
+            Assert.IsTrue(geoOnt.Ontology.URI.Equals(geoOnt.URI));
+            Assert.IsTrue(geoOnt.Ontology.Model.ClassModel.ClassesCount == 19);
+            Assert.IsTrue(geoOnt.Ontology.Model.PropertyModel.PropertiesCount == 34);
+            Assert.IsTrue(geoOnt.Ontology.Data.IndividualsCount == 1);
+            Assert.IsTrue(geoOnt.Ontology.Data.CheckHasIndividual(new RDFResource("ex:MilanToRomeToNaples")));
+            Assert.IsTrue(geoOnt.Ontology.Data.CheckIsIndividualOf(geoOnt.Ontology.Model, new RDFResource("ex:MilanToRomeToNaples"), RDFVocabulary.GEOSPARQL.SPATIAL_OBJECT));
+            Assert.IsTrue(geoOnt.Ontology.Data.CheckIsIndividualOf(geoOnt.Ontology.Model, new RDFResource("ex:MilanToRomeToNaples"), RDFVocabulary.GEOSPARQL.GEOMETRY));
+            Assert.IsTrue(geoOnt.Ontology.Data.CheckIsIndividualOf(geoOnt.Ontology.Model, new RDFResource("ex:MilanToRomeToNaples"), RDFVocabulary.GEOSPARQL.SF.POLYGON));
+            Assert.IsTrue(geoOnt.Ontology.Data.CheckHasDatatypeAssertion(new RDFResource("ex:MilanToRomeToNaples"), RDFVocabulary.GEOSPARQL.AS_WKT, new RDFTypedLiteral("POLYGON ((45.4654219 9.1859243, 41.902784 12.496366, 40.8517746 14.2681244, 45.4654219 9.1859243))", RDFModelEnums.RDFDatatypes.GEOSPARQL_WKT)));
+
+            //Test counters and enumerators
+            Assert.IsTrue(geoOnt.SpatialObjectsCount == 1);
+            int so1 = 0;
+            IEnumerator<RDFResource> spatialObjectsEnumerator = geoOnt.SpatialObjectsEnumerator;
+            while (spatialObjectsEnumerator.MoveNext()) so1++;
+            Assert.IsTrue(so1 == 1);
+
+            int so2 = 0;
+            foreach (RDFResource spatialObject in geoOnt) so2++;
+            Assert.IsTrue(so2 == 1);
+
+            Assert.IsTrue(geoOnt.PointsCount == 0);
+            int pt = 0;
+            IEnumerator<RDFResource> pointsEnumerator = geoOnt.PointsEnumerator;
+            while (pointsEnumerator.MoveNext()) pt++;
+            Assert.IsTrue(pt == 0);
+
+            Assert.IsTrue(geoOnt.LinesCount == 0);
+            int l = 0;
+            IEnumerator<RDFResource> linesEnumerator = geoOnt.LinesEnumerator;
+            while (linesEnumerator.MoveNext()) l++;
+            Assert.IsTrue(l == 0);
+
+            Assert.IsTrue(geoOnt.LineStringsCount == 0);
+            int ls = 0;
+            IEnumerator<RDFResource> lineStringsEnumerator = geoOnt.LineStringsEnumerator;
+            while (lineStringsEnumerator.MoveNext()) ls++;
+            Assert.IsTrue(ls == 0);
+
+            Assert.IsTrue(geoOnt.PolygonsCount == 1);
+            int pl = 0;
+            IEnumerator<RDFResource> polygonsEnumerator = geoOnt.PolygonsEnumerator;
+            while (polygonsEnumerator.MoveNext()) pl++;
+            Assert.IsTrue(pl == 1);
+        }
+
+        [TestMethod]
+        public void ShouldDeclareClosedPolygon()
+        {
+            GEOOntology geoOnt = new GEOOntology("ex:geoOnt");
+            geoOnt.DeclarePolygon(new RDFResource("ex:MilanToRomeToNaplesToMilan"), new[] { (45.4654219, 9.1859243), (41.902784, 12.496366), (40.8517746, 14.2681244), (45.4654219, 9.1859243) });
+
+            //Test evolution of GEO knowledge
+            Assert.IsTrue(geoOnt.Ontology.URI.Equals(geoOnt.URI));
+            Assert.IsTrue(geoOnt.Ontology.Model.ClassModel.ClassesCount == 19);
+            Assert.IsTrue(geoOnt.Ontology.Model.PropertyModel.PropertiesCount == 34);
+            Assert.IsTrue(geoOnt.Ontology.Data.IndividualsCount == 1);
+            Assert.IsTrue(geoOnt.Ontology.Data.CheckHasIndividual(new RDFResource("ex:MilanToRomeToNaplesToMilan")));
+            Assert.IsTrue(geoOnt.Ontology.Data.CheckIsIndividualOf(geoOnt.Ontology.Model, new RDFResource("ex:MilanToRomeToNaplesToMilan"), RDFVocabulary.GEOSPARQL.SPATIAL_OBJECT));
+            Assert.IsTrue(geoOnt.Ontology.Data.CheckIsIndividualOf(geoOnt.Ontology.Model, new RDFResource("ex:MilanToRomeToNaplesToMilan"), RDFVocabulary.GEOSPARQL.GEOMETRY));
+            Assert.IsTrue(geoOnt.Ontology.Data.CheckIsIndividualOf(geoOnt.Ontology.Model, new RDFResource("ex:MilanToRomeToNaplesToMilan"), RDFVocabulary.GEOSPARQL.SF.POLYGON));
+            Assert.IsTrue(geoOnt.Ontology.Data.CheckHasDatatypeAssertion(new RDFResource("ex:MilanToRomeToNaplesToMilan"), RDFVocabulary.GEOSPARQL.AS_WKT, new RDFTypedLiteral("POLYGON ((45.4654219 9.1859243, 41.902784 12.496366, 40.8517746 14.2681244, 45.4654219 9.1859243))", RDFModelEnums.RDFDatatypes.GEOSPARQL_WKT)));
+
+            //Test counters and enumerators
+            Assert.IsTrue(geoOnt.SpatialObjectsCount == 1);
+            int so1 = 0;
+            IEnumerator<RDFResource> spatialObjectsEnumerator = geoOnt.SpatialObjectsEnumerator;
+            while (spatialObjectsEnumerator.MoveNext()) so1++;
+            Assert.IsTrue(so1 == 1);
+
+            int so2 = 0;
+            foreach (RDFResource spatialObject in geoOnt) so2++;
+            Assert.IsTrue(so2 == 1);
+
+            Assert.IsTrue(geoOnt.PointsCount == 0);
+            int pt = 0;
+            IEnumerator<RDFResource> pointsEnumerator = geoOnt.PointsEnumerator;
+            while (pointsEnumerator.MoveNext()) pt++;
+            Assert.IsTrue(pt == 0);
+
+            Assert.IsTrue(geoOnt.LinesCount == 0);
+            int l = 0;
+            IEnumerator<RDFResource> linesEnumerator = geoOnt.LinesEnumerator;
+            while (linesEnumerator.MoveNext()) l++;
+            Assert.IsTrue(l == 0);
+
+            Assert.IsTrue(geoOnt.LineStringsCount == 0);
+            int ls = 0;
+            IEnumerator<RDFResource> lineStringsEnumerator = geoOnt.LineStringsEnumerator;
+            while (lineStringsEnumerator.MoveNext()) ls++;
+            Assert.IsTrue(ls == 0);
+
+            Assert.IsTrue(geoOnt.PolygonsCount == 1);
+            int pl = 0;
+            IEnumerator<RDFResource> polygonsEnumerator = geoOnt.PolygonsEnumerator;
+            while (polygonsEnumerator.MoveNext()) pl++;
+            Assert.IsTrue(pl == 1);
+        }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringPolygonBecauseNullUri()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new GEOOntology("ex:geoOnt").DeclarePolygon(null, new[] { (0d, 0d), (0d, 0d) }));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringPolygonBecauseNullPoints()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new GEOOntology("ex:geoOnt").DeclarePolygon(new RDFResource("ex:polygon"), null));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringPolygonBecauseLessThan3Points()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new GEOOntology("ex:geoOnt").DeclarePolygon(new RDFResource("ex:polygon"), new[] { (0d, 0d), (0d, 0d) }));
         #endregion
     }
 }

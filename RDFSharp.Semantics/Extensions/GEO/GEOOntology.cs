@@ -91,6 +91,21 @@ namespace RDFSharp.Semantics.Extensions.GEO
         }
 
         /// <summary>
+        /// Count of the spatial objects of type sf:Polygon
+        /// </summary>
+        public long PolygonsCount
+        {
+            get
+            {
+                long count = 0;
+                IEnumerator<RDFResource> polygonObjects = PolygonsEnumerator;
+                while (polygonObjects.MoveNext())
+                    count++;
+                return count;
+            }
+        }
+
+        /// <summary>
         /// Gets the enumerator on the spatial objects for iteration
         /// </summary>
         public IEnumerator<RDFResource> SpatialObjectsEnumerator
@@ -119,6 +134,13 @@ namespace RDFSharp.Semantics.Extensions.GEO
                             .GetEnumerator();
 
         /// <summary>
+        /// Gets the enumerator on the spatial objects of type sf:Polygon for iteration
+        /// </summary>
+        public IEnumerator<RDFResource> PolygonsEnumerator
+            => Ontology.Data.FindIndividualsOfClass(Ontology.Model, RDFVocabulary.GEOSPARQL.SF.POLYGON)
+                            .GetEnumerator();
+
+        /// <summary>
         /// Knowledge describing the spatial ontology
         /// </summary>
         internal OWLOntology Ontology { get; set; }
@@ -136,19 +158,17 @@ namespace RDFSharp.Semantics.Extensions.GEO
         /// <summary>
         /// Exposes a typed enumerator on the spatial objects for iteration
         /// </summary>
-        IEnumerator<RDFResource> IEnumerable<RDFResource>.GetEnumerator()
-            => SpatialObjectsEnumerator;
+        IEnumerator<RDFResource> IEnumerable<RDFResource>.GetEnumerator() => SpatialObjectsEnumerator;
 
         /// <summary>
         /// Exposes an untyped enumerator on the spatial objects for iteration
         /// </summary>
-        IEnumerator IEnumerable.GetEnumerator()
-            => SpatialObjectsEnumerator;
+        IEnumerator IEnumerable.GetEnumerator() => SpatialObjectsEnumerator;
         #endregion
 
         #region Methods
         /// <summary>
-        /// Declares the given sf:Point instance to the spatial ontology. Latitude/Longitude must be expressed in EPSG:4326 (WGS84)
+        /// Declares the given sf:Point instance to the spatial ontology
         /// </summary>
         public GEOOntology DeclarePoint(RDFResource pointUri, (double,double) point)
         {
@@ -167,7 +187,7 @@ namespace RDFSharp.Semantics.Extensions.GEO
         }
 
         /// <summary>
-        /// Declares the given sf:Line instance to the spatial ontology. Latitude/Longitude points must be expressed in EPSG:4326 (WGS84)
+        /// Declares the given sf:Line instance to the spatial ontology
         /// </summary>
         public GEOOntology DeclareLine(RDFResource lineUri, (double,double) startPoint, (double,double) endPoint)
         {
@@ -186,15 +206,15 @@ namespace RDFSharp.Semantics.Extensions.GEO
         }
 
         /// <summary>
-        /// Declares the given sf:LineString instance to the spatial ontology. Latitude/Longitude points must be expressed in EPSG:4326 (WGS84)
+        /// Declares the given sf:LineString instance to the spatial ontology
         /// </summary>
-        public GEOOntology DeclareLineString(RDFResource lineUri, (double,double)[] points)
+        public GEOOntology DeclareLineString(RDFResource lineStringUri, (double,double)[] points)
         {
-            if (lineUri == null)
-                throw new OWLSemanticsException("Cannot declare sf:LineString instance to the spatial ontology because given \"lineUri\" parameter is null");
+            if (lineStringUri == null)
+                throw new OWLSemanticsException("Cannot declare sf:LineString instance to the spatial ontology because given \"lineStringUri\" parameter is null");
             if (points == null)
                 throw new OWLSemanticsException("Cannot declare sf:LineString instance to the spatial ontology because given \"points\" parameter is null");
-            if (points.Length == 1)
+            if (points.Length < 2)
                 throw new OWLSemanticsException("Cannot declare sf:LineString instance to the spatial ontology because given \"points\" parameter must have at least 2 points");
 
             //Build sf:LineString instance
@@ -204,9 +224,37 @@ namespace RDFSharp.Semantics.Extensions.GEO
             LineString sfLineString = new LineString(sfLineStringPoints.ToArray());           
 
             //Add knowledge to the A-BOX
-            Ontology.Data.DeclareIndividual(lineUri);
-            Ontology.Data.DeclareIndividualType(lineUri, RDFVocabulary.GEOSPARQL.SF.LINESTRING);
-            Ontology.Data.DeclareDatatypeAssertion(lineUri, RDFVocabulary.GEOSPARQL.AS_WKT, new RDFTypedLiteral(sfLineString.ToString(), RDFModelEnums.RDFDatatypes.GEOSPARQL_WKT));
+            Ontology.Data.DeclareIndividual(lineStringUri);
+            Ontology.Data.DeclareIndividualType(lineStringUri, RDFVocabulary.GEOSPARQL.SF.LINESTRING);
+            Ontology.Data.DeclareDatatypeAssertion(lineStringUri, RDFVocabulary.GEOSPARQL.AS_WKT, new RDFTypedLiteral(sfLineString.ToString(), RDFModelEnums.RDFDatatypes.GEOSPARQL_WKT));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the given sf:Polygon instance to the spatial ontology
+        /// </summary>
+        public GEOOntology DeclarePolygon(RDFResource polygonUri, (double,double)[] points)
+        {
+            if (polygonUri == null)
+                throw new OWLSemanticsException("Cannot declare sf:Polygon instance to the spatial ontology because given \"polygonUri\" parameter is null");
+            if (points == null)
+                throw new OWLSemanticsException("Cannot declare sf:Polygon instance to the spatial ontology because given \"points\" parameter is null");
+            if (points.Length < 3)
+                throw new OWLSemanticsException("Cannot declare sf:Polygon instance to the spatial ontology because given \"points\" parameter must have at least 3 perimeter points");
+
+            //Build sf:Polygon instance (close it automatically if needed)
+            List<Coordinate> sfPolygonPoints = new List<Coordinate>();
+            foreach ((double, double) point in points)
+                sfPolygonPoints.Add(new Coordinate(point.Item1, point.Item2));
+            if (!sfPolygonPoints[0].Equals2D(sfPolygonPoints[sfPolygonPoints.Count-1]))
+                sfPolygonPoints.Add(sfPolygonPoints[0]);
+            Polygon sfPolygon = new Polygon(new LinearRing(sfPolygonPoints.ToArray()));
+
+            //Add knowledge to the A-BOX
+            Ontology.Data.DeclareIndividual(polygonUri);
+            Ontology.Data.DeclareIndividualType(polygonUri, RDFVocabulary.GEOSPARQL.SF.POLYGON);
+            Ontology.Data.DeclareDatatypeAssertion(polygonUri, RDFVocabulary.GEOSPARQL.AS_WKT, new RDFTypedLiteral(sfPolygon.ToString(), RDFModelEnums.RDFDatatypes.GEOSPARQL_WKT));
 
             return this;
         }
