@@ -58,21 +58,6 @@ namespace RDFSharp.Semantics.Extensions.GEO
         }
 
         /// <summary>
-        /// Count of the spatial objects of type sf:Line
-        /// </summary>
-        public long LinesCount
-        {
-            get
-            {
-                long count = 0;
-                IEnumerator<RDFResource> lineObjects = LinesEnumerator;
-                while (lineObjects.MoveNext())
-                    count++;
-                return count;
-            }
-        }
-
-        /// <summary>
         /// Count of the spatial objects of type sf:LineString
         /// </summary>
         public long LineStringsCount
@@ -114,13 +99,6 @@ namespace RDFSharp.Semantics.Extensions.GEO
         /// </summary>
         public IEnumerator<RDFResource> PointsEnumerator
             => Ontology.Data.FindIndividualsOfClass(Ontology.Model, RDFVocabulary.GEOSPARQL.SF.POINT)
-                            .GetEnumerator();
-
-        /// <summary>
-        /// Gets the enumerator on the spatial objects of type sf:Line for iteration
-        /// </summary>
-        public IEnumerator<RDFResource> LinesEnumerator
-            => Ontology.Data.FindIndividualsOfClass(Ontology.Model, RDFVocabulary.GEOSPARQL.SF.LINE)
                             .GetEnumerator();
 
         /// <summary>
@@ -179,25 +157,6 @@ namespace RDFSharp.Semantics.Extensions.GEO
             Ontology.Data.DeclareIndividual(pointUri);
             Ontology.Data.DeclareIndividualType(pointUri, RDFVocabulary.GEOSPARQL.SF.POINT);
             Ontology.Data.DeclareDatatypeAssertion(pointUri, RDFVocabulary.GEOSPARQL.AS_WKT, new RDFTypedLiteral(sfPoint.ToString(), RDFModelEnums.RDFDatatypes.GEOSPARQL_WKT));
-
-            return this;
-        }
-
-        /// <summary>
-        /// Declares the given sf:Line instance to the spatial ontology
-        /// </summary>
-        public GEOOntology DeclareLine(RDFResource lineUri, (double,double) startPoint, (double,double) endPoint)
-        {
-            if (lineUri == null)
-                throw new OWLSemanticsException("Cannot declare sf:LineString instance to the spatial ontology because given \"lineUri\" parameter is null");
-
-            //Build sf:Line instance
-            LineString sfLine = new LineString(new Coordinate[] { new Coordinate(startPoint.Item1, startPoint.Item2), new Coordinate(endPoint.Item1, endPoint.Item2) });
-
-            //Add knowledge to the A-BOX
-            Ontology.Data.DeclareIndividual(lineUri);
-            Ontology.Data.DeclareIndividualType(lineUri, RDFVocabulary.GEOSPARQL.SF.LINE);
-            Ontology.Data.DeclareDatatypeAssertion(lineUri, RDFVocabulary.GEOSPARQL.AS_WKT, new RDFTypedLiteral(sfLine.ToString(), RDFModelEnums.RDFDatatypes.GEOSPARQL_WKT));
 
             return this;
         }
