@@ -16,11 +16,8 @@
 
 using RDFSharp.Model;
 using System.Collections.Generic;
-using System.Linq;
 using System.Collections;
-using System.Globalization;
 using NetTopologySuite.Geometries;
-using System;
 
 namespace RDFSharp.Semantics.Extensions.GEO
 {
