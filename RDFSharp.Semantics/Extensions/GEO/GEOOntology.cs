@@ -15,9 +15,10 @@
 */
 
 using RDFSharp.Model;
+using Microsoft.Spatial;
 using System.Collections.Generic;
 using System.Collections;
-using NetTopologySuite.Geometries;
+using System.Linq;
 
 namespace RDFSharp.Semantics.Extensions.GEO
 {
@@ -143,26 +144,28 @@ namespace RDFSharp.Semantics.Extensions.GEO
 
         #region Methods
         /// <summary>
-        /// Declares the given sf:Point instance to the spatial ontology
+        /// Declares the given sf:Point instance to the spatial ontology (coordinate system is EPSG:4326)
         /// </summary>
-        public GEOOntology DeclarePoint(RDFResource pointUri, (double,double) point)
+        public GEOOntology DeclarePoint(RDFResource pointUri, double latitude, double longitude)
         {
             if (pointUri == null)
                 throw new OWLSemanticsException("Cannot declare sf:Point instance to the spatial ontology because given \"pointUri\" parameter is null");
 
             //Build sf:Point instance
-            Point sfPoint = new Point(new Coordinate(point.Item1, point.Item2));
+            GeographyPoint sfPoint = GeographyFactory.Point(CoordinateSystem.DefaultGeography, latitude, longitude).Build();
+            string sfPointWKT = WellKnownTextSqlFormatter.Create().Write(sfPoint).Replace("SRID=4326;", string.Empty);
+            string sfPointGML = GmlFormatter.Create().Write(sfPoint);
 
             //Add knowledge to the A-BOX
             Ontology.Data.DeclareIndividual(pointUri);
             Ontology.Data.DeclareIndividualType(pointUri, RDFVocabulary.GEOSPARQL.SF.POINT);
-            Ontology.Data.DeclareDatatypeAssertion(pointUri, RDFVocabulary.GEOSPARQL.AS_WKT, new RDFTypedLiteral(sfPoint.ToString(), RDFModelEnums.RDFDatatypes.GEOSPARQL_WKT));
+            Ontology.Data.DeclareDatatypeAssertion(pointUri, RDFVocabulary.GEOSPARQL.AS_GML, new RDFTypedLiteral(sfPointGML, RDFModelEnums.RDFDatatypes.GEOSPARQL_GML));
 
             return this;
         }
 
         /// <summary>
-        /// Declares the given sf:LineString instance to the spatial ontology
+        /// Declares the given sf:LineString instance to the spatial ontology (coordinate system is EPSG:4326)
         /// </summary>
         public GEOOntology DeclareLineString(RDFResource lineStringUri, (double,double)[] points)
         {
@@ -174,21 +177,23 @@ namespace RDFSharp.Semantics.Extensions.GEO
                 throw new OWLSemanticsException("Cannot declare sf:LineString instance to the spatial ontology because given \"points\" parameter must have at least 2 points");
 
             //Build sf:LineString instance
-            List<Coordinate> sfLineStringPoints = new List<Coordinate>();
+            GeographyFactory<GeographyLineString> sfLineStringFactory = GeographyFactory.LineString(CoordinateSystem.DefaultGeography);
             foreach ((double, double) point in points)
-                sfLineStringPoints.Add(new Coordinate(point.Item1, point.Item2));
-            LineString sfLineString = new LineString(sfLineStringPoints.ToArray());           
+                sfLineStringFactory.LineTo(point.Item1, point.Item2);
+            GeographyLineString sfLineString = sfLineStringFactory.Build();
+            string sfLineStringWKT = WellKnownTextSqlFormatter.Create().Write(sfLineString).Replace("SRID=4326;", string.Empty);
+            string sfLineStringGML = GmlFormatter.Create().Write(sfLineString);
 
             //Add knowledge to the A-BOX
             Ontology.Data.DeclareIndividual(lineStringUri);
             Ontology.Data.DeclareIndividualType(lineStringUri, RDFVocabulary.GEOSPARQL.SF.LINESTRING);
-            Ontology.Data.DeclareDatatypeAssertion(lineStringUri, RDFVocabulary.GEOSPARQL.AS_WKT, new RDFTypedLiteral(sfLineString.ToString(), RDFModelEnums.RDFDatatypes.GEOSPARQL_WKT));
+            Ontology.Data.DeclareDatatypeAssertion(lineStringUri, RDFVocabulary.GEOSPARQL.AS_GML, new RDFTypedLiteral(sfLineStringGML, RDFModelEnums.RDFDatatypes.GEOSPARQL_GML));
 
             return this;
         }
 
         /// <summary>
-        /// Declares the given sf:Polygon instance to the spatial ontology
+        /// Declares the given sf:Polygon instance to the spatial ontology (coordinate system is EPSG:4326)
         /// </summary>
         public GEOOntology DeclarePolygon(RDFResource polygonUri, (double,double)[] points)
         {
@@ -199,18 +204,24 @@ namespace RDFSharp.Semantics.Extensions.GEO
             if (points.Length < 3)
                 throw new OWLSemanticsException("Cannot declare sf:Polygon instance to the spatial ontology because given \"points\" parameter must have at least 3 perimeter points");
 
-            //Build sf:Polygon instance (close it automatically if needed)
-            List<Coordinate> sfPolygonPoints = new List<Coordinate>();
-            foreach ((double, double) point in points)
-                sfPolygonPoints.Add(new Coordinate(point.Item1, point.Item2));
-            if (!sfPolygonPoints[0].Equals2D(sfPolygonPoints[sfPolygonPoints.Count-1]))
+            //Automatically close polygon
+            List<(double,double)> sfPolygonPoints = points.ToList();
+            if (sfPolygonPoints[0].Item1 != sfPolygonPoints[sfPolygonPoints.Count-1].Item1
+                 && sfPolygonPoints[0].Item2 != sfPolygonPoints[sfPolygonPoints.Count-1].Item2)
                 sfPolygonPoints.Add(sfPolygonPoints[0]);
-            Polygon sfPolygon = new Polygon(new LinearRing(sfPolygonPoints.ToArray()));
+
+            //Build sf:Polygon instance
+            GeographyFactory<GeographyPolygon> sfPolygonFactory = GeographyFactory.Polygon(CoordinateSystem.DefaultGeography);
+            foreach ((double, double) sfPolygonPoint in sfPolygonPoints)
+                sfPolygonFactory.LineTo(sfPolygonPoint.Item1, sfPolygonPoint.Item2);
+            GeographyPolygon sfPolygon = sfPolygonFactory.Build();
+            string sfPolygonWKT = WellKnownTextSqlFormatter.Create().Write(sfPolygon).Replace("SRID=4326;", string.Empty);
+            string sfPolygonGML = GmlFormatter.Create().Write(sfPolygon);
 
             //Add knowledge to the A-BOX
             Ontology.Data.DeclareIndividual(polygonUri);
             Ontology.Data.DeclareIndividualType(polygonUri, RDFVocabulary.GEOSPARQL.SF.POLYGON);
-            Ontology.Data.DeclareDatatypeAssertion(polygonUri, RDFVocabulary.GEOSPARQL.AS_WKT, new RDFTypedLiteral(sfPolygon.ToString(), RDFModelEnums.RDFDatatypes.GEOSPARQL_WKT));
+            Ontology.Data.DeclareDatatypeAssertion(polygonUri, RDFVocabulary.GEOSPARQL.AS_GML, new RDFTypedLiteral(sfPolygonGML, RDFModelEnums.RDFDatatypes.GEOSPARQL_GML));
 
             return this;
         }
