@@ -153,7 +153,6 @@ namespace RDFSharp.Semantics.Extensions.GEO
 
             //Build sf:Point instance
             GeographyPoint sfPoint = GeographyFactory.Point(CoordinateSystem.DefaultGeography, latitude, longitude).Build();
-            string sfPointWKT = WellKnownTextSqlFormatter.Create().Write(sfPoint).Replace("SRID=4326;", string.Empty);
             string sfPointGML = GmlFormatter.Create().Write(sfPoint);
 
             //Add knowledge to the A-BOX
@@ -181,7 +180,6 @@ namespace RDFSharp.Semantics.Extensions.GEO
             foreach ((double, double) point in points)
                 sfLineStringFactory.LineTo(point.Item1, point.Item2);
             GeographyLineString sfLineString = sfLineStringFactory.Build();
-            string sfLineStringWKT = WellKnownTextSqlFormatter.Create().Write(sfLineString).Replace("SRID=4326;", string.Empty);
             string sfLineStringGML = GmlFormatter.Create().Write(sfLineString);
 
             //Add knowledge to the A-BOX
@@ -215,7 +213,6 @@ namespace RDFSharp.Semantics.Extensions.GEO
             foreach ((double, double) sfPolygonPoint in sfPolygonPoints)
                 sfPolygonFactory.LineTo(sfPolygonPoint.Item1, sfPolygonPoint.Item2);
             GeographyPolygon sfPolygon = sfPolygonFactory.Build();
-            string sfPolygonWKT = WellKnownTextSqlFormatter.Create().Write(sfPolygon).Replace("SRID=4326;", string.Empty);
             string sfPolygonGML = GmlFormatter.Create().Write(sfPolygon);
 
             //Add knowledge to the A-BOX
