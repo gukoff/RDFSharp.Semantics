@@ -66,6 +66,12 @@ namespace RDFSharp.Semantics.Extensions.GEO.Test
             IEnumerator<RDFResource> polygonsEnumerator = geoOnt.PolygonsEnumerator;
             while (polygonsEnumerator.MoveNext()) pl++;
             Assert.IsTrue(pl == 0);
+
+            Assert.IsTrue(geoOnt.MultiPointsCount == 0);
+            int mpt = 0;
+            IEnumerator<RDFResource> multiPointsEnumerator = geoOnt.MultiPointsEnumerator;
+            while (multiPointsEnumerator.MoveNext()) mpt++;
+            Assert.IsTrue(mpt == 0);
         }
 
         [TestMethod]
@@ -113,6 +119,12 @@ namespace RDFSharp.Semantics.Extensions.GEO.Test
             IEnumerator<RDFResource> polygonsEnumerator = geoOnt.PolygonsEnumerator;
             while (polygonsEnumerator.MoveNext()) pl++;
             Assert.IsTrue(pl == 0);
+
+            Assert.IsTrue(geoOnt.MultiPointsCount == 0);
+            int mpt = 0;
+            IEnumerator<RDFResource> multiPointsEnumerator = geoOnt.MultiPointsEnumerator;
+            while (multiPointsEnumerator.MoveNext()) mpt++;
+            Assert.IsTrue(mpt == 0);
         }
 
         [TestMethod]
@@ -164,6 +176,12 @@ namespace RDFSharp.Semantics.Extensions.GEO.Test
             IEnumerator<RDFResource> polygonsEnumerator = geoOnt.PolygonsEnumerator;
             while (polygonsEnumerator.MoveNext()) pl++;
             Assert.IsTrue(pl == 0);
+
+            Assert.IsTrue(geoOnt.MultiPointsCount == 0);
+            int mpt = 0;
+            IEnumerator<RDFResource> multiPointsEnumerator = geoOnt.MultiPointsEnumerator;
+            while (multiPointsEnumerator.MoveNext()) mpt++;
+            Assert.IsTrue(mpt == 0);
         }
 
         [TestMethod]
@@ -223,6 +241,12 @@ namespace RDFSharp.Semantics.Extensions.GEO.Test
             IEnumerator<RDFResource> polygonsEnumerator = geoOnt.PolygonsEnumerator;
             while (polygonsEnumerator.MoveNext()) pl++;
             Assert.IsTrue(pl == 1);
+
+            Assert.IsTrue(geoOnt.MultiPointsCount == 0);
+            int mpt = 0;
+            IEnumerator<RDFResource> multiPointsEnumerator = geoOnt.MultiPointsEnumerator;
+            while (multiPointsEnumerator.MoveNext()) mpt++;
+            Assert.IsTrue(mpt == 0);
         }
 
         [TestMethod]
@@ -270,6 +294,12 @@ namespace RDFSharp.Semantics.Extensions.GEO.Test
             IEnumerator<RDFResource> polygonsEnumerator = geoOnt.PolygonsEnumerator;
             while (polygonsEnumerator.MoveNext()) pl++;
             Assert.IsTrue(pl == 1);
+
+            Assert.IsTrue(geoOnt.MultiPointsCount == 0);
+            int mpt = 0;
+            IEnumerator<RDFResource> multiPointsEnumerator = geoOnt.MultiPointsEnumerator;
+            while (multiPointsEnumerator.MoveNext()) mpt++;
+            Assert.IsTrue(mpt == 0);
         }
 
         [TestMethod]
@@ -283,6 +313,71 @@ namespace RDFSharp.Semantics.Extensions.GEO.Test
         [TestMethod]
         public void ShouldThrowExceptionOnDeclaringPolygonBecauseLessThan3Points()
             => Assert.ThrowsException<OWLSemanticsException>(() => new GEOOntology("ex:geoOnt").DeclarePolygon(new RDFResource("ex:polygon"), new[] { (0d, 0d), (0d, 0d) }));
+
+        [TestMethod]
+        public void ShouldDeclareMultiPoint()
+        {
+            GEOOntology geoOnt = new GEOOntology("ex:geoOnt");
+            geoOnt.DeclareMultiPoint(new RDFResource("ex:MilanRomeNaples"), new[] { (45.4654219, 9.1859243), (41.902784, 12.496366), (40.8517746, 14.2681244) });
+
+            //Test evolution of GEO knowledge
+            Assert.IsTrue(geoOnt.Ontology.URI.Equals(geoOnt.URI));
+            Assert.IsTrue(geoOnt.Ontology.Model.ClassModel.ClassesCount == 19);
+            Assert.IsTrue(geoOnt.Ontology.Model.PropertyModel.PropertiesCount == 34);
+            Assert.IsTrue(geoOnt.Ontology.Data.IndividualsCount == 1);
+            Assert.IsTrue(geoOnt.Ontology.Data.CheckHasIndividual(new RDFResource("ex:MilanRomeNaples")));
+            Assert.IsTrue(geoOnt.Ontology.Data.CheckIsIndividualOf(geoOnt.Ontology.Model, new RDFResource("ex:MilanRomeNaples"), RDFVocabulary.GEOSPARQL.SPATIAL_OBJECT));
+            Assert.IsTrue(geoOnt.Ontology.Data.CheckIsIndividualOf(geoOnt.Ontology.Model, new RDFResource("ex:MilanRomeNaples"), RDFVocabulary.GEOSPARQL.GEOMETRY));
+            Assert.IsTrue(geoOnt.Ontology.Data.CheckIsIndividualOf(geoOnt.Ontology.Model, new RDFResource("ex:MilanRomeNaples"), RDFVocabulary.GEOSPARQL.SF.MULTI_POINT));
+            Assert.IsTrue(geoOnt.Ontology.Data.CheckHasDatatypeAssertion(new RDFResource("ex:MilanRomeNaples"), RDFVocabulary.GEOSPARQL.AS_GML, new RDFTypedLiteral("<gml:MultiPoint srsName=\"http://www.opengis.net/def/crs/EPSG/0/4326\" xmlns:gml=\"http://www.opengis.net/gml\"><gml:pointMembers><gml:Point><gml:pos>45.4654219 9.1859243</gml:pos></gml:Point><gml:Point><gml:pos>41.902784 12.496366</gml:pos></gml:Point><gml:Point><gml:pos>40.8517746 14.2681244</gml:pos></gml:Point></gml:pointMembers></gml:MultiPoint>", RDFModelEnums.RDFDatatypes.GEOSPARQL_GML)));
+
+            //Test counters and enumerators
+            Assert.IsTrue(geoOnt.SpatialObjectsCount == 1);
+            int so1 = 0;
+            IEnumerator<RDFResource> spatialObjectsEnumerator = geoOnt.SpatialObjectsEnumerator;
+            while (spatialObjectsEnumerator.MoveNext()) so1++;
+            Assert.IsTrue(so1 == 1);
+
+            int so2 = 0;
+            foreach (RDFResource spatialObject in geoOnt) so2++;
+            Assert.IsTrue(so2 == 1);
+
+            Assert.IsTrue(geoOnt.PointsCount == 0);
+            int pt = 0;
+            IEnumerator<RDFResource> pointsEnumerator = geoOnt.PointsEnumerator;
+            while (pointsEnumerator.MoveNext()) pt++;
+            Assert.IsTrue(pt == 0);
+
+            Assert.IsTrue(geoOnt.LineStringsCount == 0);
+            int ls = 0;
+            IEnumerator<RDFResource> lineStringsEnumerator = geoOnt.LineStringsEnumerator;
+            while (lineStringsEnumerator.MoveNext()) ls++;
+            Assert.IsTrue(ls == 0);
+
+            Assert.IsTrue(geoOnt.PolygonsCount == 0);
+            int pl = 0;
+            IEnumerator<RDFResource> polygonsEnumerator = geoOnt.PolygonsEnumerator;
+            while (polygonsEnumerator.MoveNext()) pl++;
+            Assert.IsTrue(pl == 0);
+
+            Assert.IsTrue(geoOnt.MultiPointsCount == 1);
+            int mpt = 0;
+            IEnumerator<RDFResource> multiPointsEnumerator = geoOnt.MultiPointsEnumerator;
+            while (multiPointsEnumerator.MoveNext()) mpt++;
+            Assert.IsTrue(mpt == 1);
+        }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringMultiPointBecauseNullUri()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new GEOOntology("ex:geoOnt").DeclareMultiPoint(null, new[] { (0d, 0d), (0d, 0d) }));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringMultiPointBecauseNullPoints()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new GEOOntology("ex:geoOnt").DeclareMultiPoint(new RDFResource("ex:multiPoint"), null));
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringMultiPointBecauseLessThan2Points()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new GEOOntology("ex:geoOnt").DeclareMultiPoint(new RDFResource("ex:multiPoint"), new[] { (0d, 0d) }));
         #endregion
     }
 }

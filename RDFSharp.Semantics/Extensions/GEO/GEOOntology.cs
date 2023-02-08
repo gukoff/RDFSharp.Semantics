@@ -89,6 +89,21 @@ namespace RDFSharp.Semantics.Extensions.GEO
         }
 
         /// <summary>
+        /// Count of the spatial objects of type sf:MultiPoint
+        /// </summary>
+        public long MultiPointsCount
+        {
+            get
+            {
+                long count = 0;
+                IEnumerator<RDFResource> multiPointObjects = MultiPointsEnumerator;
+                while (multiPointObjects.MoveNext())
+                    count++;
+                return count;
+            }
+        }
+
+        /// <summary>
         /// Gets the enumerator on the spatial objects for iteration
         /// </summary>
         public IEnumerator<RDFResource> SpatialObjectsEnumerator
@@ -114,6 +129,13 @@ namespace RDFSharp.Semantics.Extensions.GEO
         /// </summary>
         public IEnumerator<RDFResource> PolygonsEnumerator
             => Ontology.Data.FindIndividualsOfClass(Ontology.Model, RDFVocabulary.GEOSPARQL.SF.POLYGON)
+                            .GetEnumerator();
+
+        /// <summary>
+        /// Gets the enumerator on the spatial objects of type sf:MultiPoint for iteration
+        /// </summary>
+        public IEnumerator<RDFResource> MultiPointsEnumerator
+            => Ontology.Data.FindIndividualsOfClass(Ontology.Model, RDFVocabulary.GEOSPARQL.SF.MULTI_POINT)
                             .GetEnumerator();
 
         /// <summary>
@@ -149,7 +171,7 @@ namespace RDFSharp.Semantics.Extensions.GEO
         public GEOOntology DeclarePoint(RDFResource pointUri, double latitude, double longitude)
         {
             if (pointUri == null)
-                throw new OWLSemanticsException("Cannot declare sf:Point instance to the spatial ontology because given \"pointUri\" parameter is null");
+                throw new OWLSemanticsException("Cannot declare sf:Point instance to the spatial ontology because given \"multiPointUri\" parameter is null");
 
             //Build sf:Point instance
             GeographyPoint sfPoint = GeographyFactory.Point(CoordinateSystem.DefaultGeography, latitude, longitude).Build();
@@ -200,7 +222,7 @@ namespace RDFSharp.Semantics.Extensions.GEO
             if (points == null)
                 throw new OWLSemanticsException("Cannot declare sf:Polygon instance to the spatial ontology because given \"points\" parameter is null");
             if (points.Length < 3)
-                throw new OWLSemanticsException("Cannot declare sf:Polygon instance to the spatial ontology because given \"points\" parameter must have at least 3 perimeter points");
+                throw new OWLSemanticsException("Cannot declare sf:Polygon instance to the spatial ontology because given \"points\" parameter must have at least 3 points");
 
             //Automatically close polygon
             List<(double,double)> sfPolygonPoints = points.ToList();
@@ -219,6 +241,33 @@ namespace RDFSharp.Semantics.Extensions.GEO
             Ontology.Data.DeclareIndividual(polygonUri);
             Ontology.Data.DeclareIndividualType(polygonUri, RDFVocabulary.GEOSPARQL.SF.POLYGON);
             Ontology.Data.DeclareDatatypeAssertion(polygonUri, RDFVocabulary.GEOSPARQL.AS_GML, new RDFTypedLiteral(sfPolygonGML, RDFModelEnums.RDFDatatypes.GEOSPARQL_GML));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the given sf:MultiPoint instance to the spatial ontology (coordinate system is EPSG:4326)
+        /// </summary>
+        public GEOOntology DeclareMultiPoint(RDFResource multiPointUri, (double,double)[] points)
+        {
+            if (multiPointUri == null)
+                throw new OWLSemanticsException("Cannot declare sf:MultiPoint instance to the spatial ontology because given \"multiPointUri\" parameter is null");
+            if (points == null)
+                throw new OWLSemanticsException("Cannot declare sf:MultiPoint instance to the spatial ontology because given \"points\" parameter is null");
+            if (points.Length < 2)
+                throw new OWLSemanticsException("Cannot declare sf:MultiPoint instance to the spatial ontology because given \"points\" parameter must have at least 2 points");
+
+            //Build sf:MultiPoint instance
+            GeographyFactory<GeographyMultiPoint> sfMultiPointFactory = GeographyFactory.MultiPoint(CoordinateSystem.DefaultGeography);
+            foreach ((double, double) point in points)
+                sfMultiPointFactory.Point(point.Item1, point.Item2);
+            GeographyMultiPoint sfMultiPoint = sfMultiPointFactory.Build();
+            string sfMultiPointGML = GmlFormatter.Create().Write(sfMultiPoint);
+
+            //Add knowledge to the A-BOX
+            Ontology.Data.DeclareIndividual(multiPointUri);
+            Ontology.Data.DeclareIndividualType(multiPointUri, RDFVocabulary.GEOSPARQL.SF.MULTI_POINT);
+            Ontology.Data.DeclareDatatypeAssertion(multiPointUri, RDFVocabulary.GEOSPARQL.AS_GML, new RDFTypedLiteral(sfMultiPointGML, RDFModelEnums.RDFDatatypes.GEOSPARQL_GML));
 
             return this;
         }
