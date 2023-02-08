@@ -19,8 +19,6 @@ using Microsoft.Spatial;
 using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
-using System.Drawing;
-using System.Reflection;
 
 namespace RDFSharp.Semantics.Extensions.GEO
 {
