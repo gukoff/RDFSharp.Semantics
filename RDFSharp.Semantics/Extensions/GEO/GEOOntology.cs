@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
 using System.Drawing;
+using System.Reflection;
 
 namespace RDFSharp.Semantics.Extensions.GEO
 {
@@ -221,11 +222,13 @@ namespace RDFSharp.Semantics.Extensions.GEO
             //Build sf:Point instance
             GeographyPoint point = GeographyFactory.Point(CoordinateSystem.DefaultGeography, pointLatitude, pointLongitude).Build();
             string pointGML = GmlFormatter.Create().Write(point);
+            string pointWKT = WellKnownTextSqlFormatter.Create().Write(point).Replace("SRID=4326;", "<http://www.opengis.net/def/crs/EPSG/0/4326>");
 
             //Add knowledge to the A-BOX
             Ontology.Data.DeclareIndividual(pointUri);
             Ontology.Data.DeclareIndividualType(pointUri, RDFVocabulary.GEOSPARQL.SF.POINT);
             Ontology.Data.DeclareDatatypeAssertion(pointUri, RDFVocabulary.GEOSPARQL.AS_GML, new RDFTypedLiteral(pointGML, RDFModelEnums.RDFDatatypes.GEOSPARQL_GML));
+            Ontology.Data.DeclareDatatypeAssertion(pointUri, RDFVocabulary.GEOSPARQL.AS_WKT, new RDFTypedLiteral(pointWKT, RDFModelEnums.RDFDatatypes.GEOSPARQL_WKT));
 
             return this;
         }
@@ -248,11 +251,13 @@ namespace RDFSharp.Semantics.Extensions.GEO
                 lineStringFactory.LineTo(lineStringPoint.Item1, lineStringPoint.Item2);
             GeographyLineString lineString = lineStringFactory.Build();
             string lineStringGML = GmlFormatter.Create().Write(lineString);
+            string lineStringWKT = WellKnownTextSqlFormatter.Create().Write(lineString).Replace("SRID=4326;", "<http://www.opengis.net/def/crs/EPSG/0/4326>");
 
             //Add knowledge to the A-BOX
             Ontology.Data.DeclareIndividual(lineStringUri);
             Ontology.Data.DeclareIndividualType(lineStringUri, RDFVocabulary.GEOSPARQL.SF.LINESTRING);
             Ontology.Data.DeclareDatatypeAssertion(lineStringUri, RDFVocabulary.GEOSPARQL.AS_GML, new RDFTypedLiteral(lineStringGML, RDFModelEnums.RDFDatatypes.GEOSPARQL_GML));
+            Ontology.Data.DeclareDatatypeAssertion(lineStringUri, RDFVocabulary.GEOSPARQL.AS_WKT, new RDFTypedLiteral(lineStringWKT, RDFModelEnums.RDFDatatypes.GEOSPARQL_WKT));
 
             return this;
         }
@@ -280,11 +285,13 @@ namespace RDFSharp.Semantics.Extensions.GEO
                 polygonFactory.LineTo(polygonPoint.Item1, polygonPoint.Item2);
             GeographyPolygon polygon = polygonFactory.Build();
             string polygonGML = GmlFormatter.Create().Write(polygon);
+            string polygonWKT = WellKnownTextSqlFormatter.Create().Write(polygon).Replace("SRID=4326;", "<http://www.opengis.net/def/crs/EPSG/0/4326>");
 
             //Add knowledge to the A-BOX
             Ontology.Data.DeclareIndividual(polygonUri);
             Ontology.Data.DeclareIndividualType(polygonUri, RDFVocabulary.GEOSPARQL.SF.POLYGON);
             Ontology.Data.DeclareDatatypeAssertion(polygonUri, RDFVocabulary.GEOSPARQL.AS_GML, new RDFTypedLiteral(polygonGML, RDFModelEnums.RDFDatatypes.GEOSPARQL_GML));
+            Ontology.Data.DeclareDatatypeAssertion(polygonUri, RDFVocabulary.GEOSPARQL.AS_WKT, new RDFTypedLiteral(polygonWKT, RDFModelEnums.RDFDatatypes.GEOSPARQL_WKT));
 
             return this;
         }
@@ -307,11 +314,13 @@ namespace RDFSharp.Semantics.Extensions.GEO
                 sfMultiPointFactory.Point(point.Item1, point.Item2);
             GeographyMultiPoint sfMultiPoint = sfMultiPointFactory.Build();
             string sfMultiPointGML = GmlFormatter.Create().Write(sfMultiPoint);
+            string sfMultiPointWKT = WellKnownTextSqlFormatter.Create().Write(sfMultiPoint).Replace("SRID=4326;", "<http://www.opengis.net/def/crs/EPSG/0/4326>");
 
             //Add knowledge to the A-BOX
             Ontology.Data.DeclareIndividual(multiPointUri);
             Ontology.Data.DeclareIndividualType(multiPointUri, RDFVocabulary.GEOSPARQL.SF.MULTI_POINT);
             Ontology.Data.DeclareDatatypeAssertion(multiPointUri, RDFVocabulary.GEOSPARQL.AS_GML, new RDFTypedLiteral(sfMultiPointGML, RDFModelEnums.RDFDatatypes.GEOSPARQL_GML));
+            Ontology.Data.DeclareDatatypeAssertion(multiPointUri, RDFVocabulary.GEOSPARQL.AS_WKT, new RDFTypedLiteral(sfMultiPointWKT, RDFModelEnums.RDFDatatypes.GEOSPARQL_WKT));
 
             return this;
         }
@@ -341,11 +350,13 @@ namespace RDFSharp.Semantics.Extensions.GEO
             }                
             GeographyMultiLineString sfMultiLineString = sfMultiLineStringFactory.Build();
             string sfMultiLineStringGML = GmlFormatter.Create().Write(sfMultiLineString);
+            string sfMultiLineStringWKT = WellKnownTextSqlFormatter.Create().Write(sfMultiLineString).Replace("SRID=4326;", "<http://www.opengis.net/def/crs/EPSG/0/4326>");
 
             //Add knowledge to the A-BOX
             Ontology.Data.DeclareIndividual(multiLineStringUri);
             Ontology.Data.DeclareIndividualType(multiLineStringUri, RDFVocabulary.GEOSPARQL.SF.MULTI_LINESTRING);
             Ontology.Data.DeclareDatatypeAssertion(multiLineStringUri, RDFVocabulary.GEOSPARQL.AS_GML, new RDFTypedLiteral(sfMultiLineStringGML, RDFModelEnums.RDFDatatypes.GEOSPARQL_GML));
+            Ontology.Data.DeclareDatatypeAssertion(multiLineStringUri, RDFVocabulary.GEOSPARQL.AS_WKT, new RDFTypedLiteral(sfMultiLineStringWKT, RDFModelEnums.RDFDatatypes.GEOSPARQL_WKT));
 
             return this;
         }
@@ -380,11 +391,13 @@ namespace RDFSharp.Semantics.Extensions.GEO
             }
             GeographyMultiPolygon sfMultiPolygon = sfMultiPolygonFactory.Build();
             string sfMultiPolygonGML = GmlFormatter.Create().Write(sfMultiPolygon);
+            string sfMultiPolygonWKT = WellKnownTextSqlFormatter.Create().Write(sfMultiPolygon).Replace("SRID=4326;", "<http://www.opengis.net/def/crs/EPSG/0/4326>");
 
             //Add knowledge to the A-BOX
             Ontology.Data.DeclareIndividual(multiPolygonUri);
             Ontology.Data.DeclareIndividualType(multiPolygonUri, RDFVocabulary.GEOSPARQL.SF.MULTI_POLYGON);
             Ontology.Data.DeclareDatatypeAssertion(multiPolygonUri, RDFVocabulary.GEOSPARQL.AS_GML, new RDFTypedLiteral(sfMultiPolygonGML, RDFModelEnums.RDFDatatypes.GEOSPARQL_GML));
+            Ontology.Data.DeclareDatatypeAssertion(multiPolygonUri, RDFVocabulary.GEOSPARQL.AS_WKT, new RDFTypedLiteral(sfMultiPolygonWKT, RDFModelEnums.RDFDatatypes.GEOSPARQL_WKT));
 
             return this;
         }

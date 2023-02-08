@@ -16,6 +16,7 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RDFSharp.Model;
+using RDFSharp.Query;
 using System.Collections.Generic;
 
 namespace RDFSharp.Semantics.Extensions.GEO.Test
@@ -102,6 +103,7 @@ namespace RDFSharp.Semantics.Extensions.GEO.Test
             Assert.IsTrue(geoOnt.Ontology.Data.CheckIsIndividualOf(geoOnt.Ontology.Model, new RDFResource("ex:Milan"), RDFVocabulary.GEOSPARQL.GEOMETRY));
             Assert.IsTrue(geoOnt.Ontology.Data.CheckIsIndividualOf(geoOnt.Ontology.Model, new RDFResource("ex:Milan"), RDFVocabulary.GEOSPARQL.SF.POINT));
             Assert.IsTrue(geoOnt.Ontology.Data.CheckHasDatatypeAssertion(new RDFResource("ex:Milan"), RDFVocabulary.GEOSPARQL.AS_GML, new RDFTypedLiteral("<gml:Point srsName=\"http://www.opengis.net/def/crs/EPSG/0/4326\" xmlns:gml=\"http://www.opengis.net/gml\"><gml:pos>45.4654219 9.1859243</gml:pos></gml:Point>", RDFModelEnums.RDFDatatypes.GEOSPARQL_GML)));
+            Assert.IsTrue(geoOnt.Ontology.Data.CheckHasDatatypeAssertion(new RDFResource("ex:Milan"), RDFVocabulary.GEOSPARQL.AS_WKT, new RDFTypedLiteral("<http://www.opengis.net/def/crs/EPSG/0/4326>POINT (9.1859243 45.4654219)", RDFModelEnums.RDFDatatypes.GEOSPARQL_WKT)));
 
             //Test counters and enumerators
             Assert.IsTrue(geoOnt.SpatialObjectsCount == 1);
@@ -171,6 +173,7 @@ namespace RDFSharp.Semantics.Extensions.GEO.Test
             Assert.IsTrue(geoOnt.Ontology.Data.CheckIsIndividualOf(geoOnt.Ontology.Model, new RDFResource("ex:MilanToRomeToNaples"), RDFVocabulary.GEOSPARQL.GEOMETRY));
             Assert.IsTrue(geoOnt.Ontology.Data.CheckIsIndividualOf(geoOnt.Ontology.Model, new RDFResource("ex:MilanToRomeToNaples"), RDFVocabulary.GEOSPARQL.SF.LINESTRING));
             Assert.IsTrue(geoOnt.Ontology.Data.CheckHasDatatypeAssertion(new RDFResource("ex:MilanToRomeToNaples"), RDFVocabulary.GEOSPARQL.AS_GML, new RDFTypedLiteral("<gml:LineString srsName=\"http://www.opengis.net/def/crs/EPSG/0/4326\" xmlns:gml=\"http://www.opengis.net/gml\"><gml:pos>45.4654219 9.1859243</gml:pos><gml:pos>41.902784 12.496366</gml:pos><gml:pos>40.8517746 14.2681244</gml:pos></gml:LineString>", RDFModelEnums.RDFDatatypes.GEOSPARQL_GML)));
+            Assert.IsTrue(geoOnt.Ontology.Data.CheckHasDatatypeAssertion(new RDFResource("ex:MilanToRomeToNaples"), RDFVocabulary.GEOSPARQL.AS_WKT, new RDFTypedLiteral("<http://www.opengis.net/def/crs/EPSG/0/4326>LINESTRING (9.1859243 45.4654219, 12.496366 41.902784, 14.2681244 40.8517746)", RDFModelEnums.RDFDatatypes.GEOSPARQL_WKT)));
 
             //Test counters and enumerators
             Assert.IsTrue(geoOnt.SpatialObjectsCount == 1);
@@ -248,6 +251,7 @@ namespace RDFSharp.Semantics.Extensions.GEO.Test
             Assert.IsTrue(geoOnt.Ontology.Data.CheckIsIndividualOf(geoOnt.Ontology.Model, new RDFResource("ex:MilanToRomeToNaples"), RDFVocabulary.GEOSPARQL.GEOMETRY));
             Assert.IsTrue(geoOnt.Ontology.Data.CheckIsIndividualOf(geoOnt.Ontology.Model, new RDFResource("ex:MilanToRomeToNaples"), RDFVocabulary.GEOSPARQL.SF.POLYGON));
             Assert.IsTrue(geoOnt.Ontology.Data.CheckHasDatatypeAssertion(new RDFResource("ex:MilanToRomeToNaples"), RDFVocabulary.GEOSPARQL.AS_GML, new RDFTypedLiteral("<gml:Polygon srsName=\"http://www.opengis.net/def/crs/EPSG/0/4326\" xmlns:gml=\"http://www.opengis.net/gml\"><gml:exterior><gml:LinearRing><gml:pos>45.4654219 9.1859243</gml:pos><gml:pos>41.902784 12.496366</gml:pos><gml:pos>40.8517746 14.2681244</gml:pos><gml:pos>45.4654219 9.1859243</gml:pos></gml:LinearRing></gml:exterior></gml:Polygon>", RDFModelEnums.RDFDatatypes.GEOSPARQL_GML)));
+            Assert.IsTrue(geoOnt.Ontology.Data.CheckHasDatatypeAssertion(new RDFResource("ex:MilanToRomeToNaples"), RDFVocabulary.GEOSPARQL.AS_WKT, new RDFTypedLiteral("<http://www.opengis.net/def/crs/EPSG/0/4326>POLYGON ((9.1859243 45.4654219, 12.496366 41.902784, 14.2681244 40.8517746, 9.1859243 45.4654219))", RDFModelEnums.RDFDatatypes.GEOSPARQL_WKT)));
 
             //Test counters and enumerators
             Assert.IsTrue(geoOnt.SpatialObjectsCount == 1);
@@ -313,6 +317,7 @@ namespace RDFSharp.Semantics.Extensions.GEO.Test
             Assert.IsTrue(geoOnt.Ontology.Data.CheckIsIndividualOf(geoOnt.Ontology.Model, new RDFResource("ex:MilanToRomeToNaplesToMilan"), RDFVocabulary.GEOSPARQL.GEOMETRY));
             Assert.IsTrue(geoOnt.Ontology.Data.CheckIsIndividualOf(geoOnt.Ontology.Model, new RDFResource("ex:MilanToRomeToNaplesToMilan"), RDFVocabulary.GEOSPARQL.SF.POLYGON));
             Assert.IsTrue(geoOnt.Ontology.Data.CheckHasDatatypeAssertion(new RDFResource("ex:MilanToRomeToNaplesToMilan"), RDFVocabulary.GEOSPARQL.AS_GML, new RDFTypedLiteral("<gml:Polygon srsName=\"http://www.opengis.net/def/crs/EPSG/0/4326\" xmlns:gml=\"http://www.opengis.net/gml\"><gml:exterior><gml:LinearRing><gml:pos>45.4654219 9.1859243</gml:pos><gml:pos>41.902784 12.496366</gml:pos><gml:pos>40.8517746 14.2681244</gml:pos><gml:pos>45.4654219 9.1859243</gml:pos></gml:LinearRing></gml:exterior></gml:Polygon>", RDFModelEnums.RDFDatatypes.GEOSPARQL_GML)));
+            Assert.IsTrue(geoOnt.Ontology.Data.CheckHasDatatypeAssertion(new RDFResource("ex:MilanToRomeToNaplesToMilan"), RDFVocabulary.GEOSPARQL.AS_WKT, new RDFTypedLiteral("<http://www.opengis.net/def/crs/EPSG/0/4326>POLYGON ((9.1859243 45.4654219, 12.496366 41.902784, 14.2681244 40.8517746, 9.1859243 45.4654219))", RDFModelEnums.RDFDatatypes.GEOSPARQL_WKT)));
 
             //Test counters and enumerators
             Assert.IsTrue(geoOnt.SpatialObjectsCount == 1);
@@ -390,6 +395,7 @@ namespace RDFSharp.Semantics.Extensions.GEO.Test
             Assert.IsTrue(geoOnt.Ontology.Data.CheckIsIndividualOf(geoOnt.Ontology.Model, new RDFResource("ex:MilanAndRomeAndNaples"), RDFVocabulary.GEOSPARQL.GEOMETRY));
             Assert.IsTrue(geoOnt.Ontology.Data.CheckIsIndividualOf(geoOnt.Ontology.Model, new RDFResource("ex:MilanAndRomeAndNaples"), RDFVocabulary.GEOSPARQL.SF.MULTI_POINT));
             Assert.IsTrue(geoOnt.Ontology.Data.CheckHasDatatypeAssertion(new RDFResource("ex:MilanAndRomeAndNaples"), RDFVocabulary.GEOSPARQL.AS_GML, new RDFTypedLiteral("<gml:MultiPoint srsName=\"http://www.opengis.net/def/crs/EPSG/0/4326\" xmlns:gml=\"http://www.opengis.net/gml\"><gml:pointMembers><gml:Point><gml:pos>45.4654219 9.1859243</gml:pos></gml:Point><gml:Point><gml:pos>41.902784 12.496366</gml:pos></gml:Point><gml:Point><gml:pos>40.8517746 14.2681244</gml:pos></gml:Point></gml:pointMembers></gml:MultiPoint>", RDFModelEnums.RDFDatatypes.GEOSPARQL_GML)));
+            Assert.IsTrue(geoOnt.Ontology.Data.CheckHasDatatypeAssertion(new RDFResource("ex:MilanAndRomeAndNaples"), RDFVocabulary.GEOSPARQL.AS_WKT, new RDFTypedLiteral("<http://www.opengis.net/def/crs/EPSG/0/4326>MULTIPOINT ((9.1859243 45.4654219), (12.496366 41.902784), (14.2681244 40.8517746))", RDFModelEnums.RDFDatatypes.GEOSPARQL_WKT)));
 
             //Test counters and enumerators
             Assert.IsTrue(geoOnt.SpatialObjectsCount == 1);
@@ -471,6 +477,7 @@ namespace RDFSharp.Semantics.Extensions.GEO.Test
             Assert.IsTrue(geoOnt.Ontology.Data.CheckIsIndividualOf(geoOnt.Ontology.Model, new RDFResource("ex:MilanToRomeAndRomeToNaples"), RDFVocabulary.GEOSPARQL.GEOMETRY));
             Assert.IsTrue(geoOnt.Ontology.Data.CheckIsIndividualOf(geoOnt.Ontology.Model, new RDFResource("ex:MilanToRomeAndRomeToNaples"), RDFVocabulary.GEOSPARQL.SF.MULTI_LINESTRING));
             Assert.IsTrue(geoOnt.Ontology.Data.CheckHasDatatypeAssertion(new RDFResource("ex:MilanToRomeAndRomeToNaples"), RDFVocabulary.GEOSPARQL.AS_GML, new RDFTypedLiteral("<gml:MultiCurve srsName=\"http://www.opengis.net/def/crs/EPSG/0/4326\" xmlns:gml=\"http://www.opengis.net/gml\"><gml:curveMembers><gml:LineString><gml:pos>45.4654219 9.1859243</gml:pos><gml:pos>41.902784 12.496366</gml:pos></gml:LineString><gml:LineString><gml:pos>41.902784 12.496366</gml:pos><gml:pos>40.8517746 14.2681244</gml:pos></gml:LineString></gml:curveMembers></gml:MultiCurve>", RDFModelEnums.RDFDatatypes.GEOSPARQL_GML)));
+            Assert.IsTrue(geoOnt.Ontology.Data.CheckHasDatatypeAssertion(new RDFResource("ex:MilanToRomeAndRomeToNaples"), RDFVocabulary.GEOSPARQL.AS_WKT, new RDFTypedLiteral("<http://www.opengis.net/def/crs/EPSG/0/4326>MULTILINESTRING ((9.1859243 45.4654219, 12.496366 41.902784), (12.496366 41.902784, 14.2681244 40.8517746))", RDFModelEnums.RDFDatatypes.GEOSPARQL_WKT)));
 
             //Test counters and enumerators
             Assert.IsTrue(geoOnt.SpatialObjectsCount == 1);
@@ -560,6 +567,7 @@ namespace RDFSharp.Semantics.Extensions.GEO.Test
             Assert.IsTrue(geoOnt.Ontology.Data.CheckIsIndividualOf(geoOnt.Ontology.Model, new RDFResource("ex:MilanToRomeToNaplesAndNaplesToRomeToMilan"), RDFVocabulary.GEOSPARQL.GEOMETRY));
             Assert.IsTrue(geoOnt.Ontology.Data.CheckIsIndividualOf(geoOnt.Ontology.Model, new RDFResource("ex:MilanToRomeToNaplesAndNaplesToRomeToMilan"), RDFVocabulary.GEOSPARQL.SF.MULTI_POLYGON));
             Assert.IsTrue(geoOnt.Ontology.Data.CheckHasDatatypeAssertion(new RDFResource("ex:MilanToRomeToNaplesAndNaplesToRomeToMilan"), RDFVocabulary.GEOSPARQL.AS_GML, new RDFTypedLiteral("<gml:MultiSurface srsName=\"http://www.opengis.net/def/crs/EPSG/0/4326\" xmlns:gml=\"http://www.opengis.net/gml\"><gml:surfaceMembers><gml:Polygon><gml:exterior><gml:LinearRing><gml:pos>45.4654219 9.1859243</gml:pos><gml:pos>41.902784 12.496366</gml:pos><gml:pos>40.8517746 14.2681244</gml:pos><gml:pos>45.4654219 9.1859243</gml:pos></gml:LinearRing></gml:exterior></gml:Polygon><gml:Polygon><gml:exterior><gml:LinearRing><gml:pos>41.902784 12.496366</gml:pos><gml:pos>40.8517746 14.2681244</gml:pos><gml:pos>45.4654219 9.1859243</gml:pos><gml:pos>41.902784 12.496366</gml:pos></gml:LinearRing></gml:exterior></gml:Polygon></gml:surfaceMembers></gml:MultiSurface>", RDFModelEnums.RDFDatatypes.GEOSPARQL_GML)));
+            Assert.IsTrue(geoOnt.Ontology.Data.CheckHasDatatypeAssertion(new RDFResource("ex:MilanToRomeToNaplesAndNaplesToRomeToMilan"), RDFVocabulary.GEOSPARQL.AS_WKT, new RDFTypedLiteral("<http://www.opengis.net/def/crs/EPSG/0/4326>MULTIPOLYGON (((9.1859243 45.4654219, 12.496366 41.902784, 14.2681244 40.8517746, 9.1859243 45.4654219)), ((12.496366 41.902784, 14.2681244 40.8517746, 9.1859243 45.4654219, 12.496366 41.902784)))", RDFModelEnums.RDFDatatypes.GEOSPARQL_WKT)));
 
             //Test counters and enumerators
             Assert.IsTrue(geoOnt.SpatialObjectsCount == 1);
@@ -629,6 +637,7 @@ namespace RDFSharp.Semantics.Extensions.GEO.Test
             Assert.IsTrue(geoOnt.Ontology.Data.CheckIsIndividualOf(geoOnt.Ontology.Model, new RDFResource("ex:MilanToRomeToNaplesToMilanAndNaplesToRomeToMilanToNaples"), RDFVocabulary.GEOSPARQL.GEOMETRY));
             Assert.IsTrue(geoOnt.Ontology.Data.CheckIsIndividualOf(geoOnt.Ontology.Model, new RDFResource("ex:MilanToRomeToNaplesToMilanAndNaplesToRomeToMilanToNaples"), RDFVocabulary.GEOSPARQL.SF.MULTI_POLYGON));
             Assert.IsTrue(geoOnt.Ontology.Data.CheckHasDatatypeAssertion(new RDFResource("ex:MilanToRomeToNaplesToMilanAndNaplesToRomeToMilanToNaples"), RDFVocabulary.GEOSPARQL.AS_GML, new RDFTypedLiteral("<gml:MultiSurface srsName=\"http://www.opengis.net/def/crs/EPSG/0/4326\" xmlns:gml=\"http://www.opengis.net/gml\"><gml:surfaceMembers><gml:Polygon><gml:exterior><gml:LinearRing><gml:pos>45.4654219 9.1859243</gml:pos><gml:pos>41.902784 12.496366</gml:pos><gml:pos>40.8517746 14.2681244</gml:pos><gml:pos>45.4654219 9.1859243</gml:pos></gml:LinearRing></gml:exterior></gml:Polygon><gml:Polygon><gml:exterior><gml:LinearRing><gml:pos>41.902784 12.496366</gml:pos><gml:pos>40.8517746 14.2681244</gml:pos><gml:pos>45.4654219 9.1859243</gml:pos><gml:pos>41.902784 12.496366</gml:pos></gml:LinearRing></gml:exterior></gml:Polygon></gml:surfaceMembers></gml:MultiSurface>", RDFModelEnums.RDFDatatypes.GEOSPARQL_GML)));
+            Assert.IsTrue(geoOnt.Ontology.Data.CheckHasDatatypeAssertion(new RDFResource("ex:MilanToRomeToNaplesToMilanAndNaplesToRomeToMilanToNaples"), RDFVocabulary.GEOSPARQL.AS_WKT, new RDFTypedLiteral("<http://www.opengis.net/def/crs/EPSG/0/4326>MULTIPOLYGON (((9.1859243 45.4654219, 12.496366 41.902784, 14.2681244 40.8517746, 9.1859243 45.4654219)), ((12.496366 41.902784, 14.2681244 40.8517746, 9.1859243 45.4654219, 12.496366 41.902784)))", RDFModelEnums.RDFDatatypes.GEOSPARQL_WKT)));
 
             //Test counters and enumerators
             Assert.IsTrue(geoOnt.SpatialObjectsCount == 1);
