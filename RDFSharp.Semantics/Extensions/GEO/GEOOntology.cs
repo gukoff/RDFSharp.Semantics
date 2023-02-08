@@ -19,6 +19,7 @@ using Microsoft.Spatial;
 using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
+using System.Drawing;
 
 namespace RDFSharp.Semantics.Extensions.GEO
 {
@@ -104,6 +105,21 @@ namespace RDFSharp.Semantics.Extensions.GEO
         }
 
         /// <summary>
+        /// Count of the spatial objects of type sf:MultiLineString
+        /// </summary>
+        public long MultiLineStringsCount
+        {
+            get
+            {
+                long count = 0;
+                IEnumerator<RDFResource> multiLineStringObjects = MultiLineStringsEnumerator;
+                while (multiLineStringObjects.MoveNext())
+                    count++;
+                return count;
+            }
+        }
+
+        /// <summary>
         /// Gets the enumerator on the spatial objects for iteration
         /// </summary>
         public IEnumerator<RDFResource> SpatialObjectsEnumerator
@@ -139,6 +155,13 @@ namespace RDFSharp.Semantics.Extensions.GEO
                             .GetEnumerator();
 
         /// <summary>
+        /// Gets the enumerator on the spatial objects of type sf:MultiLineString for iteration
+        /// </summary>
+        public IEnumerator<RDFResource> MultiLineStringsEnumerator
+            => Ontology.Data.FindIndividualsOfClass(Ontology.Model, RDFVocabulary.GEOSPARQL.SF.MULTI_LINESTRING)
+                            .GetEnumerator();
+
+        /// <summary>
         /// Knowledge describing the spatial ontology
         /// </summary>
         internal OWLOntology Ontology { get; set; }
@@ -168,19 +191,19 @@ namespace RDFSharp.Semantics.Extensions.GEO
         /// <summary>
         /// Declares the given sf:Point instance to the spatial ontology (coordinate system is EPSG:4326)
         /// </summary>
-        public GEOOntology DeclarePoint(RDFResource pointUri, double latitude, double longitude)
+        public GEOOntology DeclarePoint(RDFResource pointUri, double pointLatitude, double pointLongitude)
         {
             if (pointUri == null)
-                throw new OWLSemanticsException("Cannot declare sf:Point instance to the spatial ontology because given \"multiPointUri\" parameter is null");
+                throw new OWLSemanticsException("Cannot declare sf:Point instance to the spatial ontology because given \"multiLineStringUri\" parameter is null");
 
             //Build sf:Point instance
-            GeographyPoint sfPoint = GeographyFactory.Point(CoordinateSystem.DefaultGeography, latitude, longitude).Build();
-            string sfPointGML = GmlFormatter.Create().Write(sfPoint);
+            GeographyPoint point = GeographyFactory.Point(CoordinateSystem.DefaultGeography, pointLatitude, pointLongitude).Build();
+            string pointGML = GmlFormatter.Create().Write(point);
 
             //Add knowledge to the A-BOX
             Ontology.Data.DeclareIndividual(pointUri);
             Ontology.Data.DeclareIndividualType(pointUri, RDFVocabulary.GEOSPARQL.SF.POINT);
-            Ontology.Data.DeclareDatatypeAssertion(pointUri, RDFVocabulary.GEOSPARQL.AS_GML, new RDFTypedLiteral(sfPointGML, RDFModelEnums.RDFDatatypes.GEOSPARQL_GML));
+            Ontology.Data.DeclareDatatypeAssertion(pointUri, RDFVocabulary.GEOSPARQL.AS_GML, new RDFTypedLiteral(pointGML, RDFModelEnums.RDFDatatypes.GEOSPARQL_GML));
 
             return this;
         }
@@ -188,26 +211,26 @@ namespace RDFSharp.Semantics.Extensions.GEO
         /// <summary>
         /// Declares the given sf:LineString instance to the spatial ontology (coordinate system is EPSG:4326)
         /// </summary>
-        public GEOOntology DeclareLineString(RDFResource lineStringUri, (double,double)[] points)
+        public GEOOntology DeclareLineString(RDFResource lineStringUri, List<(double,double)> lineStringPoints)
         {
             if (lineStringUri == null)
                 throw new OWLSemanticsException("Cannot declare sf:LineString instance to the spatial ontology because given \"lineStringUri\" parameter is null");
-            if (points == null)
-                throw new OWLSemanticsException("Cannot declare sf:LineString instance to the spatial ontology because given \"points\" parameter is null");
-            if (points.Length < 2)
-                throw new OWLSemanticsException("Cannot declare sf:LineString instance to the spatial ontology because given \"points\" parameter must have at least 2 points");
+            if (lineStringPoints == null)
+                throw new OWLSemanticsException("Cannot declare sf:LineString instance to the spatial ontology because given \"lineStringPoints\" parameter is null");
+            if (lineStringPoints.Count < 2)
+                throw new OWLSemanticsException("Cannot declare sf:LineString instance to the spatial ontology because given \"lineStringPoints\" parameter must have at least 2 elements");
 
             //Build sf:LineString instance
-            GeographyFactory<GeographyLineString> sfLineStringFactory = GeographyFactory.LineString(CoordinateSystem.DefaultGeography);
-            foreach ((double, double) point in points)
-                sfLineStringFactory.LineTo(point.Item1, point.Item2);
-            GeographyLineString sfLineString = sfLineStringFactory.Build();
-            string sfLineStringGML = GmlFormatter.Create().Write(sfLineString);
+            GeographyFactory<GeographyLineString> lineStringFactory = GeographyFactory.LineString(CoordinateSystem.DefaultGeography);
+            foreach ((double, double) lineStringPoint in lineStringPoints)
+                lineStringFactory.LineTo(lineStringPoint.Item1, lineStringPoint.Item2);
+            GeographyLineString lineString = lineStringFactory.Build();
+            string lineStringGML = GmlFormatter.Create().Write(lineString);
 
             //Add knowledge to the A-BOX
             Ontology.Data.DeclareIndividual(lineStringUri);
             Ontology.Data.DeclareIndividualType(lineStringUri, RDFVocabulary.GEOSPARQL.SF.LINESTRING);
-            Ontology.Data.DeclareDatatypeAssertion(lineStringUri, RDFVocabulary.GEOSPARQL.AS_GML, new RDFTypedLiteral(sfLineStringGML, RDFModelEnums.RDFDatatypes.GEOSPARQL_GML));
+            Ontology.Data.DeclareDatatypeAssertion(lineStringUri, RDFVocabulary.GEOSPARQL.AS_GML, new RDFTypedLiteral(lineStringGML, RDFModelEnums.RDFDatatypes.GEOSPARQL_GML));
 
             return this;
         }
@@ -215,32 +238,31 @@ namespace RDFSharp.Semantics.Extensions.GEO
         /// <summary>
         /// Declares the given sf:Polygon instance to the spatial ontology (coordinate system is EPSG:4326)
         /// </summary>
-        public GEOOntology DeclarePolygon(RDFResource polygonUri, (double,double)[] points)
+        public GEOOntology DeclarePolygon(RDFResource polygonUri, List<(double, double)> polygonPoints)
         {
             if (polygonUri == null)
                 throw new OWLSemanticsException("Cannot declare sf:Polygon instance to the spatial ontology because given \"polygonUri\" parameter is null");
-            if (points == null)
-                throw new OWLSemanticsException("Cannot declare sf:Polygon instance to the spatial ontology because given \"points\" parameter is null");
-            if (points.Length < 3)
-                throw new OWLSemanticsException("Cannot declare sf:Polygon instance to the spatial ontology because given \"points\" parameter must have at least 3 points");
+            if (polygonPoints == null)
+                throw new OWLSemanticsException("Cannot declare sf:Polygon instance to the spatial ontology because given \"polygonPoints\" parameter is null");
+            if (polygonPoints.Count < 3)
+                throw new OWLSemanticsException("Cannot declare sf:Polygon instance to the spatial ontology because given \"polygonPoints\" parameter must have at least 3 elements");
 
             //Automatically close polygon
-            List<(double,double)> sfPolygonPoints = points.ToList();
-            if (sfPolygonPoints[0].Item1 != sfPolygonPoints[sfPolygonPoints.Count-1].Item1
-                 && sfPolygonPoints[0].Item2 != sfPolygonPoints[sfPolygonPoints.Count-1].Item2)
-                sfPolygonPoints.Add(sfPolygonPoints[0]);
+            if (polygonPoints[0].Item1 != polygonPoints[polygonPoints.Count-1].Item1 
+                 && polygonPoints[0].Item2 != polygonPoints[polygonPoints.Count-1].Item2)
+                polygonPoints.Add(polygonPoints[0]);
 
             //Build sf:Polygon instance
-            GeographyFactory<GeographyPolygon> sfPolygonFactory = GeographyFactory.Polygon(CoordinateSystem.DefaultGeography);
-            foreach ((double, double) sfPolygonPoint in sfPolygonPoints)
-                sfPolygonFactory.LineTo(sfPolygonPoint.Item1, sfPolygonPoint.Item2);
-            GeographyPolygon sfPolygon = sfPolygonFactory.Build();
-            string sfPolygonGML = GmlFormatter.Create().Write(sfPolygon);
+            GeographyFactory<GeographyPolygon> polygonFactory = GeographyFactory.Polygon(CoordinateSystem.DefaultGeography);
+            foreach ((double, double) polygonPoint in polygonPoints)
+                polygonFactory.LineTo(polygonPoint.Item1, polygonPoint.Item2);
+            GeographyPolygon polygon = polygonFactory.Build();
+            string polygonGML = GmlFormatter.Create().Write(polygon);
 
             //Add knowledge to the A-BOX
             Ontology.Data.DeclareIndividual(polygonUri);
             Ontology.Data.DeclareIndividualType(polygonUri, RDFVocabulary.GEOSPARQL.SF.POLYGON);
-            Ontology.Data.DeclareDatatypeAssertion(polygonUri, RDFVocabulary.GEOSPARQL.AS_GML, new RDFTypedLiteral(sfPolygonGML, RDFModelEnums.RDFDatatypes.GEOSPARQL_GML));
+            Ontology.Data.DeclareDatatypeAssertion(polygonUri, RDFVocabulary.GEOSPARQL.AS_GML, new RDFTypedLiteral(polygonGML, RDFModelEnums.RDFDatatypes.GEOSPARQL_GML));
 
             return this;
         }
@@ -248,18 +270,18 @@ namespace RDFSharp.Semantics.Extensions.GEO
         /// <summary>
         /// Declares the given sf:MultiPoint instance to the spatial ontology (coordinate system is EPSG:4326)
         /// </summary>
-        public GEOOntology DeclareMultiPoint(RDFResource multiPointUri, (double,double)[] points)
+        public GEOOntology DeclareMultiPoint(RDFResource multiPointUri, List<(double, double)> multiPointElements)
         {
             if (multiPointUri == null)
-                throw new OWLSemanticsException("Cannot declare sf:MultiPoint instance to the spatial ontology because given \"multiPointUri\" parameter is null");
-            if (points == null)
-                throw new OWLSemanticsException("Cannot declare sf:MultiPoint instance to the spatial ontology because given \"points\" parameter is null");
-            if (points.Length < 2)
-                throw new OWLSemanticsException("Cannot declare sf:MultiPoint instance to the spatial ontology because given \"points\" parameter must have at least 2 points");
+                throw new OWLSemanticsException("Cannot declare sf:MultiPoint instance to the spatial ontology because given \"multiLineStringUri\" parameter is null");
+            if (multiPointElements == null)
+                throw new OWLSemanticsException("Cannot declare sf:MultiPoint instance to the spatial ontology because given \"multiPointElements\" parameter is null");
+            if (multiPointElements.Count < 2)
+                throw new OWLSemanticsException("Cannot declare sf:MultiPoint instance to the spatial ontology because given \"multiPointElements\" parameter must have at least 2 elements");
 
             //Build sf:MultiPoint instance
             GeographyFactory<GeographyMultiPoint> sfMultiPointFactory = GeographyFactory.MultiPoint(CoordinateSystem.DefaultGeography);
-            foreach ((double, double) point in points)
+            foreach ((double, double) point in multiPointElements)
                 sfMultiPointFactory.Point(point.Item1, point.Item2);
             GeographyMultiPoint sfMultiPoint = sfMultiPointFactory.Build();
             string sfMultiPointGML = GmlFormatter.Create().Write(sfMultiPoint);
@@ -268,6 +290,39 @@ namespace RDFSharp.Semantics.Extensions.GEO
             Ontology.Data.DeclareIndividual(multiPointUri);
             Ontology.Data.DeclareIndividualType(multiPointUri, RDFVocabulary.GEOSPARQL.SF.MULTI_POINT);
             Ontology.Data.DeclareDatatypeAssertion(multiPointUri, RDFVocabulary.GEOSPARQL.AS_GML, new RDFTypedLiteral(sfMultiPointGML, RDFModelEnums.RDFDatatypes.GEOSPARQL_GML));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Declares the given sf:MultiLineString instance to the spatial ontology (coordinate system is EPSG:4326)
+        /// </summary>
+        public GEOOntology DeclareMultiLineString(RDFResource multiLineStringUri, List<List<(double, double)>> multiLineStringElements)
+        {
+            if (multiLineStringUri == null)
+                throw new OWLSemanticsException("Cannot declare sf:MultiLineString instance to the spatial ontology because given \"multiLineStringUri\" parameter is null");
+            if (multiLineStringElements == null)
+                throw new OWLSemanticsException("Cannot declare sf:MultiLineString instance to the spatial ontology because given \"multiLineStringElements\" parameter is null");
+            if (multiLineStringElements.Count < 2)
+                throw new OWLSemanticsException("Cannot declare sf:MultiLineString instance to the spatial ontology because given \"multiLineStringElements\" parameter must have at least 2 elements");
+            if (multiLineStringElements.Any(mlsElement => mlsElement == null || mlsElement.Count < 2))
+                throw new OWLSemanticsException("Cannot declare sf:MultiLineString instance to the spatial ontology because given \"multiLineStringElements\" parameter contains a null element, or an element with less than 2 items");
+
+            //Build sf:MultiLineString instance
+            GeographyFactory<GeographyMultiLineString> sfMultiLineStringFactory = GeographyFactory.MultiLineString(CoordinateSystem.DefaultGeography);
+            foreach (List<(double, double)> multiLineStringElement in multiLineStringElements)
+            {
+                sfMultiLineStringFactory.LineString();
+                foreach ((double, double) lineStringPoint in multiLineStringElement)
+                    sfMultiLineStringFactory.LineTo(lineStringPoint.Item1, lineStringPoint.Item2);
+            }                
+            GeographyMultiLineString sfMultiLineString = sfMultiLineStringFactory.Build();
+            string sfMultiLineStringGML = GmlFormatter.Create().Write(sfMultiLineString);
+
+            //Add knowledge to the A-BOX
+            Ontology.Data.DeclareIndividual(multiLineStringUri);
+            Ontology.Data.DeclareIndividualType(multiLineStringUri, RDFVocabulary.GEOSPARQL.SF.MULTI_LINESTRING);
+            Ontology.Data.DeclareDatatypeAssertion(multiLineStringUri, RDFVocabulary.GEOSPARQL.AS_GML, new RDFTypedLiteral(sfMultiLineStringGML, RDFModelEnums.RDFDatatypes.GEOSPARQL_GML));
 
             return this;
         }
