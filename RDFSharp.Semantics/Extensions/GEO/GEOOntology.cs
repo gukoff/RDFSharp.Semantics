@@ -238,7 +238,7 @@ namespace RDFSharp.Semantics.Extensions.GEO
         /// <summary>
         /// Declares the given sf:Polygon instance to the spatial ontology (coordinate system is EPSG:4326)
         /// </summary>
-        public GEOOntology DeclarePolygon(RDFResource polygonUri, List<(double, double)> polygonPoints)
+        public GEOOntology DeclarePolygon(RDFResource polygonUri, List<(double,double)> polygonPoints)
         {
             if (polygonUri == null)
                 throw new OWLSemanticsException("Cannot declare sf:Polygon instance to the spatial ontology because given \"polygonUri\" parameter is null");
@@ -270,7 +270,7 @@ namespace RDFSharp.Semantics.Extensions.GEO
         /// <summary>
         /// Declares the given sf:MultiPoint instance to the spatial ontology (coordinate system is EPSG:4326)
         /// </summary>
-        public GEOOntology DeclareMultiPoint(RDFResource multiPointUri, List<(double, double)> multiPointElements)
+        public GEOOntology DeclareMultiPoint(RDFResource multiPointUri, List<(double,double)> multiPointElements)
         {
             if (multiPointUri == null)
                 throw new OWLSemanticsException("Cannot declare sf:MultiPoint instance to the spatial ontology because given \"multiLineStringUri\" parameter is null");
@@ -297,7 +297,7 @@ namespace RDFSharp.Semantics.Extensions.GEO
         /// <summary>
         /// Declares the given sf:MultiLineString instance to the spatial ontology (coordinate system is EPSG:4326)
         /// </summary>
-        public GEOOntology DeclareMultiLineString(RDFResource multiLineStringUri, List<List<(double, double)>> multiLineStringElements)
+        public GEOOntology DeclareMultiLineString(RDFResource multiLineStringUri, List<List<(double,double)>> multiLineStringElements)
         {
             if (multiLineStringUri == null)
                 throw new OWLSemanticsException("Cannot declare sf:MultiLineString instance to the spatial ontology because given \"multiLineStringUri\" parameter is null");
