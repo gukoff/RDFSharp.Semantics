@@ -125,7 +125,7 @@ namespace RDFSharp.Semantics
                     ontology.Model.ClassModel.DeclareAllDisjointClasses(allDisjointClasses, disjointClasses, loaderOptions);
                 }
 
-            //Extension point (e.g.: SKOS)
+            //Extension point (e.g.: SKOS, GEO)
             classModelExtensionPoint?.Invoke(ontology, graph);
             #endregion
 

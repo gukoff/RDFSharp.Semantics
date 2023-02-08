@@ -37,22 +37,22 @@ namespace RDFSharp.Semantics.Extensions.GEO
                classModelExtensionPoint: GEOClassModelExtensionPoint,
                propertyModelExtensionPoint: GEOPropertyModelExtensionPoint);
 
-            return new GEOOntology(ontology.URI.ToString()) { Ontology = ontology };
+            return (GEOOntology)ontology;
         }
         #endregion
 
         #region Utilities
         /// <summary>
-        /// Extends OWL class model loading with support for spatial artifacts
+        /// Extends OWL class model loading with support for spatial entities
         /// </summary>
         internal static void GEOClassModelExtensionPoint(OWLOntology ontology, RDFGraph graph)
-            => ontology.Model.ClassModel = BuildGEOClassModel(ontology.Model.ClassModel);
+            => BuildGEOClassModel(ontology.Model.ClassModel);
 
         /// <summary>
-        /// Extends OWL property model loading with support for spatial artifacts
+        /// Extends OWL property model loading with support for spatial entities
         /// </summary>
         internal static void GEOPropertyModelExtensionPoint(OWLOntology ontology, RDFGraph graph)
-            => ontology.Model.PropertyModel = BuildGEOPropertyModel(ontology.Model.PropertyModel);
+            => BuildGEOPropertyModel(ontology.Model.PropertyModel);
 
         /// <summary>
         /// Builds a reference spatial model
