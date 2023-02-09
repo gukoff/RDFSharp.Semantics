@@ -363,7 +363,25 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
-        public void ShouldCheckIsIndividualOfCardinalityRestriction()
+        public void ShouldCheckIsIndividualOfZeroCardinalityRestriction()
+        {
+            OWLOntology ontology = new OWLOntology("ex:ont");
+            ontology.Model.ClassModel.DeclareCardinalityRestriction(new RDFResource("ex:cardRest"), new RDFResource("ex:objProp"), 0);
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objProp"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv1"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv2"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
+
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:cardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:cardRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:cardRest")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckIsIndividualOfNonZeroCardinalityRestriction()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.ClassModel.DeclareCardinalityRestriction(new RDFResource("ex:cardRest"), new RDFResource("ex:objProp"), 2);
@@ -381,7 +399,27 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
-        public void ShouldCheckIsIndividualOfCardinalityRestrictionWithReasoningOnProperty()
+        public void ShouldCheckIsIndividualOfZeroCardinalityRestrictionWithReasoningOnProperty()
+        {
+            OWLOntology ontology = new OWLOntology("ex:ont");
+            ontology.Model.ClassModel.DeclareCardinalityRestriction(new RDFResource("ex:cardRest"), new RDFResource("ex:objMotherProp"), 0);
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objChildProp"));
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objMotherProp"));
+            ontology.Model.PropertyModel.DeclareSubProperties(new RDFResource("ex:objChildProp"), new RDFResource("ex:objMotherProp"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv1"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objChildProp"), new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objChildProp"), new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv2"), new RDFResource("ex:objChildProp"), new RDFResource("ex:indiv3"));
+
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:cardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:cardRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:cardRest")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckIsIndividualOfNonZeroCardinalityRestrictionWithReasoningOnProperty()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.ClassModel.DeclareCardinalityRestriction(new RDFResource("ex:cardRest"), new RDFResource("ex:objMotherProp"), 2);
@@ -401,7 +439,41 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
-        public void ShouldCheckIsIndividualOfQualifiedCardinalityRestriction()
+        public void ShouldCheckIsIndividualOfZeroQualifiedCardinalityRestriction()
+        {
+            OWLOntology ontology = new OWLOntology("ex:ont");
+            ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:onClass"));
+            ontology.Model.ClassModel.DeclareQualifiedCardinalityRestriction(new RDFResource("ex:qCardRest"), new RDFResource("ex:objProp"), 0, new RDFResource("ex:onClass"));
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objProp"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv1"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv4"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv5"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv6"));
+            ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv2"), new RDFResource("ex:onClass"));
+            ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv3"), new RDFResource("ex:onClass"));
+            ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv5"), new RDFResource("ex:onClass"));
+            ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv6"), new RDFResource("ex:onClass"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv2"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv2"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv4"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv4"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv5"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv6"));
+
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:qCardRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv5"), new RDFResource("ex:qCardRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv6"), new RDFResource("ex:qCardRest")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckIsIndividualOfNonZeroQualifiedCardinalityRestriction()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:onClass"));
@@ -430,10 +502,48 @@ namespace RDFSharp.Semantics.Test
             Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:qCardRest")));
             Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:qCardRest")));
             Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv5"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv6"), new RDFResource("ex:qCardRest")));
         }
 
         [TestMethod]
-        public void ShouldCheckIsIndividualOfQualifiedCardinalityRestrictionWithReasoningOnProperty()
+        public void ShouldCheckIsIndividualOfZeroQualifiedCardinalityRestrictionWithReasoningOnProperty()
+        {
+            OWLOntology ontology = new OWLOntology("ex:ont");
+            ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:onClass"));
+            ontology.Model.ClassModel.DeclareQualifiedCardinalityRestriction(new RDFResource("ex:qCardRest"), new RDFResource("ex:objProp"), 0, new RDFResource("ex:onClass"));
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objProp"));
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objPropEquiv"));
+            ontology.Model.PropertyModel.DeclareEquivalentProperties(new RDFResource("ex:objProp"), new RDFResource("ex:objPropEquiv"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv1"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv4"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv5"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv6"));
+            ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv2"), new RDFResource("ex:onClass"));
+            ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv3"), new RDFResource("ex:onClass"));
+            ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv5"), new RDFResource("ex:onClass"));
+            ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv6"), new RDFResource("ex:onClass"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objPropEquiv"), new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objPropEquiv"), new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv2"), new RDFResource("ex:objPropEquiv"), new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv2"), new RDFResource("ex:objPropEquiv"), new RDFResource("ex:indiv4"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objPropEquiv"), new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objPropEquiv"), new RDFResource("ex:indiv4"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objPropEquiv"), new RDFResource("ex:indiv5"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objPropEquiv"), new RDFResource("ex:indiv6"));
+
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:qCardRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv5"), new RDFResource("ex:qCardRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv6"), new RDFResource("ex:qCardRest")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckIsIndividualOfNonZeroQualifiedCardinalityRestrictionWithReasoningOnProperty()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:onClass"));
@@ -464,10 +574,30 @@ namespace RDFSharp.Semantics.Test
             Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:qCardRest")));
             Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:qCardRest")));
             Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv5"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv6"), new RDFResource("ex:qCardRest")));
         }
 
         [TestMethod]
-        public void ShouldCheckIsIndividualOfMinCardinalityRestriction()
+        public void ShouldCheckIsIndividualOfZeroMinCardinalityRestriction()
+        {
+            OWLOntology ontology = new OWLOntology("ex:ont");
+            ontology.Model.ClassModel.DeclareMinCardinalityRestriction(new RDFResource("ex:cardRest"), new RDFResource("ex:objProp"), 0);
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objProp"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv1"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv2"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
+
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:cardRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:cardRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:cardRest")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckIsIndividualOfNonZeroMinCardinalityRestriction()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.ClassModel.DeclareMinCardinalityRestriction(new RDFResource("ex:cardRest"), new RDFResource("ex:objProp"), 1);
@@ -485,7 +615,41 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
-        public void ShouldCheckIsIndividualOfMinQualifiedCardinalityRestriction()
+        public void ShouldCheckIsIndividualOfZeroMinQualifiedCardinalityRestriction()
+        {
+            OWLOntology ontology = new OWLOntology("ex:ont");
+            ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:onClass"));
+            ontology.Model.ClassModel.DeclareMinQualifiedCardinalityRestriction(new RDFResource("ex:qCardRest"), new RDFResource("ex:objProp"), 0, new RDFResource("ex:onClass"));
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objProp"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv1"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv4"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv5"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv6"));
+            ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv2"), new RDFResource("ex:onClass"));
+            ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv3"), new RDFResource("ex:onClass"));
+            ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv5"), new RDFResource("ex:onClass"));
+            ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv6"), new RDFResource("ex:onClass"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv2"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv2"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv4"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv4"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv5"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv6"));
+
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:qCardRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:qCardRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:qCardRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv5"), new RDFResource("ex:qCardRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv6"), new RDFResource("ex:qCardRest")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckIsIndividualOfNonZeroMinQualifiedCardinalityRestriction()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:onClass"));
@@ -517,7 +681,26 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
-        public void ShouldCheckIsIndividualOfMaxCardinalityRestriction()
+        public void ShouldCheckIsIndividualOfZeroMaxCardinalityRestriction()
+        {
+            OWLOntology ontology = new OWLOntology("ex:ont");
+            ontology.Model.ClassModel.DeclareMaxCardinalityRestriction(new RDFResource("ex:cardRest"), new RDFResource("ex:objProp"), 0);
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objProp"));
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objProp2"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv1"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objProp2"), new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv2"), new RDFResource("ex:objProp2"), new RDFResource("ex:indiv3"));
+
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:cardRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:cardRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:cardRest")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckIsIndividualOfNonZeroMaxCardinalityRestriction()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.ClassModel.DeclareMaxCardinalityRestriction(new RDFResource("ex:cardRest"), new RDFResource("ex:objProp"), 1);
@@ -535,7 +718,37 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
-        public void ShouldCheckIsIndividualOfMaxQualifiedCardinalityRestriction()
+        public void ShouldCheckIsIndividualOfZeroMaxQualifiedCardinalityRestriction()
+        {
+            OWLOntology ontology = new OWLOntology("ex:ont");
+            ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:onClass"));
+            ontology.Model.ClassModel.DeclareMaxQualifiedCardinalityRestriction(new RDFResource("ex:qCardRest"), new RDFResource("ex:objProp"), 0, new RDFResource("ex:onClass"));
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objProp"));
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objProp2"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv1"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv4"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv5"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv6"));
+            ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv2"), new RDFResource("ex:onClass"));
+            ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv3"), new RDFResource("ex:onClass"));
+            ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv5"), new RDFResource("ex:onClass"));
+            ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv6"), new RDFResource("ex:onClass"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv2"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv2"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv5"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv5"));
+
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:qCardRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv5"), new RDFResource("ex:qCardRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv6"), new RDFResource("ex:qCardRest")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckIsIndividualOfNonZeroMaxQualifiedCardinalityRestriction()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:onClass"));
@@ -561,10 +774,58 @@ namespace RDFSharp.Semantics.Test
             Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:qCardRest")));
             Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:qCardRest")));
             Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv5"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv6"), new RDFResource("ex:qCardRest")));
         }
 
         [TestMethod]
-        public void ShouldCheckIsIndividualOfMinMaxCardinalityRestriction()
+        public void ShouldCheckIsIndividualOfZeroMinZeroMaxCardinalityRestriction()
+        {
+            OWLOntology ontology = new OWLOntology("ex:ont");
+            ontology.Model.ClassModel.DeclareMinMaxCardinalityRestriction(new RDFResource("ex:cardRest"), new RDFResource("ex:objProp"), 0, 0);
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objProp"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv1"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv4"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv2"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv4"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv1"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv4"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv4"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
+
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:cardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:cardRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:cardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:cardRest")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckIsIndividualOfZeroMinNonZeroMaxCardinalityRestriction()
+        {
+            OWLOntology ontology = new OWLOntology("ex:ont");
+            ontology.Model.ClassModel.DeclareMinMaxCardinalityRestriction(new RDFResource("ex:cardRest"), new RDFResource("ex:objProp"), 0, 1);
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objProp"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv1"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv4"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv2"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv4"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv1"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv4"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv4"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
+
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:cardRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:cardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:cardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:cardRest")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckIsIndividualOfNonZeroMinNonZeroMaxCardinalityRestriction()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.ClassModel.DeclareMinMaxCardinalityRestriction(new RDFResource("ex:cardRest"), new RDFResource("ex:objProp"), 1, 2);
@@ -587,7 +848,79 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
-        public void ShouldCheckIsIndividualOfMinMaxQualifiedCardinalityRestriction()
+        public void ShouldThrowExceptionOnDeclaringNonZeroMinZeroMaxCardinalityRestriction()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new OWLOntology("ex:ont").Model.ClassModel.DeclareMinMaxCardinalityRestriction(new RDFResource("ex:cardRest"), new RDFResource("ex:objProp"), 1, 0));
+
+        [TestMethod]
+        public void ShouldCheckIsIndividualOfZeroMinZeroMaxQualifiedCardinalityRestriction()
+        {
+            OWLOntology ontology = new OWLOntology("ex:ont");
+            ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:onClass"));
+            ontology.Model.ClassModel.DeclareMinMaxQualifiedCardinalityRestriction(new RDFResource("ex:qCardRest"), new RDFResource("ex:objProp"), 0, 0, new RDFResource("ex:onClass"));
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objProp"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv1"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv4"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv5"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv6"));
+            ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv2"), new RDFResource("ex:onClass"));
+            ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv3"), new RDFResource("ex:onClass"));
+            ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv5"), new RDFResource("ex:onClass"));
+            ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv6"), new RDFResource("ex:onClass"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv2"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv5"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv6"));
+
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:qCardRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv5"), new RDFResource("ex:qCardRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv6"), new RDFResource("ex:qCardRest")));
+        }
+
+        [TestMethod]
+        public void ShouldCheckIsIndividualOfZeroMinNonZeroMaxQualifiedCardinalityRestriction()
+        {
+            OWLOntology ontology = new OWLOntology("ex:ont");
+            ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:onClass"));
+            ontology.Model.ClassModel.DeclareMinMaxQualifiedCardinalityRestriction(new RDFResource("ex:qCardRest"), new RDFResource("ex:objProp"), 0, 2, new RDFResource("ex:onClass"));
+            ontology.Model.PropertyModel.DeclareObjectProperty(new RDFResource("ex:objProp"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv1"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv4"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv5"));
+            ontology.Data.DeclareIndividual(new RDFResource("ex:indiv6"));
+            ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv2"), new RDFResource("ex:onClass"));
+            ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv3"), new RDFResource("ex:onClass"));
+            ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv5"), new RDFResource("ex:onClass"));
+            ontology.Data.DeclareIndividualType(new RDFResource("ex:indiv6"), new RDFResource("ex:onClass"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv2"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv2"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv3"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv5"));
+            ontology.Data.DeclareObjectAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:objProp"), new RDFResource("ex:indiv6"));
+
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:qCardRest")));
+            Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv5"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv6"), new RDFResource("ex:qCardRest")));
+        }
+
+        [TestMethod]
+        public void ShouldThrowExceptionOnDeclaringNonZeroMinZeroMaxQualifiedCardinalityRestriction()
+            => Assert.ThrowsException<OWLSemanticsException>(() => new OWLOntology("ex:ont").Model.ClassModel.DeclareMinMaxQualifiedCardinalityRestriction(new RDFResource("ex:cardRest"), new RDFResource("ex:objProp"), 1, 0, new RDFResource("ex:onClass")));
+
+        [TestMethod]
+        public void ShouldCheckIsIndividualOfNonZeroMinNonZeroMaxQualifiedCardinalityRestriction()
         {
             OWLOntology ontology = new OWLOntology("ex:ont");
             ontology.Model.ClassModel.DeclareClass(new RDFResource("ex:onClass"));
@@ -614,6 +947,8 @@ namespace RDFSharp.Semantics.Test
             Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:qCardRest")));
             Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv3"), new RDFResource("ex:qCardRest")));
             Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv4"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv5"), new RDFResource("ex:qCardRest")));
+            Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv6"), new RDFResource("ex:qCardRest")));
         }
         
         [TestMethod]

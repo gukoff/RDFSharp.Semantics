@@ -365,7 +365,7 @@ namespace RDFSharp.Semantics
             List<RDFResource> onClassIndividuals = new List<RDFResource>();
 
             #region Parse
-            int minCardinality = 0, maxCardinality = 0;
+            int minCardinality = -99, maxCardinality = -99; //Convention meaning that cardinality has not been expressed
             RDFResource onClass = null;
 
             //owl:[Qualified]CardinalityRestriction
@@ -405,6 +405,18 @@ namespace RDFSharp.Semantics
                 //Prefetch individuals of owl:onClass
                 onClassIndividuals = data.GetIndividualsOf(model, onClass);
             }
+            #endregion
+
+            #region Optimize
+            //This case is equivalent to returning the full set of individuals/qualifiedIndividuals
+            if (minCardinality == 0 && maxCardinality == -99)
+                return isQualified ? onClassIndividuals 
+                                   : data.Individuals.Values.ToList();
+
+            //This case is equivalent to returning the subset of individuals/qualifiedIndividuals NOT asserting the restriction property
+            if (maxCardinality == 0)
+                return isQualified  ? onClassIndividuals.Where(ocidv => assertionsGraph[ocidv, null, null, null].TriplesCount == 0).ToList()
+                                    : data.Where(idv => assertionsGraph[idv, null, null, null].TriplesCount == 0).ToList();
             #endregion
 
             #region Count

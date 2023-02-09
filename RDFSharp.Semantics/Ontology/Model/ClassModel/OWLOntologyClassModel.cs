@@ -436,9 +436,6 @@ namespace RDFSharp.Semantics
             => DeclareCardinalityRestriction(owlRestriction, onProperty, cardinality, OWLOntologyLoaderOptions.DefaultOptions);
         internal OWLOntologyClassModel DeclareCardinalityRestriction(RDFResource owlRestriction, RDFResource onProperty, uint cardinality, OWLOntologyLoaderOptions loaderOptions)
         {
-            if (cardinality == 0)
-                throw new OWLSemanticsException("Cannot declare owl:cardinality restriction to the model because given \"cardinality\" value must be greater than zero");
-
             //Declare restriction to the model
             DeclareRestriction(owlRestriction, onProperty, loaderOptions);
 
@@ -455,9 +452,6 @@ namespace RDFSharp.Semantics
             => DeclareMinCardinalityRestriction(owlRestriction, onProperty, minCardinality, OWLOntologyLoaderOptions.DefaultOptions);
         internal OWLOntologyClassModel DeclareMinCardinalityRestriction(RDFResource owlRestriction, RDFResource onProperty, uint minCardinality, OWLOntologyLoaderOptions loaderOptions)
         {
-            if (minCardinality == 0)
-                throw new OWLSemanticsException("Cannot declare owl:minCardinality restriction to the model because given \"minCardinality\" value must be greater than zero");
-
             //Declare restriction to the model
             DeclareRestriction(owlRestriction, onProperty, loaderOptions);
 
@@ -474,9 +468,6 @@ namespace RDFSharp.Semantics
             => DeclareMaxCardinalityRestriction(owlRestriction, onProperty, maxCardinality, OWLOntologyLoaderOptions.DefaultOptions);
         internal OWLOntologyClassModel DeclareMaxCardinalityRestriction(RDFResource owlRestriction, RDFResource onProperty, uint maxCardinality, OWLOntologyLoaderOptions loaderOptions)
         {
-            if (maxCardinality == 0)
-                throw new OWLSemanticsException("Cannot declare owl:maxCardinality restriction to the model because given \"maxCardinality\" value must be greater than zero");
-
             //Declare restriction to the model
             DeclareRestriction(owlRestriction, onProperty, loaderOptions);
 
@@ -493,10 +484,6 @@ namespace RDFSharp.Semantics
             => DeclareMinMaxCardinalityRestriction(owlRestriction, onProperty, minCardinality, maxCardinality, OWLOntologyLoaderOptions.DefaultOptions);
         internal OWLOntologyClassModel DeclareMinMaxCardinalityRestriction(RDFResource owlRestriction, RDFResource onProperty, uint minCardinality, uint maxCardinality, OWLOntologyLoaderOptions loaderOptions)
         {
-            if (minCardinality == 0)
-                throw new OWLSemanticsException("Cannot declare owl:minCardinality and owl:maxCardinality restriction to the model because given \"minCardinality\" value must be greater than zero");
-            if (maxCardinality == 0)
-                throw new OWLSemanticsException("Cannot declare owl:minCardinality and owl:maxCardinality restriction to the model because given \"maxCardinality\" value must be greater than zero");
             if (maxCardinality < minCardinality)
                 throw new OWLSemanticsException("Cannot declare owl:minCardinality and owl:maxCardinality restriction to the model because given \"maxCardinality\" value must be greater or equal than given \"minCardinality\" value");
 
@@ -504,8 +491,13 @@ namespace RDFSharp.Semantics
             DeclareRestriction(owlRestriction, onProperty, loaderOptions);
 
             //Add knowledge to the T-BOX
-            TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.MIN_CARDINALITY, new RDFTypedLiteral(minCardinality.ToString(), RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER)));
-            TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.MAX_CARDINALITY, new RDFTypedLiteral(maxCardinality.ToString(), RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER)));
+            if (minCardinality == maxCardinality)
+                TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.CARDINALITY, new RDFTypedLiteral(minCardinality.ToString(), RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER)));
+            else
+            {
+                TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.MIN_CARDINALITY, new RDFTypedLiteral(minCardinality.ToString(), RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER)));
+                TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.MAX_CARDINALITY, new RDFTypedLiteral(maxCardinality.ToString(), RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER)));
+            }
 
             return this;
         }
@@ -519,8 +511,6 @@ namespace RDFSharp.Semantics
         {
             if (onClass == null)
                 throw new OWLSemanticsException("Cannot declare owl:qualifiedCardinality restriction to the model because given \"onClass\" parameter is null");
-            if (cardinality == 0)
-                throw new OWLSemanticsException("Cannot declare owl:qualifiedCardinality restriction to the model because given \"cardinality\" value must be greater than zero");
 
             //Declare restriction to the model
             DeclareRestriction(owlRestriction, onProperty, loaderOptions);
@@ -545,8 +535,6 @@ namespace RDFSharp.Semantics
         {
             if (onClass == null)
                 throw new OWLSemanticsException("Cannot declare owl:minQualifiedCardinality restriction to the model because given \"onClass\" parameter is null");
-            if (minCardinality == 0)
-                throw new OWLSemanticsException("Cannot declare owl:minQualifiedCardinality restriction to the model because given \"minCardinality\" value must be greater than zero");
 
             //Declare restriction to the model
             DeclareRestriction(owlRestriction, onProperty, loaderOptions);
@@ -571,8 +559,6 @@ namespace RDFSharp.Semantics
         {
             if (onClass == null)
                 throw new OWLSemanticsException("Cannot declare owl:maxQualifiedCardinality restriction to the model because given \"onClass\" parameter is null");
-            if (maxCardinality == 0)
-                throw new OWLSemanticsException("Cannot declare owl:maxQualifiedCardinality restriction to the model because given \"maxCardinality\" value must be greater than zero");
 
             //Declare restriction to the model
             DeclareRestriction(owlRestriction, onProperty, loaderOptions);
@@ -597,10 +583,6 @@ namespace RDFSharp.Semantics
         {
             if (onClass == null)
                 throw new OWLSemanticsException("Cannot declare owl:minQualifiedCardinality and owl:maxQualifiedCardinality restriction to the model because given \"onClass\" parameter is null");
-            if (minCardinality == 0)
-                throw new OWLSemanticsException("Cannot declare owl:minQualifiedCardinality and owl:maxQualifiedCardinality restriction to the model because given \"minCardinality\" value must be greater than zero");
-            if (maxCardinality == 0)
-                throw new OWLSemanticsException("Cannot declare owl:minQualifiedCardinality and owl:maxQualifiedCardinality restriction to the model because given \"maxCardinality\" value must be greater than zero");
             if (maxCardinality < minCardinality)
                 throw new OWLSemanticsException("Cannot declare owl:minQualifiedCardinality and owl:maxQualifiedCardinality restriction to the model because given \"maxCardinality\" value must be greater or equal than given \"minCardinality\" value");
 
@@ -612,8 +594,13 @@ namespace RDFSharp.Semantics
                 DeclareClass(onClass);
 
             //Add knowledge to the T-BOX
-            TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.MIN_QUALIFIED_CARDINALITY, new RDFTypedLiteral(minCardinality.ToString(), RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER)));
-            TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.MAX_QUALIFIED_CARDINALITY, new RDFTypedLiteral(maxCardinality.ToString(), RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER)));
+            if (minCardinality == maxCardinality)
+                TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.QUALIFIED_CARDINALITY, new RDFTypedLiteral(minCardinality.ToString(), RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER)));
+            else
+            {
+                TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.MIN_QUALIFIED_CARDINALITY, new RDFTypedLiteral(minCardinality.ToString(), RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER)));
+                TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.MAX_QUALIFIED_CARDINALITY, new RDFTypedLiteral(maxCardinality.ToString(), RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER)));
+            }
             TBoxGraph.AddTriple(new RDFTriple(owlRestriction, RDFVocabulary.OWL.ON_CLASS, onClass));
 
             return this;

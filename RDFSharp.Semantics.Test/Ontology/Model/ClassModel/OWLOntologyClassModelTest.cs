@@ -499,10 +499,6 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringCardinalityRestrictionBecauseZero()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new OWLOntologyClassModel().DeclareCardinalityRestriction(new RDFResource("ex:cRestr"), new RDFResource("ex:onProp"), 0));
-
-        [TestMethod]
         public void ShouldDeclareMinCardinalityRestriction()
         {
             OWLOntologyClassModel classModel = new OWLOntologyClassModel();
@@ -531,10 +527,6 @@ namespace RDFSharp.Semantics.Test
             }
             Assert.IsTrue(i == 1);
         }
-
-        [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringMinCardinalityRestrictionBecauseZero()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new OWLOntologyClassModel().DeclareMinCardinalityRestriction(new RDFResource("ex:cRestr"), new RDFResource("ex:onProp"), 0));
 
         [TestMethod]
         public void ShouldDeclareMaxCardinalityRestriction()
@@ -567,10 +559,6 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringMaxCardinalityRestrictionBecauseZero()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new OWLOntologyClassModel().DeclareMaxCardinalityRestriction(new RDFResource("ex:cRestr"), new RDFResource("ex:onProp"), 0));
-
-        [TestMethod]
         public void ShouldDeclareMinMaxCardinalityRestriction()
         {
             OWLOntologyClassModel classModel = new OWLOntologyClassModel();
@@ -600,14 +588,6 @@ namespace RDFSharp.Semantics.Test
             }
             Assert.IsTrue(i == 1);
         }
-
-        [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringMinMaxCardinalityRestrictionBecauseZeroMin()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new OWLOntologyClassModel().DeclareMinMaxCardinalityRestriction(new RDFResource("ex:cRestr"), new RDFResource("ex:onProp"), 0, 2));
-
-        [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringMinMaxCardinalityRestrictionBecauseZeroMax()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new OWLOntologyClassModel().DeclareMinMaxCardinalityRestriction(new RDFResource("ex:cRestr"), new RDFResource("ex:onProp"), 1, 0));
 
         [TestMethod]
         public void ShouldThrowExceptionOnDeclaringMinMaxCardinalityRestrictionBecauseInvalidMax()
@@ -687,10 +667,6 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringQualifiedCardinalityRestrictionBecauseZero()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new OWLOntologyClassModel().DeclareQualifiedCardinalityRestriction(new RDFResource("ex:cRestr"), new RDFResource("ex:onProp"), 0, new RDFResource("ex:onClass")));
-
-        [TestMethod]
         public void ShouldThrowExceptionOnDeclaringQualifiedCardinalityRestrictionBecauseNullClass()
             => Assert.ThrowsException<OWLSemanticsException>(() => new OWLOntologyClassModel().DeclareQualifiedCardinalityRestriction(new RDFResource("ex:cRestr"), new RDFResource("ex:onProp"), 1, null));
 
@@ -768,10 +744,6 @@ namespace RDFSharp.Semantics.Test
         }
 
         [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringMinQualifiedCardinalityRestrictionBecauseZero()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new OWLOntologyClassModel().DeclareMinQualifiedCardinalityRestriction(new RDFResource("ex:cRestr"), new RDFResource("ex:onProp"), 0, new RDFResource("ex:onClass")));
-
-        [TestMethod]
         public void ShouldThrowExceptionOnDeclaringMinQualifiedCardinalityRestrictionBecauseNullClass()
             => Assert.ThrowsException<OWLSemanticsException>(() => new OWLOntologyClassModel().DeclareMinQualifiedCardinalityRestriction(new RDFResource("ex:cRestr"), new RDFResource("ex:onProp"), 1, null));
 
@@ -847,10 +819,6 @@ namespace RDFSharp.Semantics.Test
             }
             Assert.IsTrue(v == 1);
         }
-
-        [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringMaxQualifiedCardinalityRestrictionBecauseZero()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new OWLOntologyClassModel().DeclareMaxQualifiedCardinalityRestriction(new RDFResource("ex:cRestr"), new RDFResource("ex:onProp"), 0, new RDFResource("ex:onClass")));
 
         [TestMethod]
         public void ShouldThrowExceptionOnDeclaringMaxQualifiedCardinalityRestrictionBecauseNullClass()
@@ -934,14 +902,6 @@ namespace RDFSharp.Semantics.Test
         [TestMethod]
         public void ShouldThrowExceptionOnDeclaringMinMaxQualifiedCardinalityRestrictionBecauseNullClass()
             => Assert.ThrowsException<OWLSemanticsException>(() => new OWLOntologyClassModel().DeclareMinMaxQualifiedCardinalityRestriction(new RDFResource("ex:cRestr"), new RDFResource("ex:onProp"), 1, 2, null));
-
-        [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringMinMaxQualifiedCardinalityRestrictionBecauseZeroMin()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new OWLOntologyClassModel().DeclareMinMaxQualifiedCardinalityRestriction(new RDFResource("ex:cRestr"), new RDFResource("ex:onProp"), 0, 2, new RDFResource("ex:onClass")));
-
-        [TestMethod]
-        public void ShouldThrowExceptionOnDeclaringMinMaxQualifiedCardinalityRestrictionBecauseZeroMax()
-            => Assert.ThrowsException<OWLSemanticsException>(() => new OWLOntologyClassModel().DeclareMinMaxQualifiedCardinalityRestriction(new RDFResource("ex:cRestr"), new RDFResource("ex:onProp"), 1, 0, new RDFResource("ex:onClass")));
 
         [TestMethod]
         public void ShouldThrowExceptionOnDeclaringMinMaxQualifiedCardinalityRestrictionBecauseInvalidMax()
