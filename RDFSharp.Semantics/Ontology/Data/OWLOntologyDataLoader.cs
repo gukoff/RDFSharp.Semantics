@@ -50,7 +50,7 @@ namespace RDFSharp.Semantics
                 ontology.Data.DeclareIndividual(owlIndividual);
 
             //Individuals (rdf:type owl:Class)
-            foreach (RDFResource owlClass in ontology.Model.ClassModel.Where(cls => ontology.Model.ClassModel.CheckHasSimpleClass(cls)))
+            foreach (RDFResource owlClass in ontology.Model.ClassModel)
                 foreach (RDFTriple type in graph[null, RDFVocabulary.RDF.TYPE, owlClass, null])
                 {
                     ontology.Data.DeclareIndividual((RDFResource)type.Subject);
