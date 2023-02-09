@@ -99,7 +99,7 @@ namespace RDFSharp.Semantics
                     ontology.Data.DeclareAllDifferentIndividuals(allDifferent, differentIndividuals, loaderOptions);
                 }
 
-            //Extension point (e.g.: SKOS)
+            //Extension point (e.g.: SKOS, GEO)
             dataExtensionPoint?.Invoke(ontology, graph);
             #endregion
 

@@ -111,7 +111,7 @@ namespace RDFSharp.Semantics
                     ontology.Model.PropertyModel.DeclareAllDisjointProperties(allDisjointProperties, disjointProperties, loaderOptions);
                 }
 
-            //Extension point (e.g.: SKOS)
+            //Extension point (e.g.: SKOS, GEO)
             propertyModelExtensionPoint?.Invoke(ontology, graph);
             #endregion
 
