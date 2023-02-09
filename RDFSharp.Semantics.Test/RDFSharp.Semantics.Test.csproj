@@ -3,7 +3,7 @@
 		<AssemblyTitle>RDFSharp.Semantics.Test</AssemblyTitle>
 		<AssemblyName>RDFSharp.Semantics.Test</AssemblyName>
 		<AssemblyVersion>$(Version)</AssemblyVersion>
-		<Version>3.2.0</Version>
+		<Version>3.2.1</Version>
 		<Authors>Marco De Salvo</Authors>
 		<Copyright>Marco De Salvo</Copyright>
 		<TargetFramework>net6.0</TargetFramework>
