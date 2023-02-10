@@ -408,16 +408,26 @@ namespace RDFSharp.Semantics
             #endregion
 
             #region Optimize
-            //This case is equivalent to returning all individuals
+            //Min[Qualified]Cardinality=0
+            // This case is equivalent to targeting all individuals
             if (minCardinality == 0 && maxCardinality == -99)
                 return data.Individuals.Values.ToList();
 
-            //This case is equivalent to returning only individuals:
+            //Max[Qualified]Cardinality=0
+            // This case is equivalent to targeting only individuals:
             // unqualified => not asserting the restricted property at all
             // qualified   => not asserting the restricted property against individuals of restricted OnClass
             if (maxCardinality == 0)
                 return isQualified ? data.Where(idv => !assertionsGraph[idv, null, null, null].Any(idvAsn => onClassIndividuals.Any(ocIdv => ocIdv.Equals(idvAsn.Object)))).ToList()
                                    : data.Where(idv => !assertionsGraph[idv, null, null, null].Any()).ToList();
+
+            //Max[Qualified]Cardinality=N
+            // This case requires preliminar targeting of individuals:
+            // unqualified => not asserting the restricted property at all
+            // qualified   => not asserting the restricted property against individuals of restricted OnClass
+            if (minCardinality == -99 && maxCardinality != -99)
+                individuals.AddRange(isQualified ? data.Where(idv => !assertionsGraph[idv, null, null, null].Any(idvAsn => onClassIndividuals.Any(ocIdv => ocIdv.Equals(idvAsn.Object))))
+                                                 : data.Where(idv => !assertionsGraph[idv, null, null, null].Any()));
             #endregion
 
             #region Count
