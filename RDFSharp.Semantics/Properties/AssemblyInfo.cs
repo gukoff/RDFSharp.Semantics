@@ -19,4 +19,8 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 [assembly: Guid("10E8013A-CE1C-4641-B1BF-27AB111A54D6")]
 //Internals
+[assembly: InternalsVisibleTo("RDFSharp.Semantics.Extensions.FOAF")]
+[assembly: InternalsVisibleTo("RDFSharp.Semantics.Extensions.GEO")]
+[assembly: InternalsVisibleTo("RDFSharp.Semantics.Extensions.FOAF.Test")]
+[assembly: InternalsVisibleTo("RDFSharp.Semantics.Extensions.GEO.Test")]
 [assembly: InternalsVisibleTo("RDFSharp.Semantics.Test")]
