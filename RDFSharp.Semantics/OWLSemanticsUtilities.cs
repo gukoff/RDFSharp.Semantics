@@ -222,7 +222,7 @@ namespace RDFSharp.Semantics
                 //OWL
                 { RDFVocabulary.OWL.VERSION_INFO.PatternMemberID },
                 { RDFVocabulary.OWL.VERSION_IRI.PatternMemberID },
-                //DC
+                //DC+DCTERMS
                 { RDFVocabulary.DC.CREATOR.PatternMemberID },
                 { RDFVocabulary.DC.CONTRIBUTOR.PatternMemberID },
                 { RDFVocabulary.DC.PUBLISHER.PatternMemberID },
@@ -231,7 +231,6 @@ namespace RDFSharp.Semantics
                 { RDFVocabulary.DC.DESCRIPTION.PatternMemberID },
                 { RDFVocabulary.DC.TITLE.PatternMemberID },
                 { RDFVocabulary.DC.RIGHTS.PatternMemberID },
-                //DCTERMS
                 { RDFVocabulary.DC.DCTERMS.CREATOR.PatternMemberID },
                 { RDFVocabulary.DC.DCTERMS.CONTRIBUTOR.PatternMemberID },
                 { RDFVocabulary.DC.DCTERMS.PUBLISHER.PatternMemberID },
