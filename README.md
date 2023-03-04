@@ -10,4 +10,4 @@ This is an additional <a href="https://github.com/mdesalvo/RDFSharp">RDFSharp</a
 Documentation of the library architecture and features is available <a href="https://github.com/mdesalvo/RDFSharp.Semantics/releases/download/v3.3.2/RDFSharp.Semantics-3.3.2.pdf">here</a>
 
 <hr/>
-A set of <a href="https://github.com/mdesalvo/RDFSharp.Semantics.Extensions">extensions</a> is also available for working with domain-specific ontologies (SKOS, GeoSPARQL, Time)
+A set of <a href="https://github.com/mdesalvo/RDFSharp.Semantics.Extensions">extensions</a> is also available for working with LinkedData ontologies (SKOS, GEO, TIME)
