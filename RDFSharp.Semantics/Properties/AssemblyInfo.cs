@@ -21,6 +21,8 @@ using System.Runtime.InteropServices;
 //Internals
 [assembly: InternalsVisibleTo("RDFSharp.Semantics.Extensions.SKOS")]
 [assembly: InternalsVisibleTo("RDFSharp.Semantics.Extensions.GEO")]
+[assembly: InternalsVisibleTo("RDFSharp.Semantics.Extensions.TIME")]
 [assembly: InternalsVisibleTo("RDFSharp.Semantics.Extensions.SKOS.Test")]
 [assembly: InternalsVisibleTo("RDFSharp.Semantics.Extensions.GEO.Test")]
+[assembly: InternalsVisibleTo("RDFSharp.Semantics.Extensions.TIME.Test")]
 [assembly: InternalsVisibleTo("RDFSharp.Semantics.Test")]
