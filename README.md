@@ -5,7 +5,9 @@ This is an additional <a href="https://github.com/mdesalvo/RDFSharp">RDFSharp</a
     <li>Creating <b>OWL-DL ontologies</b> (classes, restrictions, properties, individuals, assertions, annotations, ...)</li>
     <li>Validating them against an extensible set of intelligent semantic rules analyzing <b>T-BOX</b> and <b>A-BOX</b></li>
     <li>Creating <b>OWL-DL/SWRL reasoners</b> with <b>forward-chaining</b> inference materialization capabilities</li>
-    <li>Creating <b>SKOS schemes</b> (concepts, collections, relations, annotations, labels, ...)</li>
 </ul>
 
-Documentation of the library architecture and features is available <a href="https://github.com/mdesalvo/RDFSharp.Semantics/releases/download/v3.2.0/RDFSharp.Semantics-3.2.0.pdf">here</a>
+Documentation of the library architecture and features is available <a href="https://github.com/mdesalvo/RDFSharp.Semantics/releases/download/v3.3.2/RDFSharp.Semantics-3.3.2.pdf">here</a>
+
+<hr/>
+A set of <a href="https://github.com/mdesalvo/RDFSharp.Semantics.Extensions">extensions</a> is also available for easily working with LinkedData ontologies (SKOS, GEO, TIME)
