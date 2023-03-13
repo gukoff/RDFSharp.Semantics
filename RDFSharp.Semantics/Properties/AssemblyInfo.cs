@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2012-2022 Marco De Salvo
+   Copyright 2012-2023 Marco De Salvo
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -19,10 +19,11 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 [assembly: Guid("10E8013A-CE1C-4641-B1BF-27AB111A54D6")]
 //Internals
-[assembly: InternalsVisibleTo("RDFSharp.Semantics.Extensions.SKOS")]
-[assembly: InternalsVisibleTo("RDFSharp.Semantics.Extensions.GEO")]
-[assembly: InternalsVisibleTo("RDFSharp.Semantics.Extensions.TIME")]
-[assembly: InternalsVisibleTo("RDFSharp.Semantics.Extensions.SKOS.Test")]
-[assembly: InternalsVisibleTo("RDFSharp.Semantics.Extensions.GEO.Test")]
-[assembly: InternalsVisibleTo("RDFSharp.Semantics.Extensions.TIME.Test")]
 [assembly: InternalsVisibleTo("RDFSharp.Semantics.Test")]
+//Internals (RDFSharp.Semantics.Extensions)
+[assembly: InternalsVisibleTo("RDFSharp.Semantics.Extensions.SKOS")]
+[assembly: InternalsVisibleTo("RDFSharp.Semantics.Extensions.SKOS.Test")]
+[assembly: InternalsVisibleTo("RDFSharp.Semantics.Extensions.GEO")]
+[assembly: InternalsVisibleTo("RDFSharp.Semantics.Extensions.GEO.Test")]
+[assembly: InternalsVisibleTo("RDFSharp.Semantics.Extensions.TIME")]
+[assembly: InternalsVisibleTo("RDFSharp.Semantics.Extensions.TIME.Test")]
