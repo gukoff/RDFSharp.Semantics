@@ -3,7 +3,7 @@
     <AssemblyTitle>RDFSharp.Semantics</AssemblyTitle>
     <AssemblyName>RDFSharp.Semantics</AssemblyName>
     <AssemblyVersion>$(Version)</AssemblyVersion>
-    <Version>3.4.1</Version>
+    <Version>3.4.2</Version>
     <Authors>Marco De Salvo</Authors>
     <Copyright>Marco De Salvo</Copyright>
     <Description>Lightweight and friendly .NET library for realizing Semantic Web applications</Description>
@@ -45,6 +45,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="RDFSharp" Version="3.4.1" />
+    <PackageReference Include="RDFSharp" Version="3.4.2" />
   </ItemGroup>
 </Project>

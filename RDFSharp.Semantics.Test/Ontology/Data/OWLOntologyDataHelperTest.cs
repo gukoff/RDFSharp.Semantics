@@ -1126,7 +1126,7 @@ namespace RDFSharp.Semantics.Test
             ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:indiv1"), new RDFResource("ex:dtProp"), new RDFTypedLiteral("26", RDFModelEnums.RDFDatatypes.XSD_DECIMAL));
             ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:indiv2"), new RDFResource("ex:dtProp"), new RDFPlainLiteral("25"));
             ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:dtProp"), new RDFTypedLiteral("25", RDFModelEnums.RDFDatatypes.XSD_NONNEGATIVEINTEGER));
-            ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:dtProp"), new RDFTypedLiteral("25", RDFModelEnums.RDFDatatypes.XSD_GDAY));
+            ontology.Data.DeclareDatatypeAssertion(new RDFResource("ex:indiv3"), new RDFResource("ex:dtProp"), new RDFTypedLiteral("---25", RDFModelEnums.RDFDatatypes.XSD_GDAY));
 
             Assert.IsTrue(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv1"), new RDFResource("ex:hvRest")));
             Assert.IsFalse(ontology.Data.CheckIsIndividualOf(ontology.Model, new RDFResource("ex:indiv2"), new RDFResource("ex:hvRest")));
