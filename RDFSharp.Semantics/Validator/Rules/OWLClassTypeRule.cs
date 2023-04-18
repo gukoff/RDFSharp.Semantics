@@ -28,12 +28,15 @@ namespace RDFSharp.Semantics
             OWLValidatorReport validatorRuleReport = new OWLValidatorReport();
             Dictionary<long, HashSet<long>> disjoinWithCache = new Dictionary<long, HashSet<long>>();
 
-            //rdf:type
+            // Precompute the graph with all triples that have predicate rdf:type
+            // to efficiently slice it by subject in the loop.
+            RDFGraph withTypePredicate = ontology.Data.ABoxGraph.SelectTriplesByPredicate(RDFVocabulary.RDF.TYPE);
+
             IEnumerator<RDFResource> individualsEnumerator = ontology.Data.IndividualsEnumerator;
             while (individualsEnumerator.MoveNext())
             {
                 //Extract classes assigned to the current individual
-                List<RDFResource> individualClasses = ontology.Data.ABoxGraph[individualsEnumerator.Current, RDFVocabulary.RDF.TYPE, null, null]
+                List<RDFResource> individualClasses = withTypePredicate.SelectTriplesBySubject(individualsEnumerator.Current)
                                                                    .Select(t => t.Object)
                                                                    .OfType<RDFResource>()
                                                                    .ToList();
@@ -44,7 +47,7 @@ namespace RDFSharp.Semantics
                     //Calculate disjoint classes of the current class
                     if (!disjoinWithCache.ContainsKey(individualClass.PatternMemberID))
                         disjoinWithCache.Add(individualClass.PatternMemberID, new HashSet<long>(ontology.Model.ClassModel.GetDisjointClassesWith(individualClass).Select(cls => cls.PatternMemberID)));
-
+                
                     //There should not be disjoint classes assigned as class types of the same individual
                     if (individualClasses.Any(idvClass => !idvClass.Equals(individualClass) && disjoinWithCache[individualClass.PatternMemberID].Contains(idvClass.PatternMemberID)))
                         validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
