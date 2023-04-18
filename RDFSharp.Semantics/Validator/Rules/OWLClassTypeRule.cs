@@ -26,7 +26,7 @@ namespace RDFSharp.Semantics
         internal static OWLValidatorReport ExecuteRule(OWLOntology ontology)
         {
             OWLValidatorReport validatorRuleReport = new OWLValidatorReport();
-            Dictionary<long, HashSet<long>> disjoinWithCache = new Dictionary<long, HashSet<long>>();
+            Dictionary<long, HashSet<long>> disjointWithCache = new Dictionary<long, HashSet<long>>();
 
             // Precompute the graph with all triples that have predicate rdf:type
             // to efficiently slice it by subject in the loop.
@@ -45,11 +45,11 @@ namespace RDFSharp.Semantics
                 foreach (RDFResource individualClass in individualClasses)
                 {
                     //Calculate disjoint classes of the current class
-                    if (!disjoinWithCache.ContainsKey(individualClass.PatternMemberID))
-                        disjoinWithCache.Add(individualClass.PatternMemberID, new HashSet<long>(ontology.Model.ClassModel.GetDisjointClassesWith(individualClass).Select(cls => cls.PatternMemberID)));
+                    if (!disjointWithCache.ContainsKey(individualClass.PatternMemberID))
+                        disjointWithCache.Add(individualClass.PatternMemberID, new HashSet<long>(ontology.Model.ClassModel.GetDisjointClassesWith(individualClass).Select(cls => cls.PatternMemberID)));
                 
                     //There should not be disjoint classes assigned as class types of the same individual
-                    if (individualClasses.Any(idvClass => !idvClass.Equals(individualClass) && disjoinWithCache[individualClass.PatternMemberID].Contains(idvClass.PatternMemberID)))
+                    if (individualClasses.Any(idvClass => !idvClass.Equals(individualClass) && disjointWithCache[individualClass.PatternMemberID].Contains(idvClass.PatternMemberID)))
                         validatorRuleReport.AddEvidence(new OWLValidatorEvidence(
                             OWLSemanticsEnums.OWLValidatorEvidenceCategory.Error,
                             nameof(OWLClassTypeRule),
